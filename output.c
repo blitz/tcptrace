@@ -225,6 +225,20 @@ PrintBrief(
     if (ConnReset(ptp))
 	fprintf(stdout,"  (reset)");
     fprintf(stdout,"\n");
+
+    /* warning for hardware duplicates */
+    if (pab->num_hardware_dups != 0) {
+	fprintf(stdout,
+		"  ** Warning, %s2%s: detected %lu hardware duplicates (same seq # and IP ID)\n",
+		pab->host_letter, pba->host_letter,
+		pab->num_hardware_dups);
+    }
+    if (pba->num_hardware_dups != 0) {
+	fprintf(stdout,
+		"    ** Warning, %s2%s: detected %lu hardware duplicates (same seq # and IP ID)\n",
+		pba->host_letter, pab->host_letter,
+		pba->num_hardware_dups);
+    }
 }
 
 
@@ -385,6 +399,13 @@ PrintTrace(
     StatLineF("data xmit time","secs","%7.3f",
 	      etime_data1 / 1000000.0,
 	      etime_data2 / 1000000.0);
+
+    if ((pab->num_hardware_dups != 0) || (pba->num_hardware_dups != 0)) {
+	StatLineI("hardware dups","segs",
+		  pab->num_hardware_dups, pba->num_hardware_dups);
+	fprintf(stdout,
+	       "       ** WARNING: presence of hardware duplicates makes these figures suspect!\n");
+    }
 
     /* do the throughput calcs */
     etime /= 1000000.0;  /* convert to seconds */

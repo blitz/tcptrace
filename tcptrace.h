@@ -173,6 +173,15 @@ typedef struct tcb {
     u_llong	out_order_pkts;	/* out of order packets */
     u_llong	sacks_sent;	/* sacks returned */
 
+    /* hardware duplicate detection */
+#define SEGS_TO_REMEMBER 8
+    struct str_hardware_dups {
+	seqnum	seq;	/* sequence number */
+	u_short	id;	/* IP ID */
+    } hardware_dups[SEGS_TO_REMEMBER];
+    u_long num_hardware_dups;
+    u_char hardware_dups_ix;
+
     /* added for initial window stats (for Mallman) */
     u_long	initialwin_bytes;	/* initial window (in bytes) */
     u_long	initialwin_segs;	/* initial window (in segments) */

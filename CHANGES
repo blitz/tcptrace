@@ -124,3 +124,4 @@
   fixed minor http modules bugs
   changed some longer fields to use "long long" if available
   added "pushed packets" counter
+  added hardware duplicate detection
