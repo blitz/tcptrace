@@ -149,7 +149,8 @@ CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
 	filt_scanner.c filt_parser.c filter.c udp.c \
 	version.c
 MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c
-OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
+MODSUPPORT=dyncounter.c
+OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o} ${MODSUPPORT:.c=.o}
 
 all: tcptrace versnum
 
