@@ -185,9 +185,16 @@ CompReopenFile(
     if (fd == -1)
 	return(NULL);
 
-    /* OK, now connect that fd to stdin */
-    fflush(stdin);
+    /* erase the file buffer and reposition to the front */
+#ifdef HAVE_FPURGE
+    /* needed for NetBSD and FreeBSD (at least) */
+    fpurge(stdin);		/* discard input buffer */
+#else /* HAVE_FPURGE */
+    fflush(stdin);		/* discard input buffer */
+#endif /* HAVE_FPURGE */
     rewind(stdin);
+
+    /* yank the FD out from under stdin and point to the pipe */
     dup2(fd,0);
 
     /* skip forward in the stream to the same place that we were in */
