@@ -292,3 +292,8 @@
   changes from Jun-ichiro Hagino, made compliant with latest IPv6
    API/implementations (just changes to constant names in ipv6.[ch])
   minor bug fixes to tcplib module
+5.1.4 - Wed Jan 27, 1999
+  fixed bug in congestion window graph, REALLY long connections would
+    cause a counter to wrap around, messing up the average
+  fixed major bug in tcplib module, ftp data and control ports were backwards
+
