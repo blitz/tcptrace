@@ -3,6 +3,14 @@ PLATFORM=`uname -smr | sed 's/[ \.]/_/g'`
 OUTDIR=OUTPUT_${PLATFORM}
 BINDIR=BINARY_${PLATFORM}
 #
+# the good True64 folks are smarter than the rest of us and use a
+# different checksum algorithm.  Let's see if we can get them to
+# dumb down temporarily and join us at our puny level :-(
+#
+CMD_ENV=xpg4
+export CMD_ENV
+#
+#
 DIFFS=DIFFS
 #
 echo "Platform is ${PLATFORM}"
