@@ -40,7 +40,7 @@ static u_int SynCount(tcp_pair *);
 static u_int FinCount(tcp_pair *);
 static double Average(double, int);
 static double Stdev(double, double, int);
-static void StatlineI(char *, char *, char *, u_long, u_long);
+static void StatLineI(char *, char *, char *, u_long, u_long);
 static void StatLineF(char *, char *, char *, double, double);
 static void StatLineField(char *, char *, char *, u_long, int);
 static void StatLineFieldF(char *, char *, char *, double, int);
@@ -112,6 +112,7 @@ Stdev(
     double term;
     double term1;
     double term2;
+    double retval;
 
     if (n<=2)
 	return(0.0);
@@ -120,7 +121,11 @@ Stdev(
     term2 = (sum * sum) / (double)n;
     term = term1-term2;
     term /= (double)(n-1);
-    return(sqrt(term));
+    retval = sqrt(term);
+
+/*     printf("Stdev(%f,%f,%d) is %f\n", sum,sum2,n,retval); */
+
+    return(retval);
 }
 
 
@@ -238,74 +243,74 @@ PrintTrace(
     fprintf(stdout,"   %s->%s:			      %s->%s:\n",
 	    host1,host2,host2,host1);
 
-    StatlineI("total packets","","%8lu", pab->packets, pba->packets);
+    StatLineI("total packets","","%8lu", pab->packets, pba->packets);
     if (pab->reset_count || pba->reset_count)
-	StatlineI("resets sent","","%8lu", pab->reset_count, pba->reset_count);
-    StatlineI("ack pkts sent","","%8lu", pab->ack_pkts, pba->ack_pkts);
-    StatlineI("unique bytes sent","","%8lu",
+	StatLineI("resets sent","","%8lu", pab->reset_count, pba->reset_count);
+    StatLineI("ack pkts sent","","%8lu", pab->ack_pkts, pba->ack_pkts);
+    StatLineI("unique bytes sent","","%8lu",
 	      pab->data_bytes-pab->rexmit_bytes,
 	      pba->data_bytes-pba->rexmit_bytes);
 #ifdef OLD
-    StatlineI("unique packets","","%8lu",
+    StatLineI("unique packets","","%8lu",
 	      pab->data_pkts-pab->rexmit_pkts,
 	      pba->data_pkts-pba->rexmit_pkts);
 #endif /* OLD */
-    StatlineI("actual data pkts","","%8lu", pab->data_pkts, pba->data_pkts);
-    StatlineI("actual data bytes","","%8lu", pab->data_bytes, pba->data_bytes);
-    StatlineI("rexmt data pkts","","%8lu", pab->rexmit_pkts, pba->rexmit_pkts);
-    StatlineI("rexmt data bytes","","%8lu",
+    StatLineI("actual data pkts","","%8lu", pab->data_pkts, pba->data_pkts);
+    StatLineI("actual data bytes","","%8lu", pab->data_bytes, pba->data_bytes);
+    StatLineI("rexmt data pkts","","%8lu", pab->rexmit_pkts, pba->rexmit_pkts);
+    StatLineI("rexmt data bytes","","%8lu",
 	      pab->rexmit_bytes, pba->rexmit_bytes);
-    StatlineI("outoforder pkts","","%8lu",
+    StatLineI("outoforder pkts","","%8lu",
 	      pab->out_order_pkts, pba->out_order_pkts);
-    StatlineI("SYN/FIN pkts sent","","%s",
+    StatLineI("SYN/FIN pkts sent","","%s",
 	      (sprintf(bufl,"%d/%d",
 		       pab->syn_count, pab->fin_count),(int)bufl),
 	      (sprintf(bufr,"%d/%d",
 		       pba->syn_count, pba->fin_count),(int)bufr));
     if (pab->f1323_ws || pba->f1323_ws || pab->f1323_ts || pba->f1323_ts) {
-	StatlineI("req 1323 ws/ts","","%s",
+	StatLineI("req 1323 ws/ts","","%s",
 		  (sprintf(bufl,"%c/%c",
 		      pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),(int)bufl),
 		  (sprintf(bufr,"%c/%c",
 		      pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'),(int)bufr));
     }
     if (pab->f1323_ws || pba->f1323_ws) {
-	StatlineI("adv wind scale","","%d",
+	StatLineI("adv wind scale","","%d",
 		  pab->window_scale, pba->window_scale);
     }
     if (pab->fsack_req || pba->fsack_req) {
-	StatlineI("req sack","","%c",
+	StatLineI("req sack","","%c",
 		  pab->fsack_req?'Y':'N',
 		  pba->fsack_req?'Y':'N');
-	StatlineI("sacks sent","","%d",
+	StatLineI("sacks sent","","%d",
 		  pab->sacks_sent,
 		  pba->sacks_sent);
     }
-    StatlineI("mss requested","bytes","%8lu", pab->mss, pba->mss);
-    StatlineI("max segm size","bytes","%8lu",
+    StatLineI("mss requested","bytes","%8lu", pab->mss, pba->mss);
+    StatLineI("max segm size","bytes","%8lu",
 	      pab->max_seg_size,
 	      pba->max_seg_size);
-    StatlineI("min segm size","bytes","%8lu",
+    StatLineI("min segm size","bytes","%8lu",
 	      pab->min_seg_size,
 	      pba->min_seg_size);
-    StatlineI("avg segm size","bytes","%8lu",
+    StatLineI("avg segm size","bytes","%8lu",
 	      (int)((double)pab->data_bytes / ((double)pab->data_pkts+.001)),
 	      (int)((double)pba->data_bytes / ((double)pba->data_pkts+.001)));
-    StatlineI("max win adv","bytes","%8lu", pab->win_max, pba->win_max);
-    StatlineI("min win adv","bytes","%8lu", pab->win_min, pba->win_min);
-    StatlineI("zero win adv","times","%8lu",
+    StatLineI("max win adv","bytes","%8lu", pab->win_max, pba->win_max);
+    StatLineI("min win adv","bytes","%8lu", pab->win_min, pba->win_min);
+    StatLineI("zero win adv","times","%8lu",
 	      pab->win_zero_ct, pba->win_zero_ct);
-    StatlineI("avg win adv","bytes","%8lu",
+    StatLineI("avg win adv","bytes","%8lu",
 	      pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
 	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
-    StatlineI("max cwin","bytes","%8lu", pab->cwin_max, pba->cwin_max);
-    StatlineI("min cwin","bytes","%8lu", pab->cwin_min, pba->cwin_min);
-    StatlineI("avg cwin","bytes","%8lu",
+    StatLineI("max cwin","bytes","%8lu", pab->cwin_max, pba->cwin_max);
+    StatLineI("min cwin","bytes","%8lu", pab->cwin_min, pba->cwin_min);
+    StatLineI("avg cwin","bytes","%8lu",
 	      pab->ack_pkts==0?0:pab->cwin_tot/pab->ack_pkts,
 	      pba->ack_pkts==0?0:pba->cwin_tot/pba->ack_pkts);
-    StatlineI("initial window","bytes","%8lu",
+    StatLineI("initial window","bytes","%8lu",
 	      pab->initialwin_bytes, pba->initialwin_bytes);
-    StatlineI("initial window","pkts","%8lu",
+    StatLineI("initial window","pkts","%8lu",
 	      pab->initialwin_segs, pba->initialwin_segs);
 
 
@@ -317,7 +322,7 @@ PrintTrace(
 
     if (print_rtt) {
 	fprintf(stdout,"\n");
-	StatlineI("RTT samples","","%8lu", pab->rtt_count, pba->rtt_count);
+	StatLineI("RTT samples","","%8lu", pab->rtt_count, pba->rtt_count);
 	StatLineF("RTT min","ms","%8.1f",
 		  (double)pab->rtt_min/1000.0,
 		  (double)pba->rtt_min/1000.0);
@@ -338,7 +343,7 @@ PrintTrace(
 \t  considered.  Times are taken from the last instance\n\
 \t  of a segment.\n\
 ");
-	    StatlineI("ambiguous acks","","%8lu",
+	    StatLineI("ambiguous acks","","%8lu",
 		      pab->rtt_amback, pba->rtt_amback);
 	    StatLineF("RTT min (last)","ms","%8.1f",
 		      (double)pab->rtt_min_last/1000.0,
@@ -354,14 +359,14 @@ PrintTrace(
 		      Stdev(pba->rtt_sum_last, pba->rtt_sum2_last, pba->rtt_count_last) / 1000.0);
 
 	}
-	StatlineI("segs cum acked","","%8lu",
+	StatLineI("segs cum acked","","%8lu",
 		  pab->rtt_cumack, pba->rtt_cumack);
-	StatlineI("duplicate acks","","%8lu",
+	StatLineI("duplicate acks","","%8lu",
 		  pab->rtt_dupack, pba->rtt_dupack);
 	if (debug)
-	    StatlineI("unknown acks:","","%8lu",
+	    StatLineI("unknown acks:","","%8lu",
 		      pab->rtt_unkack, pba->rtt_unkack);
-	StatlineI("max # retrans","","%8lu",
+	StatLineI("max # retrans","","%8lu",
 		  pab->retr_max, pba->retr_max);
 	StatLineF("min retr time","ms","%8.1f",
 		  (double)((double)pab->retr_min_tm/1000.0),
@@ -372,7 +377,7 @@ PrintTrace(
 	StatLineF("avg retr time","ms","%8.1f",
 		  Average(pab->retr_tm_sum, pab->retr_tm_count) / 1000.0,
 		  Average(pba->retr_tm_sum, pba->retr_tm_count) / 1000.0);
-	StatlineI("sdv retr time","ms","%8.1f",
+	StatLineF("sdv retr time","ms","%8.1f",
 		  Stdev(pab->retr_tm_sum, pab->retr_tm_sum2,
 			pab->retr_tm_count) / 1000.0,
 		  Stdev(pba->retr_tm_sum, pba->retr_tm_sum2,
@@ -382,7 +387,7 @@ PrintTrace(
 
 
 static void
-StatlineI(
+StatLineI(
     char *label,
     char *units,
     char *format,
