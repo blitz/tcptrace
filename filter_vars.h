@@ -59,6 +59,8 @@ struct filter_line filters[] = {
     {"win_zero_ct",	V_ULONG,  PTCB_C_S(win_zero_ct),"number of ZERO windows advertised"},
     {"min_seq",		V_ULONG,  PTCB_C_S(min_seq),"smallest sequence number"},
     {"max_seq",		V_ULONG,  PTCB_C_S(max_seq),"largest sequence number"},
+    {"num_sacks",	V_ULONG,  PTCB_C_S(num_sacks),"number of ACKs carrying SACKs"},
+    {"max_sacks",	V_ULONG,  PTCB_C_S(max_sack_blocks),"most SACK blocks in a single ACK"},
 
     /* synonyms */
     {"segs",		V_ULLONG, PTCB_C_S(packets),"total segments"},
