@@ -50,50 +50,50 @@ static char const rcsid[] =
  correctly.*/
 
 static struct EPFileHeader {
-    char	version;	/* file version (must be 5, 6, or 7)*/
-    char	status;		/* filler to fill to even boundary*/
+    char version;		/* file version (must be 5, 6, or 7)*/
+    char status;		/* filler to fill to even boundary*/
 } file_header;
 
 static struct EPFileHeader2 {
-    unsigned long length;	/* length of file*/
-    unsigned long numPackets;	/* number of packets contained in the file*/
-    unsigned long timeDate;	/* time and date stamp of the file (MAC format)*/
-    unsigned long timeStart;	/* time of the first packet in the file*/
-    unsigned long timeStop;	/* time of the last packet in the file*/
-    unsigned long futureUse[7];	/*reserved for future use and irrelevent to us!*/
+    u_long length;		/* length of file*/
+    u_long numPackets;		/* number of packets contained in the file*/
+    u_long timeDate;		/* time and date stamp of the file (MAC format)*/
+    u_long timeStart;		/* time of the first packet in the file*/
+    u_long timeStop;		/* time of the last packet in the file*/
+    u_long futureUse[7];	/*reserved for future use and irrelevent to us!*/
 } file_header2;
 
 
 
 struct EPFilePacket_v5_6 {
-    unsigned short packetlength;/* total packet length */
-    unsigned short slicelength;	/* sliced length of packet*/
+    u_short packetlength;	/* total packet length */
+    u_short slicelength;	/* sliced length of packet*/
 };
 
 struct EPFilePacket2_v5_6 {
-    unsigned char flags;	/* crc, frame, runt, ...*/
-    unsigned char status;	/* slice, trunc, ...*/
+    u_char flags;		/* crc, frame, runt, ...*/
+    u_char status;		/* slice, trunc, ...*/
 };
 
 struct EPFilePacket3_v5_6 { 
-    unsigned long  timestamp;	/* timestamp in milliseconds*/
+    u_long  timestamp;		/* timestamp in milliseconds*/
     short destNum;		/* str corresponding to ether address*/
     short srcNum;		/* dnum is entry in table*/
     short protoNum;		/* table number for the protocol*/
     char protoStr[8];		/* protocol identity string (NOT null terminated!)*/
-    unsigned short filterNum;	/* index to filter table*/
+    u_short filterNum;		/* index to filter table*/
 };
 
 
 /* what we need for version 7 */
 typedef struct PeekPacket_v7 {
-    unsigned short	protospec;	/* ProtoSpec ID. */
-    unsigned short	packetlength;	/* Total length of packet. */
-    unsigned short	slicelength;	/* Sliced length of packet. */
-    unsigned char	flags;		/* CRC, frame, runt, ... */
-    unsigned char	status;		/* Slicing, ... */
-    unsigned long	timestamphi;	/* 64-bit timestamp in microseconds. */
-    unsigned long	timestamplo;
+    u_short	protospec;	/* ProtoSpec ID. */
+    u_short	packetlength;	/* Total length of packet. */
+    u_short	slicelength;	/* Sliced length of packet. */
+    u_char	flags;		/* CRC, frame, runt, ... */
+    u_char	status;		/* Slicing, ... */
+    u_long	timestamphi;	/* 64-bit timestamp in microseconds. */
+    u_long	timestamplo;
 } PeekPacket_v7;
 
 /* byte swapping */
@@ -101,7 +101,7 @@ typedef struct PeekPacket_v7 {
 /* we'll need to do conversion */
 
   
-static unsigned long mactime;
+static u_long mactime;
 
 #define Real_Size_FH 2
 #define Real_Size_FH2 48 
@@ -194,9 +194,9 @@ pread_EP(
 	} else { /* version 7 */
 	    struct PeekPacket_v7 hdrv7;
 
-	    if ((rlen=fread(&hdrv7,1,sizeof(hdrv7),stdin)) != sizeof(hdrv7)) {
+	    if ((rlen=fread(&hdrv7,sizeof(hdrv7),1,stdin)) != 1) {
 		if (rlen != 0)
-		    fprintf(stderr,"Bad EP V7 header\n");
+		    fprintf(stderr,"Bad EP V7 header (rlen is %d)\n", rlen);
 		return(0);
 	    }
 
@@ -257,6 +257,7 @@ pread_EP(
 		*ptlen = hdrv7.packetlength;
 
 	    if (debug>1) {
+		printf("File position: %ld\n", ftell(stdin));
 		printf("pread_EP (v7) next packet:\n");
 		printf("  packetlength: %d\n", hdrv7.packetlength);
 		printf("  slicelength:  %d\n", hdrv7.slicelength);
@@ -276,8 +277,9 @@ pread_EP(
 	}
 
 
-	if (debug > 3)
+	if (debug > 3) {
 	    PrintRawDataHex("EP_READ: Ethernet Dump", pep, (char *)(pep+1)-1);
+	}
 
 	/* read the rest of the packet */
 	len -= sizeof(struct ether_header);
@@ -358,19 +360,24 @@ pread_f *is_EP(void)
     }
 
 
-    /* check for EP */
-    if (file_header.version != VERSION_7 &&
-	file_header.version != VERSION_6 &&
-	file_header.version != VERSION_5 ) {
+    /* check for EP file format */
+    /* Note, there's no "magic number" here, so this is just a heuristic :-( */
+    if ((file_header.version == VERSION_7 ||
+	 file_header.version == VERSION_6 ||
+	 file_header.version == VERSION_5) &&
+	(file_header.status == 0) &&
+	(memcmp(file_header2.futureUse,"\000\000\000\000\000\000\000",7) == 0)) {
+	if (debug)
+	    printf("Valid Etherpeek format file (file version: %d)\n",
+		   file_header.version);
+	thisfile_ep_version = file_header.version;
+
+    } else {
 	if (debug)
 	    fprintf(stderr,"I don't think this is version 5, 6, or 7 Ether Peek File\n");
 
 	return(NULL);
     } 
-
-    if (debug)
-	printf("EP file version: %d\n", file_header.version);
-    thisfile_ep_version = file_header.version;
 
     /* OK, it's mine.  Init some stuff */
     pep = MallocZ(sizeof(struct ether_header));
