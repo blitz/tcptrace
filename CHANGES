@@ -249,4 +249,6 @@
 	  --noshowrttdongles DON'T mark non-RTT-generating ACKs with special symbols
 	  --showdupack3	     mark triple dupacks on time sequence graphs
 	  --noshowdupack3    DON't mark triple dupacks on time sequence graphs
+	  --show0lensegs     show zero length packets on time sequence graphs
+	  --noshow0lensegs   DON'T show zero length packets on time sequence graphs
     made the default for the RTT dongles FALSE, they're not generally useful
