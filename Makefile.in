@@ -59,6 +59,10 @@ DEFINES += -DLOAD_MODULE_RTTGRAPH
 # Experimental tcplib-data generating module
 # 
 DEFINES += -DLOAD_MODULE_TCPLIB
+# 
+# Experimental module for a friend
+# 
+DEFINES += -DLOAD_MODULE_COLLIE
 
 
 
