@@ -23,6 +23,9 @@ static int *pip_buf;
 static struct ip *ipb;
 static struct tcphdr *tcpb;
 
+/* for debugging */
+static unsigned linenum;
+
 /* return the next packet header */
 /* currently only works for ETHERNET */
 static int
@@ -48,12 +51,13 @@ pread_ns(
 	char flags[100];
 	int iteration;
 	int seq;
-
 	int is_ack;
 	int is_tcp;
-
 	int rlen;
 
+	++linenum;
+
+	/* correct NS output line would have 14 fields: */
 	rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu\n",
 		      &tt,
 		      &timestamp,
@@ -70,10 +74,12 @@ pread_ns(
 		      &seq,
 		      &ipb->ip_id);
 
-	if (rlen == 0) {
-	    fprintf(stderr,"Bad ns packet header\n");
+	/* if we can't match all 14 fields, we give up on the file */
+	if (rlen != 14) {
+	    fprintf(stderr,"Bad ns packet header in line %u\n", linenum);
 	    return(0);
 	}
+
 	if (rlen == EOF) {
 	    return(0);
 	}
@@ -83,6 +89,7 @@ pread_ns(
 	is_tcp = strcmp(type, "tcp") == 0;
 	is_ack = strcmp(type, "ack") == 0;
 
+	/* if it's not a TCP data segment or ACK, discard and try again */
 	if (!is_tcp && !is_ack)
 	    continue;
 
@@ -99,22 +106,27 @@ pread_ns(
 	    tcpb->th_ack = htonl(packlen * seq);
 	}
 
+	/* make up a reasonable IPv4 packet header */
 	ipb->ip_hl = 5; /* no options, normal length of 20 */
 	ipb->ip_v = 4;  /* IPv4 */
 	ipb->ip_tos = 0;
 	ipb->ip_off = 0;
 	ipb->ip_ttl = 64;  /* nice round number */
 	ipb->ip_p = 6;     /* TCP */
-	ipb->ip_sum = 0;   /* hope it doesn't get checked! */
+	ipb->ip_sum = 0;   /* IP checksum, hope it doesn't get checked! */
 	ipb->ip_id = htons(ipb->ip_id);
 
+	/* is the transport "ECN-Capable"? */
 	if (strchr(flags, 'N') != NULL)
 	    ipb->ip_tos |= IPTOS_ECT;
+
+	/* was the "Experienced Congestion" bit set? */
 	if (strchr(flags, 'E') != NULL)
 	    ipb->ip_tos |= IPTOS_CE;
 
+	/* make up a reasonable TCP segment header */
 	tcpb->th_off = 5;  /* no options, normal length of 20 */
-	tcpb->th_flags = TH_ACK;
+	tcpb->th_flags = TH_ACK; /* sdo: what about first SYN?? */
 	tcpb->th_x2 = 0;
 	tcpb->th_sum = 0;
 	tcpb->th_urp = 0;
@@ -127,6 +139,7 @@ pread_ns(
 	if (strchr(flags, 'A') != NULL)
 	    tcpb->th_x2 |= TH_CWR;
 
+	/* convert floating point timestamp to (tv_sec,tv_usec) */
 	c = floor(timestamp);
 	ptime->tv_sec  = c;
 	d = timestamp - (double) ptime->tv_sec;
@@ -185,6 +198,9 @@ pread_f *is_ns(void)
 
     /* Set up the stuff that shouldn't change */
     pep->ether_type = ETHERTYPE_IP;
+
+    /* init line count (we might be called several times, must be done here) */
+    linenum = 0;
 
     return(pread_ns);
 }
