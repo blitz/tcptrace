@@ -1757,12 +1757,15 @@ dotrace(
     if (!SYN_SET(ptcp) && !out_order && !retrans) {
 	u_long owin;
 	/* If there has been no ack from the other direction, owin is just 
-	// If there has been no ack from the other direction, owin is just bytes in this pkt.
+	 * bytes in this pkt.
+	 */
+	if (otherdir->ack == 0){
 		owin = end - start ;
 	}
 	else {
 		/* ack  always acks 'received + 1' bytes, so subtract 1 
-		// ack  always acks 'received + 1' bytes, so subtract 1 for owin
+		 * for owin */
+		owin = end - (otherdir->ack - 1);
 	}
 	
 	if (owin > thisdir->owin_max)
@@ -1776,13 +1779,14 @@ dotrace(
        	thisdir->owin_count++;
 
 	/* adding mark's suggestion of weighted owin */
-	// adding mark's suggestion of weighted owin	
-	if (thisdir->previous_owin_sample_time.tv_sec == 0) { // if this is first ever sample for thisdir
+	if (thisdir->previous_owin_sample_time.tv_sec == 0) {
+	  /* if this is first ever sample for thisdir */
+		thisdir->previous_owin_sample_time = thisdir->last_time;
 		thisdir->previous_owin_sample = owin;
 	}
 	else { 
 		/* weight each owin sample with the duration that it exists for */
-		// weight each owin sample with the duration that it exists for 
+        	sample_elapsed_time = (elapsed(thisdir->previous_owin_sample_time, ptp_save->last_time))/1000000;
         	total_elapsed_time = (elapsed(ptp_save->first_time, ptp_save->last_time))/1000000;
 		thisdir->owin_wavg += (u_llong)((thisdir->previous_owin_sample) * sample_elapsed_time);
 		/* graph owin_wavg */
