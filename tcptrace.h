@@ -487,6 +487,10 @@ extern int debug;
 extern int thru_interval;
 extern u_long pnum;
 
+/* extended variables with values */
+extern char *output_file_dir;
+extern char *output_file_prefix;
+
 extern u_long ctrunc;
 extern timeval current_time;
 extern char *output_filename;
