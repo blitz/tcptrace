@@ -110,8 +110,8 @@ static void
 printeth_packet(
     struct ether_header *pep)
 {
-    printf("\tETH Srce: %s\n", ether_ntoa((struct ether_addr *)&pep->ether_shost));
-    printf("\tETH Dest: %s\n", ether_ntoa((struct ether_addr *)&pep->ether_dhost));
+    printf("\tETH Srce: %s\n", Ether_Ntoa((struct ether_addr *)&pep->ether_shost));
+    printf("\tETH Dest: %s\n", Ether_Ntoa((struct ether_addr *)&pep->ether_dhost));
 
     printf(
 	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
@@ -708,7 +708,7 @@ ipv6addr2str(
 /* and it messes up my cross-platform testing.  I'll just do it the */
 /* "one true" way!  :-)  */
 char *
-ether_ntoa (struct ether_addr *e)
+Ether_Ntoa (struct ether_addr *e)
 {
     unsigned char *pe;
     static char buf[30];

@@ -497,10 +497,13 @@ extern timeval last_packet;
 
 /* external routine decls */
 double sqrt(double x);
-char *ether_ntoa(struct ether_addr *e);
 void free(void *);
 int finite(double);
 
+/* note that many machines have an ether_ntoa, but the output differs, as does
+   the prototype, so we'll include our own and change the name to avoid conflicts
+   with local prototypes if they exist and differ */
+char *Ether_Ntoa(struct ether_addr *e);
 
 /* global routine decls */
 void *MallocZ(int);
