@@ -213,3 +213,5 @@
 5.0.13 - Wed Nov  4, 1998
   Fixed tcpdump OUTPUT bug, created files generated "truncated-ip"
     warnings from real tcpdump program, I fixed it.
+  Added cwin graph (-N) for Mark
+  Added segsize graph (-F!) for Jeff Fedor

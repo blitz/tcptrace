@@ -291,6 +291,16 @@ typedef struct tcb {
     u_long	rtt_lastrtt;
     timeval	rtt_lasttime;
 
+    /* Segment size graph */
+    PLOTTER	segsize_plotter;
+    PLINE	segsize_line;
+    PLINE	segsize_avg_line;
+
+    /* Congestion window graph */
+    PLOTTER	cwin_plotter;
+    PLINE	cwin_line;
+    PLINE	cwin_avg_line;
+
     /* host name letter(s) */
     char	*host_letter;
 } tcb;
@@ -411,6 +421,8 @@ extern Bool dump_rtt;
 extern Bool graph_rtt;
 extern Bool graph_tput;
 extern Bool graph_tsg;
+extern Bool graph_segsize;
+extern Bool graph_cwin;
 extern Bool hex;
 extern Bool ignore_non_comp;
 extern Bool nonames;
@@ -670,6 +682,8 @@ struct tcp_options {
 #define RTT_DUMP_FILE_EXTENSION		"_rttraw.dat"
 #define RTT_GRAPH_FILE_EXTENSION	"_rtt.xpl"
 #define PLOT_FILE_EXTENSION		"_tsg.xpl"
+#define SEGSIZE_FILE_EXTENSION		"_ssize.xpl"
+#define CWIN_FILE_EXTENSION		"_cwin.xpl"
 #define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"
 #define CONTENTS_FILE_EXTENSION		"_contents.dat"
 
