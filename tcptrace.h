@@ -535,6 +535,7 @@ char *ts2ascii(timeval *);
 char *ts2ascii_date(timeval *);
 char *ServiceName(portnum);
 char *HostName(ipaddr);
+char *HostAddr(ipaddr);
 char *HostLetter(u_int);
 char *NextHostLetter(void);
 char *EndpointName(ipaddr,portnum);
