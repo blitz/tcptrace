@@ -1,0 +1,61 @@
+Special thanks to the following organizations:
+
+    The National Science Foundation
+	For funding the rebirth of tcptrace which has made it possible
+	to hire students and purchase computers for cross-platform
+	development 
+
+    Sun Microsystems
+	For donating the web server and Solaris development platform
+        that serves as www.tcptrace.org
+
+
+Special thanks to the following people who helped, pointed out bugs,
+or ported the program to other architectures:
+
+	 Sita Menon 
+		wrote much of the early retransmission counting
+		and sequencing engine
+	 Brian Wilson 
+		wrote the original etherpeek capture library
+	 Mark Allman and Chris Hayes 
+		provided valuable (sometimes incessant!) feedback
+		on the tool (and drew the nice web page graphic)
+	 Tim Shepard 
+		for writing xplot, of course, providing
+	      	a wonderful tool for understanding TCP
+	 Bill Fenner (fenner@parc.xerox.com)
+		pointed out a couple small bugs in version 3.2.1
+		pointed out a bug in 3.2.5 that kept it from reading
+			any packets on a PC (endian bug)
+	 Jeff Semke (semke@psc.edu)
+		sent me diffs to get it compile under
+			"NetBSD 1.2 on a Pentium box."
+	 Rick Jones (raj@hpisrdq.cup.hp.com)
+		sent me diffs to get it to compile on HP systems
+	 Keith Scott (kscott@zorba.jpl.nasa.gov)
+		sent me Linux diffs
+	 Nasseef Abukamail (nabukama@irg.cs.ohiou.edu) who wrote much of
+		the IPv6 code
+	 Byron Collie (byron.collie@ccs.afp.gov.au) for helping make
+	        the program more useful to the security community 
+	 Brian Utterback (Brian.Utterback@East.Sun.COM) for very helpful
+		bug reports
+	 Jamshid Mahdavi (mahdavi@novell.com) for poking at the
+	        Intel/Linux side of the code and sending bug reports
+	 Mark Foster (mafoster@george.arc.nasa.gov) for writing the
+		manual page
+	 Ethan Blanton (eblanton@irg.cs.ohiou.edu) for helping us
+	        understand the mystery that is Linux and being the
+	        guardian of "esthetically pleasing"
+	 Wes Eddy (weddy@irg.cs.ohiou.edu) for designing the new web
+	        pages and contributing to cross-platform compatibility
+	 Nathan Smith (nsmith@irg.cs.ohiou.edu) for figuring out
+	        autoconf and making the Darwin/OSX port possible
+	 Priya Narasimhan (pnarasim@irg.cs.ohiou.edu) for helping with
+	        general bug fixes and rewriting the owin code
+	 Marina Bykova (mbykova@irg.cs.ohiou.edu) for helping with the
+	        Tru64 port and writing the realtime operation code
+		
+
+	
