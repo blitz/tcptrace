@@ -244,10 +244,6 @@ typedef struct stcp_pair tcp_pair;
 typedef struct tcphdr tcphdr;
 
 
-/* maximum number of TCP pairs to maintain */
-#define DEFAULT_MAX_TCP_PAIRS 1024
-extern int max_tcp_pairs;
-
 extern int num_tcp_pairs;	/* how many pairs are in use */
 extern tcp_pair **ttp;		/* array of pointers to allocated pairs */
 
@@ -294,6 +290,7 @@ int finite(double);
 
 /* global routine decls */
 void *MallocZ(int);
+void *ReallocZ(void *oldptr, int obytes, int nbytes);
 void trace_init(void);
 void trace_done(void);
 void seglist_init(tcb *);
@@ -325,7 +322,7 @@ void PrintTrace(tcp_pair *);
 void PrintBrief(tcp_pair *);
 void OnlyConn(int);
 void IgnoreConn(int);
-u_long elapsed(timeval, timeval);
+double elapsed(timeval, timeval);
 int ConnReset(tcp_pair *);
 int ConnComplete(tcp_pair *);
 char *ts2ascii(timeval *);

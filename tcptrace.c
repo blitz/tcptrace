@@ -113,7 +113,6 @@ Misc options\n\
   -Z      dump raw rtt sample times to file[s]\n\
   -p      print individual packet contents (can be very long)\n\
   -t      'tick' off the packet numbers as a progress indication\n\
-  -mN     max TCP pairs to keep\n\
   -v      print version information and exit\n\
   -w      print warning message when packets are too short to process\n\
   -d      whistle while you work (enable debug, use -d -d for more output)\n\
@@ -393,6 +392,26 @@ MallocZ(
 	return(ptr);
 }
 
+void *
+ReallocZ(
+    void *oldptr,
+    int obytes,
+    int nbytes)
+{
+	char *ptr;
+
+	ptr = realloc(oldptr,nbytes);
+	if (ptr == NULL) {
+		perror("Realloc failed, fatal\n");
+		exit(2);
+	}
+	if (obytes < nbytes) {
+	    bzero((char *)ptr+obytes,nbytes-obytes);
+	}
+
+	return(ptr);
+}
+
 
 static void
 ParseArgs(
@@ -453,18 +472,10 @@ ParseArgs(
 		    }
 		    *(argv[i]+1) = '\00'; break;
 		  case 'm':
-		    max_tcp_pairs = atoi(argv[i]+1);
-		    if (max_tcp_pairs <= 0) {
-			fprintf(stderr, "-m  must be > 0\n");
-			Usage(argv[0]);
-		    }
-		    if (saw_i_or_o) {
-			/* too late, the table was already made for some */
-			/* other argument to work */
-			fprintf(stderr, "-m MUST preceed all '-iN' and '-oM' options\n");
-			Usage(argv[0]);
-		    }
+		    fprintf(stderr,
+			    "-m option is obsolete (no longer necessary)\n");
 		    *(argv[i]+1) = '\00'; break;
+		    break;
 		  default:
 		    fprintf(stderr, "option '%c' not understood\n", *argv[i]);
 		    Usage(argv[0]);
@@ -531,7 +542,6 @@ DumpFlags(void)
 	fprintf(stderr,"show_rexmit:      %d\n", show_rexmit);
 	fprintf(stderr,"show_zero_window: %d\n", show_zero_window);
 	fprintf(stderr,"show_out_order:	  %d\n", show_out_order);
-	fprintf(stderr,"max connections:  %d\n", max_tcp_pairs);
 	fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
 	fprintf(stderr,"ending pnum:      %lu\n", endpnum);
 	fprintf(stderr,"throughput intvl: %d\n", thru_interval);

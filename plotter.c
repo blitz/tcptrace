@@ -77,10 +77,31 @@ xp_timestamp(
 void
 plot_init(void)
 {
-    max_plotters = 4*max_tcp_pairs;
+    max_plotters = 256;  /* just a default, make more on the fly */
 
     fplot = (MFILE **) MallocZ(max_plotters * sizeof(MFILE *));
     p2plast = (tcb **) MallocZ(max_plotters * sizeof(tcb *));
+}
+
+
+static void
+plotter_makemore(void)
+{
+    int new_max_plotters = max_plotters * 4;
+
+    if (debug)
+	fprintf(stderr,"plotter: making more space for %d total plotters\n",
+		new_max_plotters);
+
+    /* reallocate the memory to make more space */
+    fplot = ReallocZ(fplot,
+		     max_plotters * sizeof(MFILE *),
+		     new_max_plotters * sizeof(MFILE *));
+    p2plast = ReallocZ(p2plast,
+		       max_plotters * sizeof(tcb *),
+		       new_max_plotters * sizeof(tcb *));
+
+    max_plotters = new_max_plotters;
 }
 
 
@@ -188,8 +209,7 @@ new_plotter(
 
     ++plotter_ix;
     if (plotter_ix >= max_plotters) {
-	fprintf(stderr,"No more plotters\n");
-	return(NO_PLOTTER);
+	plotter_makemore();
     }
 
     pl = plotter_ix;
