@@ -32,6 +32,9 @@ AC_CHECK_FUNCS(ether_ntoa)
 dnl use fpurge if available, otherwise fflush
 AC_CHECK_FUNCS(fpurge)
 
+dnl use mkstemp if available, otherwise tempnam
+AC_CHECK_FUNCS(mkstemp)
+
 dnl check for the IPv6 routine inet_ntop
 AC_CHECK_FUNCS(inet_ntop)
 

@@ -161,3 +161,4 @@
     difference between the SYN and the SYN/ACK.  I fixed this by adding a
     green dot corresponding the the first SYN in the second graph.  Kind
     of helpful in general, too.
+  added Mallman's netbsd mkstemp change in compress.c

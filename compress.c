@@ -251,6 +251,25 @@ CompSaveHeader(
     if (fd == -1)
 	return(NULL);
 
+#ifdef HAVE_MKSTEMP
+    {
+	/* From Mallman, support to be "safer" */
+	int fd;
+	extern int mkstemp(char *template);
+
+	/* grab a writable string to keep picky compilers happy */
+	tempfile = strdup("/tmp/trace_hdrXXXXXXXX");
+
+	/* create a temporary file name and open it */
+	if ((fd = mkstemp(tempfile)) == -1) {
+	    perror("template");
+	    exit(-1);
+	}
+
+	/* convert to a stream */
+	f_file = fdopen(fd,"w");
+    }
+#else /* HAVE_MKSTEMP */
     /* get a name for a temporary file to store the header in */
     tempfile = tempnam("/tmp/","trace_hdr");
 
@@ -259,6 +278,9 @@ CompSaveHeader(
 	perror(tempfile);
 	exit(-1);
     }
+
+#endif /* HAVE_MKSTEMP */
+
 
     /* connect a stdio stream to the pipe */
     if ((f_stream = fdopen(fd,"r")) == NULL) {
