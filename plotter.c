@@ -62,7 +62,11 @@ static void DoPlot(PLOTTER pl, char *fmt, ...);
 
 /*
  * Return a string suitable for use as a timestamp in the xplot output.
- * (Currently rounds to the nearest 1/10 millisecond)
+ * sdo fix: originally, we were just plotting to the accuracy of 1/10 ms
+ *   this was mostly to help keep the .xpl files from being too large.  However,
+ *   on faster networks this just isn't enough, so we'll now use all 6 digits
+ *   of the microsecond counter.  Note that there's no guarantee that the
+ *   timestamps are really all that accurate!
  */
 static char *
 xp_timestamp(
@@ -102,13 +106,14 @@ increasing time order.  Try without the '-z' flag\n",
     /* calculate time components */
     secs = time.tv_sec;
     usecs = time.tv_usec;
-    decimal = usecs / 100;  /* just truncate, faster */
+    decimal = usecs;
 
     /* use one of 4 rotating static buffers (for multiple calls per printf) */
     bufix = (bufix+1)%4;
     pbuf = bufs[bufix];
 
-    sprintf(pbuf,"%u.%04u",secs,decimal);
+    sprintf(pbuf,"%u.%06u",secs,decimal);
+
     return(pbuf);
 }
 
