@@ -51,6 +51,7 @@ static void StatLineField(char *, char *, char *, u_long, int);
 static void StatLineFieldF(char *, char *, char *, double, int);
 static void StatLineOne(char *, char *, char *);
 static char *FormatBrief(tcp_pair *ptp);
+static char *UDPFormatBrief(udp_pair *pup);
 
 
 /* to support some of the counters being long long on some platforms, use this */
@@ -163,89 +164,6 @@ FormatBrief(
 }
 
 
-void
-PrintBrief(
-    tcp_pair *ptp)
-{
-    tcb *pab = &ptp->a2b;
-    tcb *pba = &ptp->b2a;
-    static int max_width = -1;
-
-    /* determine the maximum connection name width to make it nice */
-    if (max_width == -1) {
-	int ix;
-	int len;
-	tcp_pair *tmp_ptp;
-	
-	for (ix = 0; ix <= num_tcp_pairs; ++ix) {
-	    tmp_ptp = ttp[ix];
-	    if (tmp_ptp->ignore_pair)
-		continue;
-	    
-	    len = strlen(FormatBrief(tmp_ptp));
-	    if (len > max_width)
-		max_width = len;
-	}
-	if (debug > 2)
-	    fprintf(stderr,"Max name width: %d\n", max_width);
-    }
-
-
-    if (TRUE) {
-	/* new version */
-	fprintf(stdout,"%*s", -max_width, FormatBrief(ptp));
-#ifdef HAVE_LONG_LONG
-	fprintf(stdout," %4llu>", pab->packets);
-	fprintf(stdout," %4llu<", pba->packets);
-#else /* HAVE_LONG_LONG */
-	fprintf(stdout," %4lu>", pab->packets);
-	fprintf(stdout," %4lu<", pba->packets);
-#endif /* HAVE_LONG_LONG */
-    } else {
-	/* old version */
-	fprintf(stdout,"%s <==> %s",
-		ptp->a_endpoint,
-		ptp->b_endpoint);
-#ifdef HAVE_LONG_LONG
-	fprintf(stdout,"  %s2%s:%llu",
-#else /* HAVE_LONG_LONG */
-	fprintf(stdout,"  %s2%s:%lu",
-#endif /* HAVE_LONG_LONG */
-		pab->host_letter,
-		pba->host_letter,
-		pab->packets);
-#ifdef HAVE_LONG_LONG
-	fprintf(stdout,"  %s2%s:%llu",
-#else /* HAVE_LONG_LONG */
-	fprintf(stdout,"  %s2%s:%lu",
-#endif /* HAVE_LONG_LONG */
-		pba->host_letter,
-		pab->host_letter,
-		pba->packets);
-    }
-    if (ConnComplete(ptp))
-	fprintf(stdout,"  (complete)");
-    if (ConnReset(ptp))
-        fprintf(stdout,"  (reset)");
-    if ((ptp->a2b.packets == 0) || (ptp->b2a.packets == 0))
-        fprintf(stdout,"  (unidirectional)");
-
-    fprintf(stdout,"\n");
-
-    /* warning for hardware duplicates */
-    if (pab->num_hardware_dups != 0) {
-	fprintf(stdout,
-		"    ** Warning, %s2%s: detected %lu hardware duplicate(s) (same seq # and IP ID)\n",
-		pab->host_letter, pba->host_letter,
-		pab->num_hardware_dups);
-    }
-    if (pba->num_hardware_dups != 0) {
-	fprintf(stdout,
-		"    ** Warning, %s2%s: detected %lu hardware duplicate(s) (same seq # and IP ID)\n",
-		pba->host_letter, pab->host_letter,
-		pba->num_hardware_dups);
-    }
-}
 
 
 
@@ -485,6 +403,146 @@ PrintTrace(
 }
 
 
+void
+PrintBrief(
+    tcp_pair *ptp)
+{
+    tcb *pab = &ptp->a2b;
+    tcb *pba = &ptp->b2a;
+    static int max_width = -1;
+
+    /* determine the maximum connection name width to make it nice */
+    if (max_width == -1) {
+	int ix;
+	int len;
+	tcp_pair *tmp_ptp;
+	
+	for (ix = 0; ix <= num_tcp_pairs; ++ix) {
+	    tmp_ptp = ttp[ix];
+	    if (tmp_ptp->ignore_pair)
+		continue;
+	    
+	    len = strlen(FormatBrief(tmp_ptp));
+	    if (len > max_width)
+		max_width = len;
+	}
+	if (debug > 2)
+	    fprintf(stderr,"Max name width: %d\n", max_width);
+    }
+
+
+    if (TRUE) {
+	/* new version */
+	fprintf(stdout,"%*s", -max_width, FormatBrief(ptp));
+#ifdef HAVE_LONG_LONG
+	fprintf(stdout," %4llu>", pab->packets);
+	fprintf(stdout," %4llu<", pba->packets);
+#else /* HAVE_LONG_LONG */
+	fprintf(stdout," %4lu>", pab->packets);
+	fprintf(stdout," %4lu<", pba->packets);
+#endif /* HAVE_LONG_LONG */
+    } else {
+	/* old version */
+	fprintf(stdout,"%s <==> %s",
+		ptp->a_endpoint,
+		ptp->b_endpoint);
+#ifdef HAVE_LONG_LONG
+	fprintf(stdout,"  %s2%s:%llu",
+#else /* HAVE_LONG_LONG */
+	fprintf(stdout,"  %s2%s:%lu",
+#endif /* HAVE_LONG_LONG */
+		pab->host_letter,
+		pba->host_letter,
+		pab->packets);
+#ifdef HAVE_LONG_LONG
+	fprintf(stdout,"  %s2%s:%llu",
+#else /* HAVE_LONG_LONG */
+	fprintf(stdout,"  %s2%s:%lu",
+#endif /* HAVE_LONG_LONG */
+		pba->host_letter,
+		pab->host_letter,
+		pba->packets);
+    }
+    if (ConnComplete(ptp))
+	fprintf(stdout,"  (complete)");
+    if (ConnReset(ptp))
+        fprintf(stdout,"  (reset)");
+    if ((ptp->a2b.packets == 0) || (ptp->b2a.packets == 0))
+        fprintf(stdout,"  (unidirectional)");
+
+    fprintf(stdout,"\n");
+
+    /* warning for hardware duplicates */
+    if (pab->num_hardware_dups != 0) {
+	fprintf(stdout,
+		"    ** Warning, %s2%s: detected %lu hardware duplicate(s) (same seq # and IP ID)\n",
+		pab->host_letter, pba->host_letter,
+		pab->num_hardware_dups);
+    }
+    if (pba->num_hardware_dups != 0) {
+	fprintf(stdout,
+		"    ** Warning, %s2%s: detected %lu hardware duplicate(s) (same seq # and IP ID)\n",
+		pba->host_letter, pab->host_letter,
+		pba->num_hardware_dups);
+    }
+}
+
+
+
+
+void
+UDPPrintTrace(
+    udp_pair *pup)
+{
+    double etime;
+    u_long etime_secs;
+    u_long etime_usecs;
+    ucb *pab = &pup->a2b;
+    ucb *pba = &pup->b2a;
+    char *host1 = pab->host_letter;
+    char *host2 = pba->host_letter;
+    char bufl[40];
+
+    fprintf(stdout,"\thost %-4s      %s\n",
+	    (sprintf(bufl,"%s:", host1),bufl), pup->a_endpoint);
+    fprintf(stdout,"\thost %-4s      %s\n",
+	    (sprintf(bufl,"%s:", host2),bufl), pup->b_endpoint);
+    fprintf(stdout,"\n");
+
+    fprintf(stdout,"\tfirst packet:  %s\n", ts2ascii(&pup->first_time));
+    fprintf(stdout,"\tlast packet:   %s\n", ts2ascii(&pup->last_time));
+
+    etime = elapsed(pup->first_time,pup->last_time);
+    etime_secs = etime / 1000000.0;
+    etime_usecs = 1000000 * (etime/1000000.0 - (double)etime_secs);
+    fprintf(stdout,"\telapsed time:  %s\n", elapsed2str(etime));
+
+#ifdef HAVE_LONG_LONG
+    fprintf(stdout,"\ttotal packets: %llu\n", pup->packets);
+#else  /* HAVE_LONG_LONG */
+    fprintf(stdout,"\ttotal packets: %lu\n", pup->packets);
+#endif  /* HAVE_LONG_LONG */
+
+    fprintf(stdout,"\tfilename:      %s\n", pup->filename);
+
+    fprintf(stdout,"   %s->%s:			      %s->%s:\n",
+	    host1,host2,host2,host1);
+
+    StatLineI("total packets","", pab->packets, pba->packets);
+    StatLineI("data bytes sent","",
+	      pab->data_bytes, pba->data_bytes);
+
+    /* do the throughput calcs */
+    etime /= 1000000.0;  /* convert to seconds */
+    if (etime == 0.0)
+	StatLineP("throughput","","%s","NA","NA");
+    else
+	StatLineF("throughput","Bps","%8.0f",
+		  (double) (pab->data_bytes) / etime,
+		  (double) (pba->data_bytes) / etime);
+}
+
+
 /* with pointer args */
 static void
 StatLineP(
@@ -647,4 +705,59 @@ elapsed2str(
 	    (etime_secs % (60 * 60)) % 60,
 	    etime_usecs);
     return(buf);
+}
+
+
+void
+UDPPrintBrief(
+    udp_pair *pup)
+{
+    ucb *pab = &pup->a2b;
+    ucb *pba = &pup->b2a;
+    static int max_width = -1;
+
+    /* determine the maximum connection name width to make it nice */
+    if (max_width == -1) {
+	int ix;
+	int len;
+	udp_pair *tmp_pup;
+	
+	for (ix = 0; ix <= num_udp_pairs; ++ix) {
+	    tmp_pup = utp[ix];
+	    
+	    len = strlen(UDPFormatBrief(tmp_pup));
+	    if (len > max_width)
+		max_width = len;
+	}
+	if (debug > 2)
+	    fprintf(stderr,"Max name width: %d\n", max_width);
+    }
+
+
+    /* new version */
+    fprintf(stdout,"%*s", -max_width, UDPFormatBrief(pup));
+#ifdef HAVE_LONG_LONG
+    fprintf(stdout," %4llu>", pab->packets);
+    fprintf(stdout," %4llu<", pba->packets);
+#else /* HAVE_LONG_LONG */
+    fprintf(stdout," %4lu>", pab->packets);
+    fprintf(stdout," %4lu<", pba->packets);
+#endif /* HAVE_LONG_LONG */
+
+    fprintf(stdout,"\n");
+}
+
+
+static char *
+UDPFormatBrief(
+    udp_pair *pup)
+{
+    ucb *pab = &pup->a2b;
+    ucb *pba = &pup->b2a;
+    static char infobuf[100];
+
+    sprintf(infobuf,"%s - %s (%s2%s)",
+	    pup->a_endpoint, pup->b_endpoint,
+	    pab->host_letter, pba->host_letter);
+    return(infobuf);
 }
