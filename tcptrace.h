@@ -911,7 +911,8 @@ enum AVLRES SnapInsert(ptp_snap **n, ptp_snap *new_node);
 enum AVLRES SnapRemove(ptp_snap **n, tcp_pair_addrblock address);
 int AVL_CheckHash(tcp_pair_addrblock *ptpa1,
 		  tcp_pair_addrblock *ptpa2, int *pdir);
-
+int AVL_CheckDir(tcp_pair_addrblock *ptpa1, tcp_pair_addrblock *ptpa2);
+    
 /* high-level line drawing */
 PLINE new_line(PLOTTER pl, char *label, char *color);
 void extend_line(PLINE pline, timeval xval, int yval);
