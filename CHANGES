@@ -362,3 +362,33 @@ Note:
    %D	execution date, format "1-14-1963"
 
   others could be added, but that's the only stuff I could think of for now.
+
+6.0.0b4- Saturday, 6 Oct 2001
+
+Added options :
+	--xplot_all_files and --xplot_args. 
+		--xplot_all_files calls the xplot program to display all the
+        generated graphs automatically .
+		--xplot_args can be passed an argument as in
+		--xplot_args=-1
+		to pass arguments to the xplot program when calling
+		it to display the graphs.
+
+Added support for zero window probe packets and urgent data packets.
+tcptrace -l output shows four new fields 
+zwnd probe pkts, zwnd probe bytes, urgent data pkts and urgent data
+bytes.
+
+Fixed all sprintf's in the code to snprintf's to thwart any 
+buffer overflow attacks.
+
+Changed functionality for window scaled connections so that
+the output of "min win adv" does not print the minimum window
+as advertised in SYN packets as SYN packets cannot be scaled 
+themselves.
+
+Completely revamped the http module with code sent by Bruce Mah.
+
+Added code to verify TCP and UDP checksums in IPv6 packets.
+However, code has not been tested thoroughly yet.
+
