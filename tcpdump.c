@@ -81,6 +81,13 @@ static int callback(
 	memcpy(ip_buf,buf+EH_SIZE,iplen);
 	callback_plast = (char *)ip_buf+iplen-EH_SIZE-1;
 	break;
+      case DLT_IEEE802:
+	/* just pretend it's "normal" ethernet */
+	offset = 14;		/* 22 bytes of IEEE cruft */
+	memcpy(&eth_header,buf,EH_SIZE);  /* save ether header */
+	memcpy(ip_buf,buf+offset,iplen);
+	callback_plast = (char *)ip_buf+iplen-offset-1;
+	break;
       case DLT_SLIP:
 	memcpy(ip_buf,buf+16,iplen);
 	callback_plast = (char *)ip_buf+iplen-16-1;
@@ -100,7 +107,7 @@ static int callback(
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case DLT_ATM_RFC1483:
-	/* ATM RFC1483 */
+	/* ATM RFC1483 - LLC/SNAP ecapsulated atm */
 	memcpy((char *)ip_buf,buf+8,iplen);
 	callback_plast = ip_buf+iplen-8-1;
 	break;
@@ -205,6 +212,10 @@ pread_f *is_tcpdump(void)
 	/* OK, we understand this one */
 	physname = "Ethernet";
 	break;
+      case DLT_IEEE802:
+	/* just pretend it's normal ethernet */
+	physname = "Ethernet";
+	break;
       case DLT_SLIP:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "Slip";
@@ -219,7 +230,7 @@ pread_f *is_tcpdump(void)
 	break;
       case DLT_ATM_RFC1483:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
-	physname = "ATM_RFC1483";
+	physname = "ATM, LLC/SNAP encapsulated";
 	break;
       case DLT_RAW:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
