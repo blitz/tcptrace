@@ -106,7 +106,7 @@ LDLIBS = -lnsl -lsocket -lm -lpcap
 
 
 # Plug-in modules (if you want any)
-MODULES= mod_http.c
+MODULES= mod_http.c mod_traffic.c
 
 # Standard files
 CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
