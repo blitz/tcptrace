@@ -291,3 +291,4 @@
   added FDDI support in snoop module (for Brian Utterback)
   changes from Jun-ichiro Hagino, made compliant with latest IPv6
    API/implementations (just changes to constant names in ipv6.[ch])
+  minor bug fixes to tcplib module
