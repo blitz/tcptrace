@@ -206,3 +206,7 @@
   Lots of changes to make the RTT calculation better in cases of
     retransmissions and etc
   Added RTT graph to the traffic module
+  Added triple-dupack counter
+  Added triple dupack tick on TSG graphs
+  Added dongles to ACKS on the TSG graphs to distinguish different kinds of
+    ACKS that need to be handled differently for RTT calculation
