@@ -1096,3 +1096,8 @@ struct ipaddr *IPV6ADDR2ADDR(struct in6_addr *addr6);
 #ifndef ETHERTYPE_REVARP
 #define ETHERTYPE_REVARP        0x8035
 #endif /* ETHERTYPE_REVARP */
+
+#ifndef ETHERTYPE_VLAN
+#define ETHERTYPE_VLAN		0x8100
+#endif	/* 802.1Q Virtual LAN */
+

@@ -190,9 +190,43 @@ pread_snoop(
 		return(0);
 	    }
 
+	    /* add VLAN support for John Tysko */
+	    if ((ntohs(pep->ether_type) == ETHERTYPE_VLAN) && (len >= 4)){
+		struct {
+		    tt_uint16 vlan_num;
+		    tt_uint16 vlan_proto;
+		} vlanh;
+
+		/* adjust packet length */
+		len -= 4;
+
+		/* read the vlan header */
+		if ((rlen=fread(&vlanh,1,sizeof(vlanh),SYS_STDIN)) != sizeof(vlanh)) {
+		    perror("pread_snoop: seek past vlan header");
+		}
+
+		if ((ntohs(vlanh.vlan_proto) == ETHERTYPE_IP) ||
+		    (ntohs(vlanh.vlan_proto) == ETHERTYPE_IPV6)) {
+		    /* make it appear to have been IP all along */
+		    /* (note that both fields are still in N.B.O. */
+		    pep->ether_type = vlanh.vlan_proto;
+		    if (debug > 2)
+			printf("Removing VLAN header (vlan:%x)\n",
+			       vlanh.vlan_num);
+		} else {
+		    if (debug > 2)
+			printf("Skipping a VLAN packet (num:%x proto:%x)\n",
+			       vlanh.vlan_num, vlanh.vlan_proto);
+		}
+
+	    } 
+
+
 	    /* if it's not IP, then skip it */
 	    if ((ntohs(pep->ether_type) != ETHERTYPE_IP) &&
 		(ntohs(pep->ether_type) != ETHERTYPE_IPV6)) {
+
+
 		if (debug > 2)
 		    fprintf(stderr,
 			    "pread_snoop: not an IP packet (ethertype 0x%x)\n",

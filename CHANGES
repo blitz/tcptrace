@@ -433,3 +433,7 @@ This is the version we'll release
 6.3.0 - Development - Fri Jul 26, 2002
 
 This is now the development version
+
+Fri Aug 30, 2002
+  added vlan support to snoop for Tysko.  Need to add support in other
+  formats too, but I don't have a packet dump to test against yet.
