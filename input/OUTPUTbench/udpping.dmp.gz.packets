@@ -1,0 +1,2107 @@
+1 arg remaining, starting with 'udpping.dmp.gz'
+
+Packet 1
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.777978 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47265
+	   CKSUM: 0xaf43 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0415 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 2
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.785223 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13123
+	   CKSUM: 0xfa1e (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x070d (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 3
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.785365 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47266
+	   CKSUM: 0xaf42 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0414 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 4
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.791492 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13124
+	   CKSUM: 0xfa1d (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x070c (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 5
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.791599 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47267
+	   CKSUM: 0xaf41 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0413 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 6
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.797761 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13125
+	   CKSUM: 0xfa1c (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x070b (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 7
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.797864 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47268
+	   CKSUM: 0xaf40 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0412 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 8
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.803969 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13126
+	   CKSUM: 0xfa1b (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x070a (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 9
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.804090 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47269
+	   CKSUM: 0xaf3f (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0411 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 10
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.811106 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13127
+	   CKSUM: 0xfa1a (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0709 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 11
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.811210 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47270
+	   CKSUM: 0xaf3e (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0410 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 12
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.817381 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13128
+	   CKSUM: 0xfa19 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0708 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 13
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.817481 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47271
+	   CKSUM: 0xaf3d (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x040f (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 14
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.823698 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13129
+	   CKSUM: 0xfa18 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0707 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 15
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.823815 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47272
+	   CKSUM: 0xaf3c (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x040e (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 16
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.829987 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13130
+	   CKSUM: 0xfa17 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0706 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 17
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.830148 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47273
+	   CKSUM: 0xaf3b (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x040d (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 18
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.836325 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13131
+	   CKSUM: 0xfa16 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0705 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 19
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.836425 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47274
+	   CKSUM: 0xaf3a (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x040c (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 20
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.842565 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13132
+	   CKSUM: 0xfa15 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0704 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 21
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.842679 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47275
+	   CKSUM: 0xaf39 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x040b (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 22
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.848812 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13133
+	   CKSUM: 0xfa14 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0703 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 23
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.848916 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47276
+	   CKSUM: 0xaf38 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x040a (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 24
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.855082 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13134
+	   CKSUM: 0xfa13 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0702 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 25
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.855184 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47277
+	   CKSUM: 0xaf37 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0409 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 26
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.861286 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13135
+	   CKSUM: 0xfa12 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0701 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 27
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.861395 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47278
+	   CKSUM: 0xaf36 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0408 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 28
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.867532 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13136
+	   CKSUM: 0xfa11 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x0700 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 29
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.867634 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47279
+	   CKSUM: 0xaf35 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0407 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 30
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.873749 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13137
+	   CKSUM: 0xfa10 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06ff (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 31
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.873851 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47280
+	   CKSUM: 0xaf34 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0406 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 32
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.880020 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13138
+	   CKSUM: 0xfa0f (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06fe (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 33
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.880166 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47281
+	   CKSUM: 0xaf33 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0405 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 34
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.886352 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13139
+	   CKSUM: 0xfa0e (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06fd (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 35
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.886453 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47282
+	   CKSUM: 0xaf32 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0404 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 36
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.892569 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13140
+	   CKSUM: 0xfa0d (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06fc (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 37
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.892670 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47283
+	   CKSUM: 0xaf31 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0403 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 38
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.898824 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13141
+	   CKSUM: 0xfa0c (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06fb (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 39
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.898934 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47284
+	   CKSUM: 0xaf30 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0402 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 40
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.905164 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13142
+	   CKSUM: 0xfa0b (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06fa (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 41
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.905268 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47285
+	   CKSUM: 0xaf2f (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0401 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 42
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.911369 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13143
+	   CKSUM: 0xfa0a (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f9 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 43
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.911471 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47286
+	   CKSUM: 0xaf2e (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x0400 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 44
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.917580 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13144
+	   CKSUM: 0xfa09 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f8 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 45
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.917692 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47287
+	   CKSUM: 0xaf2d (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03ff (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 46
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.923791 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13145
+	   CKSUM: 0xfa08 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f7 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 47
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.923897 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47288
+	   CKSUM: 0xaf2c (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03fe (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 48
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.929993 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13146
+	   CKSUM: 0xfa07 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f6 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 49
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.930146 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47289
+	   CKSUM: 0xaf2b (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03fd (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 50
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.936318 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13147
+	   CKSUM: 0xfa06 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f5 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 51
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.936426 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47290
+	   CKSUM: 0xaf2a (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03fc (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 52
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.942500 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13148
+	   CKSUM: 0xfa05 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f4 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 53
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.942604 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47291
+	   CKSUM: 0xaf29 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03fb (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 54
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.948768 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13149
+	   CKSUM: 0xfa04 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f3 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 55
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.948870 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47292
+	   CKSUM: 0xaf28 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03fa (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 56
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.955057 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13150
+	   CKSUM: 0xfa03 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f2 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 57
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.955166 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47293
+	   CKSUM: 0xaf27 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f9 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 58
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.961305 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13151
+	   CKSUM: 0xfa02 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f1 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 59
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.961409 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47294
+	   CKSUM: 0xaf26 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f8 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 60
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.967533 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13152
+	   CKSUM: 0xfa01 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06f0 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 61
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.967633 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47295
+	   CKSUM: 0xaf25 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f7 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 62
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.973730 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13153
+	   CKSUM: 0xfa00 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06ef (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 63
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.973839 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47296
+	   CKSUM: 0xaf24 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f6 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 64
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.979953 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13154
+	   CKSUM: 0xf9ff (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06ee (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 65
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.980108 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47297
+	   CKSUM: 0xaf23 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f5 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 66
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.986290 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13155
+	   CKSUM: 0xf9fe (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06ed (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 67
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.986390 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47298
+	   CKSUM: 0xaf22 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f4 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 68
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.992559 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13156
+	   CKSUM: 0xf9fd (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06ec (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 69
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.992671 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47299
+	   CKSUM: 0xaf21 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f3 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 70
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:46.998802 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13157
+	   CKSUM: 0xf9fc (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06eb (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 71
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:46.998904 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47300
+	   CKSUM: 0xaf20 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f2 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 72
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.005099 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13158
+	   CKSUM: 0xf9fb (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06ea (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 73
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.005203 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47301
+	   CKSUM: 0xaf1f (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f1 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 74
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.011330 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13159
+	   CKSUM: 0xf9fa (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e9 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 75
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.011440 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47302
+	   CKSUM: 0xaf1e (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03f0 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 76
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.017598 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13160
+	   CKSUM: 0xf9f9 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e8 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 77
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.017700 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47303
+	   CKSUM: 0xaf1d (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03ef (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 78
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.023829 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13161
+	   CKSUM: 0xf9f8 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e7 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 79
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.023931 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47304
+	   CKSUM: 0xaf1c (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03ee (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 80
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.030059 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13162
+	   CKSUM: 0xf9f7 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e6 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 81
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.030204 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47305
+	   CKSUM: 0xaf1b (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03ed (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 82
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.036379 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13163
+	   CKSUM: 0xf9f6 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e5 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 83
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.036481 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47306
+	   CKSUM: 0xaf1a (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03ec (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 84
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.044637 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13164
+	   CKSUM: 0xf9f5 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e4 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 85
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.044739 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47307
+	   CKSUM: 0xaf19 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03eb (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 86
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.057519 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13165
+	   CKSUM: 0xf9f4 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e3 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 87
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.057631 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47308
+	   CKSUM: 0xaf18 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03ea (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 88
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.072394 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13166
+	   CKSUM: 0xf9f3 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e2 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 89
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.072498 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47309
+	   CKSUM: 0xaf17 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03e9 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 90
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.086410 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13167
+	   CKSUM: 0xf9f2 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e1 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 91
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.086511 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47310
+	   CKSUM: 0xaf16 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03e8 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 92
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.115645 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13168
+	   CKSUM: 0xf9f1 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06e0 (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 93
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.115757 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47311
+	   CKSUM: 0xaf15 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03e7 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 94
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.136825 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13169
+	   CKSUM: 0xf9f0 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06df (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 95
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.136929 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47312
+	   CKSUM: 0xaf14 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03e6 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 96
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.153779 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13170
+	   CKSUM: 0xf9ef (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06de (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 97
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.153883 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47313
+	   CKSUM: 0xaf13 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03e5 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 98
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.160056 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13171
+	   CKSUM: 0xf9ee (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06dd (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+Packet 99
+	Packet Length: 1446
+	Collected: Wed May 23 09:18:47.160222 2001
+	ETH Srce: 08:00:20:e7:b0:3e
+	ETH Dest: 00:01:02:97:0c:0a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.141 
+	IP  Dest: 132.235.1.12 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 1432
+	      ID: 47314
+	   CKSUM: 0xaf12 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 57945 
+	    DPRT: 7 
+	  UCKSUM: 0x03e4 (CORRECT)
+	    DLEN: 1412 (only 1404 bytes in dump file)
+Packet 100
+	Packet Length: 1066
+	Collected: Wed May 23 09:18:47.166362 2001
+	ETH Srce: 00:01:02:97:0c:0a
+	ETH Dest: 08:00:20:e7:b0:3e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.12 
+	IP  Dest: 132.235.3.141 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 59
+	     LEN: 1052
+	      ID: 13172
+	   CKSUM: 0xf9ed (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 57945 
+	  UCKSUM: 0x06dc (CORRECT)
+	    DLEN: 1032 (only 1024 bytes in dump file)
+100 packets seen, 0 TCP packets traced
+trace file elapsed time: 0:00:00.388384
+bad IP checksums:  0
+bad TCP checksums: 0
+no traced TCP packets
