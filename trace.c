@@ -106,6 +106,7 @@ char *text_color	= "magenta";
 char *default_color	= "white";
 char *synfin_color	= "orange";
 char *push_color	= "white";	/* top arrow for PUSHed segments */
+char *ecn_color		= "yellow";
 
 /* ack diamond dongle colors */
 char *ackdongle_nosample_color	= "blue";
@@ -702,6 +703,9 @@ dotrace(
     Bool	retrans;
     Bool 	probe;
     Bool	ecn_ce = FALSE;
+    Bool	ecn_echo = FALSE;
+    Bool	cwr = FALSE;
+    Bool        urg = FALSE;
     Bool	out_order;	/* out of order */
     u_short	th_sport;	/* source port */
     u_short	th_dport;	/* destination port */
@@ -949,6 +953,14 @@ dotrace(
 
 
     /* Kevin Lahey's ECN code */
+    /* only works for IPv4 */
+    /* only works for IPv4, IPv6 has no mandatory ID field */
+	ecn_ce = IP_ECT(pip) && IP_CE(pip);
+    }
+    cwr = CWR_SET(ptcp);
+    ecn_echo = ECN_ECHO_SET(ptcp);
+
+    /* save the stream contents, if requested */
     if (tcp_data_length > 0) {
 	u_char *pdata = (u_char *)ptcp + TH_OFF(ptcp)*4;
 	u_char *pdata = (u_char *)ptcp + ptcp->th_off*4;
@@ -1084,6 +1096,7 @@ dotrace(
 			 retrans_num_bytes>0?"R FIN":
 			 "FIN");
 	   
+
 	    plotter_uarrow(from_tsgpl, current_time, SeqRep(thisdir,end));
 	    plotter_line(from_tsgpl,
 			 current_time, SeqRep(thisdir,start),
@@ -1119,6 +1132,16 @@ dotrace(
 	    }
 	}
 
+	/* Kevin Lahey's code */
+	/* XXX:  can this overwrite other labels!? */
+	if (cwr || ecn_ce) {
+	    plotter_perm_color(from_tsgpl, ecn_color);
+	    plotter_diamond(from_tsgpl,
+			    current_time, SeqRep(thisdir,start));
+	    plotter_text(from_tsgpl, current_time, SeqRep(thisdir, start), "a",
+			 cwr ? (ecn_ce ? "CWR CE" : "CWR") : "CE");
+	}
+       
    
     /* check for RESET */
     if (RESET_SET(ptcp)) {
@@ -1231,6 +1254,13 @@ dotrace(
 		}
 	    }
 
+	    /* Kevin Lahey's code */
+	    if (ecn_echo && !SYN_SET(ptcp)) {
+	        plotter_perm_color(to_tsgpl, ecn_color);
+		plotter_diamond(to_tsgpl, current_time, SeqRep(otherdir, ack));
+	    }
+
+	    plotter_perm_color(to_tsgpl, window_color);
 	    plotter_line(to_tsgpl,
 			 thisdir->time, SeqRep(otherdir,old_this_windowend),
 			 thisdir->time, SeqRep(otherdir,thisdir->windowend),
