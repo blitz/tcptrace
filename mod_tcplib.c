@@ -19,11 +19,11 @@
  * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  * 
- * Author:	Shawn Ostermann
+ * Author:	Eric Helvey
  * 		School of Electrical Engineering and Computer Science
  * 		Ohio University
  * 		Athens, OH
- *		ostermann@cs.ohiou.edu
+ *		ehelvey@cs.ohiou.edu
  */
 static char const rcsid_tcplib[] =
    "$Id$";
