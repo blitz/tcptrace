@@ -245,8 +245,6 @@ udpdotrace(
 
     /* total packets stats */
     ++pup_save->packets;
-    //++thisdir->packets;
-    // this value was being incremented twice. Hence the errors in the direction counts.
 
     return(pup_save);
 }
