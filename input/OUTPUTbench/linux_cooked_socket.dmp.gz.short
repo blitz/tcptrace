@@ -1,0 +1,9 @@
+TCP packet 4: reserved bits are not all zero.  
+	Further warnings disabled, use '-w' for more info
+1 arg remaining, starting with 'linux_cooked_socket.dmp.gz'
+
+17 packets seen, 17 TCP packets traced
+trace file elapsed time: 0:00:01.430824
+TCP connection info:
+  1: 212.38.233.159:1355 - 209.10.41.242:21 (a2b)       5>    4<
+  2: 212.38.233.159:1357 - 209.10.41.242:32774 (c2d)    4>    4<  (complete)
