@@ -181,7 +181,7 @@ char *
 NextHostLetter(void)
 {
     static int count = 0;
-    return(HostLetter(++count));
+    return(HostLetter(count++));
 }
 
 
