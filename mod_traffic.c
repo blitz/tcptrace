@@ -948,7 +948,8 @@ traffic_done(void)
 {
     struct traffic_info *pti;
     struct conn_info *pci;
-    int etime_secs = elapsed(first_packet,last_packet) / 1000000.0;
+    double etime = elapsed(first_packet,last_packet);
+    int etime_secs = etime / 1000000.0;
     MFILE *pmf;
     int i;
 
@@ -991,8 +992,8 @@ bytes: %12lu  pkts: %10lu  conns: %8lu  tput: %8lu B/s\n",
 
     pti = ports[0];
 
-    Mfprintf(pmf, "\n\nOverall Statistics over %d seconds:\n",
-	     etime_secs);
+    Mfprintf(pmf, "\n\nOverall Statistics over %d seconds (%s):\n",
+	     etime_secs, elapsed2str(etime));
 
     /* ttl bytes */
     Mfprintf(pmf, "%llu ttl bytes sent, %.3f bytes/second\n",
