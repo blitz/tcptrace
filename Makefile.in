@@ -157,11 +157,11 @@ version.o: ${CFILES} Makefile
 filt_parser.c: filt_parser.y filter.h
 	bison -vd -p filtyy filt_parser.y -o filt_parser.c
 	cp filt_parser.c flex_bison
-filt_scanner.c: filt_scanner.l filter.h y.tab.h
+filt_scanner.c: filt_scanner.l filter.h filt_parser.h
 	flex -t -Pfiltyy filt_scanner.l > filt_scanner.c
 	cp filt_scanner.c flex_bison
-# y.tab.h created as a side effect of running yacc...
-y.tab.h: filt_parser.c
+# filt_parser.h created as a side effect of running yacc...
+filt_parser.h: filt_parser.c
 
 #
 # obvious dependencies
