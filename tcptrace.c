@@ -1636,7 +1636,7 @@ VerifyPositive(
     int i, ivalue = 0;
 
     for (i = 0; i < strlen(value); i++) {
-        if (!isdigit(value[i])) {
+        if (!isdigit((int)value[i])) {
 	    fprintf(stderr, 
 		    "Value '%s' is not valid for variable '%s'\n", 
 		    value, varname);
