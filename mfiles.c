@@ -118,10 +118,10 @@ Mfopen(
 	    output_file_prefix,
 	    fname);
 
-    if (strcmp(mode,"w") != 0)
+    if (strcmp(mode,"w") == 0)
 	Mfopen_internal(pmf,"w+");
-    else if (strcmp(mode,"a") != 0)
-	Mfopen_internal(pmf,"r+");
+    else if (strcmp(mode,"a") == 0)
+	Mfopen_internal(pmf,"a+");
     else {
 	fprintf(stderr,"Mfopen: internal file mode inconsistancy\n");
 	exit(10);
