@@ -110,7 +110,7 @@ pread_nlanr(
     int rlen;
     static struct tsh_frame hdr;
     int packlen = sizeof(struct ip) + sizeof(struct tcphdr);
-    int hlen = 40;
+    int hlen = 44;
 
     /* read the next frames */
     if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
