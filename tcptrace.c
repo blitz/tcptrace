@@ -60,7 +60,8 @@ static void UsageModules(void);
 static void LoadModules(int argc, char *argv[]);
 static void CheckArguments(int *pargc, char *argv[]);
 static void ParseArgs(char *argsource, int *pargc, char *argv[]);
-static void ParseExtendedArg(char *argsource, char *arg);
+static void ParseExtendedBool(char *argsource, char *arg);
+static void ParseExtendedVar(char *argsource, char *arg);
 static void ProcessFile(char *filename);
 static void QuitSig(int signum);
 static void Usage(void);
@@ -76,12 +77,12 @@ Bool graph_rtt = FALSE;
 Bool graph_tput = FALSE;
 Bool graph_tsg = FALSE;
 Bool graph_segsize = FALSE;
-Bool graph_cwin = FALSE;
+Bool graph_owin = FALSE;
 Bool hex = TRUE;
 Bool ignore_non_comp = FALSE;
 Bool dump_packet_data = FALSE;
 Bool print_rtt = FALSE;
-Bool print_cwin = FALSE;
+Bool print_owin = FALSE;
 Bool printbrief = TRUE;
 Bool printsuppress = FALSE;
 Bool printem = FALSE;
@@ -113,6 +114,10 @@ u_long ctrunc = 0;
 u_long bad_ip_checksums = 0;
 u_long bad_tcp_checksums = 0;
 u_long bad_udp_checksums = 0;
+
+/* extended variables with values */
+char *output_file_dir = NULL;
+char *output_file_prefix = NULL;
 
 /* globals */
 struct timeval current_time;
@@ -190,6 +195,19 @@ static struct ext_bool_op {
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
 
 
+/* extended variable options */
+/* they must all be strings */
+static struct ext_var_op {
+    char *var_optname;		/* what it's called when you set it */
+    char **var_popt;		/* the variable itself */
+    char *var_descr;		/* variable description */
+} extended_vars[] = {
+    {"output_dir", &output_file_dir,
+     "directory where all output files are placed"},
+    {"output_prefix", &output_file_prefix,
+     "prefix all output files with this string"},
+};
+#define NUM_EXTENDED_VARS (sizeof(extended_vars) / sizeof(struct ext_var_op))
 
 static void
 Help(
@@ -430,7 +448,7 @@ Graphing options\n\
   -T      create throughput graph[s], (average over 10 segments, see -A)\n\
   -R      create rtt sample graph[s]\n\
   -S      create time sequence graph[s]\n\
-  -N      create cwin graph[s] (data on _N_etwork)\n\
+  -N      create owin graph[s] (_o_utstanding data on _N_etwork)\n\
   -F      create segsize graph[s]\n\
   -G	  create ALL graphs\n\
 Output format detail options\n\
@@ -476,7 +494,7 @@ Dump File Names\n\
     rather than from a file\n\
 ");
 
-    fprintf(stderr,"\nExtended boolean options, mostly for graphing options\n");
+    fprintf(stderr,"\nExtended boolean options\n");
     fprintf(stderr," (unambiguous prefixes also work)\n");
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
@@ -486,6 +504,19 @@ Dump File Names\n\
 	fprintf(stderr,"  --no%-18s DON'T %s %s\n",
 		pbop->bool_optname, pbop->bool_descr,
 		(*pbop->bool_popt != pbop->bool_default)?"(default)":"");
+    }
+
+    fprintf(stderr,"\nExtended variable options\n");
+    fprintf(stderr," (unambiguous prefixes also work)\n");
+    for (i=0; i < NUM_EXTENDED_VARS; ++i) {
+	char buf[256];		/* plenty large, but checked below with strncpy */
+	struct ext_var_op *pvop = &extended_vars[i];
+	strncpy(buf,pvop->var_optname,sizeof(buf)-10);
+	strcat(buf,"=\"STR\"");
+	fprintf(stderr,"  --%-20s %s (default: '%s')\n",
+		buf,
+		pvop->var_descr,
+		*pvop->var_popt);
     }
 
     fprintf(stderr,"\n\
@@ -1345,7 +1376,7 @@ CheckArguments(
 /* these extended boolean options are table driven, to make it easier to add more
    later without messing them up */
 static void
-ParseExtendedArg(
+ParseExtendedBool(
     char *argsource,
     char *arg)
 {
@@ -1359,7 +1390,7 @@ ParseExtendedArg(
 
     /* there must be at least SOME text there */
     if ((strcmp(arg,"--") == 0) || (strcmp(arg,"--no") == 0))
-	BadArg(argsource, "Void extended argument\n");
+	BadArg(argsource, "Void extended boolean argument\n");
 
     /* find just the arg text */
     if (strncmp(arg,"--no",4) == 0) {
@@ -1372,7 +1403,7 @@ ParseExtendedArg(
     arglen = strlen(argtext);
 
 
-    /* search for a match on each extended arg */
+    /* search for a match on each extended boolean arg */
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
 
@@ -1393,10 +1424,9 @@ ParseExtendedArg(
 
 
     /* if we never found a match, it's an error */
-    if ((pbop_found == NULL) && (pbop_prefix == NULL)) {
-	BadArg(argsource, "Bad extended argument '%s' (see -hargs)\n", arg);
-	return;
-    }
+    if ((pbop_found == NULL) && (pbop_prefix == NULL))
+	BadArg(argsource, "Unknown extended boolean argument '%s' (see -hargs)\n", arg);
+
 
     /* if the prefix is UNambiguous, that's good enough */
     if ((pbop_prefix != NULL) && (!prefix_ambig))
@@ -1408,11 +1438,14 @@ ParseExtendedArg(
 	    *pbop_found->bool_popt = !pbop_found->bool_default;
 	else
 	    *pbop_found->bool_popt = pbop_found->bool_default;
+	if (debug>2)
+	    fprintf(stderr,"Set boolean variable '%s' to '%s'\n",
+		    argtext, BOOL2STR(*pbop_found->bool_popt));
 	return;
     }
 
     /* ... else ambiguous prefix */
-    fprintf(stderr,"Extended arg '%s' is ambiguous, it matches:\n", arg);
+    fprintf(stderr,"Extended boolean arg '%s' is ambiguous, it matches:\n", arg);
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
 	if (strncmp(argtext,pbop->bool_optname,arglen) == 0)
@@ -1425,6 +1458,107 @@ ParseExtendedArg(
     BadArg(argsource, "Ambiguous extended argument '%s'\n", arg);
     
     return;
+}
+
+
+
+/* these extended variable options are table driven, to make it easier to add more
+   later without messing them up */
+/* note: the format is of the form   --output_dir=string   */
+/* note2: if the string was quoted as --output_dir="this directory"
+   then those quotes were removed by the shell */
+static void
+ParseExtendedVar(
+    char *argsource,
+    char *arg_in)
+{
+    int i;
+    struct ext_var_op *pvop_found = NULL;
+    struct ext_var_op *pvop_prefix = NULL;
+    Bool prefix_ambig = FALSE;
+    char *pequals;
+    char *argname;		/* the variable name itself */
+    char *argval;		/* the part just beyond the equal sign */
+    int arglen;
+    char *arg;
+
+    /* we're going to modify the argument to split it in half, we we'd
+       better make a copy first */
+    /* note that the only way out of this routine is through BadArg(),
+       which just exits, or the single return() below, so this isn't
+       a memory leak*/
+    arg = strdup(arg_in);
+
+    /* there must be at least SOME text there */
+    if ((strcmp(arg,"--") == 0))
+	BadArg(argsource, "Void extended variable argument\n");
+
+    /* find the '=' sign, it MUST be there */
+    /* (can't really happen, because the '=' forced us to this routine */
+    pequals=strchr(arg,'=');
+    if (!pequals)
+	BadArg(argsource, "Extended variable argument with no assignment \n");
+
+
+    /* break the arg in half at the '=' sign (located above) */
+    argname = arg+2;
+    argval = pequals+1;
+    *pequals = '\00';		/* split the string here */
+    /* --output_dir=test */
+    /*   ^ argname = 1002 */
+    /*              ^ argval = 1013 */
+    /*  therefore length = argval(1013)-argname(1002)-1 (10) */
+    arglen = argval - argname - 1;
+
+    /* search for a match in the extended variable table */
+    for (i=0; i < NUM_EXTENDED_VARS; ++i) {
+	struct ext_var_op *pvop = &extended_vars[i];
+
+	/* check for an exact match */
+	if (strcmp(argname,pvop->var_optname) == 0) {
+	    pvop_found = pvop;
+	    break;
+	}
+
+	/* check for a prefix match */
+	if (strncmp(argname,pvop->var_optname,arglen) == 0) {
+	    if (pvop_prefix == NULL)
+		pvop_prefix = pvop;
+	    else
+		prefix_ambig = TRUE; /* already found one */
+	}
+    }
+
+
+    /* if we never found a match, it's an error */
+    if ((pvop_found == NULL) && (pvop_prefix == NULL))
+	BadArg(argsource, "Unknown extended variable argument '%s' (see -hargs)\n", arg);
+
+
+    /* if the prefix is UNambiguous, that's good enough */
+    if ((pvop_prefix != NULL) && (!prefix_ambig)) 
+	pvop_found = pvop_prefix;
+
+    /* either exact match or good prefix, do it */
+    if (pvop_found != NULL) {
+	*pvop_found->var_popt = strdup(argval);
+	if (debug>2)
+	    fprintf(stderr,"Set extended variable '%s' to '%s'\n",
+		    argname, *pvop_found->var_popt);
+	free(arg);
+	return;
+    }
+
+    /* ... else ambiguous prefix */
+    fprintf(stderr,"Extended variable arg '%s' is ambiguous, it matches:\n", arg);
+    for (i=0; i < NUM_EXTENDED_VARS; ++i) {
+	struct ext_var_op *pvop = &extended_vars[i];
+	if (strncmp(argname,pvop->var_optname,arglen) == 0)
+	    fprintf(stderr,"  %s - %s\n",
+		    pvop->var_optname, pvop->var_descr);
+    }
+    BadArg(argsource, "Ambiguous extended variable argument '%s'\n", arg);
+    /* never returns */
 }
 
 
@@ -1445,7 +1579,10 @@ ParseArgs(
 	    continue;
 
 	if (strncmp(argv[i],"--",2) == 0) {
-	    ParseExtendedArg(argsource, argv[i]);
+	    if (strchr(argv[i],'=') != NULL)
+		ParseExtendedVar(argsource, argv[i]);
+	    else
+		ParseExtendedBool(argsource, argv[i]);
 	    continue;
 	}
 
@@ -1486,11 +1623,11 @@ ParseArgs(
 		    graph_tput = TRUE;
 		    graph_tsg = TRUE;
 		    graph_rtt = TRUE;
-		    graph_cwin = TRUE;
+		    graph_owin = TRUE;
 		    graph_segsize = TRUE;
 		    break;
 		  case 'M': colorplot = FALSE; break;
-		  case 'N': graph_cwin = TRUE; break;
+		  case 'N': graph_owin = TRUE; break;
 		  case 'O':
 		    if (*(argv[i]+1)) {
 			/* -Ofile */
@@ -1505,7 +1642,7 @@ ParseArgs(
 		  case 'R': graph_rtt = TRUE; break;
 		  case 'S': graph_tsg = TRUE; break;
 		  case 'T': graph_tput = TRUE; break;
-		  case 'W': print_cwin = TRUE; break;
+		  case 'W': print_owin = TRUE; break;
 		  case 'X': hex = TRUE; break;
 		  case 'Z': dump_rtt = TRUE; break;
 		  case 'b': printbrief = TRUE; break;
@@ -1602,12 +1739,12 @@ ParseArgs(
 		  case 'D': hex = !FALSE; break;
 		  case 'F': graph_segsize = !TRUE; break;
 		  case 'M': colorplot = !FALSE; break;
-		  case 'N': graph_cwin = !TRUE; break;
+		  case 'N': graph_owin = !TRUE; break;
 		  case 'P': printem = !TRUE; break;
 		  case 'R': graph_rtt = !TRUE; break;
 		  case 'S': graph_tsg = !TRUE; break;
 		  case 'T': graph_tput = !TRUE; break;
-		  case 'W': print_cwin = !TRUE; break;
+		  case 'W': print_owin = !TRUE; break;
 		  case 'X': hex = !TRUE; break;
 		  case 'Z': dump_rtt = !TRUE; break;
 		  case 'b': printbrief = !TRUE; break;
@@ -1692,12 +1829,21 @@ DumpFlags(void)
     fprintf(stderr,"number modules:   %d\n", NUM_MODULES);
     fprintf(stderr,"debug:            %s\n", BOOL2STR(debug));
 
-    /* print out the stuff controlled by the extended args */
+    /* print out the stuff controlled by the extended boolean args */
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
 	char buf[100];
 	sprintf(buf,"%s:", pbop->bool_optname);
 	fprintf(stderr,"%-18s%s\n", buf, BOOL2STR(*pbop->bool_popt));
+    }
+
+    /* print out the stuff controlled by the extended variable args */
+    for (i=0; i < NUM_EXTENDED_VARS; ++i) {
+	struct ext_var_op *bvop = &extended_vars[i];
+	char buf[100];
+	sprintf(buf,"%s:", bvop->var_optname);
+	fprintf(stderr,"%-18s%s\n", buf,
+		(*bvop->var_popt)?*bvop->var_popt:"<NULL>");
     }
 }
 
