@@ -549,7 +549,7 @@ cafreemem(ptr,nbytes)
      char *ptr;
      u_int nbytes;
 {
-	free(ptr,CAMEMSIZE(nbytes));
+	free(ptr);
 }
 
 
