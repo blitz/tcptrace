@@ -2659,7 +2659,7 @@ udp_cksum(
 	/* UDP length */
 	udp_length = ntohs(pudp->uh_ulen);
 	sum += htons(pudp->uh_ulen);
-	sum += pudp->uh_ulen;
+    } else /* if (PIP_ISV6(pip))*/  {
               
 	static Bool warned = FALSE;
         struct ipv6 *pip6 = (struct ipv6 *)pip;
