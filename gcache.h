@@ -20,15 +20,21 @@ typedef u_int	ttstamp;	/* type of a timestamp			*/
 #define ISBADCACHE(cid) ((cid < 0) || (cid > CA_NUMCACHES))
 
 /* definition of the interface routines */
-int cacreate(char *name, int nentries, int lifetime);
-int cadestroy(int cid);
-int cainsert(int cid, char *pkey, tcelen keylen, char *pres, tcelen reslen);
-int calookup(int cid, char *pkey, tcelen keylen, char *pres, tcelen *preslen);
-int capurge(int cid);
-int caremove(int cid, char *pkey, tcelen keylen);
-
-
-/* system interface routines */
+int cacreate(char *, int, int);
+int cadestroy(int);
+int cainsert(int, char *, tcelen, char *, tcelen);
+int calookup(int, char *, tcelen, char *, tcelen *);
+int capurge(int);
+int caremove(int, char *, tcelen);
 void cadump();
 int cainit();
+
+
+
+/* common defines */
+#define TRUE 1
+#define FALSE 0
+#define OK 0     
+#define SYSERR -1
+
 

@@ -174,55 +174,48 @@ void free(void *);
 
 
 /* global routine decls */
-unsigned long elapsed(struct timeval, struct timeval);
-void trace_done();
 void trace_init();
-void IgnoreConn(int);
-void OnlyConn(int);
-void dotrace(struct timeval, int, struct ether_header *, struct ip *);
-char *HostName(long);
-char *ServiceName(long);
-char *EndpointName(long, long);
-char *HostLetter(u_int);
-char *ts2ascii(struct timeval *);
-int ConnComplete(tcp_pair *);
-int ConnReset(tcp_pair *);
-void PrintBrief(tcp_pair *);
-void PrintTrace(tcp_pair *);
-void calc_rtt(tcb *, struct timeval, struct tcphdr *, struct ip *);
-void dotrace();
-PLOTTER new_plotter(tcb *plast, char *title);
-void plot_init();
-void plotter_done();
-void plotter_perm_color(PLOTTER, char *color);
+void trace_done();
+void seglist_init(tcb *);
+void printpacket(struct timeval, int, int, struct ether_header *, struct ip *);
+void plotter_vtick(PLOTTER, struct timeval, u_long);
+void plotter_utick(PLOTTER, struct timeval, u_long);
+void plotter_uarrow(PLOTTER, struct timeval, u_long);
+void plotter_tick(PLOTTER, struct timeval, u_long, char);
+void plotter_text(PLOTTER, struct timeval, u_long, char *, char  *);
 void plotter_temp_color(PLOTTER, char *color);
+void plotter_rtick(PLOTTER, struct timeval, u_long);
+void plotter_rarrow(PLOTTER, struct timeval, u_long);
+void plotter_plus(PLOTTER, struct timeval, u_long);
+void plotter_perm_color(PLOTTER, char *color);
 void plotter_line(PLOTTER, struct timeval, u_long, struct timeval, u_long);
+void plotter_larrow(PLOTTER, struct timeval, u_long);
+void plotter_htick(PLOTTER, struct timeval, u_long);
+void plotter_dtick(PLOTTER, struct timeval, u_long);
+void plotter_dot(PLOTTER, struct timeval, u_long);
+void plotter_done();
 void plotter_dline(PLOTTER, struct timeval, u_long, struct timeval, u_long);
 void plotter_diamond(PLOTTER, struct timeval, u_long);
-void plotter_dot(PLOTTER, struct timeval, u_long);
-void plotter_plus(PLOTTER, struct timeval, u_long);
+void plotter_darrow(PLOTTER, struct timeval, u_long);
 void plotter_box(PLOTTER, struct timeval, u_long);
 void plotter_arrow(PLOTTER, struct timeval, u_long, char);
-void plotter_uarrow(PLOTTER, struct timeval, u_long);
-void plotter_darrow(PLOTTER, struct timeval, u_long);
-void plotter_rarrow(PLOTTER, struct timeval, u_long);
-void plotter_larrow(PLOTTER, struct timeval, u_long);
-void plotter_tick(PLOTTER, struct timeval, u_long, char);
-void plotter_dtick(PLOTTER, struct timeval, u_long);
-void plotter_utick(PLOTTER, struct timeval, u_long);
-void plotter_rtick(PLOTTER, struct timeval, u_long);
-void plotter_htick(PLOTTER, struct timeval, u_long);
-void plotter_vtick(PLOTTER, struct timeval, u_long);
-void plotter_text(PLOTTER, struct timeval, u_long, char *, char  *);
-void printpacket(struct timeval, int, int, struct ether_header *, struct ip *);
-void seglist_init(tcb *);
-
-
-/* common defines */
-#define TRUE 1
-#define FALSE 0
-#define OK 0     
-#define SYSERR -1
+void plot_init();
+void dotrace(struct timeval, int, struct ether_header *, struct ip *);
+void dotrace();
+void calc_rtt(tcb *, struct timeval, struct tcphdr *, struct ip *);
+void PrintTrace(tcp_pair *);
+void PrintBrief(tcp_pair *);
+void OnlyConn(int);
+void IgnoreConn(int);
+u_long elapsed(struct timeval, struct timeval);
+int ConnReset(tcp_pair *);
+int ConnComplete(tcp_pair *);
+char *ts2ascii(struct timeval *);
+char *ServiceName(long);
+char *HostName(long);
+char *HostLetter(u_int);
+char *EndpointName(long, long);
+PLOTTER new_plotter(tcb *plast, char *title);
 
 
 /* TCP flags macros */
@@ -237,6 +230,11 @@ void seglist_init(tcb *);
 /* connection directions */
 #define A2B 1
 #define B2A -1
+
+/* all we REALLY need is the IP and TCP headers, so don't copy	*/
+/* any more than that...  IP header is <= 20 bytes and 		*/
+/* the TCP header is 20 (don't use options here)		*/
+#define MAX_IP_PACKLEN 40
 
 
 /*

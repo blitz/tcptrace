@@ -207,7 +207,7 @@ PrintTrace(
 	    pab->packets,
 	    pba->packets);
     etime_float = (float) etime / 1000000.0;
-    if ((pab->data_bytes-pab->data_bytes == 0) || (etime_float == 0.0))
+    if ((pab->data_bytes-pab->rexmit_bytes == 0) || (etime_float == 0.0))
 	thru_float = 0.0;
     else
 	thru_float = (float) (pab->data_bytes-pab->rexmit_bytes) / etime_float;
@@ -216,7 +216,7 @@ PrintTrace(
     else
 	fprintf(stdout, "\tthroughput:    %8.0f Bps", thru_float);
 
-    if ((pba->data_bytes-pab->data_bytes == 0) || (etime_float == 0.0))
+    if ((pba->data_bytes-pab->rexmit_bytes == 0) || (etime_float == 0.0))
 	thru_float = 0.0;
     else
     thru_float = (float) (pba->data_bytes-pba->rexmit_bytes) / etime_float;

@@ -26,7 +26,7 @@ pcap_t *pcap;
 /* the callback needed for pcap's pcap_offline_read routine		*/
 static struct ether_header *callback_pep;
 static struct pcap_pkthdr *callback_phdr;
-static int ip_buf[IP_MAXPACKET/sizeof(int)];
+static int ip_buf[MAX_IP_PACKLEN];
 
 
 
@@ -39,11 +39,8 @@ static int callback(
     int iplen;
 
     iplen = phdr->caplen;
-    /* all we REALLY need is the IP and TCP headers, so don't copy	*/
-    /* any more than that...  IP header is <= 20 bytes and 		*/
-    /* the TCP header is 20 (don't use options here)			*/
-    if (iplen > 40)
-	iplen = 40;
+    if (iplen > MAX_IP_PACKLEN)
+	iplen = MAX_IP_PACKLEN;
 
     type = pcap_datalink(pcap);
 
