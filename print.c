@@ -448,14 +448,37 @@ printipv6(
 {
     int ver = (pipv6->ip6_ver_tc_flabel & 0xF0000000) >> 28;
     int tc = (pipv6->ip6_ver_tc_flabel & 0x0F000000) >> 24;
-    printf ("\tIP  Vers: %d\n", ver);
-    printf ("\tIP  Srce: %s\n", ipv6addr2str(pipv6->ip6_saddr));
-    printf ("\tIP  Dest: %s\n", ipv6addr2str(pipv6->ip6_daddr));
-    printf ("\t   Class: %d\n", tc);
-    printf ("\t    Flow: %d\n", (pipv6->ip6_ver_tc_flabel & 0x00FFFFFF));
-    printf ("\t    PLEN: %d\n",pipv6->ip6_lngth);
-    printf ("\t    NXTH: %u\n", pipv6->ip6_nheader);
-    printf ("\t    HLIM: %u\n", pipv6->ip6_hlimit);
+    struct ipv6_ext *pheader;
+    u_char nextheader;
+
+    printf("\tIP  Vers: %d\n", ver);
+    printf("\tIP  Srce: %s\n", ipv6addr2str(pipv6->ip6_saddr));
+    printf("\tIP  Dest: %s\n", ipv6addr2str(pipv6->ip6_daddr));
+    printf("\t   Class: %d\n", tc);
+    printf("\t    Flow: %d\n", (pipv6->ip6_ver_tc_flabel & 0x00FFFFFF));
+    printf("\t    PLEN: %d\n",pipv6->ip6_lngth);
+    printf("\t    NXTH: %u (%s)\n",
+	   pipv6->ip6_nheader,
+	   ipv6_header_name(pipv6->ip6_nheader));
+    printf("\t    HLIM: %u\n", pipv6->ip6_hlimit);
+
+    /* walk the extension headers */
+    nextheader = pipv6->ip6_nheader;
+    pheader = (struct ipv6_ext *)(pipv6+1);
+
+    while (pheader) {
+	u_char old_nextheader = nextheader;
+	pheader = ipv6_nextheader(pheader,&nextheader);
+
+	/* if there isn't a "next", then this isn't an extension header */
+	if (pheader) {
+	    printf("\tIPv6 Extension Header Type %d (%s)\n",
+		   old_nextheader,
+		   ipv6_header_name(old_nextheader));
+	    /* FIXME - want to give details, but I need some examples first! */
+	    /* (hint to users!!!...) */
+	}
+    }
 }
 
 
