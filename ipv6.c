@@ -43,6 +43,9 @@ gettcp(
     char *pheader;
 
     if (PIP_ISV4(pip)) {
+	/* make sure it's TCP */
+	if (pip->ip_p != IPPROTO_TCP)
+	    return(NULL);
 	return (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
     }
 
