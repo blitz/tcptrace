@@ -70,7 +70,7 @@ plot_init()
 	exit(-1);
     }
     bzero(fplot,  max_plotters * sizeof(FILE *));
-    bzero(p2plast,max_plotters * sizeof(struct last *));
+    bzero(p2plast,max_plotters * sizeof(tcb *));
 }
 
 
