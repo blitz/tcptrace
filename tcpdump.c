@@ -99,6 +99,11 @@ static int callback(
 	memcpy((char *)ip_buf,buf+offset,iplen);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
+      case DLT_ATM_RFC1483:
+	/* ATM RFC1483 */
+	memcpy((char *)ip_buf,buf+8,iplen);
+	callback_plast = ip_buf+iplen-8-1;
+	break;
       case DLT_RAW:
 	/* raw IP */
 	offset = 0;
@@ -211,6 +216,10 @@ pread_f *is_tcpdump(void)
       case DLT_NULL:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "NULL";
+	break;
+      case DLT_ATM_RFC1483:
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "ATM_RFC1483";
 	break;
       case DLT_RAW:
 	eth_header.ether_type = htons(ETHERTYPE_IP);

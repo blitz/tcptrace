@@ -46,6 +46,7 @@ static char const rcsid_tcpdump[] =
 #define DLT_EN10MB	1	/* Ethernet (10Mb) */
 #define DLT_SLIP	8	/* Serial Line IP */
 #define DLT_FDDI	10	/* FDDI */
+#define DLT_ATM_RFC1483	11	/* LLC/SNAP encapsulated atm */
 #define DLT_RAW		12	/* raw IP */
 
 /* NOT currently supported */
@@ -57,7 +58,6 @@ static char const rcsid_tcpdump[] =
 #define DLT_IEEE802	6	/* IEEE 802 Networks */
 #define DLT_ARCNET	7	/* ARCNET */
 #define DLT_PPP		9	/* Point-to-point Protocol */
-#define DLT_ATM_RFC1483	11	/* LLC/SNAP encapsulated atm */
 #define DLT_SLIP_BSDOS	13	/* BSD/OS Serial Line IP */
 #define DLT_PPP_BSDOS	14	/* BSD/OS Point-to-point Protocol */
 
