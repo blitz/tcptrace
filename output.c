@@ -297,6 +297,7 @@ PrintTrace(
 	      pab->rexmit_bytes, pba->rexmit_bytes);
     StatLineI("outoforder pkts","",
 	      pab->out_order_pkts, pba->out_order_pkts);
+    StatLineI("pushed data pkts","", pab->data_pkts_push, pba->data_pkts_push);
     StatLineP("SYN/FIN pkts sent","","%s",
 	      (sprintf(bufl,"%d/%d",
 		       pab->syn_count, pab->fin_count),bufl),

@@ -123,3 +123,4 @@
   added support for Etherpeek version 7 save file format
   fixed minor http modules bugs
   changed some longer fields to use "long long" if available
+  added "pushed packets" counter
