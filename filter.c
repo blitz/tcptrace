@@ -1263,10 +1263,11 @@ EvalRelopIpaddr(
     struct filter_res *pres,
     struct filter_node *pf)
 {
-     ipaddr *varl;
-     ipaddr *varr;
-     struct filter_res res;
-     Bool ret;
+    ipaddr *varl;
+    ipaddr *varr;
+    struct filter_res res;
+    int result;
+    Bool ret;
 
      /* grab left hand side */
      EvalFilter(ptp,&res,pf->un.binary.left);
@@ -1276,8 +1277,11 @@ EvalRelopIpaddr(
      EvalFilter(ptp,&res,pf->un.binary.right);
      varr = res.val.pipaddr;
 
+     /* compare the 2 addresses */
+     result = IPcmp(varl,varr);
+
      /* always evaluates FALSE unless both same type */
-     if (varl->addr_vers != varr->addr_vers) {
+     if (result == -2) {
 	 if (debug) {
 	     printf("EvalIpaddr %s", HostAddr(*varl));
 	     printf("%s fails, different addr types\n",
@@ -1285,21 +1289,6 @@ EvalRelopIpaddr(
 	 }
 	 ret = FALSE;
      } else {
-	 int i;
-	 int len = (varl->addr_vers == 4)?4:6;
-	 u_char *left = (char *)&varl->un.ip4;
-	 u_char *right = (char *)&varr->un.ip4;
-	 int result = 0;
-
-	 for (i=0; (result == 0) && (i < len); ++i) {
-	     if (left[i] < right[i]) {
-		 result = -1;
-	     } else if (left[i] > right[i]) {
-		 result = 1;
-	     }
-	     /* else ==, keep going */
-	 }
-
 	 switch (pf->op) {
 	   case OP_GREATER:     ret = (result >  0); break;
 	   case OP_GREATER_EQ:  ret = (result >= 0); break;
