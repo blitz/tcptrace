@@ -679,7 +679,7 @@ typedef struct opt_unknown {
 #define IPTOS_ECT	0x02	/* ECN-Capable Transport */
 #define IPTOS_CE	0x01	/* Experienced Congestion */
 
-#define TH_ECN_ECHO	0x02	/* Used by reciever to echo CE bit */
+#define TH_ECN_ECHO	0x02	/* Used by receiver to echo CE bit */
 #define TH_CWR		0x01	/* Congestion Window Reduced */
 
 
