@@ -362,7 +362,7 @@ static Bool IsNewBurst(module_conninfo *pmc, tcb *ptcb,
 
 /* various helper routines used by many others -- sdo */
 static Bool ActiveConn(module_conninfo *pmc);
-static Bool ParallelConn(module_conninfo *pmc);
+static Bool RecentlyActiveConn(module_conninfo *pmc);
 static void tcplib_do_GENERIC_itemsize(
     char *filename, int btype,
     f_testinside p_tester, int bucketsize);
@@ -764,10 +764,17 @@ tcplib_save_bursts()
 		    -- the right direction
 		    -- and parallel
 		    -- not already counted */
-		if ((ptcbc->dtype != dtype) ||
-		    (pp == NULL) ||
-		    (pp->counted[dtype]))
+		if (ptcbc->dtype != dtype)
 		    continue;
+
+		if (pp == NULL) {
+		    ++non_parallel;
+		    continue;
+		    }
+
+		if (pp->counted[dtype])
+		    continue;
+
 		
 		/* count the max connections */
 		AddToCounter(&global_pstats[dtype]->http_P_maxconns,
@@ -779,14 +786,23 @@ tcplib_save_bursts()
 			     1);
 
 		/* binary counter, one sample of either 0 or 1 */
+		/* to make this work right, we must bump up the */
+		/* numbers so it looks like: */
+		/* Num Items	% Conns	Running Sum	Counts	*/
+		/* 0.000	0.0000	    0	    	0	*/
+		/* 1.000	0.7927	25484		25484	*/
+		/* 2.000	1.0000	32150		6666	*/
 		AddToCounter(&global_pstats[dtype]->http_P_persistant,
-			     pp->persistant[dir]?1:0,
+			     pp->persistant[dir]?2:1,
 			     1);
 
 		/* don't count it again! */
 		pmc->pparallelism->counted[dtype] = TRUE;
 	    }
 	}
+
+	/* add the NON-parallel HTTP to the counter */
+	AddToCounter(&global_pstats[dtype]->http_P_maxconns, 1, non_parallel);
     }
 
 
@@ -853,15 +869,14 @@ tcplib_save_bursts()
 	tcplib_do_GENERIC_idletime(filename,
 				   global_pstats[dtype]->nntp_bursts.idletime);
 
-	/* add the NON-parallel HTTP to the counter */
-	AddToCounter(&global_pstats[dtype]->http_P_maxconns, 1, non_parallel);
-
 	/* store the counters */
 	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_P_MAXCONNS_FILE);
 	tcplib_do_GENERIC_P_maxconns(filename,
 				     global_pstats[dtype]->http_P_maxconns);
 	
 	/* store the persistance */
+	/* (placeholder required for boolean distribution */
+	AddToCounter(&global_pstats[dtype]->http_P_persistant, 0, 1);
 	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_P_PERSIST_FILE);
 	tcplib_do_GENERIC_nitems(filename,
 				 global_pstats[dtype]->http_P_persistant);
@@ -2904,7 +2919,6 @@ tcplib_cleanup_bursts()
 
 
 	    if (ptcbc->burst_bytes != 0) {
-		printf("Adding burst size %ld\n", ptcbc->burst_bytes);
 		AddToCounter(&ptcbc->pburst->size,
 			     ptcbc->burst_bytes/BUCKETSIZE_BURSTSIZE, 1);
 	    }
@@ -3120,8 +3134,17 @@ IsParallelHttp(
     /* search that pep chain for PARALLEL conns */
     for (pmc = pep->pmchead; pmc; pmc = pmc->next_pair) {
 
+	/* for efficiency, as we search we remove old, inactive entries */
+	/* that that this is the NEXT entry, not current */
+	if (pmc->next_pair) {
+	    if (!RecentlyActiveConn(pmc->next_pair)) {
+		/* remove it (by linking around it) */
+		pmc->next_pair = pmc->next_pair->next_pair;
+	    }
+	}
+
 	/* if it's ME or it's not ACTIVE, skip it */
-	if ((pmc_new == pmc) || !ParallelConn(pmc))
+	if ((pmc_new == pmc) || !RecentlyActiveConn(pmc))
 	    continue;
 
 	/* OK, it's ACTIVE */
@@ -3422,7 +3445,7 @@ ActiveConn(
 /* 1: ActiveConn() */
 /* 2: last packets sent "recently" (defined as within 1 second) */
 static Bool
-ParallelConn(
+RecentlyActiveConn(
     module_conninfo *pmc)
 {
     int dir;
@@ -3435,7 +3458,7 @@ ParallelConn(
 
 	/* elapsed time from last packet (in MICROseconds) */
 	if (elapsed(last_packet,current_time) < 1*US_PER_SEC) {
-	    /* close enough... */
+	    /* 1 second is close enough... */
 	    return(TRUE);
 	}
     }
