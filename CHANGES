@@ -239,3 +239,8 @@
     (some machines were overflowing sooner than others, I changed the math)
 5.1.0 - Tue Dec  1, 1998
   Getting ready for a new multi-platform distribution
+5.1.1 - Wed Dec  9, 1998
+  Fixed bug from Brian Utterback, both RTT graphs had same title
+  ... which led me to discover a rather obscure bug that caused the first RTT plot
+      to get corrupted, but only if no other plots were requested
+
