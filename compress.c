@@ -94,7 +94,8 @@ static int header_length = -1;
 static Bool is_compressed = FALSE;
 static FILE * f_orig_stdin = NULL;
 static int child_pid = -1;
-
+static char *tempfile;
+int posn;
 
 
 static char *FindBinary(
@@ -270,7 +271,6 @@ CompSaveHeader(
     FILE *f_stream;
     FILE *f_file;
     char buf[COMP_HDR_SIZE];
-    char *tempfile;
     int len;
     int fd;
 
@@ -360,10 +360,6 @@ CompSaveHeader(
 	exit(-1);
     }
 
-    /* now that it's open, just delete the file */
-    /* it should stay on the disk until closed... */
-    unlink(tempfile);
-    
     return(stdin);
 }
 
@@ -528,6 +524,11 @@ CompOpenFile(
     /* if we're just reading from standard input, we'll need some help because */
     /* part of the input is in a file and the rest is still stuck in a pipe */
     if (FileIsStdin(filename)) {
+	 posn=ftell(stdin);
+	 if (posn < 0) {
+	      perror("CompOpenFile : ftell failed");
+	      exit(-1);
+	 }
 	return(PipeHelper());
     }
 
@@ -593,12 +594,25 @@ PipeHelper(void)
 
     /* clean up the fd's */
     close(fdpipe[1]);
-    fclose(stdin);
-
+    // Now, we shall purge our old STDIN stream buffer, and point it to the
+    // read end of the pipe, fdpipe[0]
+    
+#ifdef HAVE_FPURGE     
+     fpurge(stdin); // needed for NetBSD/FreeBSD
+#else
+     fflush(stdin);
+#endif
+     clearerr(stdin);
+     
+     if (dup2(fdpipe[0],0)==-1) {
+	  perror("PipeHelper : dup2 failed in parent");
+	  exit(-1);
+     }
+     
     /* make a stream attached to the PIPE and return it */
     f_return = fdopen(fdpipe[0],"r");
     if (f_return == NULL) {
-	perror("fdopen on pipe for reading");
+	perror("PipeHelper : fdopen on pipe for reading");
 	exit(-1);
     }
     return(f_return);
@@ -614,6 +628,27 @@ PipeFitting(
     char buf[4096];		/* just a big buffer */
     int len;
 
+    // Fix the file synchronization problems and undefined behavior exhibited
+    // by fread() in managing its buffers, when stdin is opened by both the
+    // parent and child processes.
+    // In the child process (where we are currently executing), close and 
+    // re-open the temporary file currently opened as stdin, in which the 
+    // first COMP_HDR_SIZE bytes of data were stored. The current file pointer
+    // position in the file was stored in the global variable posn.
+
+    if (fclose(f_header)<0)
+	  perror("PipeFitting : fclose failed");
+     
+    if ((f_header=fopen(tempfile,"r"))==NULL) {
+	 perror("PipeFitting : fopen of tempfile failed");
+	 exit(-1);
+    }
+
+    if (fread(buf,1,posn,f_header)!=posn) {
+	 perror("PipeFitting : fread failed");
+	 exit(-1);
+    }
+     
     /* read from f_header (the file) until empty */
     while (1) {
 	/* read some more data */
@@ -636,6 +671,13 @@ PipeFitting(
 	}
     }
 
+    // We are done with the temporary file. Time to close and unlink it.
+    if (fclose(f_header)<0) 
+	  perror("PipeFitting : fclose failed");
+     
+    if (unlink(tempfile)<0)
+	  perror("PipeFitting : unlink of tempfile failed");
+     
     if (debug>1)
 	fprintf(stderr,
 		"PipeFitting: header file empty, switching to old stdin\n");
