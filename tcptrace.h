@@ -722,6 +722,9 @@ typedef int pread_f(struct timeval *, int *, int *, void **,
 #ifdef GROK_ETHERPEEK
 	pread_f *is_EP(void);
 #endif /* GROK_ETHERPEEK */
+#ifdef GROK_NLANR
+	pread_f *is_nlanr(void);
+#endif /* GROK_NLANR */
 
 
 /* I've had problems with the memcpy function that gcc stuffs into the program

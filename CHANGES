@@ -274,3 +274,4 @@
         # 'b_' means "Both"
 	./tcptrace '-fb_segs>100' file
 	Output filter: ((c_segs>100)AND(s_segs>100))
+  Added initial support for the NLANR tsh packet format

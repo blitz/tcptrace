@@ -78,6 +78,9 @@ struct supported_formats file_formats[] = {
 #ifdef GROK_NETM
 	{is_netm,	"netmetrix","Net Metrix -- Commercial program from HP"},
 #endif /* GROK_NETM */
+#ifdef GROK_NLANR
+	{is_nlanr,	"tsh","NLANL Tsh Format"},
+#endif /* GROK_NLANR */
 };
 
 #define NUM_FILE_FORMATS (sizeof(file_formats) / sizeof(struct supported_formats))
