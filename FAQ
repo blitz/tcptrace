@@ -358,6 +358,29 @@ those ACKs are ignored, as expected.
 I agree that the text is confusing, but I think that it's accurate
 given that explanation.
 
+============================================================
+Tue Dec 22, 1998
+
+
+>> Is it possible to use it for monitoring the whole traffic between
+>> two hosts (from and to all ports) in one throughput graph?
+
+The traffic module can do that.  First, you'd need to generate a dump
+file that contained ONLY the traffic between those two hosts (how to
+do that will depend on the kind of file).  Assuming it's a tcpdump
+file, you could:
+
+  tcpdump -r oldfile -w newfile host THEHOST1 and host THEHOST2
+
+then just use something like
+
+	tcptrace -xtraffic" -B" newfile
+
+to get bytes/second between the hosts for all traffic.
+
+--sdo
+
+
 
 
 
