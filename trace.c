@@ -358,7 +358,7 @@ CopyAddr(
  * This function tells us which way to go (Left or Right) in search for our 
  * matching 4-tuple {IP1:port1; IP2:port2} in the AVL tree hash-bucket.
  * 
- * It returns LT or RT depending on if we had to go left or right in the AVL Tree to 
+ * It returns LT or RT depending on if we had to go left or right in the AVL Tree to
  * find our exact 4-tuple match, if it existed in the tree.
  * If the exact 4-tuple is found, it returns 0.
  */
@@ -430,9 +430,6 @@ AVL_WhichDir(
     if (IP_LOWADDR(X2,Y2)) return LT;
     if (IP_LOWADDR(Y2,X2)) return RT;
 	
-    // We should not come here if we called WhichDir before.
-    // fprintf(stderr, "Should not come here! May be WhichDir() was not called earlier\n"
-    // 		       "to see if the hash collision was a perfect match??\n");
     return 0;
 }
 
@@ -939,7 +936,8 @@ FindTTP(
 	    else if (conn_status == RT)
 		ptph = ptph->right;
 	    else if (!conn_status)  {
-		fprintf(stderr, "I wouldn't expect AVL_WhichDir() to return 0 here!\n");
+		fprintf(stderr, "WARNING!! AVL_WhichDir() should not return 0 if\n"
+				"\tWhichDir() didn't return A2B or B2A previously\n");
 		break;
 	    }
 	}
