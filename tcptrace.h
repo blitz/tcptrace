@@ -29,8 +29,6 @@ static char const rcsid_tcptrace[] =
     "@(#)$Header$";
 
 
-#include "config.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
