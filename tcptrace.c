@@ -268,7 +268,7 @@ ProcessFile(void)
 		((pnum <  10000) && (pnum %  1000 == 0)) ||
 		((pnum >= 10000) && (pnum % 10000 == 0))) {
 		fprintf(stderr ,"%d %lu%%\r",
-			pnum, (100*ftell(stdin))/filesize);
+			pnum, (ftell(stdin)/(filesize/100)))
 	    }
 	    fflush(stderr);
 	}
