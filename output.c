@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996
+ * Copyright (c) 1994, 1995, 1996, 1997
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -207,6 +207,8 @@ PrintTrace(
     double etime;
     u_long etime_secs;
     u_long etime_usecs;
+    double etime_data1;
+    double etime_data2;
     tcb *pab = &ptp->a2b;
     tcb *pba = &ptp->b2a;
     char *host1 = pab->host_letter;
@@ -238,7 +240,6 @@ PrintTrace(
 	    (etime_secs % (60 * 60)) % 60,
 	    etime_usecs);
     fprintf(stdout,"\ttotal packets: %lu\n", ptp->packets);
-	
 
     fprintf(stdout,"   %s->%s:			      %s->%s:\n",
 	    host1,host2,host2,host1);
@@ -339,6 +340,21 @@ PrintTrace(
 	StatLineI("truncated packets","pkts","%8lu",
 		  pab->trunc_segs, pba->trunc_segs);
     }
+
+    /* stats on just the data */
+    etime_data1 = elapsed(pab->first_data_time,
+			  pab->last_data_time); /* in usecs */
+    etime_data2 = elapsed(pba->first_data_time,
+			  pba->last_data_time); /* in usecs */
+    StatLineI("data xmit time","secs","%s",
+	      (sprintf(bufl,"%lu.%03lu",
+		       (int)etime_data1 / 1000000,
+		       ((int)etime_data1%1000000)/1000),
+	       (int)bufl),
+	      (sprintf(bufr,"%lu.%03lu",
+		       (int)etime_data2 / 1000000,
+		       ((int)etime_data2%1000000)/1000),
+	       (int)bufr));
 
     /* do the throughput calcs */
     etime /= 1000000.0;  /* convert to seconds */

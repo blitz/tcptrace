@@ -207,7 +207,10 @@ typedef struct tcb {
     PLOTTER	thru_plotter;	/* throughput data dump file */
     timeval	thru_lasttime;	/* time of previous segment */
 
-    
+    /* data transfer time stamps - mallman */
+    timeval	first_data_time;
+    timeval	last_data_time;
+
     /* Time Sequence Graph info for this one */
     PLOTTER	tsg_plotter;
     char	*tsg_plotfile;
@@ -260,10 +263,6 @@ struct stcp_pair {
     u_long		packets;
     tcb			a2b;
     tcb			b2a;
-
-    /* data transfer time stamps - mallman */
-    timeval             first_data_time;
-    timeval             last_data_time;
 
     /* module-specific structures, if requested */
     void		**pmod_info;
