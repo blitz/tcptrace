@@ -53,7 +53,7 @@ tidy:
 	rm -f core *2*.xpl *2*.rtt *2*.tput *.PS.?
 
 noplots:
-	rm -f *2*.xpl *2*.rtt *2*.tput *.PS.?
+	rm -f *2*.xpl *2*.rtt *2*.rttraw *2*.tput *.PS.?
 
 depend:
 #	mkdep *.c
