@@ -1,8 +1,6 @@
 /* dynamic counters/arrays */
 /* uses a 10-ary tree to manage a sparse counter space */
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
+#include "tcptrace.h"
 #include "dyncounter.h"
 
 
