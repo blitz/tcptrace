@@ -1612,7 +1612,14 @@ dotrace(
 								
 	/* Don't consider for rexmit, if the send window is 0 */
 	/* We are probably doing window probing.. */
-	if(otherdir->win_last==0 && otherdir->packets > 0){ 
+	/* Patch from Ulisses Alonso Camaro : Not treat the SYN segments
+	 * as probes, even though a zero window was advertised from the 
+	 * opposite direction */
+	if( (otherdir->win_last==0) && (otherdir->packets > 0) &&
+	   /* Patch from Ulisses Alonso Camaro : Not treat the SYN segments
+	    * as probes, even though a zero window was advertised from the 
+	    * opposite direction */
+            (!SYN_SET(ptcp)) ) {
 		probe=TRUE;
 		thisdir->num_zwnd_probes++;	
 		thisdir->zwnd_probe_bytes += tcp_data_length;
@@ -2294,7 +2301,8 @@ trace_done(void)
     tcp_pair *ptp;
     FILE *f_passfilter = NULL;
     int ix;
-
+    static int count = 0;
+     
   if (!run_continuously) {
     if (!printsuppress) {
 	if (tcp_trace_count == 0) {
@@ -2351,7 +2359,6 @@ trace_done(void)
     }
   }
 
-   static int count = 0;
     /* if we're filtering, see which connections pass */
     if (filter_output || ignore_non_comp) {
 

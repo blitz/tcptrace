@@ -550,3 +550,12 @@ the -f option.
 Included the code to generate PF file with '-c' option. Error messages are
 made more logical when generating error messages for unsupported input and
 captured file formats.
+
+6.4.13: 7 OCT 2003 Mani
+------
+
+Applied patch from Ulisses Alonso Camaro that lets SYN segments following
+zero window advertisements from the opposite direction *not* be treated
+as window probes. Also fixed a compilation problem due to the previous
+patch by Jitesh (moved the "static int count=0" line to the beginning of
+trace_done() function in trace.c).
