@@ -79,6 +79,35 @@ Op2Str(
 
 
 char*
+Vartype2BStr(
+    enum vartype vartype)
+{
+    switch (vartype) {
+      case V_BOOL:	return("BOOL");
+      case V_STRING:	return("STRING");
+
+      case V_CHAR:	
+      case V_FUNC:	
+      case V_INT:	
+      case V_LLONG:	
+      case V_LONG:	
+      case V_SHORT:	return("SIGNED");
+
+      case V_UCHAR:	
+      case V_UFUNC:	
+      case V_UINT:	
+      case V_ULLONG:	
+      case V_ULONG:	
+      case V_USHORT:	return("UNSIGNED");
+    }
+
+    fprintf(stderr,"Vartype2Str: Internal error, unknown type %d\n",
+	    vartype);
+    exit(-1);
+}
+
+
+char*
 Vartype2Str(
     enum vartype vartype)
 {
@@ -559,9 +588,19 @@ LookupVar(
 	    pfn = MallocZ(sizeof(struct filter_node));
 	    pfn->op = OP_VARIABLE;
 	    switch (pf->vartype) {
+	      case V_CHAR:	
+	      case V_INT:	
+	      case V_LLONG:	
+	      case V_LONG:	
+	      case V_SHORT:	
 	      case V_FUNC:	
 		pfn->vartype = V_LLONG; /* we'll promote on the fly */
 		break;
+	      case V_UCHAR:	
+	      case V_UINT:	
+	      case V_ULLONG:	
+	      case V_ULONG:	
+	      case V_USHORT:	
 	      case V_UFUNC:	
 		pfn->vartype = V_ULLONG; /* we'll promote on the fly */
 		break;
@@ -1268,13 +1307,13 @@ HelpFilter(void)
     fprintf(stderr,"Filter Variables:\n");
 
 
-    fprintf(stderr,"\tvariable name         type\n");
-    fprintf(stderr,"\t--------------------  ----------\n");
+    fprintf(stderr,"\tvariable name        type       description\n");
+    fprintf(stderr,"\t------------------   --------   -----------------------\n");
     for (i=0; i < NUM_FILTERS; ++i) {
 	struct filter_line *pf = &filters[i];
 
-	fprintf(stderr,"\t%-20s  %s\n",
-		pf->varname, Vartype2Str(pf->vartype));
+	fprintf(stderr,"\t%-18s   %-8s   %s\n",
+		pf->varname, Vartype2BStr(pf->vartype),pf->descr);
     }
     fprintf(stderr,"\n\
 Filter Syntax:\n\
