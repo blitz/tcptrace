@@ -561,7 +561,7 @@ dump_rtt_sample(
 
     Mfprintf(ptcb->rtt_dump_file,"%lu %lu\n",
 	    pseg->seq_firstbyte,
-	    etime_rtt/1000  /* convert from us to ms */ );
+	    (int)(etime_rtt/1000)  /* convert from us to ms */ );
 }
 
 
