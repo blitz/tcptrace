@@ -56,12 +56,30 @@ struct insidenode {
 
 
 /* Local global variables */
+
+/* generic size list */
+struct sizes {
+    int maxix;
+    int arraysize;
+    int total_count;
+    int *size_list;
+};
+
+/* global data */
+
 static struct tcplibstats {
-    int tcplib_telnet_packetsize_count[MAX_TEL_PACK_SIZE_COUNT];
-    int tcplib_telnet_interarrival_count[MAX_TEL_INTER_COUNT];
+    /* telnet packet sizes */
+    struct sizes *telnet_pktsize_count;
+
+    /* telnet interarrival times */
+    struct sizes *telnet_interarrival_count;
+
     int tcplib_breakdown_total[5];
     int tcplib_breakdown_interval[5];
-} *pstats = NULL;
+} *global_pstats[3] = {NULL};
+enum t_statsix {LOCAL = 0,
+		INCOMING = 1,
+		OUTGOING = 2};
 
 static timeval last_interval;
 static int interval_count;
@@ -78,11 +96,28 @@ static int ipport_offset = IPPORT_OFFSET;
 static char *current_file = NULL;
 static char *output_dir = DEFAULT_TCPLIB_DATADIR;
 
+
+typedef Bool (*f_testinside) (tcb *);
+
+
+
 /* Function Prototypes */
+static void do_tcplib_final_converse(void);
+static void setup_breakdown(void);
+static void tcplib_do_ftp_control_size(char *filename, f_testinside p_tester);
+static void tcplib_do_ftp_itemsize(char *filename, f_testinside p_tester);
+static void tcplib_do_ftp_num_items(void);
+static void tcplib_do_http_itemsize(char *filename, f_testinside p_tester);
+static void tcplib_do_nntp_itemsize(char *filename, f_testinside p_tester);
+static void tcplib_do_nntp_numitems(void);
+static void tcplib_do_smtp_itemsize(char *filename, f_testinside p_tester);
+static void tcplib_do_telnet_duration(char *filename, f_testinside p_tester);
+static void tcplib_do_telnet_interarrival(char *filename, f_testinside p_tester);
+static void tcplib_do_telnet_packetsize(char *filename, f_testinside p_tester);
+static void tcplib_init_setup(void);
 static void ParseArgs(char *argstring);
 static int breakdown_type(int port);
 static void do_final_breakdown(char* filename);
-static void do_tcplib_final_converse();
 static void do_tcplib_next_converse(tcp_pair *ptp);
 static Bool is_ftp_control_conn(tcp_pair *ptp);
 static Bool is_ftp_data_conn(tcp_pair *ptp);
@@ -92,29 +127,16 @@ static Bool is_smtp_conn(tcp_pair *ptp);
 static Bool is_telnet_port(int port);
 static Bool is_telnet_conn(tcp_pair *ptp);
 static char * namedfile(char *localsuffix, char * file);
-static void setup_breakdown();
-static void tcplib_add_telnet_interarrival(tcp_pair *ptp,
-					   struct timeval *ptp_saved);
+static void tcplib_add_telnet_interarrival(
+    tcp_pair *ptp, struct timeval *ptp_saved,
+    struct sizes *psizes);
 static void tcplib_add_telnet_packetsize(struct tcplibstats *pstats,
 					 int length);
-static void tcplib_do_ftp_control_size();
-static void tcplib_do_ftp_itemsize();
-static void tcplib_do_ftp_num_items();
-static void tcplib_do_http_itemsize();
-static void tcplib_do_nntp_itemsize();
-static void tcplib_do_nntp_numitems();
-static void tcplib_do_smtp_itemsize();
-static void tcplib_do_telnet();
-static void tcplib_do_telnet_duration();
-static void tcplib_do_telnet_interarrival();
-static void tcplib_do_telnet_packetsize();
-static void tcplib_init_setup();
 static struct tcplib_next_converse *file_extract(FILE* fil, int *lines,
 						 int *count);
 static void update_breakdown(tcp_pair *ptp);
 
 /* prototypes for determining "insideness" */
-typedef Bool (*f_testinside) (tcb *);
 static void DefineInside(char *iplist);
 static Bool IsInside(ipaddr *pipaddr);
 static Bool TestOutgoing(tcb *ptcb);
@@ -126,6 +148,12 @@ static int InsideBytes(tcp_pair *, f_testinside);
 static void tcplib_do_GENERIC_itemsize(
     char *filename, Bool (*f_whichport)(tcp_pair *),
     f_testinside p_tester, int bucketsize);
+static struct sizes *AddToSizeArray(struct sizes *psizes, int ix, int val);
+static void StoreSizes(char *filename, char *header1, char *header2,
+		       int bucketsize, struct sizes *psizes);
+static struct sizes *ReadOldFile(char *filename, int bucketsize,
+				 int maxlegal, struct sizes *psizes);
+static struct sizes *MakeSizes(int nelem);
 
 
 
@@ -486,24 +514,32 @@ RunAllThree(
 void tcplib_done()
 {
     /* do TELNET */
-    tcplib_do_telnet();
+    RunAllThree(tcplib_do_telnet_packetsize,TCPLIB_TELNET_PACKETSIZE_FILE);
+    RunAllThree(tcplib_do_telnet_interarrival,TCPLIB_TELNET_INTERARRIVAL_FILE);
+    RunAllThree(tcplib_do_telnet_duration,TCPLIB_TELNET_DURATION_FILE);
+
+
 
     /* do FTP */
     RunAllThree(tcplib_do_ftp_control_size,TCPLIB_FTP_CTRLSIZE_FILE);
-    tcplib_do_ftp_num_items();     /* Not Done */
     RunAllThree(tcplib_do_ftp_itemsize,TCPLIB_FTP_ITEMSIZE_FILE);
+    tcplib_do_ftp_num_items();     /* Not Done */
+
 
 
     /* do SMTP */
     RunAllThree(tcplib_do_smtp_itemsize,TCPLIB_SMTP_ITEMSIZE_FILE);
 
+
+
     /* do NNTP */
     RunAllThree(tcplib_do_nntp_itemsize,TCPLIB_NNTP_ITEMSIZE_FILE);
-    tcplib_do_nntp_numitems(NULL,NULL);	/* Not Done */
+    tcplib_do_nntp_numitems();	/* Not Done */
 
 
     /* do HTTP */
     RunAllThree(tcplib_do_http_itemsize,TCPLIB_HTTP_ITEMSIZE_FILE);
+
 
     /* do the breakdown stuff */
     do_final_breakdown(current_file);
@@ -549,6 +585,7 @@ void tcplib_read(
 			  * in a conversation */
     int a2b_len;         /* The type of traffic associated with a's port # */
     int b2a_len;         /* The type of traffic associated with b's port # */
+    struct tcplibstats *pstats = global_pstats[LOCAL];
     
 
     /* Setting a pointer to the beginning of the TCP header */
@@ -565,7 +602,7 @@ void tcplib_read(
 	    (4 * pip->ip_hl) -	/* less the IP header */
 	    (4 * tcp->th_off);	/* less the TCP header */
 
-	tcplib_add_telnet_packetsize(pstats,data_len);
+	tcplib_add_telnet_packetsize(global_pstats[LOCAL],data_len);
     }
 
     /* Here's where we'd need to do telnet interarrival times.  The
@@ -574,7 +611,12 @@ void tcplib_read(
      * to be able to model how long the "stops" are.  So we measure
      * the time in between successive packets in a single telnet
      * conversation. */
-    tcplib_add_telnet_interarrival(ptp, (struct timeval *)pmodstruct);
+    if (is_telnet_conn(ptp)) {
+	tcplib_add_telnet_interarrival(
+	    ptp, (struct timeval *)pmodstruct,
+	    global_pstats[LOCAL]->telnet_interarrival_count);
+    }
+
 
     if ((a2b_len = breakdown_type(ptp->addr_pair.a_port)) != -1)
 	pstats->tcplib_breakdown_interval[a2b_len] += ptp->a2b.data_bytes;
@@ -739,27 +781,31 @@ void tcplib_usage()
  * 
  * 
  ****************************************************************************/
-static void tcplib_init_setup()
+static void tcplib_init_setup(void)
 {
     int i;   /* Loop Counter */
-
-    /* create the big data structure */
-    pstats = MallocZ(sizeof(struct tcplibstats));
+    enum t_statsix ix;
+    struct tcplibstats *pstats;
 
     /* We need to save the contents in order to piece together the answers
      * later on
      */
     save_tcp_data = FALSE;
 
-    for(i = 0; i < MAX_TEL_PACK_SIZE_COUNT; i++)
-	pstats->tcplib_telnet_packetsize_count[i] = 0;
 
-    for(i = 0; i < MAX_TEL_INTER_COUNT; i++)
-	pstats->tcplib_telnet_interarrival_count[i] = 0;
+    for (ix = LOCAL; ix <= OUTGOING; ++ix) {
+	/* create the big data structure */
+	pstats = MallocZ(sizeof(struct tcplibstats));
+	global_pstats[ix] = pstats;
 
-    for(i = 0; i < NUM_APPS; i++){
-	pstats->tcplib_breakdown_total[i] = 0;
-	pstats->tcplib_breakdown_interval[i] = 0;
+	pstats->telnet_pktsize_count = MakeSizes(0);
+	pstats->telnet_interarrival_count = MakeSizes(0);
+
+	for(i = 0; i < NUM_APPS; i++){
+	    pstats->tcplib_breakdown_total[i] = 0;
+	    pstats->tcplib_breakdown_interval[i] = 0;
+	}
+
     }
 
     setup_breakdown();
@@ -788,7 +834,7 @@ static void tcplib_init_setup()
  * 
  * 
  ****************************************************************************/
-static void setup_breakdown()
+static void setup_breakdown(void)
 {
     char *filename = namedfile("",TCPLIB_BREAKDOWN_GRAPH_FILE);
 
@@ -824,6 +870,7 @@ static void update_breakdown(
 {
     int i;        /* Looping variable */
     int count;
+    struct tcplibstats *pstats = global_pstats[LOCAL];
     
     /* Displays the interval number.  A new histogram line is displayed
      * at TIMER_VALUE seconds. */
@@ -831,6 +878,7 @@ static void update_breakdown(
 
     /* Display some characters for each type of traffic */
     for(i = 0; i < NUM_APPS; i++) {
+	struct tcplibstats *pstats = global_pstats[LOCAL];
 
 	/* We'll be displaying one character per BREAKDOWN_HASH number
 	   of bytes */
@@ -978,6 +1026,7 @@ static void do_final_breakdown(
      * all trace files.  At this point, a NULL file name has no useful
      * purpose, so we ignore it completely. */
     if (filename) {
+	struct tcplibstats *pstats = global_pstats[LOCAL];
 
 	/* The breakdown file line associated with each trace file is
 	 * prefaced with the trace file's name.  This was part of the
@@ -1309,7 +1358,7 @@ static struct tcplib_next_converse * file_extract(
  * 
  * 
  ****************************************************************************/
-static void do_tcplib_final_converse()
+static void do_tcplib_final_converse(void)
 {
     int i;                  /* Looping Variable */
     FILE* fil;              /* The Breakdown file stream */
@@ -1505,127 +1554,49 @@ is_telnet_conn(
  * 
  * 
  ****************************************************************************/
-void tcplib_do_telnet_duration()
+void tcplib_do_telnet_duration(
+    char *filename,		/* where to store the output */
+    f_testinside p_tester)	/* functions to test "insideness" */
 {
     int i;                   /* Looping variable */
-    tcp_pair *ptp;          /* Host pair */
-    int max_size = 0;        /* duration of the longest telnet connection */
-    int temp;                /* Used to store durations of conversations */
-    int count = 0;           /* Number of connections */
-    int curr_count = 0;      /* Total number of connections */
-    int *count_list = NULL;  /* The array of merged data points */
-    FILE* fil;               /* output file descriptor */
-    FILE* old;               /* input file descriptor */
-    int filelines = 0;       /* Number of lines in the input file */
-    struct tcplib_next_converse *old_stuff = NULL;
-                             /* Array containing the data from the input
-				file */
+    struct sizes *psizes = NULL;
     const int bucketsize = 100;	/* 100 millisecond buckets */
     
+
     /* This section reads in the data from the existing telnet duration
      * file in preparation for merging with the current data. */
-    if ((old = fopen(namedfile("",TCPLIB_TELNET_DURATION_FILE), "r"))) {
+    psizes = ReadOldFile(filename, bucketsize, 0, psizes);
 
-	old_stuff = file_extract(old, &filelines, &count);
 
-	/* What is this 100 for?  I forget */
-	for(i = 0; i < filelines; i++) {
-
-	    /* So we're subtracting 100ms from everything, but why? */
-	    old_stuff[i].time -= 100;
-/*	    count -= 100;*/
-	}
-
-	/* Keeping track of the maximum duration */
-	max_size = old_stuff[(filelines-1)].time;
-
-	fclose(old);
-    }   
-
-    /* First job, find the stream with the longest duration */
+    /* Fill the array with the current data */
     for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need these stats if it's telnet */
-	if (is_telnet_conn(ptp)) {
-	    /* Find the conversation with the longest duration.
-	     * This will determine the length of the array we'll need
-	     * to store our counts
-	     *
-	     * (temp is in milliseconds)
-	     */
-	    temp = (int)(elapsed(ptp->first_time,ptp->last_time)/1000.0);
-
-	    /* Update the maximum duration */
-	    if (temp > max_size) {
-		max_size = temp;
-	    }
-
-	    count++;
-
-	}
-    }
-
-    /* Allocate the array */
-    count_list = MallocZ(sizeof(int) * ((max_size/bucketsize)+1));
-
-    /* Fill the array */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
+	tcp_pair *ptp = ttp[i];
 
 	/* Only work this for telnet connections */
 	if (is_telnet_conn(ptp)) {
 	    /* convert the time difference to ms */
-	    temp = ((ptp->last_time.tv_sec -
-		     ptp->first_time.tv_sec)*1000) +
-		   ((ptp->last_time.tv_usec -
-		     ptp->first_time.tv_usec)/1000);
-
-	    /* So temp is per 100ms */
-	    temp /= bucketsize;
+	    int temp =
+		((ptp->last_time.tv_sec -
+		  ptp->first_time.tv_sec)*1000) +
+		((ptp->last_time.tv_usec -
+		  ptp->first_time.tv_usec)/1000);
 
 	    /* increment the number of instances at this time. */
-	    count_list[temp]++;
+	    psizes = AddToSizeArray(psizes,temp/bucketsize, 1);
 	}
     }
 
-    /* Integrate the old data */
-    if (old_stuff) {
-	for(i = 0; i < filelines; i++) {
-	    temp = old_stuff[i].time/bucketsize;
-	    count_list[temp] += old_stuff[i].count;
-	}
-    }
-
-    /* Open the file */
-    if (!(fil = fopen(namedfile("",TCPLIB_TELNET_DURATION_FILE), "w"))) {
-	perror("Unable to open Telnet Duration Data file for TCPLib");
-	exit(1);
-    }
-
-    fprintf(fil, "Duration (ms)\t%% Conversations\tRunning Sum\tCounts\n");
 
     /* Output data to the file */
-    for(i = 0; i < ((max_size/bucketsize)+1); i++) {
-	curr_count += count_list[i];
+    StoreSizes(filename,"Duration (ms)", "% Conversations",
+	       bucketsize,psizes);
 
-	if (count_list[i]) {
-	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)((i+1)*bucketsize), /* Here is where we add
-						     that 100ms */
-		    (((float)curr_count)/count),
-		    curr_count,
-		    count_list[i]);
-	}
+
+    /* free the dynamic memory */
+    if (psizes) {
+	free(psizes->size_list);
+	free(psizes);
     }
-
-    fclose(fil);
-
-    /* freeing up the temporary things */
-    free(count_list);
-
-    if (old_stuff)
-	free(old_stuff);
 }
 
 
@@ -1653,8 +1624,9 @@ void tcplib_do_telnet_duration()
  ****************************************************************************/
 void tcplib_add_telnet_interarrival(
     tcp_pair *ptp,              /* This conversation */
-    struct timeval* ptp_saved)  /* The time of the last packet in the
+    struct timeval* ptp_saved,  /* The time of the last packet in the
 				   conversation */
+    struct sizes *psizes)
 {
     int temp = 0;    /* time differential between packets */
 
@@ -1668,48 +1640,43 @@ void tcplib_add_telnet_interarrival(
      * to the original TCPTrace which allows a module to store information
      * about a connection.  Quite handy.  Thanks, Dr. Ostermann */
 
-    /* We only need to do this stuff if this connection is a telnet
-       connection */
-    if (is_telnet_conn(ptp)) {
-	/* First packet has no interarrival time */
-	if (   (ptp->last_time.tv_sec == ptp->first_time.tv_sec)
+    /* First packet has no interarrival time */
+    if (   (ptp->last_time.tv_sec == ptp->first_time.tv_sec)
 	   && (ptp->last_time.tv_usec == ptp->first_time.tv_usec)) {
 
-	    /* If this is the first packet we've seen, then all we need
-	     * to do is store this tiem in the ptp_saved structure and
-	     * throw it back.  We'll be able to get some data the next
-	     * time. */
-	    ptp_saved->tv_sec = ptp->last_time.tv_sec;
-	    ptp_saved->tv_usec = ptp->last_time.tv_usec;
-	    return;
-	}
-	
-	/* Determining the time difference in ms */
-	temp = (ptp->last_time.tv_sec - ptp_saved->tv_sec)*1000;
-	temp += (ptp->last_time.tv_usec - ptp_saved->tv_usec)/1000;
-
-	/* We're going to set an artificial maximum for telnet interarrivals
-	 * for the case when someone (like me) would open a telnet session
-	 * and just leave it open and not do anything on it for minutes or
-	 * hours, or in some cases days.  Keeping track of the exact time
-	 * for a connection like that is not worth the effort, so we just
-	 * set a ceiling and if it's over the ceiling, we make it the
-	 * ceiling. */
-	if (temp > MAX_TEL_INTER_COUNT - 1)
-	    temp = MAX_TEL_INTER_COUNT - 1;
-
-	/* In this case, we know for a fact that we don't have a value of
-	 * temp that larger than the array, so we just increment the count
-	 */
-	pstats->tcplib_telnet_interarrival_count[temp]++;
-
-	/* now we just want to record this time and store it with TCPTrace
-	 * until we need it - which will be the next time that this 
-	 * conversation receives a packet. */
+	/* If this is the first packet we've seen, then all we need
+	 * to do is store this tiem in the ptp_saved structure and
+	 * throw it back.  We'll be able to get some data the next
+	 * time. */
 	ptp_saved->tv_sec = ptp->last_time.tv_sec;
 	ptp_saved->tv_usec = ptp->last_time.tv_usec;
+	return;
     }
+	
+    /* Determining the time difference in ms */
+    temp = (ptp->last_time.tv_sec - ptp_saved->tv_sec)*1000;
+    temp += (ptp->last_time.tv_usec - ptp_saved->tv_usec)/1000;
 
+    /* We're going to set an artificial maximum for telnet interarrivals
+     * for the case when someone (like me) would open a telnet session
+     * and just leave it open and not do anything on it for minutes or
+     * hours, or in some cases days.  Keeping track of the exact time
+     * for a connection like that is not worth the effort, so we just
+     * set a ceiling and if it's over the ceiling, we make it the
+     * ceiling. */
+    if (temp > MAX_TEL_INTER_COUNT - 1)
+	temp = MAX_TEL_INTER_COUNT - 1;
+
+    /* In this case, we know for a fact that we don't have a value of
+     * temp that larger than the array, so we just increment the count
+     */
+    (void) AddToSizeArray(psizes, temp, 1);
+
+    /* now we just want to record this time and store it with TCPTrace
+     * until we need it - which will be the next time that this 
+     * conversation receives a packet. */
+    ptp_saved->tv_sec = ptp->last_time.tv_sec;
+    ptp_saved->tv_usec = ptp->last_time.tv_usec;
     return;
 }
 
@@ -1735,81 +1702,35 @@ void tcplib_add_telnet_interarrival(
  * 
  * 
  ****************************************************************************/
-void tcplib_do_telnet_interarrival()
+void tcplib_do_telnet_interarrival(
+    char *filename,		/* where to store the output */
+    f_testinside p_tester)	/* stuck with the interface :-(  */
 {
-    int i;                 /* Looping variable */
-    FILE* fil;             /* Output file descriptor */
-    int count = 0;         /* Number of connections */
-    int curr_count = 0;    /* Total number of connections */
-    FILE* old;             /* Input file descriptor */
-    struct tcplib_next_converse *old_stuff;
-                           /* Array containing data from the input file */
-    int j;                 /* Looping variable */
-    int filelines = 0;     /* Number of lines in the input file */
+    const int bucketsize = 1;
+    struct sizes *psizes = NULL;
 
-    /* Reads in the existing data from the telnet inter-arrival file
-     * in preparation for merging with the data from this run */
-    if ((old = fopen(namedfile("",TCPLIB_TELNET_INTERARRIVAL_FILE), "r"))) {
-
-	old_stuff = file_extract(old, &filelines, &count);
-
-	for(i = 0; i < filelines; i++)
-	    old_stuff[i].time -= 1;
-
-	j = 0;
-
-	/* In this one, we keep only a limited number of data points.
-	 * What we've got is a statically defined array which will not
-	 * grow.  So we just read in the counts from the file, and apply
-	 * them to the array we've kept */
-	for(i = 0; i < MAX_TEL_INTER_COUNT; i++) {
-	    while(old_stuff[j].time < i) {
-		if (++j >= filelines)
-		    break;
-		    
-		if ((j < filelines) && (old_stuff[j].time == i))
-		    pstats->tcplib_telnet_interarrival_count[i] +=
-			old_stuff[j].count;
-	    }
-	}
-
-	fclose(old);
-    }   
-
-    /* Just figuring out how many total entries we have */
-    count = 0;
-    for(i = 0; i < MAX_TEL_INTER_COUNT; i++) {
-	count += pstats->tcplib_telnet_interarrival_count[i];
+    if (p_tester == TestIncoming)
+	psizes = global_pstats[INCOMING]->telnet_interarrival_count;
+    else if (p_tester == TestOutgoing)
+	psizes = global_pstats[OUTGOING]->telnet_interarrival_count;
+    else if (p_tester == TestLocal)
+	psizes = global_pstats[LOCAL]->telnet_interarrival_count;
+    else {
+	fprintf(stderr,
+		"tcplib_do_telnet_interarrival: internal inconsistancy!\n");
+	exit(-1);
     }
+
+
+
+    /* add in the data from the old run (if it exists) */
+    psizes = ReadOldFile(filename, bucketsize, MAX_TEL_INTER_COUNT, psizes);
+
 
     /* Dumping the data out to the data file */
-    if (!(fil = fopen(namedfile("",TCPLIB_TELNET_INTERARRIVAL_FILE), "w"))) {
-	perror("Error opening Telnet Interarrival file");
-	exit(1);
-    }
-
-    fprintf(fil, "\
-Interarrival Time (ms)\t%% Interarrivals\tRunning Sum\tCounts\n");
-    
-    for(i = 0; i < MAX_TEL_INTER_COUNT; i++) {
-	curr_count += pstats->tcplib_telnet_interarrival_count[i];
-
-	if (pstats->tcplib_telnet_interarrival_count[i]) {
-	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)(i + 1),
-		    (((float)curr_count)/count),
-		    curr_count,
-		    pstats->tcplib_telnet_interarrival_count[i]);
-	}
-    }
-
-    fclose(fil);
+    StoreSizes(filename, "Interarrival Time (ms)", "% Interarrivals",
+	       bucketsize,psizes);
 }
-
-
-
-
-
 
 
 
@@ -1829,81 +1750,36 @@ Interarrival Time (ms)\t%% Interarrivals\tRunning Sum\tCounts\n");
  * 
  * 
  ****************************************************************************/
-void tcplib_do_telnet_packetsize()
+void tcplib_do_telnet_packetsize(
+    char *filename,		/* where to store the output */
+    f_testinside p_tester)	/* stuck with the interface :-(  */
 {
-    int i;               /* Looping variable */
-    FILE* fil;           /* Output file descriptor */
-    int count = 0;       /* Number of entries in the table */
-    int curr_count = 0;  /* Total number of table entries */
-    FILE* old;           /* Input file descriptor */
-    char buffer[256];    /* Temp buffer used to count input lines */
-    struct tcplib_next_converse old_stuff;  /* Array of previous data
-					       points */
-    float temp1, temp2;  /* Data as read from the previous data file */
-    int j;               /* Temporary variable - used to store count
-			    read from data file */
+    const int bucketsize = 1;
+    struct sizes *psizes = NULL;
 
-    /* In this section, we're readin in from the previous data file,
+    if (p_tester == TestIncoming)
+	psizes = global_pstats[INCOMING]->telnet_pktsize_count;
+    else if (p_tester == TestOutgoing)
+	psizes = global_pstats[OUTGOING]->telnet_pktsize_count;
+    else if (p_tester == TestLocal)
+	psizes = global_pstats[LOCAL]->telnet_pktsize_count;
+    else {
+	fprintf(stderr,
+		"tcplib_do_telnet_packetsize: internal inconsistancy!\n");
+	exit(-1);
+    }
+
+
+    /* In this section, we're reading in from the previous data file,
      * applying the data contained there to the data set that we've 
      * acquired during this run, and then dumping the merged data set
      * back out to the data file */
-    if ((old = fopen(namedfile("",TCPLIB_TELNET_PACKETSIZE_FILE), "r"))) {
+    psizes = ReadOldFile(filename, bucketsize, 0, psizes);
 
-	/* Get the first line out of the way - first line is just text,
-	   no data */
-	fgets(buffer, sizeof(buffer)-1, old);
 
-	/* Read the data one line at at time */
-	while(!feof(old)) {
-	    fscanf(old, "%f\t%f\t%d\t%d\n",
-		   &temp1, &temp2,
-		   &j, &(old_stuff.count));
-
-	    old_stuff.time = ((int)temp1 - 1);
-
-	    /* Making sure that the data we're reading is legal and that
-	     * we don't overstep our array boundaries */
-	    if (old_stuff.time >= MAX_TEL_PACK_SIZE_COUNT) {
-		printf("Telnet packet payload too high - %d.  Truncating.\n",
-		       old_stuff.count);
-		old_stuff.count = MAX_TEL_PACK_SIZE_COUNT - 1;
-	    }
-
-	    /* Applying the old data to our current data */
-	    pstats->tcplib_telnet_packetsize_count[old_stuff.time] +=
-		old_stuff.count;
-	}
-
-	fclose(old);
-    }   
-
-    /* Figuring out how many data points we've got total */
-    for(i = 0; i < MAX_TEL_PACK_SIZE_COUNT; i++) {
-	count += pstats->tcplib_telnet_packetsize_count[i];
-    }
-
-    /* Opening the file, preparing it form rewriting */
-    if (!(fil = fopen(namedfile("",TCPLIB_TELNET_PACKETSIZE_FILE), "w"))) {
-	perror("Error opening Telnet Packet Size file");
-	exit(1);
-    }
-
-    /* Dropping the data back out to the file */
-    fprintf(fil, "Packet Size (bytes)\t%% Packets\tRunning Sum\tCounts\n");
-    
-    for(i = 0; i < MAX_TEL_PACK_SIZE_COUNT; i++) {
-	curr_count += pstats->tcplib_telnet_packetsize_count[i];
-
-	if (pstats->tcplib_telnet_packetsize_count[i]) {
-	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)(i + 1),
-		    (((float)curr_count)/count),
-		    curr_count,
-		    pstats->tcplib_telnet_packetsize_count[i]);
-	}
-    }
-
-    fclose(fil);
+    /* Dumping the data out to the data file */
+    StoreSizes(filename, "Packet Size (bytes)", "% Packets",
+	       bucketsize,psizes);
 }
 
 
@@ -1933,41 +1809,12 @@ void tcplib_add_telnet_packetsize(
     struct tcplibstats *pstats,
     int length)  /* The length of the packet to be added to the table */
 {
-    /* Checking to make sure we don't overrun our array bounds */
-    if (length > MAX_TEL_PACK_SIZE_COUNT)
-	length = MAX_TEL_PACK_SIZE_COUNT;
-
     /* Incrementing the table */
-    pstats->tcplib_telnet_packetsize_count[length - 1]++;
+    pstats->telnet_pktsize_count =
+	AddToSizeArray(pstats->telnet_pktsize_count,
+		       length, 1);
 }
 
-
-
-
-
-
-
-/***************************************************************************
- * 
- * Function Name: tcplib_do_telnet
- * 
- * Returns: Nothing
- *
- * Purpose: To invoke the functions needed to handle data acquisition for
- *          telnet.
- *
- * Called by: tcplib_done() in mod_tcplib.c
- * 
- * 
- ****************************************************************************/
-void tcplib_do_telnet()
-{
-    tcplib_do_telnet_duration();      /* Handles duration data */
-
-    tcplib_do_telnet_interarrival();  /* Handles packet inter-arrival data */
-    
-    tcplib_do_telnet_packetsize();    /* Handles packet size data */
-}
 
 /* End Telnet Stuff */
 
@@ -2050,7 +1897,7 @@ void tcplib_do_ftp_itemsize(
 }
 
 
-void tcplib_do_ftp_num_items()
+void tcplib_do_ftp_num_items(void)
 {
     /* Need to figure out how to know when the control connection has
      * spawned off new data connections.
@@ -2058,7 +1905,7 @@ void tcplib_do_ftp_num_items()
 }
 
 
-void tcplib_do_ftp_control_size(
+static void tcplib_do_ftp_control_size(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
@@ -2081,7 +1928,7 @@ Bool is_smtp_conn(
 	    (pab->b_port-ipport_offset == IPPORT_SMTP));
 }
 
-void tcplib_do_smtp_itemsize(
+static void tcplib_do_smtp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
@@ -2105,7 +1952,7 @@ Bool is_nntp_conn(
 }
 
 
-void tcplib_do_nntp_itemsize(
+static void tcplib_do_nntp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
@@ -2116,7 +1963,8 @@ void tcplib_do_nntp_itemsize(
 }
 
 
-void tcplib_do_nntp_numitems(void *junk1, void *junk2)
+static void
+tcplib_do_nntp_numitems(void)
 {
     /* Basically we need to figure out how many different
      * articles are bundles up together?  I'm not quite sure
@@ -2137,7 +1985,7 @@ Bool is_http_conn(
 }
 
 
-void tcplib_do_http_itemsize(
+static void tcplib_do_http_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
@@ -2154,14 +2002,6 @@ void tcplib_do_http_itemsize(
  **
  ***************************************************************************/
 
-/* generic size list */
-struct sizes {
-    int maxix;
-    int arraysize;
-    int total_count;
-    int *size_list;
-};
-
 /* populate the size array, one entry at a time */
 static struct sizes *
 AddToSizeArray(
@@ -2171,14 +2011,7 @@ AddToSizeArray(
 {
     /* if the array doesn't exist yet, make it some big size */
     if (psizes == NULL) {
-	int default_size = 1024;
-
-	while (ix >= default_size)
-	    default_size *= 2;
-
-	psizes = MallocZ(sizeof(struct sizes));
-	psizes->arraysize = default_size;
-	psizes->size_list = MallocZ(psizes->arraysize*sizeof(int));
+	psizes = MakeSizes(ix);
     }
 
     /* if the array is too small, quadruple it */
@@ -2207,6 +2040,8 @@ AddToSizeArray(
 static void
 StoreSizes(
     char *filename,
+    char *header1,
+    char *header2,
     int bucketsize,
     struct sizes *psizes)
 {
@@ -2222,7 +2057,7 @@ StoreSizes(
 	exit(1);
     }
 
-    fprintf(fil, "Article Size (bytes)\t%% Articles\tRunning Sum\tCounts\n");
+    fprintf(fil, "%s\t%s\tRunning Sum\tCounts\n", header1, header2);
 
     if (psizes == NULL) {
 	if (debug)
@@ -2250,11 +2085,13 @@ static struct sizes *
 ReadOldFile(
     char *filename,
     int bucketsize,
+    int maxlegal,		/* upper limit on array IX (or 0) */
     struct sizes *psizes)
 {
     FILE* old;                /* File pointer for old data file */
     float bytes;
-    int  count;
+    int count;
+    int linesread = 0;
 
     /* If the an old data file exists, open it, read in its contents
      * and store them until they are integrated with the current
@@ -2275,13 +2112,16 @@ ReadOldFile(
 	*/
 	/* (we only need the 1st and 4th fields) */
 	while (fscanf(old, "%f\t%*f\t%*d\t%d\n", &bytes, &count) == 4) {
+	    ++linesread;
+	    if ((maxlegal != 0) && (bytes > maxlegal))
+		bytes = maxlegal;
 	    psizes = AddToSizeArray(psizes,
 				    (((int)bytes)/bucketsize),
 				    count);
 	}
 
 	if (debug) {
-	    if (psizes)
+	    if (psizes && (linesread > 0))
 		printf("Read data from old file '%s' (%d values)\n",
 		       filename, psizes->total_count);
 	    else
@@ -2310,7 +2150,7 @@ tcplib_do_GENERIC_itemsize(
     /* If an old data file exists, open it, read in its contents
      * and store them until they are integrated with the current
      * data */
-    psizes = ReadOldFile(filename, bucketsize, psizes);
+    psizes = ReadOldFile(filename, bucketsize, 0, psizes);
 
 
     /* fill out the array with data from the current connections */
@@ -2326,7 +2166,8 @@ tcplib_do_GENERIC_itemsize(
 
 
     /* store all the data (old and new) into the file */
-    StoreSizes(filename,bucketsize,psizes);
+    StoreSizes(filename,"Article Size (bytes)", "% Articles",
+	       bucketsize,psizes);
 
 
     /* free the dynamic memory */
@@ -2334,6 +2175,24 @@ tcplib_do_GENERIC_itemsize(
 	free(psizes->size_list);
 	free(psizes);
     }
+}
+
+
+static struct sizes *
+MakeSizes(
+    int nelem)
+{
+    int default_size = 1024;
+    struct sizes *psizes;
+
+    while (nelem >= default_size)
+	default_size *= 2;
+
+    psizes = MallocZ(sizeof(struct sizes));
+    psizes->arraysize = default_size;
+    psizes->size_list = MallocZ(psizes->arraysize*sizeof(int));
+
+    return(psizes);
 }
 
 
