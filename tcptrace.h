@@ -55,6 +55,7 @@ static char const rcsid_tcptrace[] =
 #include <sys/stat.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <math.h>
 
 /* IPv6 support */
 #include "ipv6.h"
@@ -463,6 +464,7 @@ extern Bool graph_zero_len_pkts;
 extern Bool plot_tput_instant;
 extern Bool filter_output;
 extern Bool do_udp;
+extern Bool show_title;
 extern int debug;
 extern int thru_interval;
 extern u_long pnum;
@@ -605,6 +607,8 @@ Bool PassesFilter(tcp_pair *ptp);
 #define URGENT_SET(ptcp)((ptcp)->th_flags & TH_URG)
 #define FLAG6_SET(ptcp)((ptcp)->th_flags & 0x40)
 #define FLAG7_SET(ptcp)((ptcp)->th_flags & 0x80)
+#define CWR_SET(ptcp)((ptcp)->th_x2 & TH_CWR)
+#define ECN_ECHO_SET(ptcp)((ptcp)->th_x2 & TH_ECN_ECHO)
 
 
 /* connection directions */
@@ -670,6 +674,15 @@ typedef struct opt_unknown {
 #define TCPOPT_CC		11	/* T/TCP CC options (rfc1644) */
 #define TCPOPT_CCNEW		12	/* T/TCP CC options (rfc1644) */
 #define TCPOPT_CCECHO		13	/* T/TCP CC options (rfc1644) */
+
+/* RFC 2481 (ECN) IP and TCP flags (not usually defined yet) */
+#define IPTOS_ECT	0x02	/* ECN-Capable Transport */
+#define IPTOS_CE	0x01	/* Experienced Congestion */
+
+#define TH_ECN_ECHO	0x02	/* Used by reciever to echo CE bit */
+#define TH_CWR		0x01	/* Congestion Window Reduced */
+
+
 
 /* some compilers seem to want to make "char" unsigned by default, */
 /* which is breaking stuff.  Rather than introduce (more) ugly */
@@ -744,6 +757,9 @@ typedef int pread_f(struct timeval *, int *, int *, void **,
 #ifdef GROK_ETHERPEEK
 	pread_f *is_EP(void);
 #endif /* GROK_ETHERPEEK */
+#ifdef GROK_NS
+ 	pread_f *is_ns(void);
+#endif /* GROK_NS */
 #ifdef GROK_NLANR
 	pread_f *is_nlanr(void);
 #endif /* GROK_NLANR */
@@ -790,7 +806,11 @@ void *MemCpy(void *p1, void *p2, size_t n); /* in tcptrace.c */
 struct ipaddr *IPV4ADDR2ADDR(struct in_addr *addr4);    
 struct ipaddr *IPV6ADDR2ADDR(struct in6_addr *addr6);    
 
-
+/*
+ * Macros to check for congestion experienced bits
+ */
+#define IP_CE(pip) (((struct ip *)(pip))->ip_tos & IPTOS_CE)
+#define IP_ECT(pip) (((struct ip *)(pip))->ip_tos & IPTOS_ECT)
 
 /*
  * fixes for various systems that aren't exactly like Solaris
