@@ -304,9 +304,14 @@ PrintTrace(
     StatLineI("min win adv","bytes", pab->win_min, pba->win_min);
     StatLineI("zero win adv","times",
 	      pab->win_zero_ct, pba->win_zero_ct);
+    /* Changed this computation from
+     *   division by pXX->ack_pkts to
+     *   division by pXX->packets
+     * --Avinash.
+     */ 
     StatLineI("avg win adv","bytes",
-	      pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
-	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
+	      pab->ack_pkts==0?0:pab->win_tot/pab->packets,
+	      pba->ack_pkts==0?0:pba->win_tot/pba->packets);
     if (print_owin) {
 	StatLineI("max owin","bytes", pab->owin_max, pba->owin_max);
 	StatLineI("min non-zero owin","bytes", pab->owin_min, pba->owin_min);
