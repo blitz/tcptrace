@@ -114,7 +114,7 @@ pread_nlanr(
 
     /* read the next frames */
     if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
-	if (rlen != 0)
+	if (debug && (rlen != 0))
 	    fprintf(stderr,"Bad tsh packet header (len:%d)\n", rlen);
 	return(0);
     }
