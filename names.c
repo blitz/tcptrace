@@ -105,14 +105,9 @@ ServiceName(
 
 
 char *
-HostName(
+HostAddr(
     ipaddr ipaddress)
 {
-    tcelen len;
-    static int cache = -1;
-    struct hostent *phe;
-    char *sb_host;
-    static char name_buf[100];
     char *adr;
 
     if (ADDR_ISV6(&ipaddress)) {
@@ -124,6 +119,24 @@ HostName(
 	adr = inet_ntoa(ipaddress.un.ip4);
     }
         
+    return(adr);
+}
+
+
+
+char *
+HostName(
+    ipaddr ipaddress)
+{
+    tcelen len;
+    static int cache = -1;
+    struct hostent *phe;
+    char *sb_host;
+    static char name_buf[100];
+    char *adr;
+
+    adr = HostAddr(ipaddress);
+
     if (!resolve_ipaddresses) {
 	return(adr);
     }
