@@ -581,7 +581,7 @@ struct mfile *Mfopen(char *fname, char *mode);
 void Minit(void);
 int Mfileno(MFILE *pmf);
 int Mvfprintf(MFILE *pmf, char *format, va_list ap);
-int Mfwrite(char *buf, u_long size, u_long nitems, MFILE *pmf);
+int Mfwrite(void *buf, u_long size, u_long nitems, MFILE *pmf);
 long Mftell(MFILE *pmf);
 int Mfseek(MFILE *pmf, long offset, int ptrname);
 int Mfprintf(MFILE *pmf, char *format, ...);
