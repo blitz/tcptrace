@@ -611,6 +611,7 @@ extern Bool docheck_hw_dups;
 /* constants for real-time (continuous) mode */
 extern Bool run_continuously;
 extern Bool conn_num_threshold;
+extern Bool xplot_all_files;
 extern u_long remove_live_conn_interval;
 extern u_long remove_closed_conn_interval;
 extern u_long update_interval;
@@ -624,6 +625,7 @@ extern u_long pnum;
 extern char *output_file_dir;
 extern char *output_file_prefix;
 extern char *xplot_title_prefix;
+extern char *xplot_args;
 
 extern u_long ctrunc;
 extern timeval current_time;

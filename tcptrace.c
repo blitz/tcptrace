@@ -134,6 +134,7 @@ Bool resolve_ports = TRUE;
 Bool verify_checksums = FALSE;
 Bool triple_dupack_allows_data = FALSE;
 Bool run_continuously = FALSE;
+Bool xplot_all_files = FALSE;
 Bool conn_num_threshold = FALSE;
 u_long remove_live_conn_interval = REMOVE_LIVE_CONN_INTERVAL;
 u_long remove_closed_conn_interval = REMOVE_CLOSED_CONN_INTERVAL;
@@ -152,7 +153,7 @@ u_long bad_udp_checksums = 0;
 char *output_file_dir = NULL;
 char *output_file_prefix = NULL;
 char *xplot_title_prefix = NULL;
-
+char *xplot_args = NULL;
 /* globals */
 struct timeval current_time;
 int num_modules = 0;
@@ -234,6 +235,8 @@ static struct ext_bool_op {
      "run continuously and don't provide a summary"},
     {"limit_conn_num", &conn_num_threshold, TRUE,
      "limit the maximum number of connections kept at a time in real-time mode"},
+	{"xplot_all_files", &xplot_all_files, TRUE,
+	 "display all generated xplot files at the end"},
 
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
@@ -271,6 +274,8 @@ static struct ext_var_op {
      "idle time after which an open connection is removed in real-time mode"},
     {"remove_closed_conn_interval", &closed_conn_interval_st, VerifyClosedConnInt,
      "time interval after which a closed connection is removed in real-time mode"},
+	{"xplot_args", &xplot_args, NULL,
+	 "arguments to pass to xplot, if we are calling xplot from here"},
 };
 #define NUM_EXTENDED_VARS (sizeof(extended_vars) / sizeof(struct ext_var_op))
 
