@@ -39,9 +39,9 @@ AC_CHECK_FUNCS(inet_pton)
 
 
 dnl Grab standard includes under weird Linux versions
-case "$target_os" in
-  *inux*)	V_INCLS="$V_INCLS -Ilinux-include";;
-esac
+dnl case "$target_os" in
+dnl  *inux*)	V_INCLS="$V_INCLS -Ilinux-include";;
+dnl esac
 
 dnl define _BSD_SOURCE for libc-2
 if [[ -f /lib/libc-2* ]]; then
