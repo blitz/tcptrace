@@ -16,20 +16,20 @@ struct netm_header {
 
 /* netm packet header format */
 struct packet_header_old {
-	int	junk1;
-	int	junk2;
+	int	unused1;
+	int	unused2;
 	int	tstamp_secs;
 	int	tstamp_usecs;
-	int	junk3;
+	int	unused3;
 	int	len;
 };
 struct packet_header {
-	int	junk1;
+	int	unused1;
 	int	tstamp_secs;
 	int	tstamp_usecs;
-	int	junk2;
-	int	junk3;
+	int	unused2;
+	int	unused3;
 	int	len;
 	int	tlen;  /* truncated length */
-	int	junk5;
+	int	unused5;
 };
