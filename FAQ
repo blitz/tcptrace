@@ -2,200 +2,202 @@ Some good/common questions with some relatively good answers :-)
 
 --sdo
 
-============================================================
+===========================================================================
 Tue May 26, 1998
 
->> I installed tcptrace version 4.1.3 on sunos4.1.4 together with
->> tcpdump version 3.4a6 and libpcap version 0.4a6 and made a few
->> tests, however I am very puzzled by the lack of traffic in the
->> reverse direction!
->> 
->> Can you throw some light on what the problem might be?
+Q1. I installed tcptrace version 4.1.3 on sunos4.1.4 together with
+    tcpdump version 3.4a6 and libpcap version 0.4a6 and made a few
+    tests, however I am very puzzled by the lack of traffic in the
+    reverse direction!
+ 
+    Can you throw some light on what the problem might be?
 
-Probably.  It appears that you're doing the "packet grabbing" on the
-same machine that's hosting the connection.  That's a problem under
-SunOS (and maybe other systems).  Their packet capturing pseudo-device
-can't grab both ends of a connection whose home is the local machine.
-I never can remember which end it omits, but given your output, it
-appears that it can't see packets SENT by the local host.  The easiest
-solution is to run tcpdump on a machine OTHER than the ones you're
-monitoring.
+A1. Probably.  It appears that you're doing the "packet grabbing" on the
+    same machine that's hosting the connection.  That's a problem under
+    SunOS (and maybe other systems).  Their packet capturing pseudo-device
+    can't grab both ends of a connection whose home is the local machine.
+    I never can remember which end it omits, but given your output, it
+    appears that it can't see packets SENT by the local host.  The easiest
+    solution is to run tcpdump on a machine OTHER than the ones you're
+    monitoring.
 
-============================================================
+===========================================================================
 Fri Jul 24, 1998
 
->> I have been trying to find out when you place a diamond and when an
->> arrow and why.
+Q2. I have been trying to find out when you place a diamond and when an
+    arrow and why.
 
-The "diamond" means that the segment was sent with a PUSH (so most
-segments will have these except for large data transfers).  This feature
-is now documented in the on-line docs.
+A2. The "diamond" means that the segment was sent with a PUSH (so most
+    segments will have these except for large data transfers).  This feature
+    is now documented in the on-line docs.
+
+===========================================================================
+Fri Jul 24, 1998
+
+Q3.  The second thing is that you should create a margin around the
+     plot.  Unfortunately, XPLOT will only zoom out as far as the
+     original plot. I often find myself trying to figure out what is
+     happening at the handshake and closing of a connection and I cannot
+     see clearly these locations because they run off the side of the
+     plot.
+
+A3.  Yes, this is a problem.  The only way to do it is to add invisible
+     points outside the normal range, xplot won't let me control the area
+     otherwise.  In this particular case, however, there's an easy
+     solution: use the middle mouse button to move the graph so that the
+     lower corner all shows.  Using this, you can scroll anywhere on the
+     screen, even outside the boundaries of the points being plotted.
 
 
->> The second thing is that you should create a margin around the
->> plot.  Unfortunately, XPLOT will only zoom out as far as the
->> original plot. I often find myself trying to figure out what is
->> happening at the handshake and closing of a connection and I cannot
->> see clearly these locations because they run off the side of the
->> plot.
-
-Yes, this is a problem.  The only way to do it is to add invisible
-points outside the normal range, xplot won't let me control the area
-otherwise.  In this particular case, however, there's an easy
-solution: use the middle mouse button to move the graph so that the
-lower corner all shows.  Using this, you can scroll anywhere on the
-screen, even outside the boundaries of the points being plotted.
-
-
-============================================================
+===========================================================================
 Mon Jul 27, 1998
 
->> do you know if I'd be able to find the precompiled versions of
->> tcpdump or a similar package for NT from somewhere?
+Q4. do you know if I'd be able to find the precompiled versions of
+    tcpdump or a similar package for NT from somewhere?
 
-I'm sorry, I don't keep up on Microsoft software.  Lots of people have
-asked me this question and I don't know the answer.  I'm pretty sure
-that tcpdump does NOT run under NT.  The only packet-grabbing software 
-that I'm aware of for Wintel machines is etherpeek (Windows/NT/Mac):
+A4. I'm sorry, I don't keep up on Microsoft software.  Lots of people have
+    asked me this question and I don't know the answer.  I'm pretty sure
+    that tcpdump does NOT run under NT.  The only packet-grabbing software 
+    that I'm aware of for Wintel machines is etherpeek (Windows/NT/Mac):
 
-	http://www.aggroup.com/
+    http://www.aggroup.com/
 
-It's nice software, but it's commercial.
+    It's nice software, but it's commercial.
 
-============================================================
+===========================================================================
 Tue Jul 28, 1998
 
->> I've just tried tcptrace. It seems to be really good. But, I've got a
->> problem: I can't trace any UDP packets. It's like we can only decode TCP
->> packets. Is it a tcptrace feature? 
->> 
->> Thanks in advance.
+Q5. I've just tried tcptrace. It seems to be really good. But, I've got a
+    problem: I can't trace any UDP packets. It's like we can only decode TCP
+    packets. Is it a tcptrace feature? 
 
-:-)
+A5. Yes, that's why it's called _TCP_trace!!!  Seriously, I've never had
+    any reason to look at UDP packets.  Tcptrace was designed to explore
+    TCP's protocol details and there's not much protocol detail to UDP to
+    look into.
 
-Yes, that's why it's called _TCP_trace!!!  Seriously, I've never had
-any reason to look at UDP packets.  Tcptrace was designed to explore
-TCP's protocol details and there's not much protocol detail to UDP to
-look into.
-
-(update, version 5 DOES support UDP a little, but you need to add the
-"-u" option, as it ignores UDP by default)
+    (update, version 5 DOES support UDP a little, but you need to add the
+    "-u" option, as it ignores UDP by default)
 
 
-============================================================
+===========================================================================
 Wed Jul 29, 1998
 
 
->> I was trying to measure tcp throughput in an experimental testbed
->> here in xxxxx initially using netperf so as to have a roughly idea
->> how much it would be.
->> 
->> I tried afterwards to have the same results in the tcptrace. The
->> problem is that the use of tcpdump program seems to degrade the
->> performance up to 75%.
->> 
->> Parameters used in the tcpdump are: -i interface -w file
->> 
->> For example without tcpdump : TPUT: 45Mbps
->> 		with tcpdump: TPUT: 11Mbps
->> 
->> If the use of the tcpdump degradates performance then how else can
->> someone use your tcptrace program in Free BSD?
+Q6. I was trying to measure tcp throughput in an experimental testbed
+    here in xxxxx initially using netperf so as to have a roughly idea
+    how much it would be.
+ 
+    I tried afterwards to have the same results in the tcptrace. The
+    problem is that the use of tcpdump program seems to degrade the
+    performance up to 75%.
+ 
+    Parameters used in the tcpdump are: -i interface -w file
+ 
+    For example without tcpdump : TPUT: 45Mbps
+    		    with tcpdump: TPUT: 11Mbps
+ 
+    If the use of the tcpdump degrades performance then how else can
+    someone use your tcptrace program in Free BSD?
 
-If you want really good data from tcpdump, you need to run it on a
-machine on the same LAN as the tcp sender, but NOT on the same
-machine.  You also need to make sure that the data that you're writing
-is going to a local file system, rather than a remote file system,
-which would cause extra network traffic.
+A6. If you want really good data from tcpdump, you need to run it on a
+    machine on the same LAN as the tcp sender, but NOT on the same
+    machine.  You also need to make sure that the data that you're writing
+    is going to a local file system, rather than a remote file system,
+    which would cause extra network traffic.
 
-From what you describe, I'm assuming that you're running tcpdump on
-the SAME machine as one connection endpoint.  I've never seen a case
-in which running tcpdump on a reasonably fast machine would slow it
-down enough to cause that sort of degradation.  One other possibility
-is that the machine is busy enough that tcpdump is not seeing all the
-packets (which IS common, the kernel drops them if tcpdump gets
-behind).  Tcptrace only counts the packets that it sees, so if it only
-sees half of them, its throughput estimate will be off by half.
+    From what you describe, I'm assuming that you're running tcpdump on
+    the SAME machine as one connection endpoint.  I've never seen a case
+    in which running tcpdump on a reasonably fast machine would slow it
+    down enough to cause that sort of degradation.  One other possibility
+    is that the machine is busy enough that tcpdump is not seeing all the
+    packets (which IS common, the kernel drops them if tcpdump gets
+    behind).  Tcptrace only counts the packets that it sees, so if it only
+    sees half of them, its throughput estimate will be off by half.
 
-The other possibility that I alluded to is that you're writing the
-packet data to a file system on a different machine.  That competing
-network traffic might congest the network enough to skew the results.
+    The other possibility that I alluded to is that you're writing the
+    packet data to a file system on a different machine.  That competing
+    network traffic might congest the network enough to skew the results.
 
+===========================================================================
+Wed Jul 29, 1998
 
->> And a last question: In case of TPUT which line should I consider?
->> I suspect it should be the blue one.
+Q7. And a last question: In case of TPUT which line should I consider?
+    I suspect it should be the blue one.
 
-That's the running average.  Network throughput is difficult to
-represent discretely.  Normally, you take bytes/second over a short
-period of time.  The blue line is a running average of that figure
-from the beginning of the connection.  If you want a numeric answer,
-just use "-l" with tcptrace and look at the figure that it prints
-out.
+A7. That's the running average.  Network throughput is difficult to
+    represent discretely.  Normally, you take bytes/second over a short
+    period of time.  The blue line is a running average of that figure
+    from the beginning of the connection.  If you want a numeric answer,
+    just use "-l" with tcptrace and look at the figure that it prints
+    out.
 
-============================================================
+===========================================================================
 Sat Sep 12, 1998
 
->> How do I print the plots from xplot?
+Q8. How do I print the plots from xplot?
 
-This is from the xplot README:
+A8. This is from the xplot README:
 
->>>> Clicking the left button while SHIFT is pressed causes xplot to
->>>> drop a postscript file in the current directory.  The title is
->>>> used as the first part of the filename if there has been a title
->>>> plot command.  Otherwise, "xplot" is used.  The file ends in PS.#
->>>> where # is a serial number.  Xplot is careful not to write over a
->>>> previously dumped postscript file, and # is incremented until an
->>>> unused filename is found.
->>>> 
->>>> Clicking the middle button while SHIFT is pressed similarly
->>>> causes xplot to drop a postscript file, but this will be scaled
->>>> suitably to allow the figure to be included in a document.  You
->>>> might have to fiddle with the constants in emit_PS() and
->>>> recompile to get the figure sized the way you want it.
->>>> 
->>>> If you didn't like the size of the figure produced by
->>>> SHIFT-Middle, Clicking the right button while SHIFT is pressed
->>>> will produce a postscript plot just like the middle button, but
->>>> it will take less vertical space.  Again, you can fiddle with the
->>>> constants in emit_PS() and recompile if you don't like these
->>>> sizes.
+    {
+     Clicking the left button while SHIFT is pressed causes xplot to
+     drop a postscript file in the current directory.  The title is
+     used as the first part of the filename if there has been a title
+     plot command.  Otherwise, "xplot" is used.  The file ends in PS.#
+     where # is a serial number.  Xplot is careful not to write over a
+     previously dumped postscript file, and # is incremented until an
+     unused filename is found.
+ 
+     Clicking the middle button while SHIFT is pressed similarly
+     causes xplot to drop a postscript file, but this will be scaled
+     suitably to allow the figure to be included in a document.  You
+     might have to fiddle with the constants in emit_PS() and
+     recompile to get the figure sized the way you want it.
+ 
+     If you didn't like the size of the figure produced by
+     SHIFT-Middle, Clicking the right button while SHIFT is pressed
+     will produce a postscript plot just like the middle button, but
+     it will take less vertical space.  Again, you can fiddle with the
+     constants in emit_PS() and recompile if you don't like these
+     sizes.
+    }
 
-Just a note about these files.  The magic first line that gets created on
-them is nonstandard.  The first line of a postscript file is supposed to
-look like:
+    Just a note about these files.  The magic first line that gets created on
+    them is nonstandard.  The first line of a postscript file is supposed to
+    look like:
 
-#!PS (and possibly more stuff)
+    #!PS (and possibly more stuff)
 
-but xplot generates
+    but xplot generates
 
-#!POSTSCRIPT
+    #!POSTSCRIPT
 
-That's not correct, but some older printers don't mind.  My experience
-with newer printers is that they WON'T recognize it and will misbehave
-in annoying ways.  If you change the first like to #!PS it'll work
-fine.  If you have the xplot source, you might as well fix this and
-recompile (that's what I always do).
+    That's not correct, but some older printers don't mind.  My experience
+    with newer printers is that they WON'T recognize it and will misbehave
+    in annoying ways.  If you change the first like to #!PS it'll work
+    fine.  If you have the xplot source, you might as well fix this and
+    recompile (that's what I always do).
 
-============================================================
+===========================================================================
 Sat Sep 12, 1998
 
->> I just installed tcptrace and xplot, but I'm having trouble 
->> figuring out how to load the neat plots into xplot?
->> Any chance of including a typical session in the docs?
+Q9. I just installed tcptrace and xplot, but I'm having trouble 
+    figuring out how to load the neat plots into xplot?
+    Any chance of including a typical session in the docs?
 
-There's not much to it.  Tcptrace creates plot files with the suffix
-".xpl".  To see a single plot:
+A9. There's not much to it.  Tcptrace creates plot files with the suffix
+    ".xpl".  To see a single plot:
 
-    xplot a2b_tsg.xpl
+    	   xplot a2b_tsg.xpl
 
-a VERY nice feature for lining up plots is the "-x" which locks all
-graphs to the same X axis.  For example, you can:
+    a VERY nice feature for lining up plots is the "-x" which locks all
+    graphs to the same X axis.  For example, you can:
 
-    xplot -x a2b_tsg.xpl  b2a_tsg.xpl
+    	   xplot -x a2b_tsg.xpl  b2a_tsg.xpl
 
-and it'll show you BOTH plots.  When you zoom in on one, the other
-zooms in too.  Very handy, particularly if you line them up across you 
-screen like:
+    and it'll show you BOTH plots.  When you zoom in on one, the other
+    zooms in too.  Very handy, particularly if you line them up across you 
+    screen like:
 
   +----------------------------------------+
   |                                        | screen
@@ -214,183 +216,191 @@ screen like:
   |                                        |
   +----------------------------------------+
 
-============================================================
+===========================================================================
 Tue Sep 15, 1998
 
->> xplot doesn't work
+Q10. xplot doesn't work
 
-if you type
+A10. if you type
 
-   xplot [FILE].xpl
+     	xplot [FILE].xpl
 
-and see some sort of strange syntax error warnings, type
+     and see some sort of strange syntax error warnings, type
 
-   xplot -v
+     	xplot -v
 
-   output:
-	   xplot version 0.90
+     output:
+        xplot version 0.90
 
-if you see something that doesn't look much like that, make sure that
-you're running the correct "xplot" program.  There are probably a lot of
-programs around with the same name.  You want the one from:
+     if you see something that doesn't look much like that, make sure that
+     you're running the correct "xplot" program.  There are probably a lot of
+     programs around with the same name.  You want the one from:
 
  	ftp://mercury.lcs.mit.edu/pub/shep/
 
-============================================================
+===========================================================================
 Tue Oct  6, 1998
 
->> Do programs such as snoop identify the application (e.g. telnet,
->> ftp) simply by knowledge of the standard port numbers, or is there
->> something else in the packet somewhere that identifies it?
+Q11. Do programs such as snoop identify the application (e.g. telnet,
+     ftp) simply by knowledge of the standard port numbers, or is there
+     something else in the packet somewhere that identifies it?
 
-It's just from the port numbers.  RFC 1700 
+A11. It's just from the port numbers.  RFC 1700 
 
-	http://www.cis.ohio-state.edu/htbin/rfc/rfc1700.html
+     	  http://www.cis.ohio-state.edu/htbin/rfc/rfc1700.html
 
-gives the official purposes of all of the low-numbered ports.  Unix
-machines usually have a subset of this document in /etc/services,
-which is where snoop et. al. get their application information.  If
-you have a lot of traffic on official ports that AREN'T in this file,
-If you can add more entries and make the snoop (and tcptrace)
-information easier to read.
+     gives the official purposes of all of the low-numbered ports.  Unix
+     machines usually have a subset of this document in /etc/services,
+     which is where snoop et. al. get their application information.  If
+     you have a lot of traffic on official ports that AREN'T in this file,
+     If you can add more entries and make the snoop (and tcptrace)
+     information easier to read.
 
-============================================================
+===========================================================================
 Wed Dec  2, 1998
 
->> [...referring to the TSG graphs...] interpretation of some of the
->> graphics, like the "3" and diamonds and arrows and such.
+Q12. [...referring to the TSG graphs...] interpretation of some of the
+     graphics, like the "3" and diamonds and arrows and such.
 
-"3" is a triple duplicate ACK, the kind of thing that usually triggers 
-fast retransmit in the sender.
+A12. "3" is a triple duplicate ACK, the kind of thing that usually triggers 
+     fast retransmit in the sender.
 
-The "diamonds" are probably what you're seeing at the tops of some of
-the data segments.  That means the segment was sent with a PUSH.
+     The "diamonds" are probably what you're seeing at the tops of some of
+     the data segments.  That means the segment was sent with a PUSH.
 
->> From the code, there are a bunch of types of ACKS and things. A
->> bunch of different colors as well.
+===========================================================================
+Wed Dec  2, 1998
 
-SACKs are purple, normal ACKs are green.  SYNs and FINs are orange
-(unless they're retransmitted, then they're red)
+Q13. From the code, there are a bunch of types of ACKS and things. A
+     bunch of different colors as well.
 
-If there's a blue diamond on an ACK, that means that it doesn't create 
-a usable RTT sample (because something that preceeded that data was
-retransmitted)
+A13. SACKs are purple, normal ACKs are green.  SYNs and FINs are orange
+     (unless they're retransmitted, then they're red)
 
-If there's a red diamond on an ACK, it ALSO means that there's no RTT
-sample for it, but in this case it's because the data being ACKed was
-retransmitted.
-============================================================
-Mon Dec 14, 1998S
+     If there's a blue diamond on an ACK, that means that it doesn't create 
+     a usable RTT sample (because something that preceeded that data was
+     retransmitted)
 
->> Is there any way to always use the same set of flags??
+     If there's a red diamond on an ACK, it ALSO means that there's no RTT
+     sample for it, but in this case it's because the data being ACKed was
+     retransmitted.
 
-You can store commonly-used tcptrace arguments in "~/.tcptracerc"
-(comments start with '#') or in envariable "TCPTRACEOPTS".
+===========================================================================
+Mon Dec 14, 1998
 
-============================================================
+Q14. Is there any way to always use the same set of flags??
+
+A14. You can store commonly-used tcptrace arguments in "~/.tcptracerc"
+     (comments start with '#') or in envariable "TCPTRACEOPTS".
+
+===========================================================================
 Wed Dec 16, 1998
 
->> it seems to be running VERY slowly, and using very little CPU time
+Q15. It seems to be running VERY slowly, and using very little CPU time
 
-It might be stuck trying to resolve IP addresses.  Try running it with
-"-n" to NOT resolve.  I almost always use "-n" when looking at
-non-local traces.  It sometimes takes FOREVER to resolve the names
-otherwise.
+A15. It might be stuck trying to resolve IP addresses.  Try running it with
+     "-n" to NOT resolve.  I almost always use "-n" when looking at
+     non-local traces.  It sometimes takes FOREVER to resolve the names
+     otherwise.
 
-A quick check of what it's doing is to use the "-t" option that gives
-you visual feedback of its progress; it displays the number of packets
-processed so far, percentage done (unless compressed), and the
-"elapsed trace file time".  If it's not doing at least several hundred
-packets per second, then it's probably stuck doing DNS lookups.
-============================================================
+     A quick check of what it's doing is to use the "-t" option that gives
+     you visual feedback of its progress; it displays the number of packets
+     processed so far, percentage done (unless compressed), and the
+     "elapsed trace file time".  If it's not doing at least several hundred
+     packets per second, then it's probably stuck doing DNS lookups.
+
+===========================================================================
 Wed Dec 16, 1998
 
->> with "-t", why is the the percentage done more than 100%
+Q16. with "-t", why is the the percentage done more than 100%
 
-Probably one of:
+A16. Probably one of:
 
-1) If it's a live file, ie one that tcpdump is currently writing, then the
-   "percentage done" is based on the original size of the file.  As
-   such, depending on how fast the file is growing compared to the
-   horsepower of the processor, the figure might be way off.
+     1) If it's a live file, ie one that tcpdump is currently writing, then the
+     	"percentage done" is based on the original size of the file.  As
+     	such, depending on how fast the file is growing compared to the
+     	horsepower of the processor, the figure might be way off.
 
-2) If it's a compressed file, tcptrace doesn't know how long it'll be.  For
-   gzipped files of headers only, it usually runs up to around 100%+275% (or
-   almost 4 to one compression). 
-============================================================
+     2) If it's a compressed file, tcptrace doesn't know how long it'll be.  For
+     	gzipped files of headers only, it usually runs up to around 100%+275% (or
+   	almost 4 to one compression). 
+
+===========================================================================
 Thu Dec 17, 1998
 
->> What are "post-loss acks"?
+Q17. What are "post-loss acks"?
 
-Tcptrace tries to gather _ALL_ RTT samples, not just some of them as
-several TCP implementations do.  I called the case causing trouble
-"Post Loss":
+A17. Tcptrace tries to gather _ALL_ RTT samples, not just some of them as
+     several TCP implementations do.  I called the case causing trouble
+     "Post Loss":
 
-  Post-loss: an ACK arrives for a segment that was only xmitted once.
-   However, at least one of the segments that preceeded it was
-   retransmitted, so this ACK was delayed until a CUMACK could be
-   sent.  This is not a valid RTT sample therefore.
-
-tcptrace counts them and (optionally) marks them on the TSG output,
-but otherwise ignores them
-
-============================================================
+===========================================================================
 Thu Dec 17, 1998
 
->> What does this mean in the long output with RTT stats: 
->> 
->>           For the following 5 RTT statistics, only ACKs for
->>           multiply-transmitted segments (ambiguous ACKs) were
->>           considered.  Times are taken from the last instance
->>           of a segment.
->> 
+Q18. Post-loss: an ACK arrives for a segment that was only xmitted once.
+     However, at least one of the segments that preceeded it was
+     retransmitted, so this ACK was delayed until a CUMACK could be
+     sent.  This is not a valid RTT sample therefore.
 
-This is some pretty old stuff that probably isn't useful anymore.
-When I first started looking at this, I was studying some TCP's
-without the Karn/Partridge stuff in them and this was a big deal.
+A18. tcptrace counts them and (optionally) marks them on the TSG output,
+     but otherwise ignores them
 
-The point was to gather some stats about RTTs that might be confused
-by older TCPs, those that were taking samples from "ambiguous ACKs"
-(those for segments that were retransmitted).  For those ACKs, I kept
-track separately of the max,min,avg,stdev.  For the other RTT stats,
-those ACKs are ignored, as expected.
+===========================================================================
+Thu Dec 17, 1998
 
-I agree that the text is confusing, but I think that it's accurate
-given that explanation.
+Q19. What does this mean in the long output with RTT stats: 
+ 
+     For the following 5 RTT statistics, only ACKs for
+     multiply-transmitted segments (ambiguous ACKs) were
+     considered.  Times are taken from the last instance
+     of a segment.
+ 
+A19. This is some pretty old stuff that probably isn't useful anymore.
+     When I first started looking at this, I was studying some TCP's
+     without the Karn/Partridge stuff in them and this was a big deal.
 
-============================================================
+     The point was to gather some stats about RTTs that might be confused
+     by older TCPs, those that were taking samples from "ambiguous ACKs"
+     (those for segments that were retransmitted).  For those ACKs, I kept
+     track separately of the max,min,avg,stdev.  For the other RTT stats,
+     those ACKs are ignored, as expected.
+
+     I agree that the text is confusing, but I think that it's accurate
+     given that explanation.
+
+===========================================================================
 Tue Dec 22, 1998
 
 
->> Is it possible to use it for monitoring the whole traffic between
->> two hosts (from and to all ports) in one throughput graph?
+Q20. Is it possible to use it for monitoring the whole traffic between
+     two hosts (from and to all ports) in one throughput graph?
 
-The traffic module can do that.  First, you'd need to generate a dump
-file that contained ONLY the traffic between those two hosts (how to
-do that will depend on the kind of file).  Assuming it's a tcpdump
-file, you could:
+A20. The traffic module can do that.  First, you'd need to generate a dump
+     file that contained ONLY the traffic between those two hosts (how to
+     do that will depend on the kind of file).  Assuming it's a tcpdump
+     file, you could:
 
-  tcpdump -r oldfile -w newfile host THEHOST1 and host THEHOST2
+     	   tcpdump -r oldfile -w newfile host THEHOST1 and host THEHOST2
 
-then just use something like
+     then just use something like
 
-	tcptrace -xtraffic" -B" newfile
+     	   tcptrace -xtraffic" -B" newfile
 
-to get bytes/second between the hosts for all traffic.
+     to get bytes/second between the hosts for all traffic.
 
-============================================================
+===========================================================================
 Tue Jan 12, 1999
 
->> I get the message indicating that there is the presence of hardware 
->> duplicates. What exactly does that mean? Two ethernet cards with 
->> the same MAC address? I don't think it could be a duplicate IP 
->> address.
+Q21. I get the message indicating that there is the presence of hardware 
+     duplicates. What exactly does that mean? Two ethernet cards with 
+     the same MAC address? I don't think it could be a duplicate IP 
+     address.
 
-That's a sanity check.  It means that tcptrace saw 2 packets with the
-same TCP header and identical ID fields at the IP level.  Because the
-IP headers (IPv4) are the same, it's unlikely that this is a
-retransmission.  Most likely, it means that those packets are crossing
-the local network twice, as in:
+A21. That's a sanity check.  It means that tcptrace saw 2 packets with the
+     same TCP header and identical ID fields at the IP level.  Because the
+     IP headers (IPv4) are the same, it's unlikely that this is a
+     retransmission.  Most likely, it means that those packets are crossing
+     the local network twice, as in:
 
        Router                Sender                  Receiver
          |                     |                         |
@@ -398,196 +408,474 @@ the local network twice, as in:
 pkt1:    ^---------------------<
 pkt2:    >-----------------------------------------------^
 
-once from the sender to a router (or hub), and then again from the router to
-the receiver.  Tcptrace flags the situation because otherwise those packets would
-be seen as retransmissions when they really aren't.  If you're seeing a lot of
-these (well, probably any at all), then there's a bad setup on your network.
+     once from the sender to a router (or hub), and then again from the router to
+     the receiver.  Tcptrace flags the situation because otherwise those packets would
+     be seen as retransmissions when they really aren't.  If you're seeing a lot of
+     these (well, probably any at all), then there's a bad setup on your network.
     
-============================================================
+===========================================================================
 Thu Mar  4, 1999
 
->> I just have a question regarding the congestion window plot. I am
->> wondering if this congestion is the cwnd on the sending side or it
->> is the MIN (cwnd, adv_win) where adv_win is the receiving side
->> advertised window size. Can you please explain how the congestion
->> window is calculated (I assumed it is calculated since the tcp
->> packet does not carry the congestion window information).
+Q22. I just have a question regarding the congestion window plot. I am
+     wondering if this congestion is the cwnd on the sending side or it
+     is the MIN (cwnd, adv_win) where adv_win is the receiving side
+     advertised window size. Can you please explain how the congestion
+     window is calculated (I assumed it is calculated since the tcp
+     packet does not carry the congestion window information).
 
-The title of that plot is misleading and is titled "outstanding data"
-in the version that I'm working on now.  There's a high probability
-that what it's plotting is similar to the sender's congestion window,
-but in fact it is just a heuristic that plots the amount of non-acked
-data on the network (the different between the highest byte sent and
-the highest byte ACKed).
-============================================================
+A22. The title of that plot is misleading and is titled "outstanding data"
+     in the version that I'm working on now.  There's a high probability
+     that what it's plotting is similar to the sender's congestion window,
+     but in fact it is just a heuristic that plots the amount of non-acked
+     data on the network (the different between the highest byte sent and
+     the highest byte ACKed).
+
+===========================================================================
 Tue Mar  9, 1999
 
->> Can I use the program in "real-time" mode?
+Q23. Can I use the program in "real-time" mode?
 
-Sort of, but it depends on what you're trying to do.  For example:
+A23. Sort of, but it depends on what you're trying to do.  For example:
 
 	tcpdump -s4096 -w- | tcptrace -e stdin
 
-will create data files for all connections as they're opened.  For
-functions that give answers WHILE processing, this works fine.  For
-functions that don't answer until they're done, this will require a
-little more fiddling.  For example:
+     will create data files for all connections as they're opened.  For
+     functions that give answers WHILE processing, this works fine.  For
+     functions that don't answer until they're done, this will require a
+     little more fiddling.  For example:
 
 	tcpdump -c100 -s4096 -w- | tcptrace -e -l stdin
 
-for grab the next 100 packets and then stop, while extracting the
-contents and then doing a "long" output listing.
-============================================================
+     for grab the next 100 packets and then stop, while extracting the
+     contents and then doing a "long" output listing.
+
+===========================================================================
 Mon Apr 19, 1999
 
-Somebody pointed out that there's now a windows port of tcpdump.  I
-don't know anything about it except the URL:
+Q24. Somebody pointed out that there's now a windows port of tcpdump.  I
+     don't know anything about it except the URL:
 
-http://netgroup-serv.polito.it/tools/analyzer/Install/windump/
-============================================================
+A24. http://netgroup-serv.polito.it/tools/analyzer/Install/windump/
+
+===========================================================================
 Tue Apr 27, 1999
 
->> What does the "truncated data" and "truncated packets" mean ??  I
->> ask this because I do not see any anomalies using our sniffer and
->> tcpdump, but this field has us confused.
+Q25. What does the "truncated data" and "truncated packets" mean ??  I
+     ask this because I do not see any anomalies using our sniffer and
+     tcpdump, but this field has us confused.
 
-"truncated" refers to the difference between the size of the packets
-"on the wire" and the number of bytes saved in the dump file.  With
-tcpdump and snoop, for example, you can set the "snap length", which
-controls the maximum amount of data saved from each packet.  A
-1500-byte packet grabbed with a 128-byte snap-length is "truncated".
-Because some of the analysis from various modules and features
-requires full packet data, tcptrace counts and prints the truncated
-segments ("truncated packets") and the amount of missing data
-("truncated data").
-============================================================
+A25. "truncated" refers to the difference between the size of the packets
+     "on the wire" and the number of bytes saved in the dump file.  With
+     tcpdump and snoop, for example, you can set the "snap length", which
+     controls the maximum amount of data saved from each packet.  A
+     1500-byte packet grabbed with a 128-byte snap-length is "truncated".
+     Because some of the analysis from various modules and features
+     requires full packet data, tcptrace counts and prints the truncated
+     segments ("truncated packets") and the amount of missing data
+     ("truncated data").
+
+===========================================================================
 Wed Apr 28, 1999
 
->> I was wondering if you could please explan what the following actually
->> mean in the detailed output:
->> 
->> data xmit time:        1.377 secs
+Q26. I was wondering if you could please explan what the following actually
+     mean in the detailed output:
+ 
+     	  data xmit time:        1.377 secs
 
-That's the elapsed time of the connection from the first segment
-containing data to the last segment containing data.  It discounts the
-SYN and FIN handshaking.
+A26. That's the elapsed time of the connection from the first segment
+     containing data to the last segment containing data.  It discounts the
+     SYN and FIN handshaking.
 
+     	  idletime max:         126384.9 ms
 
->> idletime max:         126384.9 ms
+     That's the longest period during which no packets were sent (data or ACK)
+     from that side of the connection.
 
-That's the longest period during which no packets were sent (data or ACK)
-from that side of the connection.
-============================================================
+===========================================================================
 Thu May 20, 1999
 
->> Is there a version of tcpdump for wintel machines?
+Q27. Is there a version of tcpdump for wintel machines?
 
-I'm told that there's one here:
+A27. I'm told that there's one here:
 
-  http://netgroup-serv.polito.it/analyzer/install/windump/default.htm
+     http://netgroup-serv.polito.it/analyzer/install/windump/default.htm
 
-but I've never used it.
-============================================================
+     but I've never used it.
+
+===========================================================================
 Tue Jun  1, 1999
 
->> 2. I get some 'Z' letters printed out by xplot on a sequence number
->> graph, and I couldn't find anything about this in the doc I found. Do
->> you know what they mean ?
+Q28. I get some 'Z' letters printed out by xplot on a sequence number
+     graph, and I couldn't find anything about this in the doc I found. Do
+     you know what they mean ?
 
-Those are "zero windows".  That's when the receiver of the data
-advertises a receive window of 0, meaning that it can't accept any
-more data.  That normally means that the receiving application can't
-keep up.  Normally, they're followed by a "gratuitious ACK" from the
-receiver advertising additional buffer space, which will cause the
-sender to send more data.  If the sender is impatient (which it's
-allowed to be) or the gratuitious ACK is lost, the sender can send
-additional data anyway (a zero window probe).
-============================================================
+A28. Those are "zero windows".  That's when the receiver of the data
+     advertises a receive window of 0, meaning that it can't accept any
+     more data.  That normally means that the receiving application can't
+     keep up.  Normally, they're followed by a "gratuitious ACK" from the
+     receiver advertising additional buffer space, which will cause the
+     sender to send more data.  If the sender is impatient (which it's
+     allowed to be) or the gratuitious ACK is lost, the sender can send
+     additional data anyway (a zero window probe).
+
+===========================================================================
 Wed Oct 13, 1999
 
->> I actually wanted very selective outputs.  For example I just want
->> tcptrace to give me only "actual data pkts", "rexmt data pkts",
->> "data xmit time" and the "RTT avg".  I couldnt get it to work with
->> the filtering option. I'd appreciate any help on this.
+Q29. I actually wanted very selective outputs.  For example I just want
+     tcptrace to give me only "actual data pkts", "rexmt data pkts",
+     "data xmit time" and the "RTT avg".  I couldnt get it to work with
+     the filtering option. I'd appreciate any help on this.
 
-There's no automatic way to do this.  A simple script should do the
-trick.  You might start with something like:
+A29. There's no automatic way to do this.  A simple script should do the
+     trick.  You might start with something like:
 
 tcptrace -r -l -n input/all.snoop.gz | egrep '(actual data pkts)|(rexmt data pkts)|(data xmit time)|(RTT avg)'
-============================================================
+
+===========================================================================
 Tue Nov  9, 1999
 
->> What's with all of the stupid quotes for module args
+Q30. What's with all of the stupid quotes for module args
 
-As the modules evolved, it became clear that it wasn't possible to
-keep the names of the arguments that the module writers needed
-separate from the arguments that the main program wanted.  Rather then 
-make the argument names even MORE non-intuitive, I decided that all
-module arguments must be in the same shell argument as the -x switch
-that enables it.  That means that if you want to pass "-G -I" to the
-traffic module, you need to say:
+A30. As the modules evolved, it became clear that it wasn't possible to
+     keep the names of the arguments that the module writers needed
+     separate from the arguments that the main program wanted.  Rather then 
+     make the argument names even MORE non-intuitive, I decided that all
+     module arguments must be in the same shell argument as the -x switch
+     that enables it.  That means that if you want to pass "-G -I" to the
+     traffic module, you need to say:
 
-   tcptrace -xtraffic"-G -I"
-      or
-   tcptrace -xtraffic" -G -I"
+     	     tcptrace -xtraffic"-G -I"
+     	     	      or
+       	     tcptrace -xtraffic" -G -I"
 
-note that the Unix shell will package this the same as:
+     note that the Unix shell will package this the same as:
 
-   tcptrace "-xtraffic-G -I"
+     	     tcptrace "-xtraffic-G -I"
 
-but this seems less clear to me somehow.  The module writer then has
-to parse a long, ugly string, but there's a support routine to do it
-for them (see the existing modules as examples).
+     but this seems less clear to me somehow.  The module writer then has
+     to parse a long, ugly string, but there's a support routine to do it
+     for them (see the existing modules as examples).
 
-============================================================
+===========================================================================
 Tue Jan 18, 2000
 
+Q31. Not being completely sure how to interpret out of order packets, I
+     would be grateful if you could confirm that such conditions occur
+     following packet losses
 
->> Not being completely sure how to interpret out of order packets, I
->> would be grateful if you could confirm that such conditions occur
->> following packet losses
+A31. Out of order packets can occur in lots of cases.  Let's say that TCP
+     sends the following segments:
 
-Out of order packets can occur in lots of cases.  Let's say that TCP
-sends the following segments:
+     1 2 3 4 5 6 2'
 
-1 2 3 4 5 6 2'
+     meaning that segment 2 was retransmitted (as 2') for some reason.  If
+     tcptrace sees those packets near the sender, it will mark 2' as a
+     retransmission because it already saw the first instance of the
+     segment.
 
-meaning that segment 2 was retransmitted (as 2') for some reason.  If
-tcptrace sees those packets near the sender, it will mark 2' as a
-retransmission because it already saw the first instance of the
-segment.
+     However, if you grab the packets "close" to the receiver, tcptrace
+     will likely see:
 
-However, if you grab the packets "close" to the receiver, tcptrace
-will likely see:
+     1 3 4 5 6 2'
 
-1 3 4 5 6 2'
+     because segment "2" didn't arrive.  In that case, tcptrace will mark	
+     segment 2 as being "out of order" because it can't tell the
+     difference.
 
-because segment "2" didn't arrive.  In that case, tcptrace will mark
-segment 2 as being "out of order" because it can't tell the
-difference.
-============================================================
+===========================================================================
 Wed Jun  6, 2001
 
->> What if I want the output file names to be different or to go in a
->> different place?
+Q32. What if I want the output file names to be different or to go in a
+     different place?
 
-You can use the arguments:
+A32. You can use the arguments:
 
-  --output_dir="STR"     directory where all output files are placed (default: '<NULL>')
-  --output_prefix="STR"  prefix all output files with this string (default: '<NULL>')
+     --output_dir="STR"     directory where all output files are placed (default: '<NULL>')
+     --output_prefix="STR"  prefix all output files with this string (default: '<NULL>')
 
-with the formatting substitutions:
+     with the formatting substitutions:
 
-   %f	basename of the current input file
-   %d	execution date, standard unix output, spaces ==> underscores
-   %t	execution time & date, standard unix output, spaces ==> underscores
-   %D	execution date, format "1-14-1963"
+     %f	  basename of the current input file
+     %d	  execution date, standard unix output, spaces ==> underscores
+     %t	  execution time & date, standard unix output, spaces ==> underscores
+     %D	  execution date, format "1-14-1963"
+     
+     For example, you might put in your ~/.tcptracerc
 
-For example, you might put in your ~/.tcptracerc
+     	--output_dir=output_%f
 
-   --output_dir=output_%f
+     or run
 
-or run
+     	tcptrace -G --output_dir=output/%d/%f   file1 file2 file3
 
-   tcptrace -G --output_dir=output/%d/%f   file1 file2 file3
+===========================================================================
+Tue 12 Dec, 2000
 
+Q33. What is a valid input file format for tcptrace? And which programs (besides tcpdump)
+     can produce dumpfiles which tcptrace understands? 
+
+A33. tcptrace supports files generated by the following packet capture tools:
+
+     "tcpdump","tcpdump -- Public domain program from LBL"
+     "snoop","Sun Snoop -- Distributed with Solaris"
+     "etherpeek","etherpeek -- Mac sniffer program"
+     "netmetrix","Net Metrix -- Commercial program from HP"
+     "ns","ns -- network simulator from LBL"
+     "tsh","NLANL Tsh Format"
+     "netscout","NetScout Manager format"
+
+===========================================================================
+Thu 14 Dec, 2000
+
+Q34. tcptrace does not support Dags native output format.
+
+A34. ATM and PoS packets captured from OC3c, OC12c, and OC48c links by Dag 
+     cards ( http://dag.cs.waikato.ac.nz/dag/ ) can be converted into a pcap 
+     format file, and hence used as input for tcptrace (or tcpdump etc). 
+
+     tcptrace does not support Dags native output format, but the conversion 
+     is simple enough.
+
+===========================================================================
+Mon 15 Jan, 2001
+
+Q35. What is the last option that is specified in the SYNC packet ([|tcp]), 
+     13:49:47.544632 172.21.21.23.1043 > 172.22.22.24.5555: S 
+     1846530079:1846530079(0) win 16384 <mss 9140,nop,wscale 0,
+     nop,nop,timestamp 19346 0,[|tcp]> (DF) 
+                             ^^^^^^^      
+A35. This is tcpdump's way of saying that the header in question (tcp) 
+     couldn't be decoded in its entirety because it was cut off early.
+     By default, tcpdump collects only the first 68 bytes of each packet. 
+     Call tcpdump with the -s option to specify a larger "snaplen" (e.g. 
+     -s 1500). Then tcpdump will decode the complete header. 
+
+===========================================================================
+Thu 08 Feb, 2001
+
+Q36. I am aware that TCPTrace only takes BINARY dump files from TCPDump.
+     However, I have a lot of useful ASCII formatted TCPDump files which I
+     wouldn't mind analysing with TCPTrace. Thus I was wondering if anyone
+     knows of a simple ASCII --> BINARY conversion utility for TCPDump (and
+     yes, I know I could do a simple PERL script to do this, but I did not
+     want to duplicate effort in case something like this existed already).
+     
+A36. I don't know of such a thing, although I've wanted one on several 
+     occastions. I see a couple of problems: 
+
+     1) missing information not all of the information that tcptrace uses in 
+     	all cases can be gleaned from just the ASCII output, but I suspect it
+     	would suffice in most cases
+    
+     2) tedious!
+     	tcpdump output format seems pretty regular. It wouldn't be extremely 
+   	difficult to parse the output, but it would take a while to get all of
+   	the special cases right (IP options, TCP options, etc)
+      
+     If somebody were tempted to write such a thing, I'd suggest that you 
+     make ASCII Tcpdump a supported input format. You could even write the 
+     parser in lex/yacc which should make the task much easier. It makes 
+     me a little nervous having a program that is pretending to create 
+     tcpdump binary files when those files would necessarily have errors in 
+     them from missing information.
+
+===========================================================================
+Tue 20 Feb, 2001
+
+Q37. xplot generates the following error message: 
+     "XAllocColorCells failed, will only have one plot color"
+
+A37. Tim Shepard (author of xplot), has a fix that he gives out 
+     when people ask, but he hasn't officially "released" it yet. We have a
+     version of xplot here: 
+
+     http://masaka.cs.ohiou.edu/tools/xplot-0.90_sdo.tar.gz 
+     
+     that contains his fix. Most likely this would fix your problem.
+
+===========================================================================
+Tue 20 Feb, 2001
+
+Q38. The only difference in my problem (and the one above), is that I have 
+     started getting this message since yestreday,, Before that xplot could
+     plot all the colors.
+  
+A38. Well, if you haven't changed the binary, then I haven't seen this 
+     mentioned before. All of the color problems that I've seen are 
+     related to older xplot versions... 
+  
+     The only thought that I have is that you might be running this on a 
+     machine with a limited number of colors and they're all used up. I 
+     know that with the older Solaris boxes that I have used in the past 
+     with 256 color video hardware (like an Ultra 1 or previous), a
+     program like netscape could eat up enough colors that xplot can't get any 
+     more.
+
+     Try killing other running apps and see if the problem goes away.
+
+===========================================================================
+Thu 22 Feb, 2001
+
+Q39. tcptrace generates the following error : "Resource temporaly unavailable"
+
+A39. It isn't really a tcptrace error, it's coming from the operating system.
+     I suspect that it's a memory allocation problem. You can get that from
+     malloc(), although I'm a little confused because we have a malloc wrapper 
+     that traps this error and tries to explain it a little. Perhaps you're seeing
+     that and didn't mention it. In any case, if that's the problem, then you're 
+     out of swap space (but may or may not be out of physical memory). A 
+     quick way to verify this is to run 'top' (freely available) and watch 
+     the amount of available swap space as the program runs, if it goes to 
+     0 right before the program exits, that's your problem. Adding 
+     temporary swap space on a solaris machine (and most others) is fairly 
+     simple. You would use a combination of mkfile(1M) to make a large 
+     file to swap into (maybe 1GB) and then swap(1M) to add that new file 
+     to the list of swap space. This is a little slower than a real swap 
+     partition, but much less work. Note that this requires root access. 
+
+===========================================================================
+Tue 17 Apr, 2001
+
+Q40. can tcptrace trace UDP "connections" ?
+
+A40. Take a look at the `-u --- perform (minimal) UDP analysis` option.
+
+===========================================================================
+Thu 23 Aug, 2001
+
+Q41. I'm wondering about the meaning of the white crosses on the green line 
+     (which tracks the acknowledged data by the receiver) of TIME-SEQUENCE 
+     graphes. Are they "non containing data segments"?
+   
+A41. I believe it is just an empty data packet (i.e. just an ack, with zero bytes
+     of data). 
+
+     Imagine a line with an arrowhead each end. Now imagine the line is zero length,
+     and draw the two arrowheads -- it looks like an X. 
+
+===========================================================================
+Mon 17 Sep, 2001
+
+Q42. I am using ns2.1b6 and want to generate trace files to be analyzed
+     with tcptrace. Until now I have only be able to generate ASCII traces
+     in ns, but tcptrace use binary traces. 
+
+A42. Kevin Lahey wrote an input module a few years ago (ns.c) that understood
+     the ASCII output format of NS. I haven't used it on anything non-trivial,
+     but I thought that it worked. It's been in there for at least a couple of
+     years, I think, and it's compiled in by default. 
+
+     If you turn on debugging in tcptrace (-d), does it recognize your file 
+     as being an NS trace file? You might poke at the ns.c file for a few 
+     minutes and see what it doesn't like about the file. 
+
+===========================================================================
+Mon, 17 Sep 2001
+
+Q43. We're analyzing network performance and we need to compare the
+     snoops for the server and the receiver end. We have both captures done
+     at syncronized time but for best comparison, we need to put them both into
+     one window, superimpose them if you will. Is this possible? If so, how? 
+  
+A43. xplot files are plain text files hence it is pretty easy to combine graphs 
+     manually with an editor. The first few lines of the file are setup and titles.
+     The last line is the word "go". Get rid of the setup lines, change the plotting
+     colors and combine the files together.
+
+===========================================================================
+Thu 29 Nov, 2001
+
+Q44. I'd like to remove the arrows in time sequence graph (tsg). What
+     must I do? 
+    
+A44. I'm not sure exactly what you mean by the "arrows". However, those 
+     are just text files, so can easily be edited by hand. Take a look, 
+     Tim's input format for xplot is very readable. If you're just
+     talking about the arrowheads, you might try something like: 
+
+     	     `egrep -v '^[ud]arrow' b2a_tsg.xpl > new_tsg.xpl`
+
+===========================================================================
+Thu 29 Nov, 2001
+
+Q45. I use tcptrace to view test results to measure tcp performance on 
+     'ad hoc' wireless network IEEE802.11 based. I use also tcpdump (to 
+     dump packet) and DBS (to generate TCP traffic). As result I can see 
+     a lot of HD (Hardware duplicate) but I don't understand what it
+     means.
+  
+A45. HD is an indication that tcptrace thinks it is seeing a "Hardware 
+     Duplicate". That means that it saw exactly the same frame twice and 
+     it assumes that it was duplicated by the hardware or appeared twice
+     on the wire due to bad routing. I'm not sure which of those might be the 
+     case for you. 
+
+     If it's annoying, you can disable the warnings with:
+
+     	--nocheck_hwdups DON'T check for 'hardware' dups 
+  
+     Of course, if they're really there, they will throw off some of the 
+     analysis because they'll count as retranmissions then. 
+
+===========================================================================
+Thu 29 Nov, 2001
+
+Q46. What's the meaning of the yellow line in time sequence graph? Is it the 
+     advertise window at receiver? If yes, how can I measure it if on the 
+     Y axis there are the packet number sequence? 
+   
+A46. That's the advertised window in terms of sequence number. The 
+     difference between the green line (ACK) and yellow line (RWIN) will 
+     be the numeric advertisement from the packet (32k for example). 
+
+===========================================================================
+Mon 14 Jan, 2002
+
+Q47. I am interested in measuring the throughput of my client-server 
+     application i.e port to port throughput ability.
+  
+A47. I get questions like this a lot. There isn't a lot of "aggregate" 
+     logic in the program because there are so many different ways to 
+     answer the question. It's pretty easy to add whatever you want, 
+     though. HOWEVER, you might find the "traffic" module handy. 
+ 
+     For example: 
+
+     	 `tcptrace "-xtraffic -G" file.dmp`
+    
+     will generate a lot of graphs that might help. The command 
+   
+     	 `tcptrace -hxargs` will help you with the arguments. 
+      
+     If you want something more, then it would be pretty easy to add the 
+     code into the mod_traffic.c file. 
+
+===========================================================================
+Wed Jan 22, 2002
+
+Q48. Do I need to install anything else for tcptrace?
+
+A48. Yes, make sure you have installed libpcap, the standard packet capture
+     library if you want to read tcpdump files. It is a good idea to install
+     on your Unix system.
+
+===========================================================================
+Wed Jan 22, 2002
+
+Q49. Does tcptrace work with Windows?
+
+A49. Well, nobody has tried to compile tcptrace on Windows platform yet. However
+     tcptrace can read network dumpfiles collected on Windows machines using
+     WinDump/WinPcap.
+
+     It has been tested to work successfully on
+     	WinDump version 3.5.2b ("http://netgroup-serv.polito.it/windump/")
+	WinPcap version 2.2    ("http://netgroup-serv.polito.it/winpcap/")
+
+===========================================================================
+Wed Jan 22, 2002
+
+Q50. Can I convert the .xpl files generated by xplot into gnuplot format?
+
+A50. Yes, look at the xpl2gpl converter that comes with the distribution of
+     tcptrace. You might also want to check the README.xpl2gpl file.
