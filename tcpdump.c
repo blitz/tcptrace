@@ -142,15 +142,11 @@ pread_tcpdump(
 	*plen      = callback_phdr->len;
 	*ptlen     = callback_phdr->caplen;
 
-	/* if it's not TCP/IP, then skip it */
-	if ((ntohs(eth_header.ether_type) != ETHERTYPE_IP) ||
-	    ((*ppip)->ip_p != IPPROTO_TCP)) {
-	    if (debug > 2) {
-		if (ntohs(eth_header.ether_type) != ETHERTYPE_IP)
-		    fprintf(stderr,"pread_tcpdump: not an IP packet\n");
-		if ((*ppip)->ip_p != IPPROTO_TCP)
-		    fprintf(stderr,"pread_tcpdump: not a TCP packet\n");
-	    }
+	/* if it's not IP, then skip it */
+	if ((ntohs(eth_header.ether_type) != ETHERTYPE_IP) &&
+	    (ntohs(eth_header.ether_type) != ETHERTYPE_IPV6)) {
+	    if (debug > 2)
+		fprintf(stderr,"pread_tcpdump: not an IP packet\n");
 	    continue;
 	}
 

@@ -305,10 +305,13 @@ pread_EP(
 	*pphys  = pep;
 	*pphystype = PHYS_ETHER;
 
-	/* if it's not TCP/IP, then skip it */
-	if ((ntohs(pep->ether_type) != ETHERTYPE_IP) ||
-	    ((*ppip)->ip_p != IPPROTO_TCP))
+	/* if it's not IP, then skip it */
+	if ((ntohs(pep->ether_type) != ETHERTYPE_IP) &&
+	    (ntohs(pep->ether_type) != ETHERTYPE_IPV6)) {
+	    if (debug > 2)
+		fprintf(stderr,"pread_EP: not an IP packet\n");
 	    continue;
+	}
 
 	return(1);
     }

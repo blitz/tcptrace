@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,10 @@ static void printeth_packet(struct ether_header *);
 static void printip_packet(struct ip *, void *plast);
 static void printtcp_packet(struct ip *, void *plast);
 static char *ParenServiceName(portnum);
-static char *ParenHostName(ipaddr);
+static char *ParenHostName(struct ipaddr addr);
+static void printipv4(struct ip *pip, void *plast);
+static void printipv6(struct ipv6 *pipv6, void *plast);
+static char *ipv6addr2str(struct in6_addr addr);
 
 
 
@@ -118,6 +121,41 @@ printip_packet(
     struct ip *pip,
     void *plast)
 {
+    /* print an ipv6 header */
+    if (PIP_ISV6(pip)) {
+	if ((unsigned)pip+sizeof(struct ipv6)-1 > (unsigned)plast) {
+	    if (printtrunc)
+		printf("\t[packet truncated too short for IP details]\n");
+	    ++ctrunc;
+	    return;
+	}
+	printipv6((struct ipv6 *)pip, plast);
+	return;
+    }
+
+    if (PIP_ISV4(pip)) {
+	/* make sure we have enough of the packet */
+	if ((unsigned)pip+sizeof(struct ip)-1 > (unsigned)plast) {
+	    if (printtrunc)
+		printf("\t[packet truncated too short for IP details]\n");
+	    ++ctrunc;
+	    return;
+	}
+	printipv4(pip, plast);
+	return;
+    }
+
+    /* unknown type */
+    printf("Unknown IP version %d\n", pip->ip_v);
+}
+
+
+
+static void
+printipv4(
+    struct ip *pip,
+    void *plast)
+{
     /* make sure we have enough of the packet */
     if ((unsigned)pip+sizeof(struct ip)-1 > (unsigned)plast) {
 	if (printtrunc)
@@ -128,10 +166,10 @@ printip_packet(
 
     printf("\tIP  Srce: %s %s\n",
 	   inet_ntoa(pip->ip_src),
-	   ParenHostName(pip->ip_src));
+	   ParenHostName(*IPV4ADDR2ADDR(&pip->ip_src)));
     printf("\tIP  Dest: %s %s\n",
 	   inet_ntoa(pip->ip_dst),
-	   ParenHostName(pip->ip_dst));
+	   ParenHostName(*IPV4ADDR2ADDR(&pip->ip_dst)));
 
     printf(
 	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
@@ -161,8 +199,9 @@ printtcp_packet(
     struct tcphdr *ptcp;
     int i;
     u_char *pdata;
+    struct ipv6 *pipv6;
 
-    ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
+    ptcp = gettcp(pip, plast);
 
     /* make sure we have enough of the packet */
     if ((unsigned)ptcp+sizeof(struct tcphdr)-1 > (unsigned)plast) {
@@ -173,7 +212,12 @@ printtcp_packet(
     }
 
     /* calculate data length */
-    tcp_length = ntohs(pip->ip_len) - (4 * pip->ip_hl);
+    if (PIP_ISV6(pip)) {
+	pipv6 = (struct ipv6 *) pip;
+	tcp_length = ntohs(pipv6->ip6_lngth);
+    } else {
+	tcp_length = ntohs(pip->ip_len) - (4 * pip->ip_hl);
+    }
     tcp_data_length = tcp_length - (4 * ptcp->th_off);
 
     printf("\tTCP SPRT: %u %s\n",
@@ -311,7 +355,7 @@ ParenServiceName(
 
 static char *
 ParenHostName(
-     ipaddr addr)
+     struct ipaddr addr)
 {
     char *pname;
     static char buf[80];
@@ -391,4 +435,36 @@ PrintRawDataHex(
     printf("\n");
 }
 
+
+static void
+printipv6(
+    struct ipv6 *pipv6,
+    void *plast)
+{
+    int ver = (pipv6->ip6_ver_tc_flabel & 0xF0000000) >> 28;
+    int tc = (pipv6->ip6_ver_tc_flabel & 0x0F000000) >> 24;
+    printf ("\n\tIPv6 Ver: %d\n", ver);
+    printf ("\tIPv6 SRC: %s\n", ipv6addr2str(pipv6->ip6_saddr));
+    printf ("\n\tIPV6 DST: %s\n", ipv6addr2str(pipv6->ip6_daddr));
+    printf ("\tTraf cls: %d\n", tc);
+    printf ("\tFlow Lbl: %d\n", (pipv6->ip6_ver_tc_flabel & 0x00FFFFFF));
+    printf ("\tPld  len: %d\n",pipv6->ip6_lngth);
+    printf ("\tNext Hdr: %u\n", pipv6->ip6_nheader);
+    printf ("\tHop Limt: %u\n", pipv6->ip6_hlimit);
+    printf ("\n\n");
+}
+
+
+/*
+ * ipv6addr2str: return the string rep. of an ipv6 address
+ */
+static char *
+ipv6addr2str(
+    struct in6_addr addr)
+{
+    static char adr[INET6_ADDRSTRLEN];
+    inet_ntop(AF_INET6, (char *)&addr, (char *)adr, INET6_ADDRSTRLEN);
+    sprintf(adr,"%s", adr);
+    return(adr);
+}
 

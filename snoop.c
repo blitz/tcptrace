@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@ static char const rcsid[] =
 
 /* 
  * snoop.c - SNOOP specific file reading stuff
+ *	ipv6 addition by Nasseef Abukamail
  */
 
 
@@ -56,7 +57,6 @@ struct snoop_packet_header {
 /* static buffers for reading */
 static struct ether_header *pep;
 static int *pip_buf;
-
 
 /* return the next packet header */
 /* currently only works for ETHERNET */
@@ -124,10 +124,13 @@ pread_snoop(
 	*pphys  = pep;
 	*pphystype = PHYS_ETHER;
 
-	/* if it's not TCP/IP, then skip it */
-	if ((ntohs(pep->ether_type) != ETHERTYPE_IP) ||
-	    ((*ppip)->ip_p != IPPROTO_TCP))
+	/* if it's not IP, then skip it */
+	if ((ntohs(pep->ether_type) != ETHERTYPE_IP) &&
+	    (ntohs(pep->ether_type) != ETHERTYPE_IPV6)) {
+	    if (debug > 2)
+		fprintf(stderr,"pread_snoop: not an IP packet\n");
 	    continue;
+	}
 
 	return(1);
     }

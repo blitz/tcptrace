@@ -113,9 +113,19 @@ HostName(
     struct hostent *phe;
     char *sb_host;
     static char name_buf[100];
+    char *adr;
 
+    if (ADDR_ISV6(&ipaddress)) {
+	static char adrv6[INET6_ADDRSTRLEN];
+	inet_ntop(AF_INET6,(char *) ipaddress.un.ip6.s6_addr,
+		  adrv6, INET6_ADDRSTRLEN);
+	adr = adrv6;
+    } else {
+	adr = inet_ntoa(ipaddress.un.ip4);
+    }
+        
     if (nonames) {
-	return(inet_ntoa(ipaddress));
+	return(adr);
     }
 	
     /* check the cache */
@@ -125,22 +135,27 @@ HostName(
     len = sizeof(name_buf);
     if (debug > 2)
 	fprintf(stderr,"Searching cache for host '%s'\n",
-		inet_ntoa(ipaddress));
+		adr);
     if (calookup(cache,
 		 (char *) &ipaddress,    (tcelen)  sizeof(ipaddress),
 		 (char *) name_buf, &len) == OK) {
 	if (debug > 2)
 	    fprintf(stderr,"Found host %s='%s' in cache\n",
-		    inet_ntoa(ipaddress), name_buf);
+		    adr, name_buf);
 	return(name_buf);
     }
 	
 
-    phe = gethostbyaddr((char *)&ipaddress, sizeof(ipaddress), AF_INET);
+    if (ADDR_ISV6(&ipaddress))
+	phe = gethostbyaddr ((char *)&ipaddress.un.ip6,
+			     sizeof(ipaddress.un.ip6), AF_INET6);
+    else
+	phe = gethostbyaddr((char *)&ipaddress.un.ip4,
+			    sizeof(ipaddress.un.ip4), AF_INET);
     if (phe != NULL) {
 	sb_host = phe->h_name;
     } else {
-	sb_host = inet_ntoa(ipaddress);
+	sb_host = adr;
     }
 
     if (use_short_names) {
@@ -153,7 +168,8 @@ HostName(
 
     if (debug > 2)
 	fprintf(stderr,"Putting host %s='%s' in cache\n",
-		inet_ntoa(ipaddress), sb_host);
+		adr, sb_host);
+
     cainsert(cache,
 	     (char *) &ipaddress,   (tcelen)sizeof(ipaddress),
 	     (char *) sb_host, (tcelen)(strlen(sb_host)+1));
