@@ -292,6 +292,11 @@ typedef struct tcb {
     Bool	fsack_req;	/* did he request SACKs? */
     u_char	window_scale;
 
+	/* If we are using window scaling, have we adjusted the 
+	   win_min field from the non-scaled window size
+	   that appeared in the SYN packet?? */
+	Bool window_stats_updated_for_scaling;
+
     /* statistics added */
     u_llong	data_bytes;
     u_llong	data_pkts;
@@ -482,6 +487,7 @@ struct stcp_pair {
     u_llong		packets;
     tcb			a2b;
     tcb			b2a;
+
 
     /* module-specific structures, if requested */
     void		**pmod_info;

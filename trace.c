@@ -1355,6 +1355,7 @@ dotrace(
 	thisdir->window_scale = ptcpo->ws;
 	thisdir->f1323_ws = TRUE;
     }
+
     if (ptcpo->tsval != -1) {
 	thisdir->f1323_ts = TRUE;
     }
@@ -1671,10 +1672,31 @@ dotrace(
     
 	thisdir->win_last=eff_win;
 
+    if (ACK_SET(ptcp) || SYN_SET(ptcp)) {
 	if (eff_win > thisdir->win_max)
 	    thisdir->win_max = eff_win;
 
-	if ((eff_win > 0) &&
+	/* If we *are* going to use window scaling,
+	/* If we *are* going to use window scaling, ignore the window
+	size that appeared in SYN packet as being counted as win_min 
+	for this direction. 
+	Instead, treat the smallest, window-scaled, window advertisement
+	as win_min. 
+
+	We have a flag "window_stats_updated_for_scaling" 
+	in either direction of the connection, that gets turned ON, the 
+	moment we find that both sides have agreed to use window
+	scaling and this is the first packet in either direction
+	with scaled window. */
+	   
+	     ( thisdir->f1323_ws && otherdir->f1323_ws && !SYN_SET(ptcp) &&
+		!thisdir->window_stats_updated_for_scaling  
+		   !thisdir->window_stats_updated_for_scaling  
+	     ) ) {
+			thisdir->window_stats_updated_for_scaling=TRUE;
+			thisdir->win_min = eff_win;
+	else if ((eff_win > 0) &&
+	    ((thisdir->win_min == 0) ||
 	     (eff_win < thisdir->win_min)))
 	    thisdir->win_min = eff_win;
 	
