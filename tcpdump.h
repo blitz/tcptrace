@@ -27,7 +27,7 @@
  */
 /* Added FDDI support 9/96 Jeffrey Semke, Pittsburgh Supercomputing Center */
 static char const copyright[] =
-    "@(#)Copyright (c) 1996 -- Ohio University.  All rights reserved.\n";
+    "@(#)Copyright (c) 1998 -- Shawn Ostermann -- Ohio University.  All rights reserved.\n";
 static char const rcsid[] =
     "@(#)$Header$";
 

@@ -26,7 +26,7 @@
  *		ostermann@cs.ohiou.edu
  */
 static char const copyright[] =
-    "@(#)Copyright (c) 1996 -- Ohio University.  All rights reserved.\n";
+    "@(#)Copyright (c) 1998 -- Shawn Ostermann -- Ohio University.  All rights reserved.\n";
 static char const rcsid[] =
     "@(#)$Header$";
 
