@@ -40,41 +40,37 @@ struct traffic_info {
     u_short port;
     
     /* interval byte counters */
+    PLINE line_nbytes;
     u_long nbytes;
-    u_long last_nbytes;
     u_long ttlbytes;
 
     /* interval packet counters */
+    PLINE line_npackets;
     u_long npackets;
-    u_long last_npackets;
     u_long ttlpackets;
 
     /* active connections */
+    PLINE line_nactive;
     u_long nactive;
-    u_long last_nactive;
     u_long ttlactive;
 
     /* open connections */
+    PLINE line_nopen;
     u_long nopen;
-    u_long last_nopen;
     u_long ttlopen;
 
     /* instantaneous open connections */
+    PLINE line_niopen;
     u_long n_i_open;
-    u_long last_n_i_open;
     u_long ttl_i_open;
-    timeval iopen_last_time;
 
     /* long-duration connections */
+    PLINE line_nlong;
     u_long nlong;
-    u_long last_nlong;
     u_long ttllong;
 
     /* which color is used for plotting */
     char *color;
-
-    /* did we draw the label yet? */
-    Bool labelled;
 
     /* linked list of the one's we're using */
     struct traffic_info *next;
@@ -100,6 +96,7 @@ struct conn_info {
 
     u_int last_dupacks;		/* last value of dupacks I saw */
     u_int last_rexmits;		/* last value of rexmits I saw */
+    u_int last_rtts;		/* last value of rtt counters I saw */
 };
 static struct conn_info *connhead = NULL;
 
@@ -114,6 +111,7 @@ static PLOTTER plotter_openclose;
 static PLOTTER plotter_i_open;
 static PLOTTER plotter_loss;
 static PLOTTER plotter_long;
+static PLOTTER plotter_rtt;
 
 #define  PLOTTER_BYTES_FILENAME		"traffic_bytes.xpl"
 #define  PLOTTER_PACKETS_FILENAME	"traffic_packets.xpl"
@@ -123,6 +121,7 @@ static PLOTTER plotter_long;
 #define  PLOTTER_I_OPEN_FILENAME	"traffic_i_open.xpl"
 #define  PLOTTER_LOSS_FILENAME		"traffic_loss.xpl"
 #define  PLOTTER_LONG_FILENAME		"traffic_long.xpl"
+#define  PLOTTER_RTT_FILENAME		"traffic_rtt.xpl"
 
 /* argument flags */
 static float age_interval = 15.0;  /* 15 seconds by default */
@@ -134,11 +133,13 @@ static Bool doplot_openclose = FALSE;
 static Bool doplot_i_open = FALSE;
 static Bool doplot_loss = FALSE;
 static Bool doplot_long = FALSE;
+static Bool doplot_rtt = FALSE;
 static int longconn_duration = 60;
 
 
 /* local routines */
 static struct traffic_info *MakeTrafficRec(u_short port);
+static void MakeTrafficLines(struct traffic_info *pti);
 static struct conn_info *MakeConnRec(void);
 static void AgeTraffic(void);
 static struct traffic_info *FindPort(u_short port);
@@ -149,19 +150,32 @@ static char *PortName(int port);
 static void ParseArgs(char *argstring);
 static void DoplotIOpen(int port, Bool fopen);
 
-/* for other stats on connections */
-static int last_num_closes = 0;
-static int last_num_opens = 0;
-static int last_open_conns = 0;
+
+/* info for opens and closes graphs */
+static PLINE line_num_closes;
+static PLINE line_num_opens;
+static PLINE line_open_conns;
 static int num_closes = 0;
 static int num_opens = 0;
 static int open_conns = 0;
 
-/* counters for loss events */
+/* info for the loss events graph */
+static PLINE line_dupacks;
+static PLINE line_rexmits;
 static int dupacks;
-static int last_dupacks;
 static int rexmits;
-static int last_rexmits;
+
+/* info for the RTT graph */
+static PLINE line_rtt_avg;
+static PLINE line_rtt_min;
+static PLINE line_rtt_max;
+static float rtt_ttl;		/* in msecs */
+static int rtt_min = -1;	/* in msecs */
+static int rtt_max = -1;	/* in msecs */
+static int rtt_samples;
+static u_int rtt_minvalid = 0;	/* minimum RTT to consider (ms) */
+static u_int rtt_maxvalid = 0xffffffff; /* maximum RTT to consider (ms) */
+
 
 /* local debugging flag */
 static int debug = 0;
@@ -283,20 +297,40 @@ traffic_init(
 			"open connections over time by port - instantaneous",
 			"time","number of connections",
 			NULL);
-    if (doplot_openclose)
+    if (doplot_openclose) {
 	plotter_openclose =
 	    new_plotter(NULL,
 			PLOTTER_OPENCLOSE_FILENAME,
 			"connections opened and closed over time",
 			"time","number of connections",
 			NULL);
-    if (doplot_loss)
+	line_num_opens = new_line(plotter_openclose, "Number Opens", "green");
+	line_num_closes = new_line(plotter_openclose, "Number Closes", "red");
+	line_open_conns = new_line(plotter_openclose, "Total Open", "blue");
+    }
+
+    if (doplot_loss) {
 	plotter_loss =
 	    new_plotter(NULL,
 			PLOTTER_LOSS_FILENAME,
 			"packet loss per second over time",
 			"time","events/second",
 			NULL);
+	line_dupacks = new_line(plotter_loss, "Triple Dupacks", "yellow");
+	line_rexmits = new_line(plotter_loss, "Retransmits", "blue");
+    }
+
+    if (doplot_rtt) {
+	plotter_rtt =
+	    new_plotter(NULL,
+			PLOTTER_RTT_FILENAME,
+			"RTT over time",
+			"time","RTT (msecs)",
+			NULL);
+	line_rtt_min = new_line(plotter_rtt, "Min RTT", "green");
+	line_rtt_max = new_line(plotter_rtt, "Max RTT", "red");
+	line_rtt_avg = new_line(plotter_rtt, "Average RTT", "blue");
+    }
 
     if (doplot_long) {
 	char title[100];
@@ -312,6 +346,9 @@ traffic_init(
 
     /* we don't want the normal output */
     printsuppress = TRUE;
+
+    /* create any lines that I want to draw */
+    MakeTrafficLines(ports[0]);
 
     /* init the graphs and etc... */
     AgeTraffic();
@@ -333,12 +370,14 @@ FindPort(
     pti = ports[port];
 
     /* see if it's "excluded" */
-    if (pti == EXCLUDE_PORT)
+    if ((port != 0) && (pti == EXCLUDE_PORT))
 	return(NULL);
 
     /* make a new one if there's a NULL there */
     if (!pti) {
 	pti = MakeTrafficRec(port);
+	/* create any lines that I want to draw */
+	MakeTrafficLines(pti);
     }
 
     return(pti);
@@ -353,16 +392,14 @@ MakeTrafficRec(
     u_short port)
 {
     struct traffic_info *pti;
-    static int nextcolor = 0;
 
     pti = MallocZ(sizeof(struct traffic_info));
 
+    if (debug>10)
+	printf("MakeTrafficRec(%d) called\n", (int)port);
+
     /* init */
     pti->port = port;
-
-    /* pick color */
-    pti->color = ColorNames[nextcolor % NCOLORS];
-    ++nextcolor;
 
     /* chain it in (at head of list) */
     pti->next = traffichead;
@@ -372,6 +409,36 @@ MakeTrafficRec(
     ports[port] = pti;
 
     return(pti);
+}
+
+
+static void
+MakeTrafficLines(
+    struct traffic_info *pti)
+{
+    char *portname;
+    static int nextcolor = 0;
+
+    /* map port number to name for printing */
+    portname = (pti->port==0)?"total":strdup(PortName(pti->port));
+
+    /* pick color */
+    pti->color = ColorNames[nextcolor % NCOLORS];
+    ++nextcolor;
+
+    /* create the lines that we sometimes use */
+    if (doplot_bytes)
+	pti->line_nbytes = new_line(plotter_bytes, portname, pti->color);
+    if (doplot_packets) 
+	pti->line_npackets = new_line(plotter_packets, portname, pti->color);
+    if (doplot_active)
+	pti->line_nactive = new_line(plotter_active, portname, pti->color);
+    if (doplot_open)
+	pti->line_nopen = new_line(plotter_open, portname, pti->color);
+    if (doplot_long)
+	pti->line_nlong = new_line(plotter_long, portname, pti->color);
+    if (doplot_i_open)
+	pti->line_niopen = new_line(plotter_i_open, portname, pti->color);
 }
 
 
@@ -462,14 +529,54 @@ traffic_read(
     }
 
     /* check losses */
-    if (pci->last_dupacks != ptp->a2b.rtt_dupack+ptp->b2a.rtt_dupack) {
-	pci->last_dupacks = ptp->a2b.rtt_dupack+ptp->b2a.rtt_dupack;
+    if (pci->last_dupacks != ptp->a2b.rtt_triple_dupack+
+	ptp->b2a.rtt_triple_dupack) {
+	pci->last_dupacks = ptp->a2b.rtt_triple_dupack+
+	    ptp->b2a.rtt_triple_dupack;
 	++dupacks;
     }
     if (pci->last_rexmits != ptp->a2b.rexmit_pkts+ptp->b2a.rexmit_pkts) {
 	pci->last_rexmits = ptp->a2b.rexmit_pkts+ptp->b2a.rexmit_pkts;
 	++rexmits;
     }
+
+    /* RTT stats */
+    if (doplot_rtt && (ACK_SET(ptcp))) {
+	tcb *ptcb;
+	int rtt;
+
+	/* see which of the 2 TCB's this goes with */
+	if (ptp->addr_pair.a_port == ptcp->th_dport)
+	    ptcb = &ptp->a2b;
+	else
+	    ptcb = &ptp->b2a;
+
+	/* check the rtt counter of the last sample */
+	rtt = ptcb->rtt_last / 1000.0;
+ 
+	if ((pci->last_rtts != ptcb->rtt_count + ptcb->rtt_amback) &&
+	    (ptcb->rtt_last != 0.0) &&
+	    (rtt > rtt_minvalid) && (rtt <= rtt_maxvalid)) {
+
+	    /* sample is only valid when one of these counters is higher */
+	    pci->last_rtts = ptcb->rtt_count + ptcb->rtt_amback;
+
+	    /* keep stats */
+	    rtt_ttl += rtt;
+	    ++rtt_samples;
+
+	    /* also, remember min and max */
+	    if ((rtt_max == -1) || (rtt_max < rtt))
+		rtt_max = rtt;
+	    if ((rtt_min == -1) || (rtt_min > rtt))
+		rtt_min = rtt;
+
+	    if (debug > 9)
+		printf("Rtt: %d,  min:%d,  max:%d\n",
+		       rtt, rtt_min, rtt_max);
+	}
+    }
+
 
     /* see if this is now "long duration" */
     if (!pci->islong) {
@@ -480,7 +587,7 @@ traffic_read(
     }
 
 
-    /* determine elapsed time and age the samples (every 15 seconds now) */
+    /* determine elapsed time and age the samples */
     if (elapsed(last_time,current_time)/1000000.0 > age_interval) {
 	AgeTraffic();
 	last_time = current_time;
@@ -555,92 +662,52 @@ AgeTraffic(void)
     /* plot connection activity */
     /* opens */
     if (doplot_openclose) {
-	static Bool openclose_labelled = 0;
-	plotter_perm_color(plotter_openclose, "green");
-	plotter_dot(plotter_openclose, current_time, num_opens);
-	if (!ZERO_TIME(&last_time))
-	    plotter_line(plotter_openclose,
-			 current_time, num_opens,
-			 last_time, last_num_opens);
-	last_num_opens = num_opens;
+	/* draw lines */
+	extend_line(line_num_opens,current_time, num_opens);
+	extend_line(line_num_closes,current_time, num_closes);
+	extend_line(line_open_conns,current_time, open_conns);
+
+	/* reset interval counters */
 	num_opens = 0;
-
-
-	/* closes */
-	plotter_perm_color(plotter_openclose, "red");
-	plotter_dot(plotter_openclose, current_time, num_closes);
-	if (!ZERO_TIME(&last_time))
-	    plotter_line(plotter_openclose,
-			 current_time, num_closes,
-			 last_time, last_num_closes);
-	
-	last_num_closes = num_closes;
 	num_closes = 0;
-
-	/* total open */
-	pti = FindPort(0);
-	plotter_perm_color(plotter_openclose, "blue");
-	plotter_dot(plotter_openclose, current_time, open_conns);
-	if (!ZERO_TIME(&last_time))
-	    plotter_line(plotter_openclose,
-			 current_time, open_conns,
-			 last_time, last_open_conns);
-	last_open_conns = open_conns;
-
-	/* insert labels */
-	if (!openclose_labelled) {
-	    if (!ZERO_TIME(&last_time)) {
-		plotter_temp_color(plotter_openclose, "green");
-		plotter_text(plotter_openclose, current_time, last_num_opens,
-			     "l", "Number Opens");
-		plotter_temp_color(plotter_openclose, "red");
-		plotter_text(plotter_openclose, current_time, last_num_closes,
-			     "l", "Number Closes");
-		plotter_temp_color(plotter_openclose, "blue");
-		plotter_text(plotter_openclose, current_time, open_conns,
-			     "l", "Total Open");
-	    }
-	    openclose_labelled = 1;
-	}
     }
 
 
     /* ============================================================ */
     /* report of loss events */
     if (doplot_loss) {
-	static Bool loss_labelled = 0;
+	/* convert to events/second */
+	dupacks = (int)((float)dupacks/age_interval);
+	rexmits = (int)((float)rexmits/age_interval);
 
-	dupacks = (int)((float)dupacks/age_interval);/* convert to events/second */
-	plotter_perm_color(plotter_loss, "yellow");
-	plotter_dot(plotter_loss, current_time, dupacks);
-	if (!ZERO_TIME(&last_time))
-	    plotter_line(plotter_loss,
-			 current_time, dupacks,
-			 last_time, last_dupacks);
-	last_dupacks = dupacks;
+	/* draw lines */
+	extend_line(line_dupacks,current_time, dupacks);
+	extend_line(line_rexmits,current_time, rexmits);
+
+	/* reset interval counters */
 	dupacks = 0;
-
-	rexmits = (int)((float)rexmits/age_interval);/* convert to events/second */
-	plotter_perm_color(plotter_loss, "blue");
-	plotter_dot(plotter_loss, current_time, rexmits);
-	if (!ZERO_TIME(&last_time))
-	    plotter_line(plotter_loss,
-			 current_time, rexmits,
-			 last_time, last_rexmits);
-	last_rexmits = rexmits;
 	rexmits = 0;
-	/* insert labels */
-	if (!loss_labelled) {
-	    if (!ZERO_TIME(&last_time)) {
-		plotter_temp_color(plotter_loss, "yellow");
-		plotter_text(plotter_loss, current_time, last_dupacks,
-			     "l", "Number Dupacks");
-		plotter_temp_color(plotter_loss, "blue");
-		plotter_text(plotter_loss, current_time, last_rexmits,
-			     "l", "Number Retransmits");
-	    }
-	    loss_labelled = 1;
-	}
+    }
+
+
+    /* ============================================================ */
+    /* report of RTT */
+    if (doplot_rtt) {
+	int rtt_avg;
+
+	/* convert to average rtt */
+	rtt_avg = (int)((rtt_ttl/(float)rtt_samples));
+
+	/* draw lines */
+	extend_line(line_rtt_avg, current_time, rtt_avg);
+	extend_line(line_rtt_min, current_time, rtt_min);
+	extend_line(line_rtt_max, current_time, rtt_max);
+
+	/* reset interval counters */
+	rtt_ttl = 0;
+	rtt_samples = 0;
+	rtt_min = -1;
+	rtt_max = -1;
     }
 
 
@@ -653,74 +720,40 @@ AgeTraffic(void)
 
 	/* plot bytes */
 	if (doplot_bytes) {
+	    /* convert to units per second */
 	    ups = (int)((float)pti->nbytes * 1000000.0 / etime);
-	    plotter_perm_color(plotter_bytes, pti->color);
-	    if (!pti->labelled || ((ups > 0) && (pti->last_nbytes == 0)))
-		plotter_text(plotter_bytes, current_time, ups,
-			     "l", PortName(pti->port));
-	    plotter_dot(plotter_bytes, current_time, ups);
-	    if (!ZERO_TIME(&last_time))
-		plotter_line(plotter_bytes,
-			     current_time, ups, last_time, pti->last_nbytes);
-	    pti->last_nbytes = ups;
+
+	    /* plot it */
+	    extend_line(pti->line_nbytes,current_time, ups);
 	}
 
 	/* plot packets */
 	if (doplot_packets) {
+	    /* convert to units per second */
 	    ups = (int)((float)pti->npackets * 1000000.0 / etime);
-	    plotter_perm_color(plotter_packets, pti->color);
-	    if (!pti->labelled || ((ups > 0) && (pti->last_npackets == 0)))
-		plotter_text(plotter_packets, current_time, ups,
-			     "l", PortName(pti->port));
-	    plotter_dot(plotter_packets, current_time, ups);
-	    if (!ZERO_TIME(&last_time))
-		plotter_line(plotter_packets,
-			     current_time, ups, last_time, pti->last_npackets);
-	    pti->last_npackets = ups;
+
+	    /* plot it */
+	    extend_line(pti->line_npackets,current_time, ups);
 	}
+
 
 	/* plot active connections */
 	if (doplot_active) {
-	    plotter_perm_color(plotter_active, pti->color);
-	    if (!pti->labelled || ((pti->nactive > 0) && (pti->last_nactive == 0)))
-		plotter_text(plotter_active, current_time, pti->nactive,
-			     "l", PortName(pti->port));
-	    plotter_dot(plotter_active, current_time, pti->nactive);
-	    if (!ZERO_TIME(&last_time))
-		plotter_line(plotter_active,
-			     current_time, pti->nactive, last_time, pti->last_nactive);
-	    pti->last_nactive = pti->nactive;
+	    /* plot it */
+	    extend_line(pti->line_nactive,current_time, pti->nactive);
 	}
+
 
 	/* plot open connections */
 	if (doplot_open) {
-	    plotter_perm_color(plotter_open, pti->color);
-	    if (!pti->labelled || ((pti->nopen > 0) && (pti->last_nopen == 0)))
-		plotter_text(plotter_open, current_time, pti->nopen,
-			     "l", PortName(pti->port));
-	    plotter_dot(plotter_open, current_time, pti->nopen);
-	    if (!ZERO_TIME(&last_time))
-		plotter_line(plotter_open,
-			     current_time, pti->nopen, last_time, pti->last_nopen);
-	    pti->last_nopen = pti->nopen;
+	    /* plot it */
+	    extend_line(pti->line_nopen,current_time, pti->nopen);
 	}
 
 	/* plot long-duration */
 	if (doplot_long) {
-	    ups = pti->nlong;
-	    plotter_perm_color(plotter_long, pti->color);
-	    if (!pti->labelled || ((ups > 0) && (pti->last_nlong == 0)))
-		plotter_text(plotter_long, current_time, ups,
-			     "l", PortName(pti->port));
-	    plotter_dot(plotter_long, current_time, ups);
-	    if (!ZERO_TIME(&last_time))
-		plotter_line(plotter_long,
-			     current_time, ups, last_time, pti->last_nlong);
-	    pti->last_nlong = ups;
+	    extend_line(pti->line_nlong,current_time, pti->nlong);
 	}
-
-	/* OK, we must have done the left hand label by now */
-	pti->labelled = 1;
     }
 
     /* zero them out */
@@ -817,6 +850,8 @@ traffic_usage(void)
 \t       -O           generate the 'open connections' graph\n\
 \t       -I           generate the 'instantaneous open connections' graph\n\
 \t       -P           generate the 'packets per second' graph\n\
+\t       -R[MIN[-MAX]]generate the 'round trip time' graph\n\
+\t                    with args, ignore samples outside MIN to MAX (in ms)\n\
 \t       -D[SECS]     generate the 'long duration connection' graph\n\
 \t		      default definition of 'long' is 60 seconds\n\
 \t       -d           enable local debugging in this module\n\
@@ -928,6 +963,46 @@ ParseArgs(char *argstring)
 		fprintf(stderr,
 			"mod_traffic: generating 'packets' graph into '%s'\n",
 			PLOTTER_PACKETS_FILENAME);
+	} else if (strncmp(argv[i],"-R",2) == 0) {
+	    doplot_rtt = TRUE;
+	    if (debug)
+		fprintf(stderr,
+			"mod_traffic: generating 'rtt' graph into '%s'\n",
+			PLOTTER_RTT_FILENAME);
+	    /* check for valid RTT range args */
+	    switch (sscanf(argv[i],"-R%d-%d", &rtt_minvalid, &rtt_maxvalid)) {
+	      case 2: {		/* 2 args is min and max */
+		  /* sanity check */
+		  if (rtt_maxvalid <= rtt_minvalid) {
+		      fprintf(stderr,
+			      "mod_traffic: Out of order min-max range for -R '%s'\n",
+			      argv[i]);
+		      traffic_usage();
+		      exit(-1);
+		  }
+		  break;
+	      }
+	      case 1: {		/* 1 args in min rtt */
+		  /* sanity check */
+		  if (rtt_maxvalid <= rtt_minvalid) {
+		      fprintf(stderr,
+			      "mod_traffic: Out of order min-max range for -R '%s'\n",
+			      argv[i]);
+		      traffic_usage();
+		      exit(-1);
+		  }
+		  break;
+	      }
+	      case 0: 		/* no args, that's OK */
+		break;
+	      default:		/* illegal args  */
+		fprintf(stderr,
+			"mod_traffic: Invalid min-max range for -R '%s'\n",
+			argv[i]);
+		traffic_usage();
+		exit(-1);
+		break;
+	    }
 	} else if (strncmp(argv[i],"-p",2) == 0) {
 	    pch = argv[i]+2;
 	    while (pch && *pch) {
@@ -972,38 +1047,17 @@ static void
 DoplotIOpen(int port, Bool fopen)
 {
     struct traffic_info *pti;
-    char *color;
 
     /* just for this port */
     if ((pti = FindPort(port)) == NULL)
 	return;
-
-    color = pti->color;
 
     if (fopen)
 	++pti->n_i_open;
     else
 	--pti->n_i_open;
 
-    plotter_perm_color(plotter_i_open, color);
-    plotter_dot(plotter_i_open, current_time, pti->n_i_open);
-    if (!ZERO_TIME(&pti->iopen_last_time))
-	plotter_line(plotter_i_open,
-		     current_time, pti->n_i_open,
-		     pti->iopen_last_time, pti->last_n_i_open);
-    
-    pti->last_n_i_open = pti->n_i_open ;
-
-
-    /* insert labels */
-    if (ZERO_TIME(&pti->iopen_last_time)) {
-	    plotter_temp_color(plotter_i_open, color);
-	    plotter_text(plotter_i_open, current_time, pti->last_n_i_open,
-			 "l",
-			 port == 0?"total":PortName(port));
-    }
-
-    pti->iopen_last_time = current_time;
+    extend_line(pti->line_niopen, current_time, pti->n_i_open);
 }
 
 #endif /* LOAD_MODULE_TRAFFIC */
