@@ -337,3 +337,5 @@
   fixed bug in TCP checksum code, it was always saying CORRECT
 6.0.0a - preparing for alpha release of version 6
 6.0.1a - added support for atmsnoop output format in snoop.c
+6.0.1a2 - changed all of the DLT_ constants in tcpdump.[ch] to PCAP_DLT_
+   with the same numbers to avoid OSs that are renumbering them.
