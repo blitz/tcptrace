@@ -487,6 +487,9 @@ typedef struct tcb {
     /* for computing LEAST (see FAQ) */
     enum	tcp_strains { TCP_RENO, TCP_SACK, TCP_DSACK } tcp_strain;
     u_long	LEAST;
+    char	in_rto;
+    u_long	recovered, recovered_orig, rto_segment, lastackno;
+    u_long	event_retrans, event_dupacks;
 
     /* host name letter(s) */
     char	*host_letter;
@@ -835,6 +838,7 @@ PLOTTER new_plotter(tcb *plast, char *filename, char *title,
 		    char *xlabel, char *ylabel, char *suffix);
 int rexmit(tcb *, seqnum, seglen, Bool *);
 enum t_ack ack_in(tcb *, seqnum, unsigned tcp_data_length, u_long eff_win);
+Bool IsRTO(tcb *ptcb, seqnum s);
 void DoThru(tcb *ptcb, int nbytes);
 struct mfile *Mfopen(char *fname, char *mode);
 void Minit(void);

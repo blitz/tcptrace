@@ -480,6 +480,7 @@ NewTTP(
     ptp->b2a.tcp_strain = TCP_RENO;
 
     ptp->a2b.LEAST = ptp->b2a.LEAST = 0;
+    ptp->a2b.in_rto = ptp->b2a.in_rto = FALSE;
 
     /* init time sequence graphs */
     ptp->a2b.tsg_plotter = ptp->b2a.tsg_plotter = NO_PLOTTER;
@@ -890,7 +891,7 @@ FindTTP(
    else
      return (tcp_pair *)(ptph->ptp);
 }
-
+     
 static void 
 UpdateConnLists(
 		ptp_ptr *tcp_ptr,
@@ -1683,9 +1684,32 @@ dotrace(
 		 (otherdir->syn_count == 1) )
 		 otherdir->rtt_3WHS=otherdir->rtt_last; 
 		 /* otherdir->rtt_last was set in the call to ack_in() */
-		
+	
+        otherdir->lastackno = th_ack;	
     }
 
+    /* LEAST */
+    if (thisdir->tcp_strain == TCP_RENO) {
+      if (thisdir->in_rto && tcp_data_length > 0) {
+        if (retrans_num_bytes>0 && th_seq < thisdir->recovered)
+          thisdir->event_retrans++;
+        if (IsRTO(thisdir, th_seq)) {
+          thisdir->recovered = thisdir->recovered_orig = thisdir->seq;
+          thisdir->rto_segment = th_seq;
+        }
+        if (!(retrans_num_bytes>0) && thisdir->ack <= thisdir->recovered_orig)
+          thisdir->recovered = th_seq;
+      }
+      if (otherdir->in_rto && ACK_SET(ptcp)) {
+        if (th_ack > otherdir->recovered) {
+          otherdir->LEAST -=
+            (otherdir->event_dupacks < otherdir->event_retrans)?
+             otherdir->event_dupacks:otherdir->event_retrans;
+          otherdir->in_rto = FALSE;
+        } else if (th_ack == otherdir->lastackno &&
+                   th_ack >= otherdir->rto_segment) otherdir->event_dupacks++;
+      }
+    }
 
     /* plot out-of-order segments, if asked */
     if (out_order && (from_tsgpl != NO_PLOTTER) && show_out_order) {
@@ -1701,6 +1725,14 @@ dotrace(
     /* stats for rexmitted data */
     if (retrans_num_bytes>0) {
 	retrans = TRUE;
+        /* for reno LEAST estimate */
+        if (thisdir->tcp_strain == TCP_RENO &&
+            !thisdir->in_rto && IsRTO(thisdir, th_seq)) {
+          thisdir->in_rto = TRUE;
+          thisdir->recovered = thisdir->recovered_orig = thisdir->seq;
+          thisdir->rto_segment = th_seq;
+          thisdir->event_retrans = 1; thisdir->event_dupacks = 0;
+        }
 	thisdir->rexmit_pkts += 1;
 	thisdir->LEAST++;
 	thisdir->rexmit_bytes += retrans_num_bytes;
