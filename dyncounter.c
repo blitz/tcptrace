@@ -3,11 +3,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "tcptrace.h"
 #include "dyncounter.h"
 
 
 static int debug = 0;
+
+/* external routines */
+void *MallocZ(int nbytes);
+
 
 /* WIDTH of the nodes (designed for 10, caveat emptor!) */
 /* (sdo: tested at 2, 5, 10, 100) */
@@ -29,8 +32,10 @@ struct node {
 
 /* dynamically-sized counter structure */
 struct dyn_counter {
-    u_long maxix;
-    u_long minix;
+    u_long gran;		/* granularity of the IX */
+    u_long maxix;		/* NOT scaled */
+    u_long minix;		/* NOT scaled */
+    u_long maxcount;
     u_long total_count;		/* sum of the "AddToCounters" call values */
     struct node *tree;
 
@@ -57,6 +62,11 @@ static struct node *NextCounterRecurse(struct node *node, u_long nextix,
 				       u_long *pix, u_long *pcount);
 static struct node *MakeDepth(struct node *node, u_long depth);
 static void DestroyTree(struct node *pnode);
+static void MakeCounter(struct dyn_counter **ppdc, u_long ix,
+			u_long val, u_long granularity, char set);
+
+
+
 
 
 
@@ -65,20 +75,13 @@ void
 AddToCounter(
     struct dyn_counter **ppdc,
     u_long ix,
-    u_long val)
+    u_long val,
+    u_long granularity)
 {
-    u_long *pcounter;
-
     if (debug)
 	fprintf(stderr,"AddToCounter(%p, %lu, %lu) called\n", *ppdc, ix, val);
 
-    pcounter = FindCounter(ppdc, ix, 1);
-
-    *pcounter += val;
-
-    (*ppdc)->total_count += val;
-
-    return;
+    MakeCounter(ppdc,ix,val,granularity,0);
 }
 
 
@@ -88,19 +91,15 @@ void
 SetCounter(
     struct dyn_counter **ppdc,
     u_long ix,
-    u_long val)
+    u_long val,
+    u_long granularity)
 {
-    u_long *pcounter;
-
     if (debug)
 	fprintf(stderr,"SetCounter(%p, %lu, %lu) called\n", *ppdc, ix, val);
 
-    pcounter = FindCounter(ppdc, ix, 1);
-
-    *pcounter = val;
-
-    return;
+    MakeCounter(ppdc,ix,val,granularity,1);
 }
+
 
 
 /* read only, doesn't MAKE anything */
@@ -151,6 +150,9 @@ NextCounter(
     }
     pdc = *ppdc;
 
+    /* scale ix by granularity */
+    *pix /= pdc->gran;
+
     /* make sure the linked list of leaves is up to date */
     if (pdc->firstleaf == NULL) {
 	FinishTree(pdc);
@@ -182,6 +184,9 @@ NextCounter(
     if (node == NULL)
 	return(0);		/* no more */
 
+    /* scale ix by granularity */
+    *pix *= pdc->gran;
+
     /* remember cookie for next time */
     *((struct node **)pvoidcookie) = node;
 
@@ -189,9 +194,18 @@ NextCounter(
 }
 
 
+/* access routine - maximum counter value */
+u_long
+GetMaxCount(
+    struct dyn_counter *pdc)
+{
+    return(pdc->maxcount);
+}
+
+
 /* access routine - return MAX index */
 u_long
-MaxCounter(
+GetMaxIx(
     struct dyn_counter *pdc)
 {
     return(pdc->maxix);
@@ -200,18 +214,31 @@ MaxCounter(
 
 /* access routine - return MIN index */
 u_long
-MinCounter(
+GetMinIx(
     struct dyn_counter *pdc)
 {
     return(pdc->minix);
 }
 
 
-/* access routine - total value added with AddToCounter() */
+/* access routine - return stored granularity */
 u_long
-TotalCounter(
+GetGran(
     struct dyn_counter *pdc)
 {
+    if (pdc == NULL)
+	return(1);
+    return(pdc->gran);
+}
+
+
+/* access routine - total value added with AddToCounter() */
+u_long
+GetTotalCounter(
+    struct dyn_counter *pdc)
+{
+    if (pdc == NULL)
+	return(0);
     return(pdc->total_count);
 }
 
@@ -447,7 +474,6 @@ FindCounter(
     }
     pdc = *ppdc;
 
-
     /* track MAX and MIN */
     if (ix > pdc->maxix)
 	pdc->maxix = ix;
@@ -457,6 +483,8 @@ FindCounter(
     if (debug>1)
 	PrintTree(pdc->tree);
 
+    /* scale (TRUNCATE) the index by the granularity */
+    ix /= (*ppdc)->gran;
 
     /* find the leaf node */
     pnode = FindLeaf(pdc, &pdc->tree,
@@ -622,4 +650,53 @@ NextCounterRecurse(
 
     /* check each counter in the NEXT leaf */
     return(NextCounterRecurse(node->nextleaf, 0, pix, pcount));
+}
+
+
+/* internal counter access routine */
+static void
+MakeCounter(
+    struct dyn_counter **ppdc,
+    u_long ix,
+    u_long val,
+    u_long granularity,
+    char is_set) /* "set" as opposed to "add" */
+{
+    u_long *pcounter;
+
+    /* if the counter tree doesn't exist yet, create it */
+    if (*ppdc == NULL) {
+	*ppdc = MakeCounterStruct();
+    }
+
+    /* check granularity */
+    if ((*ppdc)->gran == 0) {
+	(*ppdc)->gran = granularity;
+    } else {
+	/* error check */
+	if ((*ppdc)->gran != granularity) {
+	    fprintf(stderr,"DYNCOUNTER: internal error, granularity changed\n");
+	    exit(-1);
+	}
+    }
+
+    /* find/create the counter */
+    pcounter = FindCounter(ppdc, ix, 1);
+
+    /* add or set */
+    if (is_set) {
+	/* counter = val */
+	*pcounter = val;
+    } else {
+	/* counter += val */
+	*pcounter += val;
+	(*ppdc)->total_count += val;
+    }
+
+
+    /* check MAX counter value */
+    if (*pcounter > (*ppdc)->maxcount)
+	(*ppdc)->maxcount = *pcounter;
+
+    return;
 }
