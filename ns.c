@@ -55,8 +55,7 @@ static char const copyright[] =
     "@(#)Copyright (c) 2001 -- Ohio University.\n";
 
 /*
- * Kevin Lahey (kml@novell.com)
- * Novell, Inc.
+ * Kevin Lahey (kml@patheticgeek.net)
  */
 
 static char const rcsid[] =
