@@ -23,7 +23,7 @@ static char *temp_color = NULL;
 
 /* local routine declarations */
 static char *xp_timestamp(struct timeval time);
-static char *PlotName(tcb *plast, PLOTTER);
+static char *TSGPlotName(tcb *plast, PLOTTER);
 static void DoPlot(PLOTTER pl, char *fmt, ...);
 
 
@@ -101,13 +101,13 @@ HostLetter(
 
 
 static char *
-PlotName(
+TSGPlotName(
     tcb *plast,
     PLOTTER pl)
 {
     static char filename[10];
 
-    sprintf(filename,"%s2%s",
+    sprintf(filename,"%s2%s.xpl",
 	    plast->host_letter, plast->ptwin->host_letter);
 
     return(filename);
@@ -171,7 +171,7 @@ new_plotter(
 
     pl = plotter_ix;
 
-    filename = PlotName(plast,pl);
+    filename = TSGPlotName(plast,pl);
 
     if (debug)
 	fprintf(stderr,"Plotter %d file is '%s'\n", pl, filename);
@@ -186,7 +186,7 @@ new_plotter(
 
     fplot[pl] = f;
     p2plast[pl] = plast;
-    plast->plotfile = strdup(filename);
+    plast->tsg_plotfile = strdup(filename);
     return(pl);
 }
 
@@ -205,7 +205,7 @@ plotter_done()
 	    fprintf(f,"go\n");
 	    fclose(f);
 	} else {
-	    fname = p2plast[pl]->plotfile;
+	    fname = p2plast[pl]->tsg_plotfile;
 	    if (debug)
 		fprintf(stderr,"Removing incomplete plot file '%s'\n",
 			fname);

@@ -2,19 +2,22 @@
 # Gnu Makefile for tcptrace
 #
 
+
+
+#
+# User-configurable constants
+#
+OPTIM	= -O2 -g -Wall
+INCS	= -I/usr/local/include
+CC	= gcc
+LDFLAGS = -L/usr/local/lib
 SUPPORTED_FORMATS = -DGROK_SNOOP -DGROK_TCPDUMP -DGROK_NETM
 
-OPTIM = -O2 -g -Wall
-#
-INCS=-I/usr/local/include
-CFLAGS = ${OPTIM} ${INCS} ${SUPPORTED_FORMATS}
-#
-CC=gcc
-#
-CPPFLAGS = 
-LDFLAGS = -L/usr/local/lib
 
-
+#
+# Standard rules
+#
+CFLAGS	= ${OPTIM} ${INCS} ${SUPPORTED_FORMATS}
 
 
 #

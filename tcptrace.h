@@ -103,9 +103,9 @@ typedef struct tcb {
     double	retr_tm_sum2;	/* sum of squares, for stdev */
     u_long	retr_tm_count;	/* for averages */
 
-    /* plotter for this one */
-    PLOTTER	plotter;
-    char	*plotfile;
+    /* Time Sequence Graph info for this one */
+    PLOTTER	tsg_plotter;
+    char	*tsg_plotfile;
 
     /* host name letter(s) */
     char	*host_letter;
@@ -140,7 +140,6 @@ struct stcp_pair {
 
     /* linked list of usage */
     struct stcp_pair *next;
-    struct stcp_pair *prev;
 };
 typedef struct stcp_pair tcp_pair;
 
@@ -180,9 +179,11 @@ void trace_init();
 void IgnoreConn(int);
 void OnlyConn(int);
 void dotrace(struct timeval, int, struct ether_header *, struct ip *);
+char *HostName(long);
+char *ServiceName(long);
 char *EndpointName(long, long);
 char *HostLetter(u_int);
-char *ts(struct timeval	*);
+char *ts2ascii(struct timeval *);
 int ConnComplete(tcp_pair *);
 int ConnReset(tcp_pair *);
 void PrintBrief(tcp_pair *);
@@ -212,9 +213,7 @@ void plotter_rtick(PLOTTER, struct timeval, u_long);
 void plotter_htick(PLOTTER, struct timeval, u_long);
 void plotter_vtick(PLOTTER, struct timeval, u_long);
 void plotter_text(PLOTTER, struct timeval, u_long, char *, char  *);
-void printeth(struct ether_header *);
 void printpacket(struct timeval, int, int, struct ether_header *, struct ip *);
-void printtcp(struct ip *);     
 void seglist_init(tcb *);
 
 

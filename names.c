@@ -14,14 +14,10 @@
 
 
 /* local routines */
-static char *ServiceName(long);
-static char *HostName(long);
 
 
-static int verbose_debug = 0;
 
-
-static char *
+char *
 ServiceName(
      long port)
 {
@@ -48,13 +44,13 @@ ServiceName(
 	cache = cacreate("service",250,0);
     }
     len = sizeof(port_buf);
-    if (verbose_debug)
+    if (debug > 2)
 	fprintf(stderr,"Searching cache for service %d='%s'\n",
 		port, port_buf);
     if (calookup(cache,
 		 (char *) &port,    (tcelen) sizeof(port),
 		 (char *) port_buf, &len) == OK) {
-	if (verbose_debug)
+	if (debug > 2)
 	    fprintf(stderr,"Found service %d='%s' in cache\n",
 		    port, port_buf);
 	return(port_buf);
@@ -69,7 +65,7 @@ ServiceName(
 	sprintf(port_buf,"%d",port);
 	sb_port = port_buf;
     }
-    if (verbose_debug)
+    if (debug > 2)
 	fprintf(stderr,"Putting service %d='%s' in cache\n",
 		port, sb_port);
     cainsert(cache,
@@ -80,7 +76,7 @@ ServiceName(
 }
 
 
-static char *
+char *
 HostName(
     long addr)
 {
@@ -102,13 +98,13 @@ HostName(
 	cache = cacreate("host",250,0);
     }
     len = sizeof(name_buf);
-    if (verbose_debug)
+    if (debug > 2)
 	fprintf(stderr,"Searching cache for host %x='%s'\n",
 		addr, name_buf);
     if (calookup(cache,
 		 (char *) &addr,    (tcelen)  sizeof(addr),
 		 (char *) name_buf, &len) == OK) {
-	if (verbose_debug)
+	if (debug > 2)
 	    fprintf(stderr,"Found host %x='%s' in cache\n",
 		    addr, name_buf);
 	return(name_buf);
@@ -121,7 +117,7 @@ HostName(
     } else {
 	sb_host = inet_ntoa(ina);
     }
-    if (verbose_debug)
+    if (debug > 2)
 	fprintf(stderr,"Putting host %x='%s' in cache\n",
 		addr, sb_host);
     cainsert(cache,

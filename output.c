@@ -146,15 +146,15 @@ PrintTrace(
 	fprintf(stdout,"\t(SYNs: %d)  (FINs: %d)\n",
 		SynCount(ptp), FinCount(ptp));
 
-    fprintf(stdout,"\tfirst packet:  %s\n", ts(&ptp->first_time));
-    fprintf(stdout,"\tlast packet:   %s\n", ts(&ptp->last_time));
+    fprintf(stdout,"\tfirst packet:  %s\n", ts2ascii(&ptp->first_time));
+    fprintf(stdout,"\tlast packet:   %s\n", ts2ascii(&ptp->last_time));
 
     etime = elapsed(ptp->first_time,ptp->last_time);
-    fprintf(stdout,"\telapsed time:  %d:%02d:%02d.%03u\n",
+    fprintf(stdout,"\telapsed time:  %d:%02d:%02d.%04u\n",
 	    (etime / 1000000) / (60 * 24),
 	    (etime / 1000000) % (60 * 24) / 60,
 	    ((etime / 1000000) % (60 * 24)) % 60,
-	    (etime % 1000000) / 1000);
+	    (etime % 1000000) / 100);
     fprintf(stdout,"\ttotal packets: %u\n", ptp->packets);
 	
 

@@ -22,32 +22,43 @@ pcap_t *pcap;
 
 
 
-static struct pcap_pkthdr hdr;
-static struct ether_header ep;
+/* ugly (necessary) interaction between the pread_tcpdump() routine and */
+/* the callback needed for pcap's pcap_offline_read routine		*/
+static struct ether_header *callback_pep;
+static struct pcap_pkthdr *callback_phdr;
 static int ip_buf[IP_MAXPACKET/sizeof(int)];
+
 
 
 static int callback(
     char *user,
-    struct pcap_pkthdr *p,
+    struct pcap_pkthdr *phdr,
     char *buf)
 {
     int type;
+    int iplen;
+
+    iplen = phdr->caplen;
+    /* all we REALLY need is the IP and TCP headers, so don't copy	*/
+    /* any more than that...  IP header is <= 20 bytes and 		*/
+    /* the TCP header is 20 (don't use options here)			*/
+    if (iplen > 40)
+	iplen = 40;
 
     type = pcap_datalink(pcap);
+
+    /* remember the stuff we always save */
+    callback_phdr = phdr;
+    callback_pep = (struct ether_header *) buf;
     
     /* kindof ugly, but about the only way to make them fit together :-( */
     switch (type) {
       case DLT_EN10MB:
-	memcpy(&hdr,p,sizeof(hdr));
-	memcpy(&ep,buf,14);
-	memcpy(ip_buf,buf+14,p->caplen);
+	memcpy(ip_buf,buf+14,iplen);
 	break;
       case DLT_SLIP:
-	memcpy(&hdr,p,sizeof(hdr));
-	memcpy(&ep,buf,14);
-	ep.ether_type = ETHERTYPE_IP;
-	memcpy(ip_buf,buf+16,p->caplen);
+	callback_pep->ether_type = ETHERTYPE_IP;
+	memcpy(ip_buf,buf+16,iplen);
 	break;
       default:
 	fprintf(stderr,"Don't understand packet format (%d)\n", type);
@@ -69,17 +80,18 @@ pread_tcpdump(
     int ret;
     int pcap_offline_read();
     
+
     if ((ret = pcap_offline_read(pcap,1,callback,0)) != 1) {
 	/* prob EOF */
 	return(0);
     }
 
     /* fill in all of the return values */
-    *ptime = hdr.ts;
-    *plen  = hdr.len;
-    *ptlen = hdr.caplen;
+    *ppep  = callback_pep;
     *ppip  = (struct ip *) ip_buf;
-    *ppep  = &ep;
+    *ptime = callback_phdr->ts;
+    *plen  = callback_phdr->len;
+    *ptlen = callback_phdr->caplen;
 
     return(1);
 }

@@ -230,7 +230,7 @@ print_seglist(
 	printf("  %u %u %s\n",
 	       pseg->seq,
 	       pseg->ackedby,
-	       ts(&pseg->time));
+	       ts2ascii(&pseg->time));
 	pseg = pseg->next;
     }
 }
