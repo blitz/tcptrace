@@ -159,6 +159,8 @@ ci:
 clean:
 	rm -f *.o tcptrace core *.xpl *.dat .devel \
 		config.cache config.log config.status bin.*
+	cd input; ${MAKE} clean
+
 noplots:
 	rm -f *.xpl *.dat
 
