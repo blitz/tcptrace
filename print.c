@@ -47,6 +47,7 @@ static char *ParenHostName(ipaddr);
 
 
 
+/* Unix format: "Fri Sep 13 00:00:00 1986\n" */
 char *
 ts2ascii(
     struct timeval	*ptime)
@@ -55,6 +56,9 @@ ts2ascii(
 	struct tm *ptm;
 	char *now;
 	int decimal;
+
+	if ((ptime->tv_sec == 0) && (ptime->tv_usec == 0))
+	    return("        <the epoch>       ");
 
 	ptm = localtime(&ptime->tv_sec);
 	now = asctime(ptm);
