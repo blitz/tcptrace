@@ -25,8 +25,8 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
-static char const rcsid_file_formats[] =
-    "";
+static char const rcsid_http[] =
+   "$Id$";
 
 #include "tcptrace.h"
 
