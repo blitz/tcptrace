@@ -1,0 +1,58 @@
+Thu Dec 12, 1996
+Shawn Ostermann
+ostermann@cs.ohiou.edu
+
+tcptrace is a TCP connection analysis tool.  It can tell you detailed
+information about TCP connections by sifting through dump files.  The
+dump file formats supported are:
+   Sun's snoop format
+   Standard tcpdump format (you need pcap library)
+   Macintosh Etherpeek format
+   HP/NetMetrix protocol analysis format
+
+To see the graphs, you'll also need Tim Shepard's xplot program,
+available on mercury.lcs.mit.edu:
+	ftp://mercury.lcs.mit.edu/pub/shep 
+
+As this is the first public release of tcptrace, the installation
+procedure is fairly raw.  There's a standard Makefile here.  The
+program has been successfully compiled on various Sun platforms here
+using GCC.  I'd love to hear from people who have problems (preferably
+with solutions!!!).
+
+Most of the rest of the Docs are on the web.  Check out:
+  http://jarok.cs.ohiou.edu/software/tcptrace/tcptrace.html
+
+
+Running the program
+-------------------
+
+Some simple examples:
+
+0) What are the args and what do they mean???
+     tcptrace 
+
+1) Run the program quickly over a dump file
+     tcptrace dumpfile
+
+2) Get longer output
+     tcptrace -l dumpfile
+
+3) Generate lots of pretty plot files (you need xplot to see them)
+     tcptrace -G dumpfile
+
+4) Print the segment contents as you go
+     tcptrace -p dumpfile
+
+5) Print progress info (useful for large files)
+     tcptrace -t dumpfile
+
+Of course, you can chain arguments together until you get just what
+you want.  
+
+
+Let me know what you think....
+
+Shawn
+
+
