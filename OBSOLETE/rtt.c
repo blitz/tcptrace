@@ -2,20 +2,28 @@
  * rtt.c - Round Trip Timing Routines
  * 
  * Author:	Shawn Ostermann
- * 		Dept. of Computer Sciences
- * 		Purdue University
- * Date:	Fri Sep  4 13:35:42 1992
+ * 		Computer Science Department
+ * 		Ohio University
+ * Date:	Tue Nov  1, 1994
  *
- * Copyright (c) 1992 Shawn Ostermann
+ * Copyright (c) 1994 Shawn Ostermann
  */
 
 #include "tcptrace.h"
 
 
+/* local routines */
+static seg_rec *newseg();
+static void freeseg(seg_rec *);
+static void unlinkseg(seg_rec *);
+static void ack_in(tcb *, struct timeval, struct tcphdr *, struct ip *);
+static void seg_out(tcb *, struct timeval, struct tcphdr *, struct ip *);
+
+
+
 void
 seglist_init(
-    tcb *ptcb
-    )
+    tcb *ptcb)
 {
     ptcb->seglist_head.next = &ptcb->seglist_tail;
     ptcb->seglist_tail.prev = &ptcb->seglist_head;
@@ -36,8 +44,7 @@ newseg()
 
 static void
 freeseg(
-    seg_rec *pseg
-    )
+    seg_rec *pseg)
 {
     free(pseg);
 }
@@ -45,8 +52,7 @@ freeseg(
 
 static void
 unlinkseg(
-    seg_rec *pseg
-    )
+    seg_rec *pseg)
 {
     pseg->next->prev = pseg->prev;
     pseg->prev->next = pseg->next;
@@ -61,8 +67,7 @@ ack_in(
     tcb *ptcb,
     struct timeval time,
     struct tcphdr *ptcp,
-    struct ip *pip
-    )
+    struct ip *pip)
 {
     unsigned long etime;
     unsigned ack = ntohl(ptcp->th_ack);
@@ -132,8 +137,7 @@ seg_out(
     tcb *ptcb,
     struct timeval time,
     struct tcphdr *ptcp,
-    struct ip *pip
-    )
+    struct ip *pip)
 {
     unsigned long etime;
     u_long start;
@@ -200,8 +204,7 @@ calc_rtt(
     tcb *ptcb,
     struct timeval time,
     struct tcphdr *ptcp,
-    struct ip *pip
-    )
+    struct ip *pip)
 {
     seg_out(ptcb,time,ptcp,pip);
     ack_in(ptcb->ptwin,time,ptcp,pip);
@@ -209,9 +212,10 @@ calc_rtt(
 
 
 
-void print_seglist(
-    tcb *ptcb
-    )
+#ifdef OLD
+static void
+print_seglist(
+    tcb *ptcb)
 {
     seg_rec *pseg;
 
@@ -220,7 +224,8 @@ void print_seglist(
 	printf("  %u %u %s\n",
 	       pseg->seq,
 	       pseg->ackedby,
-	       ts(pseg->time));
+	       ts(&pseg->time));
 	pseg = pseg->next;
     }
 }
+#endif OLD

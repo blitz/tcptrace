@@ -1,3 +1,14 @@
+/* 
+ * tcptrace.h - turn protocol monitor traces into xplot
+ * 
+ * Author:	Shawn Ostermann
+ * 		Computer Science Department
+ * 		Ohio University
+ * Date:	Tue Nov  1, 1994
+ *
+ * Copyright (c) 1994 Shawn Ostermann
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -21,7 +32,6 @@ extern int max_tcp_pairs;
 
 /* number of plotters to use */
 #define DEFAULT_MAX_PLOTTERS (2*MAX_TCP_PAIRS)
-extern int max_plotters;
 
 typedef int PLOTTER;
 #define NO_PLOTTER -1
@@ -153,59 +163,57 @@ extern int show_zero_window;
 
 #define MAX_NAME 20
 
-/* understood file formats */
-#define SNOOP 1
-#define NETM  2
-#define TCPDUMP 3
-
 
 /* external routine decls */
-char *malloc(int);
+void *malloc(int);
 char *ether_ntoa();
-void bzero(void *,int);
+void bzero(void *, int);
+void bcopy(void *, void *,int);
 void free(void *);
 
 
 /* global routine decls */
-char *ts();
-unsigned long elapsed();
-
-int is_tcpdump();
-int is_netm();
-int is_snoop();
-
-int pread_tcpdump();
-int pread_netm();
-int pread_snoop();
-
-void dotrace();
-void plotter_darrow();
-void plotter_done();
-void plotter_dtick();
-PLOTTER new_plotter();
-void plotter_line();
-void plotter_text();
-void plotter_uarrow();
-void plotter_utick();
-void plotter_diamond();
-void plotter_box();
-void plotter_temp_color(PLOTTER,char*);
-void plotter_perm_color(PLOTTER,char*);
-void printeth();     
-void printpacket();     
-void printtcp();     
+unsigned long elapsed(struct timeval, struct timeval);
 void trace_done();
 void trace_init();
-void plot_init();
-void OnlyConn();
-void IgnoreConn();
-void calc_rtt();
-void seglist_init();
-int Complete();
-char *HostLetter();
-char *EndpointName();
+void IgnoreConn(int);
+void OnlyConn(int);
+void dotrace(struct timeval, int, struct ether_header *, struct ip *);
+char *EndpointName(long, long);
+char *HostLetter(u_int);
+char *ts(struct timeval	*);
+int Complete(tcp_pair *);
 void PrintBrief(tcp_pair *);
-void PrintTrace(tcp_pair *ptp);
+void PrintTrace(tcp_pair *);
+void calc_rtt(tcb *, struct timeval, struct tcphdr *, struct ip *);
+void dotrace();
+PLOTTER new_plotter(tcb *plast, char *title);
+void plot_init();
+void plotter_done();
+void plotter_perm_color(PLOTTER, char *color);
+void plotter_temp_color(PLOTTER, char *color);
+void plotter_line(PLOTTER, struct timeval, u_long, struct timeval, u_long);
+void plotter_dline(PLOTTER, struct timeval, u_long, struct timeval, u_long);
+void plotter_diamond(PLOTTER, struct timeval, u_long);
+void plotter_dot(PLOTTER, struct timeval, u_long);
+void plotter_plus(PLOTTER, struct timeval, u_long);
+void plotter_box(PLOTTER, struct timeval, u_long);
+void plotter_arrow(PLOTTER, struct timeval, u_long, char);
+void plotter_uarrow(PLOTTER, struct timeval, u_long);
+void plotter_darrow(PLOTTER, struct timeval, u_long);
+void plotter_rarrow(PLOTTER, struct timeval, u_long);
+void plotter_larrow(PLOTTER, struct timeval, u_long);
+void plotter_tick(PLOTTER, struct timeval, u_long, char);
+void plotter_dtick(PLOTTER, struct timeval, u_long);
+void plotter_utick(PLOTTER, struct timeval, u_long);
+void plotter_rtick(PLOTTER, struct timeval, u_long);
+void plotter_htick(PLOTTER, struct timeval, u_long);
+void plotter_vtick(PLOTTER, struct timeval, u_long);
+void plotter_text(PLOTTER, struct timeval, u_long, char *, char  *);
+void printeth(struct ether_header *);
+void printpacket(struct timeval, int, struct ether_header *, struct ip *);
+void printtcp(struct ip *);     
+void seglist_init(tcb *);
 
 
 /* common defines */
@@ -239,4 +247,3 @@ void PrintTrace(tcp_pair *ptp);
 #define	SEQCMP(a, b)		((long)(a) - (long)(b))
 #define	SEQ_LESSTHAN(a, b)	(SEQCMP(a,b) < 0)
 #define	SEQ_GREATERTHAN(a, b)	(SEQCMP(a,b) > 0)
-

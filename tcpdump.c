@@ -11,6 +11,8 @@
  * Copyright (c) 1994 Shawn Ostermann
  */
 
+#ifdef GROK_TCPDUMP
+
 #include <stdio.h>
 #include <pcap.h>
 #include "tcptrace.h"
@@ -19,31 +21,16 @@
 pcap_t *pcap;
 
 
-int
-is_tcpdump()
-{
-    char errbuf[100];
-
-    if ((pcap = pcap_open_offline("-",errbuf)) == NULL) {
-	fprintf(stderr,"PCAP said: '%s'\n", errbuf);
-	rewind(stdin);
-	return(0);
-    }
-
-    return(1);
-}
-
-
 
 static struct pcap_pkthdr hdr;
 static struct ether_header ep;
 static int ip_buf[IP_MAXPACKET/sizeof(int)];
 
 
-static int callback(user,p,buf)
-    char *user;
-    struct pcap_pkthdr *p;
-    char *buf;
+static int callback(
+    char *user,
+    struct pcap_pkthdr *p,
+    char *buf)
 {
     int type;
 
@@ -71,12 +58,12 @@ static int callback(user,p,buf)
 };
 
 
-int
-pread_tcpdump(ptime,plen,ppep,ppip)
-     struct timeval	 *ptime;
-     int		 *plen;
-     struct ether_header **ppep;
-     struct ip		 **ppip;
+static int
+pread_tcpdump(
+    struct timeval	*ptime,
+    int		 	*plen,
+    struct ether_header **ppep,
+    struct ip		**ppip)
 {
     int ret;
     int pcap_offline_read();
@@ -94,3 +81,19 @@ pread_tcpdump(ptime,plen,ppep,ppip)
 
     return(1);
 }
+
+
+int (*is_tcpdump())()
+{
+    char errbuf[100];
+
+    if ((pcap = pcap_open_offline("-",errbuf)) == NULL) {
+	fprintf(stderr,"PCAP said: '%s'\n", errbuf);
+	rewind(stdin);
+	return(NULL);
+    }
+
+    return(pread_tcpdump);
+}
+
+#endif GROK_TCPDUMP

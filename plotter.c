@@ -1,15 +1,33 @@
+/* 
+ * tcptrace.c - turn protocol monitor traces into xplot
+ * 
+ * Author:	Shawn Ostermann
+ * 		Computer Science Department
+ * 		Ohio University
+ * Date:	Tue Nov  1, 1994
+ *
+ * Copyright (c) 1994 Shawn Ostermann
+ */
+
 #include "tcptrace.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 
-int max_plotters;
-
-
+/* locally global parameters */
+static int max_plotters;
 static FILE **fplot;
 static tcb **p2plast;
 static PLOTTER plotter_ix = NO_PLOTTER;
-
 static char *temp_color = NULL;
+
+
+/* local routine declarations */
+static char *xp_timestamp(struct timeval time);
+static char *PlotName(tcb *plast, PLOTTER);
+static void DoPlot(PLOTTER pl, char *fmt, ...);
+
+
+
 
 
 /*
@@ -17,8 +35,8 @@ static char *temp_color = NULL;
  * (Currently rounds to the nearest 1/10 millisecond)
  */
 static char *
-xp_timestamp(time)
-    struct timeval time;
+xp_timestamp(
+    struct timeval time)
 {
     static char bufs[4][20];	/* several of them for multiple calls in one printf */
     static int bufix = 0;
@@ -35,7 +53,8 @@ xp_timestamp(time)
 
 
 
-void plot_init()
+void
+plot_init()
 {
     max_plotters = 2*max_tcp_pairs;
 
@@ -56,8 +75,9 @@ void plot_init()
 
 
 
-char *HostLetter(ix)
-     u_int ix;
+char *
+HostLetter(
+     u_int ix)
 {
     static char name[10];
     char ch1;
@@ -80,29 +100,31 @@ char *HostLetter(ix)
 
 
 
-char *PlotName(plast,pl)
-     tcb *plast;
-     PLOTTER pl;
+static char *
+PlotName(
+    tcb *plast,
+    PLOTTER pl)
 {
-	static char filename[10];
+    static char filename[10];
 
-	sprintf(filename,"%s2%s",
-		plast->host_letter, plast->ptwin->host_letter);
+    sprintf(filename,"%s2%s",
+	    plast->host_letter, plast->ptwin->host_letter);
 
-	return(filename);
+    return(filename);
 }
 
 
 
-static void DoPlot(pl, fmt, va_alist)
-     PLOTTER	pl;
-     char	*fmt;
-     va_dcl
+static void
+DoPlot(
+     PLOTTER	pl,
+     char	*fmt,
+     ...)
 {
     va_list	ap;
     FILE *f = NULL;
 
-    va_start(ap);
+    va_start(ap,);
 
     if (!plotem)
 	return;
@@ -132,10 +154,10 @@ static void DoPlot(pl, fmt, va_alist)
 }
 
 
-int
-new_plotter(plast,title)
-     tcb *plast;
-     char *title;
+PLOTTER
+new_plotter(
+     tcb *plast,
+     char *title)
 {
     PLOTTER pl;
     FILE *f;
@@ -197,9 +219,9 @@ plotter_done()
 
 
 void
-plotter_temp_color(pl,color)
-     PLOTTER pl;
-     char *color;
+plotter_temp_color(
+    PLOTTER pl,
+    char *color)
 {
     if (colorplot)
 	temp_color = color;
@@ -207,9 +229,9 @@ plotter_temp_color(pl,color)
 
 
 void
-plotter_perm_color(pl,color)
-     PLOTTER pl;
-     char *color;
+plotter_perm_color(
+    PLOTTER pl,
+    char *color)
 {
     if (colorplot)
 	DoPlot(pl,"%s",color);
@@ -217,62 +239,68 @@ plotter_perm_color(pl,color)
 
 
 void
-plotter_line(pl,t1,x1,t2,x2)
-     PLOTTER pl;
-     struct timeval	t1,t2;
-     unsigned long	x1,x2;
+plotter_line(
+    PLOTTER pl,
+    struct timeval	t1,
+    u_long		x1,
+    struct timeval	t2,
+    u_long		x2)
 {
-	DoPlot(pl,"line %s %u %s %u",
-	     xp_timestamp(t1), x1,
-	     xp_timestamp(t2), x2);
+    DoPlot(pl,"line %s %u %s %u",
+	   xp_timestamp(t1), x1,
+	   xp_timestamp(t2), x2);
 }
 
 
 void
-plotter_dline(pl,t1,x1,t2,x2)
-    PLOTTER pl;
-    struct timeval	t1,t2;
-    unsigned long	x1,x2;
+plotter_dline(
+    PLOTTER pl,
+    struct timeval	t1,
+    u_long		x1,
+    struct timeval	t2,
+    u_long		x2)
 {
-    DoPlot(pl,"dline %s %u %s %u", xp_timestamp(t1), x1, xp_timestamp(t2), x2);
+    DoPlot(pl,"dline %s %u %s %u",
+           xp_timestamp(t1), x1,
+           xp_timestamp(t2), x2);
 }
 
 
 void
-plotter_diamond(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_diamond(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     DoPlot(pl,"diamond %s %u", xp_timestamp(t), x);
 }
 
 
 void
-plotter_dot(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_dot(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     DoPlot(pl,"dot %s %u", xp_timestamp(t), x);
 }
 
 
 void
-plotter_plus(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_plus(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     DoPlot(pl,"plus %s %u", xp_timestamp(t), x);
 }
 
 
 void
-plotter_box(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_box(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     DoPlot(pl,"box %s %u", xp_timestamp(t), x);
 }
@@ -280,122 +308,122 @@ plotter_box(pl,t,x)
 
 
 void
-plotter_arrow(pl,t,x,dir)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
-    char	dir;
+plotter_arrow(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x,
+    char	dir)
 {
     DoPlot(pl,"%carrow %s %u", dir, xp_timestamp(t), x);
 }
 
 
 void
-plotter_uarrow(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_uarrow(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_arrow(pl,t,x,'u');
 }
 
 
 void
-plotter_darrow(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_darrow(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_arrow(pl,t,x,'d');
 }
 
 
 void
-plotter_rarrow(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_rarrow(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_arrow(pl,t,x,'r');
 }
 
 
 void
-plotter_larrow(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_larrow(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_arrow(pl,t,x,'l');
 }
 
 
 void
-plotter_tick(pl,t,x,dir)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
-    char	dir;
+plotter_tick(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x,
+    char		dir)
 {
     DoPlot(pl,"%ctick %s %u", dir, xp_timestamp(t), x);
 }
 
 
 void
-plotter_dtick(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_dtick(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_tick(pl,t,x,'d');
 }
 
 
 void
-plotter_utick(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_utick(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_tick(pl,t,x,'u');
 }
 
 
 void
-plotter_ltick(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_ltick(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_tick(pl,t,x,'l');
 }
 
 
 void
-plotter_rtick(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_rtick(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_tick(pl,t,x,'r');
 }
 
 
 void
-plotter_htick(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_htick(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_tick(pl,t,x,'h');
 }
 
 
 void
-plotter_vtick(pl,t,x)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
+plotter_vtick(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
 {
     plotter_tick(pl,t,x,'v');
 }
@@ -403,12 +431,12 @@ plotter_vtick(pl,t,x)
 
 
 void
-plotter_text(pl,t,x,where,str)
-    PLOTTER pl;
-    struct timeval	t;
-    unsigned long	x;
-    char		*where;
-    char		*str;
+plotter_text(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x,
+    char		*where,
+    char		*str)
 {
     DoPlot(pl,"%stext %s %u\n%s", where, xp_timestamp(t), x, str);
 }

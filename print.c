@@ -2,28 +2,23 @@
  * print.c -- packet printing routines
  * 
  * Author:	Shawn Ostermann
- * 		Dept. of Computer Sciences
- * 		Purdue University
- * Date:	Fri Sep  4 13:35:42 1992
+ * 		Computer Science Department
+ * 		Ohio University
+ * Date:	Tue Nov  1, 1994
  *
- * Copyright (c) 1992 Shawn Ostermann
+ * Copyright (c) 1994 Shawn Ostermann
  */
 
 #include "tcptrace.h"
 
 
 /* local routines */
-char *ts();
-void printeth();
-void printip();
-void printtcp();
-void printone();
 
 
 
 char *
-ts(ptime)
-     struct timeval	*ptime;
+ts(
+    struct timeval	*ptime)
 {
 	static char buf[100];
 	struct tm *ptm;
@@ -42,8 +37,8 @@ ts(ptime)
 
 
 void
-printeth(pep)
-     struct ether_header *pep;
+printeth(
+    struct ether_header *pep)
 {
     printf("\tETH From: %s\n", ether_ntoa(pep->ether_shost));
     printf("\t    Dest: %s\n", ether_ntoa(pep->ether_dhost));
@@ -58,24 +53,26 @@ printeth(pep)
 
 
 void
-printip(pip)
-     struct ip *pip;
+printip(
+    struct ip *pip)
 {
-	printf("\tIP From: %s\n", inet_ntoa(pip->ip_src));
-	printf("\t   Dest: %s\n", inet_ntoa(pip->ip_dst));
+    printf("\tIP From: %s\n", inet_ntoa(pip->ip_src));
+    printf("\t   Dest: %s\n", inet_ntoa(pip->ip_dst));
 
-	printf(
-	    hex?"\t   Type: 0x%x %s\n":"\t   Type: %d %s\n",
-	       ntohs(pip->ip_p), 
-	       (ntohs(pip->ip_p) == IPPROTO_UDP)?"(UDP)":
-	       (ntohs(pip->ip_p) == IPPROTO_TCP)?"(TCP)":
-	       "");
+    printf("\t     ID: %d\n", ntohs(pip->ip_id));
+
+    printf(
+	hex?"\t   Type: 0x%x %s\n":"\t   Type: %d %s\n",
+	ntohs(pip->ip_p), 
+	(ntohs(pip->ip_p) == IPPROTO_UDP)?"(UDP)":
+	(ntohs(pip->ip_p) == IPPROTO_TCP)?"(TCP)":
+	"");
 }
 
 
 void
-printtcp(pip)
-     struct ip *pip;
+printtcp(
+    struct ip *pip)
 {
     unsigned tcp_length;
     unsigned tcp_data_length;
@@ -98,10 +95,10 @@ printtcp(pip)
 	   (ptcp->th_flags & TH_URG)?'U':'-');
     printf(
 	hex?"\t    SEQ:   0x%08x\n":"\t    SEQ:   %d\n",
-	   ntohl(ptcp->th_seq));
+	ntohl(ptcp->th_seq));
     printf(
 	hex?"\t    ACK:   0x%08x\n":"\t    ACK:   %d\n",
-	   ntohl(ptcp->th_ack));
+	ntohl(ptcp->th_ack));
     printf("\t    WIN:   %u\n", ntohs(ptcp->th_win));
     printf("\t    OFF:   %u\n", ptcp->th_off);
     if (tcp_data_length > 0)
@@ -111,23 +108,23 @@ printtcp(pip)
 
 
 void
-printpacket(time,len,pep,pip)
-     struct timeval	time;
-     int		len;
-     struct ether_header *pep;
-     struct ip		*pip;
+printpacket(
+     struct timeval	time,
+     int		len,
+     struct ether_header *pep,
+     struct ip		*pip)
 {
-	printf("\tPacket Length: %d\n", len);
+    printf("\tPacket Length: %d\n", len);
 
-	printf("\tCollected: %s\n", ts(&time));
+    printf("\tCollected: %s\n", ts(&time));
 
-	printeth(pep);
+    printeth(pep);
 
-	if (pep->ether_type != ETHERTYPE_IP)
-	    return;
-	printip(pip);
+    if (pep->ether_type != ETHERTYPE_IP)
+	return;
+    printip(pip);
 
-	if (ntohs(pip->ip_p) != IPPROTO_TCP)
-	    return;
-	printtcp(pip);
+    if (ntohs(pip->ip_p) != IPPROTO_TCP)
+	return;
+    printtcp(pip);
 }
