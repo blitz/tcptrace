@@ -110,6 +110,7 @@ printeth_packet(
 	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
 	pep->ether_type,
 	(pep->ether_type == ETHERTYPE_IP)?"(IP)":
+	(pep->ether_type == ETHERTYPE_IPV6)?"(IPv6)":
 	(pep->ether_type == ETHERTYPE_ARP)?"(ARP)":
 	(pep->ether_type == ETHERTYPE_REVARP)?"(RARP)":
 	"");
@@ -164,6 +165,7 @@ printipv4(
 	return;
     }
 
+    printf("\tIP  VERS: %d\n", pip->ip_v);
     printf("\tIP  Srce: %s %s\n",
 	   inet_ntoa(pip->ip_src),
 	   ParenHostName(*IPV4ADDR2ADDR(&pip->ip_src)));
@@ -201,7 +203,10 @@ printtcp_packet(
     u_char *pdata;
     struct ipv6 *pipv6;
 
+    /* find the tcp header */
     ptcp = gettcp(pip, plast);
+    if (ptcp == NULL)
+	return;			/* not TCP */
 
     /* make sure we have enough of the packet */
     if ((unsigned)ptcp+sizeof(struct tcphdr)-1 > (unsigned)plast) {
@@ -332,8 +337,8 @@ printpacket(
     printip_packet(pip,plast);
 
 
-    if (ntohs(pip->ip_p) == IPPROTO_TCP)
-	printtcp_packet(pip,plast);
+    /* this will fail if it's not TCP */
+    printtcp_packet(pip,plast);
 }
 
 
@@ -443,15 +448,14 @@ printipv6(
 {
     int ver = (pipv6->ip6_ver_tc_flabel & 0xF0000000) >> 28;
     int tc = (pipv6->ip6_ver_tc_flabel & 0x0F000000) >> 24;
-    printf ("\n\tIPv6 Ver: %d\n", ver);
-    printf ("\tIPv6 SRC: %s\n", ipv6addr2str(pipv6->ip6_saddr));
-    printf ("\n\tIPV6 DST: %s\n", ipv6addr2str(pipv6->ip6_daddr));
-    printf ("\tTraf cls: %d\n", tc);
-    printf ("\tFlow Lbl: %d\n", (pipv6->ip6_ver_tc_flabel & 0x00FFFFFF));
-    printf ("\tPld  len: %d\n",pipv6->ip6_lngth);
-    printf ("\tNext Hdr: %u\n", pipv6->ip6_nheader);
-    printf ("\tHop Limt: %u\n", pipv6->ip6_hlimit);
-    printf ("\n\n");
+    printf ("\tIP  Vers: %d\n", ver);
+    printf ("\tIP  Srce: %s\n", ipv6addr2str(pipv6->ip6_saddr));
+    printf ("\tIP  Dest: %s\n", ipv6addr2str(pipv6->ip6_daddr));
+    printf ("\t   Class: %d\n", tc);
+    printf ("\t    Flow: %d\n", (pipv6->ip6_ver_tc_flabel & 0x00FFFFFF));
+    printf ("\t    PLEN: %d\n",pipv6->ip6_lngth);
+    printf ("\t    NXTH: %u\n", pipv6->ip6_nheader);
+    printf ("\t    HLIM: %u\n", pipv6->ip6_hlimit);
 }
 
 
@@ -467,4 +471,3 @@ ipv6addr2str(
     sprintf(adr,"%s", adr);
     return(adr);
 }
-
