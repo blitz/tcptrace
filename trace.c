@@ -2180,27 +2180,29 @@ trace_done(void)
     if (!printsuppress) {
 	if (tcp_trace_count == 0) {
 	    fprintf(stdout,"%sno traced TCP packets\n", comment);
-	    fprintf(stdout,"no traced TCP packets\n");
+	    return;
 	} else {
 	    fprintf(stdout,"%sTCP connection info:\n", comment);
-	    fprintf(stdout,"TCP connection info:\n");
+	}
     }
 
     if (!printbrief)
 	fprintf(stdout,"%s%d TCP %s traced:\n",
-	fprintf(stdout,"%d TCP %s traced:\n",
+		comment,
+		num_tcp_pairs + 1,
 		num_tcp_pairs==0?"connection":"connections");
     if (ctrunc > 0) {
 	fprintf(stdout,
 		"%s*** %lu packets were too short to process at some point\n",
-		"*** %lu packets were too short to process at some point\n",
+		comment,
+		ctrunc);
 	if (!warn_printtrunc)
 	    fprintf(stdout,"%s\t(use -w option to show details)\n", comment);
-	    fprintf(stdout,"\t(use -w option to show details)\n");
+    }
     if (debug>1)
 	fprintf(stdout,"%saverage TCP search length: %d\n",
-	fprintf(stdout,"average TCP search length: %d\n",
-		search_count / tcp_packet_count);
+		comment, search_count / tcp_packet_count);
+
     /* complete the "idle time" calculations using NOW */
     for (ix = 0; ix <= num_tcp_pairs; ++ix) {
 	tcp_pair *ptp = ttp[ix];
@@ -2263,6 +2265,9 @@ trace_done(void)
     /* print each connection */
     if (!printsuppress) {
         Bool first = TRUE; /* Used with <SP>-separated-values
+			    * Keeps track of whether header has already
+			    * been printed */
+	for (ix = 0; ix <= num_tcp_pairs; ++ix) {
 	    ptp = ttp[ix];
 
 	    if (!ptp->ignore_pair) {
@@ -2271,9 +2276,18 @@ trace_done(void)
 		    PrintBrief(ptp);
 		} else if (!ignore_non_comp || ConnComplete(ptp)) {
 		    if(csv || tsv || (sv != NULL)) {
-		    if (ix > 0)
-			fprintf(stdout,"================================\n");
-		    fprintf(stdout,"TCP connection %d:\n", ix+1);
+		       if(first) {
+			  PrintSVHeader();
+			  first = FALSE;
+		       }
+		       fprintf(stdout, "%d%s", ix+1, sp);
+		    }
+		    else {
+		       if (ix > 0)
+			 fprintf(stdout,"================================\n");
+		       fprintf(stdout,"TCP connection %d:\n", ix+1);
+		    }
+		    PrintTrace(ptp);
 		}
 	    }
 	}
@@ -2376,12 +2390,7 @@ IgnoreConn(
     if (debug) fprintf(stderr,"ignoring conn %d\n", ix);
 
 //    trace_init();
-    if (run_continuously) {
-      fprintf(stderr, "Warning: cannot ignore connections in continuous mode\n");
-      return;
-    }
-
-    trace_init();
+	
     --ix;
 
     MoreTcpPairs(ix);
@@ -2401,12 +2410,7 @@ OnlyConn(
     if (debug) fprintf(stderr,"only printing conn %d\n", ix_only);
 
 //    trace_init();
-    if (run_continuously) {
-      fprintf(stderr, "Warning: cannot ignore connections in continuous mode\n");
-      return;
-    }
-
-    trace_init();
+	
     --ix_only;
 
     MoreTcpPairs(ix_only);

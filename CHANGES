@@ -467,3 +467,24 @@ bugfix: Negative sequence numbers were being printed by function
 6.2.6 - Thu Nov 14, 2002
 bugfix: '-c' option - ignore non-complete connections was working only for
 	long output. Fixed it to work for brief output too.
+
+Release 6.4.0
+=============
+Bugfix made to fix misbehavior due to FILE synchronization issues
+found when tcptrace exits with "PCAP error - truncated file" when asked to
+read real-time network packets from STDIN - Mani.
+
+Patches added to process dumpfiles with 802.11 wireless headers for the
+Prism2 chipset. Courtesy - Brandon Eisenmann.
+
+Added new extended option "--nonreal_live_conn_interval" option to let the
+user set the duration to timeout live connections, in non real-time mode 
+- Ramani.
+
+Merged from development tree:
+
+Added the options --oUDP, --iUDP, --oTCP, --iTCP to filter out TCP
+and UDP connections - Mani
+
+Added options --csv, --tsv, --sv=<SP> for comma/tab/<SP>-separated values to be
+printed with the long output - Avinash

@@ -1,7 +1,9 @@
 #
 # Makefile for tcptrace
 #
-
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
 
 ################################################################## 
 #
@@ -182,7 +184,7 @@ tcptrace: ${OFILES}
 # If you have problems getting "whoami", "hostname", or "date" to run on
 # your machine, just hack in a quick string below in place of the command.
 version.o: ${CFILES} Makefile
-	${CC} ${CFLAGS} -o version.o -c version.c \
+	${CC} ${CFLAGS} -o version.o -c $(srcdir)/version.c \
 	-DBUILT_USER="\"`whoami`\"" -DBUILT_HOST="\"`hostname`\"" -DBUILT_DATE="\"`date`\""
 
 #
@@ -197,9 +199,8 @@ YACC_VAL=@YACC@
 LEX_VAL=@LEX@
 
 filt_parser.c: filt_parser.y filter.h
-#	bison -vd -p filtyy filt_parser.y -o filt_parser.c
 	if test "${YACC_VAL}" = "bison -y" ; then \
-		@YACC@ -vd -p filtyy -o filt_parser.c filt_parser.y ;\
+		@YACC@ -vd -p filtyy -o filt_parser.c $(srcdir)/filt_parser.y ;\
 		cp filt_parser.c flex_bison ;\
 		cp filt_parser.h flex_bison ;\
 	else \
@@ -211,7 +212,7 @@ filt_parser.c: filt_parser.y filter.h
 
 filt_scanner.c: filt_scanner.l filter.h filt_parser.h
 	if test ${LEX_VAL} = "flex" ; then \
-		@LEX@ -t -Pfiltyy filt_scanner.l > filt_scanner.c ;\
+		@LEX@ -t -Pfiltyy $(srcdir)/filt_scanner.l > filt_scanner.c ;\
 		cp filt_scanner.c flex_bison ;\
 	else \
 		echo "Could not find FLEX on this system" ;\
@@ -224,7 +225,7 @@ filt_parser.h: filt_parser.c
 
 # version numbering program
 versnum: versnum.c version.h
-	${CC} ${LDFLAGS} ${CFLAGS} versnum.c -o versnum ${LDLIBS}
+	${CC} ${LDFLAGS} ${CFLAGS} $(srcdir)/versnum.c -o versnum ${LDLIBS}
 
 #
 # obvious dependencies

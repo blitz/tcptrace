@@ -27,7 +27,6 @@
 #define YY_FLEX_MINOR_VERSION 5
 
 #include <stdio.h>
-#include <unistd.h>
 
 
 /* cfront 1.2 defines "c_plusplus" instead of "__cplusplus" */
@@ -41,6 +40,7 @@
 #ifdef __cplusplus
 
 #include <stdlib.h>
+#include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
@@ -432,9 +432,9 @@ static char *yy_last_accepting_cpos;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "filt_scanner.l"
+#line 1 "./filt_scanner.l"
 #define INITIAL 0
-#line 2 "filt_scanner.l"
+#line 2 "./filt_scanner.l"
 /*
  * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
  *	Ohio University.
@@ -652,10 +652,10 @@ YY_MALLOC_DECL
 YY_DECL
 	{
 	register yy_state_type yy_current_state;
-	register char *yy_cp = NULL, *yy_bp = NULL;
+	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 74 "filt_scanner.l"
+#line 74 "./filt_scanner.l"
 
 
 
@@ -742,137 +742,137 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 76 "filt_scanner.l"
+#line 76 "./filt_scanner.l"
 { }  /* Just ignore white space */
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 78 "filt_scanner.l"
+#line 78 "./filt_scanner.l"
 { return(EOS); } 
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 79 "filt_scanner.l"
+#line 79 "./filt_scanner.l"
 { return(PLUS); } 
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 80 "filt_scanner.l"
+#line 80 "./filt_scanner.l"
 { return(MINUS); } 
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 81 "filt_scanner.l"
+#line 81 "./filt_scanner.l"
 { return(TIMES); } 
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 82 "filt_scanner.l"
+#line 82 "./filt_scanner.l"
 { return(DIVIDE); } 
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 83 "filt_scanner.l"
+#line 83 "./filt_scanner.l"
 { return(MOD); } 
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 84 "filt_scanner.l"
+#line 84 "./filt_scanner.l"
 { return(LPAREN); } 
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 85 "filt_scanner.l"
+#line 85 "./filt_scanner.l"
 { return(RPAREN); } 
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 86 "filt_scanner.l"
+#line 86 "./filt_scanner.l"
 { return(LESS); } 
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 87 "filt_scanner.l"
+#line 87 "./filt_scanner.l"
 { return(LESS_EQ); } 
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 88 "filt_scanner.l"
+#line 88 "./filt_scanner.l"
 { return(GREATER); } 
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 89 "filt_scanner.l"
+#line 89 "./filt_scanner.l"
 { return(GREATER_EQ); } 
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 90 "filt_scanner.l"
+#line 90 "./filt_scanner.l"
 { return(EQUAL); } 
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 91 "filt_scanner.l"
+#line 91 "./filt_scanner.l"
 { return(EQUAL); }   /* same as "=" */
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 92 "filt_scanner.l"
+#line 92 "./filt_scanner.l"
 { return(NEQUAL); } 
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 93 "filt_scanner.l"
+#line 93 "./filt_scanner.l"
 { return(NOT); } 
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 94 "filt_scanner.l"
+#line 94 "./filt_scanner.l"
 { return(NOT); }   /* same as "!" */
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 95 "filt_scanner.l"
+#line 95 "./filt_scanner.l"
 { return(AND); } 
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 96 "filt_scanner.l"
+#line 96 "./filt_scanner.l"
 { return(AND); }    /* same as "AND" */
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 97 "filt_scanner.l"
+#line 97 "./filt_scanner.l"
 { return(AND); }    /* same as "AND" */
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 98 "filt_scanner.l"
+#line 98 "./filt_scanner.l"
 { return(OR); } 
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 99 "filt_scanner.l"
+#line 99 "./filt_scanner.l"
 { return(OR); }     /* same as "OR" */
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 100 "filt_scanner.l"
+#line 100 "./filt_scanner.l"
 { return(OR); }     /* same as "OR" */
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 101 "filt_scanner.l"
+#line 101 "./filt_scanner.l"
 { return(BOR); }     /* bitwise OR */
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 102 "filt_scanner.l"
+#line 102 "./filt_scanner.l"
 { return(BAND); }    /* bitwise AND */
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 105 "filt_scanner.l"
+#line 105 "./filt_scanner.l"
 {
     /* an IPv4 addr */
     yylval.pipaddr = str2ipaddr(yytext);
@@ -881,7 +881,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 111 "filt_scanner.l"
+#line 111 "./filt_scanner.l"
 {
     /* an IPv6 addr */
     yylval.pipaddr = str2ipaddr(yytext);
@@ -890,7 +890,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 117 "filt_scanner.l"
+#line 117 "./filt_scanner.l"
 {
     /* an unsigned integer */
     yylval.unsigned_long = atoi(yytext);
@@ -899,7 +899,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 123 "filt_scanner.l"
+#line 123 "./filt_scanner.l"
 {
     /* a signed integer */
     yylval.signed_long = atoi(yytext);
@@ -908,17 +908,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 128 "filt_scanner.l"
+#line 128 "./filt_scanner.l"
 { yylval.unsigned_long = 0; return(UNSIGNED); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 129 "filt_scanner.l"
+#line 129 "./filt_scanner.l"
 { yylval.unsigned_long = 1; return(UNSIGNED); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 131 "filt_scanner.l"
+#line 131 "./filt_scanner.l"
 {
     /* a string */
     yylval.string = strdup(yytext+1);  /* make a copy of the string */
@@ -928,7 +928,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 138 "filt_scanner.l"
+#line 138 "./filt_scanner.l"
 {
     /* a variable (word) */
     yylval.string = strdup(yytext);  /* make a copy of the string */
@@ -937,7 +937,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 145 "filt_scanner.l"
+#line 145 "./filt_scanner.l"
 {
     /* if we haven't matched anything yet, then it's illegal */
     fprintf(stderr, "filter scanner: Bad character '%c' (%d decimal)\n",
@@ -947,7 +947,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 153 "filt_scanner.l"
+#line 153 "./filt_scanner.l"
 ECHO;
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -1513,6 +1513,11 @@ YY_BUFFER_STATE b;
 	}
 
 
+#ifndef YY_ALWAYS_INTERACTIVE
+#ifndef YY_NEVER_INTERACTIVE
+extern int isatty YY_PROTO(( int ));
+#endif
+#endif
 
 #ifdef YY_USE_PROTOS
 void yy_init_buffer( YY_BUFFER_STATE b, FILE *file )
@@ -1830,7 +1835,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 153 "filt_scanner.l"
+#line 153 "./filt_scanner.l"
 
 
 int yywrap(void)

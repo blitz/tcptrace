@@ -56,7 +56,6 @@ static char const copyright[] =
 static char const rcsid[] =
     "@(#)$Header$";
 
-
 #include "tcptrace.h"
 #include "file_formats.h"
 #include "modules.h"
@@ -86,6 +85,7 @@ static void UsageModules(void);
 static void LoadModules(int argc, char *argv[]);
 static void CheckArguments(int *pargc, char *argv[]);
 static void ParseArgs(char *argsource, int *pargc, char *argv[]);
+static int  ParseExtendedOpt(char *argsource, char *arg);
 static void ParseExtendedBool(char *argsource, char *arg);
 static void ParseExtendedVar(char *argsource, char *arg);
 static void ProcessFile(char *filename);
@@ -139,6 +139,8 @@ Bool run_continuously = FALSE;
 Bool xplot_all_files = FALSE;
 Bool conn_num_threshold = FALSE;
 Bool ns_hdrs = TRUE;
+Bool csv = FALSE;
+Bool tsv = FALSE;
 u_long remove_live_conn_interval = REMOVE_LIVE_CONN_INTERVAL;
 u_long nonreal_live_conn_interval = NONREAL_LIVE_CONN_INTERVAL;
 u_long remove_closed_conn_interval = REMOVE_CLOSED_CONN_INTERVAL;
@@ -158,12 +160,13 @@ char *output_file_dir = NULL;
 char *output_file_prefix = NULL;
 char *xplot_title_prefix = NULL;
 char *xplot_args = NULL;
+char *sv = NULL;
 /* globals */
 struct timeval current_time;
 int num_modules = 0;
 char *ColorNames[NCOLORS] =
 {"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink"};
-
+char *comment;
 
 /* locally global variables */
 static u_long filesize = 0;
@@ -212,8 +215,8 @@ static struct ext_bool_op {
      "mark triple dupacks on time sequence graphs"},
     {"showzerolensegs", &graph_zero_len_pkts,  TRUE,
      "show zero length packets on time sequence graphs"},
-	{"showzwndprobes", &show_zwnd_probes, TRUE,
-	 "show zero window probe packets on time sequence graphs"},
+    {"showzwndprobes", &show_zwnd_probes, TRUE,
+     "show zero window probe packets on time sequence graphs"},
     {"showtitle", &show_title,  TRUE,
      "show title on the graphs"},
     {"res_addr", &resolve_ipaddresses,  TRUE,
@@ -246,11 +249,15 @@ static struct ext_bool_op {
      "print sequence numbers as offset from initial sequence number"},
     {"limit_conn_num", &conn_num_threshold, TRUE,
      "limit the maximum number of connections kept at a time in real-time mode"},
-	{"xplot_all_files", &xplot_all_files, TRUE,
-	 "display all generated xplot files at the end"},
-	{"ns_hdrs", &ns_hdrs, TRUE,
-	 "assume that ns has the useHeaders_ flag true (uses IP+TCP headers)"},
-    
+    {"xplot_all_files", &xplot_all_files, TRUE,
+     "display all generated xplot files at the end"},
+    {"ns_hdrs", &ns_hdrs, TRUE,
+     "assume that ns has the useHeaders_flag true (uses IP+TCP headers)"},
+    {"csv", &csv, TRUE,
+     "display the long output as comma separated values"},
+    {"tsv", &tsv, TRUE,
+     "display the long output as tab separated values"},
+
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
 
@@ -290,10 +297,36 @@ static struct ext_var_op {
      "idle time after which an open connection is removed in nonreal-time mode"},
      {"remove_closed_conn_interval", &closed_conn_interval_st, VerifyClosedConnInt,
      "time interval after which a closed connection is removed in real-time mode"},
-	{"xplot_args", &xplot_args, NULL,
-	 "arguments to pass to xplot, if we are calling xplot from here"},
+    {"xplot_args", &xplot_args, NULL,
+     "arguments to pass to xplot, if we are calling xplot from here"},
+    {"sv", &sv, NULL,
+     "separator to use for long output with <STR>-separated-values"},
+   
 };
 #define NUM_EXTENDED_VARS (sizeof(extended_vars) / sizeof(struct ext_var_op))
+
+// Extended option verification routines
+static void Ignore(char *argsource, char *opt);
+static void GrabOnly(char *argsource, char *opt);
+static void IgnoreUDP(char *argsource, char *opt);
+static void GrabOnlyUDP(char *argsource, char *opt);
+
+// Extended options to allow --iudp and --oudp to be able to 
+// specifically ignore or output UDP connections.
+// For sake of clarity, options --itcp and --otcp shall also be added
+// to do the same job done by -i and -o options currently.
+static struct ext_opt {
+     char *opt_name;  // what it is called
+     void (*opt_func) (char *argsource, char *opt);
+     char *opt_descr;
+} extended_options[] = {
+     {"iTCP",Ignore,"ignore specific TCP connections, same as -i"},
+     {"oTCP",GrabOnly,"only specific TCP connections, same as -o"},
+     {"iUDP",IgnoreUDP,"ignore specific UDP connections"},
+     {"oUDP",GrabOnlyUDP,"only specific UDP connections"}
+
+};
+#define NUM_EXTENDED_OPTIONS (sizeof(extended_options)/sizeof(struct ext_opt))
 
 static void
 Help(
@@ -676,12 +709,13 @@ main(
 {
     int i;
     double etime;
-
+   
     if (argc == 1)
 	Help(NULL);
 
     /* initialize internals */
     trace_init();
+    udptrace_init();
     plot_init();
 
     /* let modules start first */
@@ -690,19 +724,28 @@ main(
     /* parse the flags */
     CheckArguments(&argc,argv);
 
-    /* optional UDP */
-    if (do_udp)
-	udptrace_init();
+    /* Used with <SP>-separated-values,
+     * prints a '#' before each header line if --csv/--tsv is requested.
+     */
+   comment = (char *)malloc(sizeof(char *) * 2);
+   memset(comment, 0, sizeof(comment));
+   if(csv || tsv || (sv != NULL))
+     snprintf(comment, sizeof(comment), "#");
 
-    if (run_continuously) {
-      trace_init();
-    }
+    /* optional UDP */
+//    if (do_udp)
+//	udptrace_init();
+
+  //  if (run_continuously) {
+    //  trace_init();
+    //}
 
     /* get starting wallclock time */
     gettimeofday(&wallclock_start, NULL);
 
     num_files = argc;
-    printf("%d arg%s remaining, starting with '%s'\n",
+    printf("%s%d arg%s remaining, starting with '%s'\n",
+	   comment,
 	   num_files,
 	   num_files>1?"s":"",
 	   filenames[0]);
@@ -713,16 +756,16 @@ main(
 	DumpFlags();
 
     /* knock, knock... */
-    printf("%s\n\n", VERSION);
+    printf("%s%s\n\n", comment, VERSION);
 
     /* read each file in turn */
     numfiles = argc;
     for (i=0; i < argc; ++i) {
 	if (debug || (numfiles > 1)) {
 	    if (argc > 1)
-		printf("Running file '%s' (%d of %d)\n", filenames[i], i+1, numfiles);
+		printf("%sRunning file '%s' (%d of %d)\n", comment, filenames[i], i+1, numfiles);
 	    else
-		printf("Running file '%s'\n", filenames[i]);
+		printf("%sRunning file '%s'\n", comment, filenames[i]);
 	}
 
 	/* do the real work */
@@ -737,41 +780,40 @@ main(
     gettimeofday(&wallclock_finished, NULL);
 
     /* general output */
-    fprintf(stdout, "%lu packets seen, %lu TCP packets traced",
-	    pnum, tcp_trace_count);
+    fprintf(stdout, "%s%lu packets seen, %lu TCP packets traced",
+	    comment, pnum, tcp_trace_count);
     if (do_udp)
 	fprintf(stdout,", %lu UDP packets traced", udp_trace_count);
     fprintf(stdout,"\n");
 
     /* processing time */
     etime = elapsed(wallclock_start,wallclock_finished);
-    fprintf(stdout, "elapsed wallclock time: %s, %d pkts/sec analyzed\n",
+    fprintf(stdout, "%selapsed wallclock time: %s, %d pkts/sec analyzed\n",
+	    comment,
 	    elapsed2str(etime),
 	    (int)((double)pnum/(etime/1000000)));
 
     /* actual tracefile times */
     etime = elapsed(first_packet,last_packet);
-    fprintf(stdout,"trace %s elapsed time: %s\n",
+    fprintf(stdout,"%strace %s elapsed time: %s\n",
+	    comment,
 	    (num_files==1)?"file":"files",
 	    elapsed2str(etime));
     if (debug) {
-	fprintf(stdout,"\tfirst packet:  %s\n", ts2ascii(&first_packet));
-	fprintf(stdout,"\tlast packet:   %s\n", ts2ascii(&last_packet));
+	fprintf(stdout,"%s\tfirst packet:  %s\n", comment, ts2ascii(&first_packet));
+	fprintf(stdout,"%s\tlast packet:   %s\n", comment, ts2ascii(&last_packet));
     }
     if (verify_checksums) {
-	fprintf(stdout,"bad IP checksums:  %ld\n", bad_ip_checksums);
-	fprintf(stdout,"bad TCP checksums: %ld\n", bad_tcp_checksums);
+	fprintf(stdout,"%sbad IP checksums:  %ld\n", comment, bad_ip_checksums);
+	fprintf(stdout,"%sbad TCP checksums: %ld\n", comment, bad_tcp_checksums);
 	if (do_udp)
-	    fprintf(stdout,"bad UDP checksums: %ld\n", bad_udp_checksums);
+	    fprintf(stdout,"%sbad UDP checksums: %ld\n", comment, bad_udp_checksums);
     }
 
     /* close files, cleanup, and etc... */
     trace_done();
-    if (!run_continuously) {
-      /* countinuos mode is not supported for udp */
-      if (do_udp)
-	udptrace_done();
-    }
+    udptrace_done();
+
     FinishModules();
     plotter_done();
 
@@ -1220,70 +1262,283 @@ ReallocZ(
 }
 
 static void
+Ignore(
+       char *argsource,
+       char *opt)
+{
+     char *o_arg;
+		      
+     /* next part of arg is a filename or number list */
+     if (*opt == '\00') {
+	  BadArg(argsource,
+		 "Expected filename or number list *immediately* after -i / --iTCP\n");
+     }
+
+     if (run_continuously) {
+	  fprintf(stderr, 
+		  "Warning: cannot ignore connections in continuous mode\n");
+     }
+     
+     /* option is a list of connection numbers separated by commas */
+     /* option can be immediately "here" or given as a file name */
+     if (isdigit((int)(*opt)))  // --iTCP1 case
+	  o_arg=opt;
+     else {
+	  /* it's in a file */	  
+	  /* open the file */
+	  o_arg = FileToBuf(opt);
+	  /* if that fails, it's a command line error */
+	  if (o_arg == NULL) 
+	       BadArg(argsource,
+		      "Expected filename or number list *immediately* after -i/--iTCP\n");
+     }
+     /* wherever we got it, o_arg is a connection list */
+     while (o_arg && *o_arg) {
+	  int num1,num2;
+	  
+	  if (sscanf(o_arg,"%d-%d",&num1,&num2) == 2) {
+	       /* process range */
+	       if (num2 <= num1) {
+		    BadArg(argsource,
+			   "-iX-Y / --iTCPX-Y, must have X<Y, '%s'\n", o_arg);
+	       }
+	       if (debug)
+		    printf("setting IgnoreConn(%d-%d)\n", num1, num2);
+	       
+	       while (num1<=num2) {
+		    if (debug > 1)
+			 printf("setting IgnoreConn(%d)\n", num1);
+		    IgnoreConn(num1++);
+		    
+	       }
+	  } else if (sscanf(o_arg,"%d",&num1) == 1) {
+	       /* single argument */
+	       if (debug)
+		    printf("setting IgnoreConn(%d)\n", num1);
+	       IgnoreConn(num1);
+	  } else {
+	       /* error */
+	       BadArg(argsource,
+		      "Don't understand conn number starting at '%s'\n", o_arg);
+	  }
+	  
+	  /* look for the next comma */
+	  o_arg = strchr(o_arg,',');
+	  if (o_arg)
+	       ++o_arg;
+     }
+}
+
+static void
 GrabOnly(
     char *argsource,
     char *opt)
 {
-    char *o_arg;
-		      
-    /* next part of arg is a filename or number list */
-    if (*opt == '\00') {
-	BadArg(argsource,"Expected filename or number list\n");
-    }
+     char *o_arg;
+     
+     /* next part of arg is a filename or number list */
+     if (*opt == '\00') {
+	  BadArg(argsource,
+		 "Expected filename or number list *immediately* after -o / --oTCP\n");
+     }
 
-    /* option is a list of connection numbers separated by commas */
-    /* option can be immediately "here" or given as a file name */
-    if (isdigit((int)(*opt))) {
-	/* list is on the command line */
-	o_arg = opt;
-    } else {
-	/* it's in a file */
+     if (run_continuously) {
+	  fprintf(stderr, 
+		  "Warning: cannot 'grab-only' connections in continuous mode\n");
+     }
 
-	/* open the file */
-	o_arg = FileToBuf(opt);
-
-	/* if that fails, it's a command line error */
-	if (o_arg == NULL) {
-	    Usage();
-	}
-    }
-
-    /* wherever we got it, o_arg is a connection list */
-    while (o_arg && *o_arg) {
-	int num1,num2;
-	
-	if (sscanf(o_arg,"%d-%d",&num1,&num2) == 2) {
-	    /* process range */
-	    if (num2 <= num1) {
-		BadArg(argsource,
-		       "-oX-Y, must have X<Y, '%s'\n", o_arg);
-	    }
-	    if (debug)
-		printf("setting OnlyConn(%d-%d)\n", num1, num2);
-
-	    while (num1<=num2) {
-		if (debug > 1)
+     /* option is a list of connection numbers separated by commas */
+     /* option can be immediately "here" or given as a file name */
+     if (isdigit((int)(*opt))) {
+	  /* list is on the command line */
+	  o_arg = opt;
+     } else {
+	  /* it's in a file */
+	  /* open the file */
+	  o_arg = FileToBuf(opt);
+	  
+	  /* if that fails, it's a command line error */
+	  if (o_arg == NULL) {
+	       BadArg(argsource,"Expected filename or number list *immediately* after -o / --oTCP\n");
+	  }
+     }
+     
+     /* wherever we got it, o_arg is a connection list */
+     while (o_arg && *o_arg) {
+	  int num1,num2;
+	  
+	  if (sscanf(o_arg,"%d-%d",&num1,&num2) == 2) {
+	       /* process range */
+	       if (num2 <= num1) {
+		    BadArg(argsource,
+			   "-oX-Y / --oTCPX-Y, must have X<Y, '%s'\n", 
+			   o_arg);
+	       }
+	       if (debug)
+		    printf("setting OnlyConn(%d-%d)\n", num1, num2);
+	       
+	       while (num1<=num2) {
+		    if (debug > 1)
+			 printf("setting OnlyConn(%d)\n", num1);
+		    OnlyConn(num1++);
+	       }
+	  } else if (sscanf(o_arg,"%d",&num1) == 1) {
+	       /* single argument */
+	       if (debug)
 		    printf("setting OnlyConn(%d)\n", num1);
-		OnlyConn(num1++);
-	    }
-	} else if (sscanf(o_arg,"%d",&num1) == 1) {
-	    /* single argument */
-	    if (debug)
-		printf("setting OnlyConn(%d)\n", num1);
-	    OnlyConn(num1);
-	} else {
-	    /* error */
-	    BadArg(argsource,
-		   "Don't understand conn number starting at '%s'\n", o_arg);
-	}
-		   
-	/* look for the next comma */
-	o_arg = strchr(o_arg,',');
-	if (o_arg)
-	    ++o_arg;
-    }
+	       OnlyConn(num1);
+	  } else {
+	       /* error */
+	       BadArg(argsource,
+		      "Don't understand conn number starting at '%s'\n", o_arg);
+	  }
+	  
+	  /* look for the next comma */
+	  o_arg = strchr(o_arg,',');
+	  if (o_arg)
+	       ++o_arg;
+     }
 }
 
+static void
+     IgnoreUDP(
+	       char *argsource,
+	       char *opt)
+{
+     char *o_arg;
+     
+     /* next part of arg is a filename or number list */
+     if (*opt == '\00') {
+	  BadArg(argsource,
+		 "Expected filename or number list *immediately* after --iUDP\n");
+     }
+
+     if (run_continuously) {
+	  fprintf(stderr, 
+		  "Warning: cannot ignore UDP connections in continuous mode\n");
+     }
+
+     /* option is a list of connection numbers separated by commas */
+     /* option can be immediately "here" or given as a file name */
+     if (isdigit((int)(*opt)))  // --iUDP1 case
+	  o_arg=opt;
+     else {
+	  /* it's in a file */	  
+	  /* open the file */
+	  o_arg = FileToBuf(opt);
+	  /* if that fails, it's a command line error */
+	  if (o_arg == NULL) 
+	       BadArg(argsource,
+		      "Expected filename or number list *immediately* after --iUDP\n");
+
+     }
+     /* wherever we got it, o_arg is a connection list */
+     while (o_arg && *o_arg) {
+	  int num1,num2;
+	  
+	  if (sscanf(o_arg,"%d-%d",&num1,&num2) == 2) {
+	       /* process range */
+	       if (num2 <= num1) {
+		    BadArg(argsource,
+			   "--iUDPX-Y, must have X<Y, '%s'\n", o_arg);
+	       }
+	       if (debug)
+		    printf("setting IgnoreUDPConn(%d-%d)\n", num1,num2);
+	       
+	       while (num1<=num2) {
+		    if (debug > 1)
+			 printf("setting IgnoreUDPConn(%d)\n", num1);
+		    IgnoreUDPConn(num1++);
+		    
+	       }
+	  } else if (sscanf(o_arg,"%d",&num1) == 1) {
+	       /* single argument */
+	       if (debug)
+		    printf("setting IgnoreUDPConn(%d)\n", num1);
+	       IgnoreUDPConn(num1);
+	  } else {
+	       /* error */
+	       BadArg(argsource,
+		      "Don't understand conn number starting at '%s'\n", o_arg);
+	  }
+	  
+	  /* look for the next comma */
+	  o_arg = strchr(o_arg,',');
+	  if (o_arg)
+	       ++o_arg;
+     }
+}
+
+static void
+     GrabOnlyUDP(
+		 char *argsource,
+		 char *opt)
+{
+     char *o_arg;
+     
+     /* next part of arg is a filename or number list */
+     if (*opt == '\00') {
+	  BadArg(argsource,"Expected filename or number list *immediately* after --oUDP\n");
+     }
+
+     if (run_continuously) {
+	  fprintf(stderr, 
+		  "Warning: cannot 'grab-only' UDP connections in continuous mode\n");
+     }
+     
+     /* option is a list of connection numbers separated by commas */
+     /* option can be immediately "here" or given as a file name */
+     if (isdigit((int)(*opt))) {
+	  /* list is on the command line */
+	  o_arg = opt;
+     } else {
+	  /* it's in a file */
+	  
+	  /* open the file */
+	  o_arg = FileToBuf(opt);
+	  
+	  /* if that fails, it's a command line error */
+	  if (o_arg == NULL) {
+	       BadArg(argsource,"Expected filename or number list *immediately* after --oUDP\n");
+	  }
+     }
+     
+     /* wherever we got it, o_arg is a connection list */
+     while (o_arg && *o_arg) {
+	  int num1,num2;
+	  
+	  if (sscanf(o_arg,"%d-%d",&num1,&num2) == 2) {
+	       /* process range */
+	       if (num2 <= num1) {
+		    BadArg(argsource,
+			   "--oUDPX-Y, must have X<Y, '%s'\n", o_arg);
+	       }
+	       if (debug)
+		    printf("setting OnlyUDPConn(%d-%d)\n", num1, num2);
+	       
+	       while (num1<=num2) {
+		    if (debug > 1)
+			 printf("setting OnlyUDPConn(%d)\n", num1);
+		    OnlyUDPConn(num1++);
+	       }
+	  } else if (sscanf(o_arg,"%d",&num1) == 1) {
+	       /* single argument */
+	       if (debug)
+		    printf("setting OnlyUDPConn(%d)\n", num1);
+	       OnlyUDPConn(num1);
+	  } else {
+	       /* error */
+	       BadArg(argsource,
+		      "Don't understand conn number starting at '%s'\n", 
+		      o_arg);
+	  }
+	  
+	  /* look for the next comma */
+	  o_arg = strchr(o_arg,',');
+	  if (o_arg)
+	       ++o_arg;
+     }
+}
 
 /* convert a buffer to an argc,argv[] pair */
 void
@@ -1479,7 +1734,48 @@ CheckArguments(
     }
 }
 
+// these extended options are table driven, to make it easier to
+// add more later without messing them up.
+// Initially they include --iTCP, --iUDP to ignore TCP, UDP connections
+// and --oTCP, --oUDP to output only TCP, UDP connections.
+static int
+ParseExtendedOpt(
+    char *argsource,
+    char *arg)
+{
+     int i;
+     struct ext_opt *popt_found = NULL;
+     char *argtext,*opt;
+     int arglen;
+     
+     /* there must be at least SOME text there */
+     if (strcmp(arg,"--") == 0)
+	  BadArg(argsource, "Void extended filter argument\n");
+     
+     /* find just the arg text */
+     argtext = arg+2;
+     arglen = strlen(argtext);
+     
 
+     /* search for a match on each extended boolean opt */
+     for (i=0; i < NUM_EXTENDED_OPTIONS; ++i) {
+	  struct ext_opt *popt = &extended_options[i];
+
+	  if (strncasecmp(argtext,popt->opt_name,
+		      strlen(popt->opt_name)) == 0 ) {
+	       popt_found = popt;
+	       opt=argtext+strlen(popt->opt_name);
+	       break;
+	  }
+     }
+          
+     /* if we never found a match, it's an error */
+     if (popt_found == NULL)
+	  return 0;
+     
+     (*popt_found->opt_func)(argsource,opt);
+     return 1;
+}
 
 
 /* these extended boolean options are table driven, to make it easier to
@@ -1766,12 +2062,19 @@ ParseArgs(
 	if (argv[i] == NULL)
 	    continue;
 
+	// Arguments beginning with "--" could be an extended option
+	// as in --iUDP2 , --iTCP3-5, --oUDP5-9,19 etc
+	// or they could be the regular extended variables or booleans.
 	if (strncmp(argv[i],"--",2) == 0) {
-	    if (strchr(argv[i],'=') != NULL)
-		ParseExtendedVar(argsource, argv[i]);
-	    else
-		ParseExtendedBool(argsource, argv[i]);
-	    continue;
+	     if (ParseExtendedOpt(argsource,argv[i])) 
+		  continue;
+	     else {
+		  if (strchr(argv[i],'=') != NULL)
+		       ParseExtendedVar(argsource, argv[i]);
+		  else
+		       ParseExtendedBool(argsource, argv[i]);
+		  continue;
+	     }
 	}
 
 	if (*argv[i] == '-') {
@@ -1853,11 +2156,14 @@ ParseArgs(
 		    }
 		    break;
 		  case 'h': Help(argv[i]+1); *(argv[i]+1) = '\00'; break;
-		  case 'i': {
+		  case 'i': Ignore(argsource,argv[i]+1);
+/*			      {
 		      int conn = -1;
 		      if (run_continuously) {
 			fprintf(stderr, "Warning: cannot ignore connections in continuous mode\n");
 		      }
+		      else
+			   
 		      else {
 			  if (isdigit((int)(*(argv[i]+1))))
 			      conn = atoi(argv[i]+1);
@@ -1866,10 +2172,10 @@ ParseArgs(
 		          if (conn < 0)
 			      BadArg(argsource, "-i  must be >= 0\n");
  		          ++saw_i_or_o;
-		          IgnoreConn(conn);
+		          gIgnoreConn(conn);
 		      }
-		      *(argv[i]+1) = '\00'; 
-		  } break;
+ }*/		      *(argv[i]+1) = '\00'; 
+		     break;
 		  case 'l': printbrief = FALSE; break;
 		  case 'm':
 		    BadArg(argsource,

@@ -1,4 +1,4 @@
-.TH tcptrace 1 "03 May 2002"
+.TH tcptrace 1 "14 Oct 2002"
 .SH NAME
 tcptrace - a TCP connection analysis tool
 .SH SYNOPSIS
@@ -302,6 +302,24 @@ display all generated xplot files at the end
 .TP 5
 .B \--noxplot_all_files
 DON'T display all generated xplot files at the end (default)
+.TP 5
+.B \--ns_hdrs
+assume that ns has the useHeaders_flag true (uses IP+TCP headers) (default)
+.TP 5
+.B \--nons_hdrs
+DON'T assume that ns has the useHeaders_flag true (uses IP+TCP headers)
+.TP 5
+.B \--csv
+display the long output as comma separated values
+.TP 5
+.B \--nocsv
+DON'T display the long output as comma separated values (default)
+.TP 5
+.B \--tsv
+display the long output as tab separated values
+.TP 5
+.B \--notsv
+DON'T display the long output as tab separated values (default)
 .PP
 .I Extended variable options
 (unambiguous prefixes also work)
@@ -329,6 +347,9 @@ time interval after which a closed connection is removed in real-time mode (defa
 .TP 5
 .B \--xplot_args=``STR''
 arguments to pass to xplot, if we are calling xplot from here (default: '<NULL>')
+.TP 5
+.B \--sv=``STR''
+separator to use for long output with <STR>-separated-values (default: '<NULL>')
 .PP
 .I Included Modules
 .TP 5

@@ -55,10 +55,10 @@ static char const copyright[] =
 static char const rcsid[] =
     "@(#)$Header$";
 
-
 #include "tcptrace.h"
 
 static long tcp_pair_pool = -1;
+static long udp_pair_pool = -1;
 static long seqspace_pool = -1;
 static long ptp_snap_pool = -1;
 static long ptp_ptr_pool  = -1;
@@ -84,6 +84,27 @@ FreeTcpPair(
 	    tcp_pair *ptr)
 {
   PoolFree(tcp_pair_pool, ptr);
+}
+
+udp_pair *
+MakeUdpPair(
+	    void)
+{
+  udp_pair	*ptr = NULL;
+
+  if (udp_pair_pool < 0) {
+    udp_pair_pool = MakeMemPool(sizeof(udp_pair), 0);
+  }
+  
+  ptr = PoolMalloc(udp_pair_pool, sizeof(udp_pair));
+  return ptr;
+}
+
+void
+FreeUdpPair(
+	    udp_pair *ptr)
+{
+  PoolFree(udp_pair_pool, ptr);
 }
 
 seqspace *

@@ -56,7 +56,6 @@ static char const copyright[] =
 static char const rcsid[] =
     "@(#)$Header$";
 
-
 #include "tcptrace.h"
 #include "gcache.h"
 
@@ -90,14 +89,19 @@ NewUTP(
 {
     udp_pair *pup;
 
+    if (0) {
+	 printf("trace.c:NewUTP() calling MakeUdpPair()\n");
+    }
+    pup = MakeUdpPair();
+    ++num_udp_pairs;
     /* make a new one, if possible */
     if ((num_udp_pairs+1) >= max_udp_pairs) {
 	MoreUdpPairs(num_udp_pairs+1);
     }
 
     /* create a new UDP pair record and remember where you put it */
-    ++num_udp_pairs;
-    pup = utp[num_udp_pairs] = MallocZ(sizeof(udp_pair));
+    utp[num_udp_pairs] = pup;
+    pup->ignore_pair=ignore_pairs[num_udp_pairs];
 
 
     /* grab the address from this packet */
@@ -186,6 +190,43 @@ FindUTP(
     return(pup);
 }
      
+void IgnoreUDPConn(
+		   int ix)
+{
+   if (debug)
+     fprintf(stderr,"ignoring conn %d\n", ix);
+   
+   --ix;
+   
+   MoreUdpPairs(ix);
+   
+   more_conns_ignored=FALSE;
+   ignore_pairs[ix]=TRUE;
+}
+
+void 
+OnlyUDPConn(
+	    int ix_only)
+{
+     int ix;
+     static Bool cleared = FALSE;
+	
+     if (debug) fprintf(stderr,"only printing conn %d\n", ix_only);
+
+     --ix_only;
+
+     MoreUdpPairs(ix_only);
+
+     if (!cleared) {
+	  for (ix = 0; ix < max_udp_pairs; ++ix) {
+	       ignore_pairs[ix] = TRUE;
+	  }
+	  cleared = TRUE;
+     }
+
+     more_conns_ignored = TRUE;
+     ignore_pairs[ix_only] = FALSE;  
+}
  
 
 udp_pair *
@@ -236,6 +277,10 @@ udpdotrace(
     }
     pup_save->last_time = current_time;
 
+    // Lets not waste any more CPU cycles if we are ignoring this connection.
+    if (pup_save->ignore_pair)
+	  return (pup_save);
+     
     /* save to a file if requested */
     if (output_filename) {
 	PcapSavePacket(output_filename,pip,plast);
@@ -284,54 +329,62 @@ udptrace_done(void)
     int ix;
     double etime;
 
-    if (!printsuppress) {
-	if (udp_trace_count == 0) {
-	    fprintf(stdout,"no traced UDP packets\n");
-	    return;
-	} else {
-	    if ((tcp_trace_count > 0) && (!printbrief))
-		printf("\n============================================================\n");
-	    fprintf(stdout,"UDP connection info:\n");
-	}
-    }
-	       
-    if (!printbrief)
-	fprintf(stdout,"%d UDP %s traced:\n",
-		num_udp_pairs + 1,
-		num_udp_pairs==0?"connection":"connections");
-
-    /* elapsed time */
-    etime = elapsed(first_packet,last_packet);
-
-    if (ctrunc > 0) {
-	fprintf(stdout,
-		"*** %lu packets were too short to process at some point\n",
-		ctrunc);
-	if (!warn_printtrunc)
-	    fprintf(stdout,"\t(use -w option to show details)\n");
-    }
-    if (debug>1)
-	fprintf(stdout,"average search length: %d\n",
-		search_count / packet_count);
-
-    /* print each connection */
-    if (!printsuppress) {
-	for (ix = 0; ix <= num_udp_pairs; ++ix) {
-	    pup = utp[ix];
-
-	    if (printbrief) {
-		fprintf(stdout,"%3d: ", ix+1);
-		UDPPrintBrief(pup);
-	    } else {
-		if (ix > 0)
-		    fprintf(stdout,"================================\n");
-		fprintf(stdout,"UDP connection %d:\n", ix+1);
-		UDPPrintTrace(pup);
-	    }
-	}
+    if(do_udp) { // Just a quick sanity check to make sure if we need to do 
+	         // anything at all..
+	 if(!run_continuously) {
+	      if (!printsuppress) {
+		   if (udp_trace_count == 0) {
+			fprintf(stdout,"no traced UDP packets\n");
+			return;
+		   } else {
+			if ((tcp_trace_count > 0) && (!printbrief))
+			     printf("\n============================================================\n");
+			fprintf(stdout,"UDP connection info:\n");
+		   }
+	      }
+	      
+	      if (!printbrief)
+		   fprintf(stdout,"%d UDP %s traced:\n",
+			   num_udp_pairs + 1,
+			   num_udp_pairs==0?"connection":"connections");
+	 }
+	 
+	 /* elapsed time */
+	 etime = elapsed(first_packet,last_packet);
+	 
+	 if (ctrunc > 0) {
+	      fprintf(stdout,
+		      "*** %lu packets were too short to process at some point\n",
+		      ctrunc);
+	      if (!warn_printtrunc)
+		   fprintf(stdout,"\t(use -w option to show details)\n");
+	 }
+	 if (debug>1)
+	      fprintf(stdout,"average search length: %d\n",
+		      search_count / packet_count);
+	 
+	 /* print each connection */
+	 if(!run_continuously) {
+	      if (!printsuppress) {
+		   for (ix = 0; ix <= num_udp_pairs; ++ix) {
+			pup = utp[ix];
+			if (!pup->ignore_pair) {
+			     if (printbrief) {
+				  fprintf(stdout,"%3d: ", ix+1);
+				  UDPPrintBrief(pup);
+			     } else {
+				  if (ix > 0)
+				       fprintf(stdout,
+					       "================================\n");
+				  fprintf(stdout,"UDP connection %d:\n", ix+1);
+				  UDPPrintTrace(pup);
+			     }
+			}
+		   }
+	      }
+	 }
     }
 }
-
 static void
 MoreUdpPairs(
     int num_needed)

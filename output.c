@@ -77,6 +77,12 @@ static void StatLineOne(char *, char *, char *);
 static char *FormatBrief(tcp_pair *ptp);
 static char *UDPFormatBrief(udp_pair *pup);
 
+/* locally global variables*/
+static u_int sv_print_count    = 0;
+static u_int sv_expected_count = 0;
+
+/* global variables */
+char *sp;  /* Separator used for long output with <SP>-separated-values */
 
 /* to support some of the counters being long long on some platforms, use this */
 /* macro... */
@@ -89,7 +95,14 @@ static char *UDPFormatBrief(udp_pair *pup);
 #define StatLineI StatLineI_L
 #endif /* HAVE_LONG_LONG */
 
-
+/* Size of header for comma-separated-values or tab-separated-values
+ * The size is actually (SV_HEADER_COLUMN_COUNT - 1) & (SV__RTT_HEADER_COLUMN_COUNT - 1)
+ * since there is a NULL at the end.
+ * NOTE: If the exact number of fields are not printed for each connection,
+ * the program will print out an error messages. This is a precautionary measure.
+ */
+#define SV_HEADER_COLUMN_COUNT 88
+#define SV_RTT_HEADER_COLUMN_COUNT 51
 
 u_int
 SynCount(
@@ -205,42 +218,66 @@ PrintTrace(
     char *host1 = pab->host_letter;
     char *host2 = pba->host_letter;
     char bufl[40],bufr[40];
-
+   
     /* counters to use for seq. space wrap around calculations
      */
     u_llong stream_length_pab=0, stream_length_pba=0;
     u_long pab_last, pba_last;
-    
-    fprintf(stdout,"\thost %-4s      %s\n",
-	    (snprintf(bufl,sizeof(bufl),"%s:", host1),bufl), ptp->a_endpoint);
-    fprintf(stdout,"\thost %-4s      %s\n",
-	    (snprintf(bufl,sizeof(bufl),"%s:", host2),bufl), ptp->b_endpoint);
-    fprintf(stdout,"\tcomplete conn: %s",
-	    ConnReset(ptp)?"RESET":(
-		ConnComplete(ptp)?"yes":"no"));
-    if (ConnComplete(ptp))
-	fprintf(stdout,"\n");
-    else
-	fprintf(stdout,"\t(SYNs: %u)  (FINs: %u)\n",
-		SynCount(ptp), FinCount(ptp));
 
-    fprintf(stdout,"\tfirst packet:  %s\n", ts2ascii(&ptp->first_time));
-    fprintf(stdout,"\tlast packet:   %s\n", ts2ascii(&ptp->last_time));
+   /* Reset the counter for each connection */
+   sv_print_count = 1; /* The first field (conn_#) gets printed in trace.c */
+   
 
+    /* calculate elapsed time */
     etime = elapsed(ptp->first_time,ptp->last_time);
     etime_secs = etime / 1000000.0;
     etime_usecs = 1000000 * (etime/1000000.0 - (double)etime_secs);
-    fprintf(stdout,"\telapsed time:  %s\n", elapsed2str(etime));
 
-    fprintf(stdout,"\ttotal packets: %" FS_ULL "\n", ptp->packets);
-
-    fprintf(stdout,"\tfilename:      %s\n", ptp->filename);
-
-    fprintf(stdout,"   %s->%s:			      %s->%s:\n",
-	    host1,host2,host2,host1);
-
+    /* Check if comma-separated-values or tab-separated-values
+     * has been requested.
+     */ 
+   if(csv || tsv || (sv != NULL)) {
+       fprintf(stdout,"%s%s%s%s%s%s%s%s",
+	       ptp->a_hostname, sp, ptp->b_hostname, sp,
+	       ptp->a_portname, sp, ptp->b_portname, sp);
+       sv_print_count += 4;
+       /* Print the start and end times. In other words,
+	* print the time of the first and the last packet
+	*/ 
+       fprintf(stdout,"%lu.%lu %s %lu.%lu %s",
+	       ptp->first_time.tv_sec, ptp->first_time.tv_usec, sp,
+	       ptp->last_time.tv_sec,  ptp->last_time.tv_usec,  sp);
+       sv_print_count += 2;      
+    }
+    else {
+       fprintf(stdout,"\thost %-4s      %s\n",
+	       (snprintf(bufl,sizeof(bufl),"%s:", host1),bufl), ptp->a_endpoint);
+       fprintf(stdout,"\thost %-4s      %s\n",
+	       (snprintf(bufl,sizeof(bufl),"%s:", host2),bufl), ptp->b_endpoint);
+       fprintf(stdout,"\tcomplete conn: %s",
+	       ConnReset(ptp)?"RESET":(
+				       ConnComplete(ptp)?"yes":"no"));
+       if (ConnComplete(ptp))
+	 fprintf(stdout,"\n");
+       else
+	 fprintf(stdout,"\t(SYNs: %u)  (FINs: %u)\n",
+		 SynCount(ptp), FinCount(ptp));
+       
+       fprintf(stdout,"\tfirst packet:  %s\n", ts2ascii(&ptp->first_time));
+       fprintf(stdout,"\tlast packet:   %s\n", ts2ascii(&ptp->last_time));
+       
+       fprintf(stdout,"\telapsed time:  %s\n", elapsed2str(etime));
+       
+       fprintf(stdout,"\ttotal packets: %" FS_ULL "\n", ptp->packets);
+       
+       fprintf(stdout,"\tfilename:      %s\n", ptp->filename);
+       
+       fprintf(stdout,"   %s->%s:			      %s->%s:\n",
+	       host1,host2,host2,host1);
+    }
+   
     StatLineI("total packets","", pab->packets, pba->packets);
-    if (pab->reset_count || pba->reset_count)
+    if (pab->reset_count || pba->reset_count || csv || tsv || (sv != NULL))
 	StatLineI("resets sent","", pab->reset_count, pba->reset_count);
     StatLineI("ack pkts sent","", pab->ack_pkts, pba->ack_pkts);
     StatLineI("pure acks sent","", pab->pureack_pkts, pba->pureack_pkts);
@@ -265,18 +302,18 @@ PrintTrace(
 		       pab->syn_count, pab->fin_count),bufl),
 	      (snprintf(bufr,sizeof(bufr),"%d/%d",
 		       pba->syn_count, pba->fin_count),bufr));
-    if (pab->f1323_ws || pba->f1323_ws || pab->f1323_ts || pba->f1323_ts) {
+    if (pab->f1323_ws || pba->f1323_ws || pab->f1323_ts || pba->f1323_ts || csv || tsv || (sv != NULL)) {
 	StatLineP("req 1323 ws/ts","","%s",
 		  (snprintf(bufl,sizeof(bufl),"%c/%c",
 		      pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),bufl),
 		  (snprintf(bufr,sizeof(bufr),"%c/%c",
 		      pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'),bufr));
     }
-    if (pab->f1323_ws || pba->f1323_ws) {
+    if (pab->f1323_ws || pba->f1323_ws || csv || tsv || (sv != NULL)) {
 	StatLineI("adv wind scale","",
 		  (u_long)pab->window_scale, (u_long)pba->window_scale);
     }
-    if (pab->fsack_req || pba->fsack_req) {
+    if (pab->fsack_req || pba->fsack_req || csv || tsv || (sv != NULL)) {
 	StatLineP("req sack","","%s",
 		  pab->fsack_req?"Y":"N",
 		  pba->fsack_req?"Y":"N");
@@ -438,11 +475,13 @@ PrintTrace(
 	      ZERO_TIME(&pba->last_time)?"NA":
 	      (snprintf(bufr,sizeof(bufr),"%8.1f",(double)pba->idle_max/1000.0),bufr));
 
-    if ((pab->num_hardware_dups != 0) || (pba->num_hardware_dups != 0)) {
+    if ((pab->num_hardware_dups != 0) || (pba->num_hardware_dups != 0)  || csv || tsv || (sv != NULL)) {
 	StatLineI("hardware dups","segs",
 		  pab->num_hardware_dups, pba->num_hardware_dups);
-	fprintf(stdout,
-	       "       ** WARNING: presence of hardware duplicates makes these figures suspect!\n");
+
+        if(!(csv || tsv || (sv != NULL)))       
+	  fprintf(stdout,
+		  "       ** WARNING: presence of hardware duplicates makes these figures suspect!\n");
     }
 
     /* do the throughput calcs */
@@ -455,7 +494,8 @@ PrintTrace(
 		  (double) (pba->unique_bytes) / etime);
 
     if (print_rtt) {
-	fprintf(stdout,"\n");
+        if(!(csv || tsv || (sv != NULL)))
+	  fprintf(stdout,"\n");
 	StatLineI("RTT samples","", pab->rtt_count, pba->rtt_count);
 	StatLineF("RTT min","ms","%8.1f",
 		  (double)pab->rtt_min/1000.0,
@@ -469,11 +509,13 @@ PrintTrace(
 	StatLineF("RTT stdev","ms","%8.1f",
 		  Stdev(pab->rtt_sum, pab->rtt_sum2, pab->rtt_count) / 1000.0,
 		  Stdev(pba->rtt_sum, pba->rtt_sum2, pba->rtt_count) / 1000.0);
-	fprintf(stdout,"\n");
+        if(!(csv || tsv || (sv != NULL)))
+	  fprintf(stdout,"\n");
 	StatLineF("RTT from 3WHS","ms","%8.1f",
 		  (double)pab->rtt_3WHS/1000.0,
 		  (double)pba->rtt_3WHS/1000.0);
-	fprintf(stdout,"\n");
+        if(!(csv || tsv || (sv != NULL)))
+	  fprintf(stdout,"\n");
 	StatLineI("RTT full_sz smpls","", 
 		  pab->rtt_full_count, pba->rtt_full_count);
 	StatLineF("RTT full_sz min","ms","%8.1f",
@@ -488,12 +530,13 @@ PrintTrace(
 	StatLineF("RTT full_sz stdev","ms","%8.1f",
 		  Stdev(pab->rtt_full_sum, pab->rtt_full_sum2, pab->rtt_full_count) / 1000.0,
 		  Stdev(pba->rtt_full_sum, pba->rtt_full_sum2, pba->rtt_full_count) / 1000.0);
-	fprintf(stdout,"\n");
-
+        if(!(csv || tsv || (sv != NULL)))
+	  fprintf(stdout,"\n");
 	StatLineI("post-loss acks","",
 		  pab->rtt_nosample, pba->rtt_nosample);
-	if (pab->rtt_amback || pba->rtt_amback) {
-	    fprintf(stdout, "\
+	if (pab->rtt_amback || pba->rtt_amback || csv || tsv || (sv != NULL)) {
+	   if(!(csv || tsv || (sv != NULL)))
+	     fprintf(stdout, "\
 \t  For the following 5 RTT statistics, only ACKs for\n\
 \t  multiply-transmitted segments (ambiguous ACKs) were\n\
 \t  considered.  Times are taken from the last instance\n\
@@ -541,8 +584,18 @@ PrintTrace(
 		  Stdev(pba->retr_tm_sum, pba->retr_tm_sum2,
 			pba->retr_tm_count) / 1000.0);
     }
+   
+   if(csv || tsv || (sv != NULL)) {
+      printf("\n");
+      /* Error checking: print an error message if the count of printed fields
+       * doesn't correspond to the actual fields expected.
+       */
+      if(sv_print_count != sv_expected_count) {
+	 fprintf(stderr, "output.c: Count of printed fields does not correspond to count of header fields for long output with comma/tab/<SP>-separated values.\n");
+	 exit(-1);
+      }
+   }
 }
-
 
 void
 PrintBrief(
@@ -731,9 +784,10 @@ StatLineFieldL(
     snprintf(valbuf,sizeof(valbuf),format,arg);
 
     /* print the field */
-    printf("     ");
+    if(!(csv || tsv || (sv != NULL)))
+     printf("     ");
     StatLineOne(label, units, valbuf);
-    if (f_rightside)
+    if (f_rightside && !(csv || tsv || (sv != NULL))) 
 	printf("\n");
 }
 #endif /* HAVE_LONG_LONG */
@@ -768,9 +822,10 @@ StatLineField(
     snprintf(valbuf,sizeof(valbuf),format,arg);
 
     /* print the field */
-    printf("     ");
+    if(!(csv || tsv || (sv != NULL)))
+     printf("     ");
     StatLineOne(label, units, valbuf);
-    if (f_rightside)
+    if (f_rightside && !(csv || tsv || (sv != NULL)))
 	printf("\n");
 }
 
@@ -795,12 +850,13 @@ StatLineFieldF(
 	snprintf(valbuf,sizeof(valbuf),format,arg);
 
     /* print the field */
-    printf("     ");
+    if(!(csv || tsv || (sv != NULL)))
+     printf("     ");
     if (printable)
 	StatLineOne(label, units, valbuf);
     else
 	StatLineOne(label, "", "NA");
-    if (f_rightside)
+    if (f_rightside && !(csv || tsv || (sv != NULL)))
 	printf("\n");
 }
 
@@ -817,7 +873,16 @@ StatLineOne(
     snprintf(labbuf,sizeof(labbuf), "%s:", label);
 
     /* print the field */
-    printf("%-18s %9s %-5s", labbuf, value, units);
+    if(csv || tsv || (sv != NULL)) {
+       printf("%15s%s", value, sp);
+       /* Count the fields printed until this point. Used as a guard with the
+	* <SP>-separated-values option to ensure correct alignment of headers
+	* and field values.
+	*/
+       sv_print_count++;
+    }   
+    else 
+     printf("%-18s %9s %-5s", labbuf, value, units);
 }
 
 
@@ -888,4 +953,152 @@ UDPFormatBrief(
 	    pup->a_endpoint, pup->b_endpoint,
 	    pab->host_letter, pba->host_letter);
     return(infobuf);
+}
+
+
+/* Print the header if comma-separated-values or tab-separated-values
+ * has been requested.
+ */ 
+void
+PrintSVHeader(
+	      void)
+{
+   /* NOTE: If you add new headers to the tables below, make sure you update the 
+    * constant defined at the top of this file to avoid getting error messages 
+    * during execution. This is a safety precausion.
+    */
+   
+   /* Headers for long output requested with comma/tab/<SP>-separated- values */
+   char *svHeader[SV_HEADER_COLUMN_COUNT] = {
+        "conn_#"                   ,
+        "host_a"                   , "host_b",
+	"port_a"                   , "port_b",
+	"first_packet"             , "last_packet",
+	"total_packets_a2b"        , "total_packets_b2a",
+	"resets_sent_a2b"          , "resets_sent_b2a",
+	"ack_pkts_sent_a2b"        , "ack_pkts_sent_b2a",
+	"pure_acks_sent_a2b"       , "pure_acks_sent_b2a",
+	"sack_pkts_sent_a2b"       , "sack_pkts_sent_b2a",
+	"max_sack_blks/ack_a2b"    , "max_sack_blks/ack_b2a",
+	"unique_bytes_sent_a2b"    , "unique_bytes_sent_b2a",
+	"actual_data_pkts_a2b"     , "actual_data_pkts_b2a",
+	"actual_data_bytes_a2b"    , "actual_data_bytes_b2a",
+	"rexmt_data_pkts_a2b"      , "rexmt_data_pkts_b2a",
+	"rexmt_data_bytes_a2b"     , "rexmt_data_bytes_b2a",
+	"zwnd_probe_pkts_a2b"      , "zwnd_probe_pkts_b2a",
+	"zwnd_probe_bytes_a2b"     , "zwnd_probe_bytes_b2a",
+	"outoforder_pkts_a2b"      , "outoforder_pkts_b2a",
+	"pushed_data_pkts_a2b"     , "pushed_data_pkts_b2a",
+	"SYN/FIN_pkts_sent_a2b"    , "SYN/FIN_pkts_sent_b2a",
+	"req_1323_ws/ts_a2b"       , "1323_ws/ts_b2a",
+	"adv_wind_scale_a2b"       , "adv_wind_scale_b2a",
+	"req_sack_a2b"             , "req_sack_b2a",
+	"sacks_sent_a2b"           , "sacks_sent_b2a",
+	"urgent_data_pkts_a2b"     , "urgent_data_pkts_b2a",
+	"urgent_data_bytes_a2b"    , "urgent_data_bytes_b2a",
+	"mss_requested_a2b"        , "mss_requested_b2a",
+	"max_segm_size_a2b"        , "max_segm_size_b2a",
+	"min_segm_size_a2b"        , "min_segm_size_b2a",
+	"avg_segm_size_a2b"        , "avg_segm_size_b2a",
+	"max_win_adv_a2b"          , "max_win_adv_b2a",
+	"min_win_adv_a2b"          , "min_win_adv_b2a",
+	"zero_win_adv_a2b"         , "zero_win_adv_b2a",
+	"avg_win_adv_a2b"          , "avg_win_adv_b2a",
+	"initial_window_bytes_a2b" , "initial_window_bytes_b2a",
+	"initial_window_pkts_a2b"  , "initial_window_pkts_b2a",
+	"ttl_stream_length_a2b"    , "ttl_stream_length_b2a",
+	"missed_data_a2b"          , "missed_data_b2a",
+	"truncated_data_a2b"       , "truncated_data_b2a",
+	"truncated_packets_a2b"    , "truncated_packets_b2a",
+	"data_xmit_time_a2b"       , "data_xmit_time_b2a",
+	"idletime_max_a2b"         , "idletime_max_b2a",
+	"hardware_dups_a2b"        , "hardware_dups_b2a",
+	"throughput_a2b"           , "throughput_b2a",
+	NULL
+   };
+   
+   /* Headers for RTT, to be printed for long output requested with
+    * comma/tab/<SP>-separated- values.
+    */
+   char *svRTTHeader[SV_RTT_HEADER_COLUMN_COUNT] = {
+        "RTT_samples_a2b"       , "RTT_samples_b2a",
+	"RTT_min_a2b"           , "RTT_min_b2a",
+	"RTT_max_a2b"           , "RTT_max_b2a",
+	"RTT_avg_a2b"           , "RTT_avg_b2a",
+	"RTT_stdev_a2b"         , "RTT_stdev_b2a", 
+	"RTT_from_3WHS_a2b"     , "RTT_from_3WHS_b2a",
+	"RTT_full_sz_smpls_a2b" , "RTT_full_sz_smpls_b2a",
+	"RTT_full_sz_min_a2b"   , "RTT_full_sz_min_b2a",
+	"RTT_full_sz_max_a2b"   , "RTT_full_sz_max_b2a",
+	"RTT_full_sz_avg_a2b"   , "RTT_full_sz_avg_b2a",
+	"RTT full_sz_stdev_a2b" , "RTT_full_sz_stdev_b2a",
+	"post-loss_acks_a2b"    , "post-loss_acks_b2a",
+	"ambiguous_acks_a2b"    , "ambiguous_acks_b2a",
+	"RTT_min_(last)_a2b"    , "RTT_min_(last)_b2a",
+	"RTT_max_(last)_a2b"    , "RTT_max_(last)_b2a",
+	"RTT_avg_(last)_a2b"    , "RTT_avg_(last)_b2a",
+	"RTT_sdv_(last)_a2b"    , "RTT_sdv_(last)_b2a",
+	"segs_cum_acked_a2b"    , "segs_cum_acked_b2a",
+	"duplicate_acks_a2b"    , "duplicate_acks_b2a",
+	"triple_dupacks_a2b"    , "triple_dupacks_b2a",
+	"max_#_retrans_a2b"     , "max_#_retrans_b2a",
+	"min_retr_time_a2b"     , "min_retr_time_b2a",
+	"max_retr_time_a2b"     , "max_retr_time_b2a",
+	"avg_retr_time_ab2"     , "avg_retr_time_b2a",
+	"sdv_retr_time_a2b"     , "sdv_retr_time_b2a",
+	NULL
+   };
+   
+   /* Local Variables */
+   u_int i = 0; /* Counter */ 
+   
+   /* Set the separator */
+   if(csv || tsv) {
+      /* Initialize the separator buffer */      
+      sp = (char *)malloc(sizeof(char *) * 2);
+      memset(sp, 0, sizeof(sp));
+      /* Set it */
+      if(csv)
+	snprintf(sp, sizeof(sp), ",");	
+      else if(tsv)
+	snprintf(sp, sizeof(sp), "\t");
+   }
+   else if (sv != NULL)
+     {
+	/* Look for escape sequence and remove the extra '\',
+	 * the shell puts it in there.
+	 * We will do this only for the escape sequence '\t' since that is
+	 * the only useful one, else the user probably meant something
+	 * else and things get messy.
+	 */
+	if(strncmp(sv, "\\t", 2) == 0) {
+	   /* Initialize the separator buffer and set it */      
+	   sp = (char *)malloc(sizeof(char *) * 2);
+	   memset(sp, 0, sizeof(sp));
+	   snprintf(sp, sizeof(sp), "\t");
+	}
+	else /* Just use the string the user has provided */
+	  sp = strdup(sv);
+     }
+   
+   /* Print the column headings (the field names) */
+   for(i = 0; i < SV_HEADER_COLUMN_COUNT-1; i++)
+     fprintf(stdout, "%s%s", svHeader[i], sp);
+
+   /* Print the RTT column headings (the field names) */   
+   if(print_rtt)
+     for(i = 0; i < SV_RTT_HEADER_COLUMN_COUNT-1; i++)
+       fprintf(stdout, "%s%s", svRTTHeader[i], sp);
+     
+   /* Improve readability */
+   fprintf(stdout, "\n\n");
+   
+   /* Set the number of columns expected to be printed.
+    * the subtraction is to exclude the 2 NULLS, one in each array.
+    */
+   
+   if(print_rtt)
+     sv_expected_count = SV_HEADER_COLUMN_COUNT + SV_RTT_HEADER_COLUMN_COUNT - 2;
+   else
+     sv_expected_count = SV_HEADER_COLUMN_COUNT - 1;
 }

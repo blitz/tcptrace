@@ -589,6 +589,9 @@ typedef struct ucb {
 
 typedef tcp_pair_addrblock udp_pair_addrblock;
 struct sudp_pair {
+    /* Are we ignoring this 'connection' ? */
+    Bool                ignore_pair;
+     
     /* endpoint identification */
     udp_pair_addrblock	addr_pair;
 
@@ -676,6 +679,8 @@ extern Bool run_continuously;
 extern Bool conn_num_threshold;
 extern Bool xplot_all_files;
 extern Bool ns_hdrs;
+extern Bool csv;
+extern Bool tsv;
 extern u_long remove_live_conn_interval;
 extern u_long nonreal_live_conn_interval;
 extern u_long remove_closed_conn_interval;
@@ -691,6 +696,13 @@ extern char *output_file_dir;
 extern char *output_file_prefix;
 extern char *xplot_title_prefix;
 extern char *xplot_args;
+extern char *sv;
+extern char *sp;       /* Separator used for long output with <SP>-separated-values */
+
+/* Used to comment out header lines of the long output
+ * when <SP>-separated-values is requested
+ */
+extern char *comment;
 
 extern u_long ctrunc;
 extern timeval current_time;
@@ -753,10 +765,13 @@ void PrintRawData(char *label, void *pfirst, void *plast, Bool octal);
 void PrintRawDataHex(char *label, void *pfirst, void *plast);
 void PrintTrace(tcp_pair *);
 void UDPPrintTrace(udp_pair *);
+void PrintSVHeader(void);
 void PrintBrief(tcp_pair *);
 void UDPPrintBrief(udp_pair *);
 void OnlyConn(int);
 void IgnoreConn(int);
+void OnlyUDPConn(int);
+void IgnoreUDPConn(int);
 double elapsed(timeval, timeval);
 void tv_sub(struct timeval *plhs, struct timeval rhs);
 void tv_add(struct timeval *plhs, struct timeval rhs);
@@ -816,6 +831,8 @@ void ModulesPerOldConn(tcp_pair *ptp);
 /* Memory allocation routines with page boundaries */ 
 tcp_pair *MakeTcpPair(void);
 void FreeTcpPair(tcp_pair *ptr);
+udp_pair *MakeUdpPair(void);
+void FreeUdpPair(udp_pair *ptr);
 seqspace *MakeSeqspace(void);
 void FreeSeqspace(seqspace *ptr);
 ptp_snap *MakePtpSnap(void);
