@@ -14,19 +14,6 @@ dnl Replace `main' with a function in -lm:
 AC_CHECK_LIB(m, main)
 
 
-dnl Checks for header files.
-AC_HEADER_STDC
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(sys/time.h unistd.h)
-
-
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_TYPE_OFF_T
-AC_HEADER_TIME
-AC_STRUCT_TM
-
-
 dnl include additional checking if developing
 AC_MSG_CHECKING(for development environment)
 AC_LBL_DEVEL(V_CCOPT)
@@ -38,6 +25,9 @@ AC_LBL_LIBRARY_NET()
 
 dnl Checks for sometime-missing ether_ntoa function
 AC_CHECK_FUNCS(ether_ntoa)
+
+dnl use fpurge if available, otherwise fflush
+AC_CHECK_FUNCS(fpurge)
 
 
 
