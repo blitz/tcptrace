@@ -318,5 +318,6 @@
   patch in gache.c for Linux/Redhat stupidity with the strncmp() macro
   fixed ipv6.h to work with the way that Linux/Redhat built IPv6
   fixed bug in recording window stats from SYN packets when using scaling
+  fixed off-by-one in final report on number of packets seen
 
 
