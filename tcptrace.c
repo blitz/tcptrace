@@ -563,8 +563,10 @@ main(
 	udptrace_init();
 
     num_files = argc;
-    printf("%d args remaining, starting with '%s'\n",
-	   num_files, filenames[0]);
+    printf("%d arg%s remaining, starting with '%s'\n",
+	   num_files,
+	   num_files>1?"s":"",
+	   filenames[0]);
     
 
 
