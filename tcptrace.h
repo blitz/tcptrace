@@ -770,7 +770,7 @@ char *ts2ascii_date(timeval *);
 char *ServiceName(portnum);
 char *HostName(ipaddr);
 char *HostAddr(ipaddr);
-char *HostLetter(u_int);
+char *HostLetter(llong);
 char *NextHostLetter(void);
 char *EndpointName(ipaddr,portnum);
 PLOTTER new_plotter(tcb *plast, char *filename, char *title,

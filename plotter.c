@@ -192,7 +192,7 @@ plotter_makemore(void)
 
 char *
 HostLetter(
-     unsigned ix)
+     llong ix)
 {
     static char name[MAX_HOSTLETTER_LEN+1];
     static char *pname;
@@ -203,8 +203,8 @@ HostLetter(
     while (pname >= name) {
 	unsigned digit = ix % 26;
 	*pname-- = 'a'+digit;
-	ix = ix / 26;
-	if (ix == 0)
+	ix = (ix / 26) - 1;
+	if (ix == -1)
 	    return(pname+1);
     }
    fprintf(stderr,"Fatal, too many hosts to name (max length %d)\n\nNOTE:\nIf you are using gcc version 2.95.3, then this may be a compiler bug. This particular version\nis known to generate incorrect assembly code when used with CCOPT=-O2.\nSuggested fixes are:\n   1. Update gcc to the latest version and recompile tcptrace.\n   2. Use the same version of gcc, but edit the tcptrace Makefile, setting CCOPT=-O instead of\n      CCOPT=-O2, and then recompile tcptrace.\nEither of these steps should hopefully fix the problem.\n\n", MAX_HOSTLETTER_LEN);
@@ -216,7 +216,7 @@ HostLetter(
 char *
 NextHostLetter(void)
 {
-    static int count = 0;
+    static llong count = 0;
     return(HostLetter(count++));
 }
 
