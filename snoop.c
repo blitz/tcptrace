@@ -57,7 +57,7 @@ struct snoop_file_header {
 struct snoop_packet_header {
     unsigned int	len;
     unsigned int	tlen;
-    unsigned int	unused2;
+    unsigned int	blen;
     unsigned int	unused3;
     unsigned int	secs;
     unsigned int	usecs;
@@ -126,12 +126,16 @@ pread_snoop(
 	/* convert some stuff to host byte order */
 	hdr.tlen = ntohl(hdr.tlen);
 	hdr.len = ntohl(hdr.len);
+	hdr.blen = ntohl(hdr.blen);
 	hdr.secs = ntohl(hdr.secs);
 	hdr.usecs = ntohl(hdr.usecs);
 
+	/* truncated packet length */
 	packlen = hdr.tlen;
-	/* round up to multiple of 4 bytes */
-	len = (packlen + 3) & ~0x3;
+
+	/* bug fix from Brian Utterback */
+	/* "blen" is the "total length of the packet", header+data+padding */
+	len = hdr.blen - hlen;
 
 	if (snoop_mac_type == SNOOP_DL_ETHER) {
 	    /* read the ethernet header */
