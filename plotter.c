@@ -382,6 +382,10 @@ plotter_done(void)
 	}
 
 	if(xplot_all_files){
+		if(output_file_dir!=NULL) {
+			DSAppendString(xplot_cmd_buff,output_file_dir);
+			DSAppendString(xplot_cmd_buff,"/");
+		}
 		DSAppendString(xplot_cmd_buff,ppi->filename);
 		DSAppendString(xplot_cmd_buff," ");	
 	}
@@ -389,8 +393,7 @@ plotter_done(void)
 
 	if(plotter_ix>0) {
 		if(xplot_all_files) {
-			if(debug)
-				fprintf(stderr,"%s\n",DSVal(xplot_cmd_buff));
+			fprintf(stdout,"%s\n",DSVal(xplot_cmd_buff));
 			system(DSVal(xplot_cmd_buff));
 			DSDestroy(&xplot_cmd_buff);
 		}
