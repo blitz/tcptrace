@@ -45,6 +45,12 @@ static char const rcsid[] =
 #include "dyncounter.h"
 
 
+/* reading old files is problematic and I never use it anyway!!!
+   it probably doesn't work anymore.
+   sdo - Thu Aug  5, 1999 */
+#undef READ_OLD_FILES
+
+
 /* Local global variables */
 
 /* different types of connections */
@@ -71,8 +77,19 @@ typedef struct module_conninfo_tcb {
     /* cached data bytes */
     u_llong	data_bytes;
 
-    /* if it's FTP CONTROL, HTTP, or NNTP, we track numitems */
+    /*
+     * FTP: number of data connections against this control conn
+     * HTTP:
+     * NNTP: number of bursts
+     * HTTP: number of bursts
+     */
     u_long numitems;
+
+    /* burst info */
+    u_long	burst_bytes;	/* size of the current burst */
+    dyn_counter *pburst_size;
+    dyn_counter *pburst_idletime;
+    dyn_counter *pburst_nitems;
 
     /* last time new data was sent */
     timeval	last_data_time;
@@ -106,6 +123,9 @@ typedef struct module_conninfo {
 
     /* previous connection in linked list of all connections */
     struct module_conninfo *prev;
+
+    /* HTTP1.0 (parallel) vs. HTTP1.1 (streaming) */
+    Bool fhttp11;
 
     /* for determining bursts */
     tcb *tcb_lastdata;
@@ -152,8 +172,32 @@ static struct tcplibstats {
     /* histogram files */
     FILE *hist_file;
 
-    /* For HTTP, we track idle time between bursts */
-    dyn_counter http_idletime;
+    /* for NNTP, we track: */
+    /* # items per connection */
+    /* idletime between items */
+    /* burst size */
+    dyn_counter nntp_idletime;
+    dyn_counter nntp_burstsize;
+    dyn_counter nntp_nitems;
+
+
+    /* for HTTP1.0, we track: */
+    /* # items per connection */
+    /* # connections */
+    /* idletime between items */
+    /* burst size */
+    dyn_counter http10_idletime;
+    dyn_counter http10_burstsize;
+    dyn_counter http10_connections;
+    dyn_counter http10_nitems;
+
+    /* for HTTP1.1, we track: */
+    /* # items per connection */
+    /* idletime between items */
+    /* burst size */
+    dyn_counter http11_idletime;
+    dyn_counter http11_burstsize;
+    dyn_counter http11_nitems;
 
     /* telnet packet sizes */
     dyn_counter throughput;
@@ -218,6 +262,7 @@ static void do_tcplib_conv_duration(char *filename,
 				    dyn_counter psizes);
 static void do_tcplib_next_duration(module_conninfo_tcb *ptcbc,
 				    module_conninfo *pmc);
+static void tcplib_cleanup_bursts(void);
 
 /* prototypes for connection-type determination */
 static Bool is_ftp_ctrl_port(portnum port);
@@ -246,9 +291,6 @@ static void tcplib_add_telnet_packetsize(struct tcplibstats *pstats,
 static void tcplib_do_ftp_control_size(char *filename, f_testinside p_tester);
 static void tcplib_do_ftp_itemsize(char *filename, f_testinside p_tester);
 static void tcplib_do_ftp_numitems(char *filename, f_testinside p_tester);
-static void tcplib_do_http_itemsize(char *filename, f_testinside p_tester);
-static void tcplib_do_nntp_itemsize(char *filename, f_testinside p_tester);
-static void tcplib_do_nntp_numitems(char *filename, f_testinside p_tester);
 static void tcplib_do_smtp_itemsize(char *filename, f_testinside p_tester);
 static void tcplib_do_telnet_duration(char *filename, f_testinside p_tester);
 static void tcplib_do_telnet_interarrival(char *filename,
@@ -297,13 +339,18 @@ static Bool ActiveConn(module_conninfo *pmc);
 static void tcplib_do_GENERIC_itemsize(
     char *filename, int btype,
     f_testinside p_tester, int bucketsize);
-static void tcplib_do_GENERIC_numitems(
-    char *filename, int btype,
-    f_testinside p_tester);
+static void tcplib_do_GENERIC_burstsize(
+    char *filename, dyn_counter counter);
+static void tcplib_do_GENERIC_nitems(
+    char *filename, dyn_counter counter);
+static void tcplib_do_GENERIC_idletime(
+    char *filename, dyn_counter counter);
 static void StoreCounters(char *filename, char *header1, char *header2,
 		       int bucketsize, dyn_counter psizes);
+#ifdef READ_OLD_FILES
 static dyn_counter ReadOldFile(char *filename, int bucketsize,
 				 int maxlegal, dyn_counter psizes);
+#endif /* READ_OLD_FILES */
 
 
 
@@ -729,14 +776,79 @@ void tcplib_done()
     /* do NNTP */
     if (ldebug)
 	printf("tcplib: running nntp\n");
-    RunAllFour(tcplib_do_nntp_itemsize,TCPLIB_NNTP_ITEMSIZE_FILE);
-    RunAllFour(tcplib_do_nntp_numitems,TCPLIB_NNTP_NITEMS_FILE);
 
 
     /* do HTTP */
     if (ldebug)
 	printf("tcplib: running http\n");
-    RunAllFour(tcplib_do_http_itemsize,TCPLIB_HTTP_ITEMSIZE_FILE);
+
+
+    /* for efficiency, do all burst size stuff together */
+    if (ldebug)
+	printf("tcplib: running burstsizes\n");
+    tcplib_cleanup_bursts();
+    for (i=0; i < NUM_TCB_TYPES; ++i) {
+	if (ldebug>1)
+	    printf("tcplib: running burstsizes (%s)\n", ttype_names[i]);
+
+	/* ---------------------*/
+	/*   Burstsize		*/
+	/* ---------------------*/
+	/* HTTP 1.0 */
+	filename = namedfile(ttype_names[i],TCPLIB_HTTP10_BURSTSIZE_FILE);
+	tcplib_do_GENERIC_burstsize(filename,
+				    global_pstats[i]->http10_burstsize);
+
+	/* HTTP 1.1 */
+	filename = namedfile(ttype_names[i],TCPLIB_HTTP11_BURSTSIZE_FILE);
+	tcplib_do_GENERIC_burstsize(filename,
+				    global_pstats[i]->http11_burstsize);
+
+	/* NNTP */
+	filename = namedfile(ttype_names[i],TCPLIB_NNTP_BURSTSIZE_FILE);
+	tcplib_do_GENERIC_burstsize(filename,
+				    global_pstats[i]->nntp_burstsize);
+
+	/* ---------------------*/
+	/*   Num Items in Burst */
+	/* ---------------------*/
+	/* HTTP 1.0 */
+	filename = namedfile(ttype_names[i],TCPLIB_HTTP10_NITEMS_FILE);
+	tcplib_do_GENERIC_nitems(filename,
+				 global_pstats[i]->http10_nitems);
+
+	/* HTTP 1.1 */
+	filename = namedfile(ttype_names[i],TCPLIB_HTTP11_NITEMS_FILE);
+	tcplib_do_GENERIC_nitems(filename,
+				 global_pstats[i]->http11_nitems);
+
+	/* NNTP */
+	filename = namedfile(ttype_names[i],TCPLIB_NNTP_NITEMS_FILE);
+	tcplib_do_GENERIC_nitems(filename,
+				 global_pstats[i]->nntp_nitems);
+
+	/* ---------------------*/
+	/*   Idletime		*/
+	/* ---------------------*/
+
+	/* HTTP 1.0 */
+	filename = namedfile(ttype_names[i],TCPLIB_HTTP10_IDLETIME_FILE);
+	tcplib_do_GENERIC_idletime(filename,
+				   global_pstats[i]->http10_idletime);
+
+	/* HTTP 1.1 */
+	filename = namedfile(ttype_names[i],TCPLIB_HTTP11_IDLETIME_FILE);
+	tcplib_do_GENERIC_idletime(filename,
+				   global_pstats[i]->http11_idletime);
+
+	/* NNTP */
+	filename = namedfile(ttype_names[i],TCPLIB_NNTP_IDLETIME_FILE);
+	tcplib_do_GENERIC_idletime(filename,
+				   global_pstats[i]->nntp_idletime);
+
+	if (LOCAL_ONLY)
+	    break;
+    }
 
 
     /* do the breakdown stuff */
@@ -916,16 +1028,36 @@ void tcplib_read(
 	}
     }
 
-    /* DATA Burst checking */
-    if (data_len > 0) {
+    /* DATA Burst checking (NNTP and HTTP only) */
+    if ((data_len > 0) &&
+	(is_nntp_conn(pmc) || is_http_conn(pmc))) {
 	seqnum seq = ntohl(tcp->th_seq);
 
-	/* NNTP burst checking */
-	if (is_nntp_conn(pmc)) {
-	    if (IsNewBurst(pmc, ptcb, seq)) {
-		++ptcbc->numitems;
-	    }
+	/* see if it's a new burst */
+	if (IsNewBurst(pmc, ptcb, seq)) {
+	    int etime;
+	    ++ptcbc->numitems;
+
+	    /* accumulate burst size stats */
+	    AddToCounter(ptcbc->pburst_size, ptcbc->burst_bytes, 1);
+
+	    /* reset counter for next burst */
+	    ptcbc->burst_bytes = 0;
+
+	    /* determine idle time */
+	    /* elapsed time in milliseconds */
+	    etime = (int)(elapsed(ptcbc->last_data_time,
+				  current_time)/1000.0);
+
+	    /* accumulate idletime stats */
+	    AddToCounter(ptcbc->pburst_idletime, etime, 1);
 	}
+
+	/* accumulate size of current burst */
+	ptcbc->burst_bytes += data_len;
+
+	/* remember when the last data was sent (for idletime) */
+	ptcbc->last_data_time = current_time;
     }
 
     /* This is just a sanity check to make sure that we've got at least
@@ -1120,6 +1252,44 @@ tcplib_newconn(
 
     /* add to list of endpoints we track */
     TrackEndpoints(pmc);
+
+    /* setup the burst counter shorthand */
+    {
+	module_conninfo_tcb *ptcbc;
+	struct tcplibstats *pstats;
+
+	if (btype == TCPLIBPORT_NNTP) {
+	    /* A2B */
+	    ptcbc = &pmc->tcb_cache_a2b;
+	    pstats = global_pstats[ptcbc->ttype];
+	    ptcbc->pburst_size     = &pstats->nntp_burstsize;
+	    ptcbc->pburst_idletime = &pstats->nntp_idletime;
+	    ptcbc->last_data_time = current_time;
+	    /* B2A */
+	    ptcbc = &pmc->tcb_cache_b2a;
+	    pstats = global_pstats[ptcbc->ttype];
+	    ptcbc->pburst_size     = &pstats->nntp_burstsize;
+	    ptcbc->pburst_idletime = &pstats->nntp_idletime;
+	    ptcbc->last_data_time = current_time;
+	} else if (btype == TCPLIBPORT_HTTP) {
+	    /* assume 1.1 unless we see parallelism later */
+
+	    /* A2B */
+	    ptcbc = &pmc->tcb_cache_a2b;
+	    pstats = global_pstats[ptcbc->ttype];
+	    ptcbc->pburst_size     = &pstats->http11_burstsize;
+	    ptcbc->pburst_idletime = &pstats->http11_idletime;
+	    ptcbc->pburst_nitems = &pstats->http11_nitems;
+	    ptcbc->last_data_time = current_time;
+	    /* B2A */
+	    ptcbc = &pmc->tcb_cache_b2a;
+	    pstats = global_pstats[ptcbc->ttype];
+	    ptcbc->pburst_size     = &pstats->http11_burstsize;
+	    ptcbc->pburst_idletime = &pstats->http11_idletime;
+	    ptcbc->pburst_nitems = &pstats->http11_nitems;
+	    ptcbc->last_data_time = current_time;
+	}
+    }
 
     return (pmc);
 }
@@ -1781,12 +1951,14 @@ do_tcplib_final_converse(
     char *filename,
     dyn_counter psizes)
 {
-    const int bucketsize = 1;
+    const int bucketsize = BUCKETSIZE_CONVARRIVAL;
 
 
+#ifdef READ_OLD_FILES
     /* sdo - OK, pstats->conv_interarrival already has the counts we */
     /* made.  First, include anything from an existing file. */
     psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+#endif /* READ_OLD_FILES */
 
 
     /* Now, dump out the combined data */
@@ -1801,9 +1973,11 @@ do_tcplib_conv_duration(
     char *filename,
     dyn_counter psizes)
 {
-    const int bucketsize = 50;
+    const int bucketsize = BUCKETSIZE_CONVDURATION;
 
+#ifdef READ_OLD_FILES
     psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+#endif /* READ_OLD_FILES */
 
     /* Now, dump out the combined data */
     StoreCounters(filename,"Conversation Duration (ms)",
@@ -1882,7 +2056,7 @@ Bool is_telnet_port(
       case IPPORT_KLOGIN2:
       case IPPORT_NLOGIN:
       case IPPORT_TELNET:
-      case IPPORT_SSH:
+/*       case IPPORT_SSH: */ /* not considered safe to assume -- sdo */
 	return TRUE;
 	break;
 
@@ -1917,13 +2091,15 @@ void tcplib_do_telnet_duration(
     f_testinside p_tester)	/* functions to test "insideness" */
 {
     dyn_counter psizes = NULL;
-    const int bucketsize = 10;	/* 10 millisecond buckets */
+    const int bucketsize = BUCKETSIZE_TELNET_DURATION;
     module_conninfo *pmc;
     
 
+#ifdef READ_OLD_FILES
     /* This section reads in the data from the existing telnet duration
      * file in preparation for merging with the current data. */
     psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+#endif /* READ_OLD_FILES */
 
 
     /* Fill the array with the current data */
@@ -2094,7 +2270,7 @@ void tcplib_do_telnet_interarrival(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* stuck with the interface :-(  */
 {
-    const int bucketsize = 1;	/* 1 ms buckets */
+    const int bucketsize = BUCKETSIZE_TELNET_ARRIVAL;
     dyn_counter psizes = NULL;
 
     /* ugly interface conversion :-( */
@@ -2114,8 +2290,10 @@ void tcplib_do_telnet_interarrival(
 
 
 
+#ifdef READ_OLD_FILES
     /* add in the data from the old run (if it exists) */
     psizes = ReadOldFile(filename, bucketsize, MAX_TEL_INTER_COUNT, psizes);
+#endif /* READ_OLD_FILES */
 
 
     /* Dumping the data out to the data file */
@@ -2145,7 +2323,7 @@ void tcplib_do_telnet_packetsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* stuck with the interface :-(  */
 {
-    const int bucketsize = 1;	/* 10 byte buckets */
+    const int bucketsize = BUCKETSIZE_TELNET_PACKETSIZE;
     dyn_counter psizes = NULL;
 
     /* ugly interface conversion :-( */
@@ -2164,11 +2342,13 @@ void tcplib_do_telnet_packetsize(
     }
 
 
+#ifdef READ_OLD_FILES
     /* In this section, we're reading in from the previous data file,
      * applying the data contained there to the data set that we've 
      * acquired during this run, and then dumping the merged data set
      * back out to the data file */
     psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+#endif /* READ_OLD_FILES */
 
 
     /* Dumping the data out to the data file */
@@ -2286,7 +2466,7 @@ void tcplib_do_ftp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 256;	/* 256-byte buckets */
+    const int bucketsize = BUCKETSIZE_FTP_ITEMSIZE;
 
     tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_FTPDATA,
 			       p_tester, bucketsize);
@@ -2297,15 +2477,17 @@ void tcplib_do_ftp_numitems(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    int bucketsize = 1;
+    int bucketsize = BUCKETSIZE_NUMITEMS;
     module_conninfo *pmc;
     dyn_counter psizes = NULL;
     
 
+#ifdef READ_OLD_FILES
     /* If an old data file exists, open it, read in its contents
      * and store them until they are integrated with the current
      * data */
     psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+#endif /* READ_OLD_FILES */
 
 
     /* fill out the array with data from the current connections */
@@ -2335,7 +2517,7 @@ static void tcplib_do_ftp_control_size(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 10;	/* 10 byte buckets */
+    const int bucketsize = BUCKETSIZE_FTP_CTRLSIZE;
 
     tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_FTPCTRL,
 			       p_tester, bucketsize);
@@ -2359,7 +2541,7 @@ static void tcplib_do_smtp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 10;	/* 10 byte buckets */
+    const int bucketsize = BUCKETSIZE_SMTP_ITEMSIZE;
 
     tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_SMTP,
 			       p_tester, bucketsize);
@@ -2379,25 +2561,6 @@ is_nntp_port(
 }
 
 
-
-static void tcplib_do_nntp_itemsize(
-    char *filename,		/* where to store the output */
-    f_testinside p_tester)	/* functions to test "insideness" */
-{
-    const int bucketsize = 10;	/* 10 byte buckets */
-
-    tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_NNTP,
-			       p_tester, bucketsize);
-}
-
-
-static void
-tcplib_do_nntp_numitems(
-    char *filename,		/* where to store the output */
-    f_testinside p_tester)	/* functions to test "insideness" */
-{
-    tcplib_do_GENERIC_numitems(filename, TCPLIBPORT_NNTP, p_tester);
-}
 /* Done NNTP Stuff */
 
 
@@ -2412,16 +2575,6 @@ is_http_port(
 	    (port == IPPORT_HTTPS));
 }
 
-
-static void tcplib_do_http_itemsize(
-    char *filename,		/* where to store the output */
-    f_testinside p_tester)	/* functions to test "insideness" */
-{
-    const int bucketsize = 10;  /* 10 byte buckets */
-
-    tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_HTTP,
-			       p_tester, bucketsize);
-}
 
 
 /***************************************************************************
@@ -2482,12 +2635,13 @@ StoreCounters(
 
     fclose(fil);
 
-    if (ldebug)
+    if (ldebug>1)
 	printf("  Stored %d values into %d lines of '%s'\n",
 	       running_total, lines, filename);
 }
 
 
+#ifdef READ_OLD_FILES
 static dyn_counter 
 ReadOldFile(
     char *filename,
@@ -2538,6 +2692,7 @@ ReadOldFile(
 
     return(psizes);
 }
+#endif /* READ_OLD_FILES */
 
 
 /* all of the itemsize routines look like this */
@@ -2552,10 +2707,12 @@ tcplib_do_GENERIC_itemsize(
     dyn_counter psizes = NULL;
     
 
+#ifdef READ_OLD_FILES
     /* If an old data file exists, open it, read in its contents
      * and store them until they are integrated with the current
      * data */
     psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+#endif /* READ_OLD_FILES */
 
 
     /* fill out the array with data from the current connections */
@@ -2580,52 +2737,74 @@ tcplib_do_GENERIC_itemsize(
 }
 
 
+
+/* cleanup all the burstsize counters */
+/* called for HTTP10, HTTP11, and NNTP */
+static void
+tcplib_cleanup_bursts()
+{
+    module_conninfo *pmc;
+    module_conninfo_tcb *ptcbc;
+
+    /* all but the last burst was ALREADY recorded, so we just clean
+       up any burst that might be left */
+    for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
+	/* a2b direction */
+	ptcbc = &pmc->tcb_cache_a2b;
+	if (ptcbc->burst_bytes != 0)
+	    AddToCounter(ptcbc->pburst_size,
+			 ptcbc->burst_bytes/BUCKETSIZE_BURSTSIZE, 1);
+
+	AddToCounter(ptcbc->pburst_nitems,
+		     ptcbc->numitems/BUCKETSIZE_NUMITEMS, 1);
+
+	/* b2a direction */
+	ptcbc = &pmc->tcb_cache_b2a;
+	if (ptcbc->burst_bytes != 0)
+	    AddToCounter(ptcbc->pburst_size,
+			 ptcbc->burst_bytes/BUCKETSIZE_BURSTSIZE, 1);
+	AddToCounter(ptcbc->pburst_nitems,
+		     ptcbc->numitems/BUCKETSIZE_NUMITEMS, 1);
+
+    }
+}
 /* both ftp and nntp look the same */
 static void
-tcplib_do_GENERIC_numitems(
+tcplib_do_GENERIC_burstsize(
     char *filename,		/* where to store the output */
-    int btype,
-    f_testinside p_tester)
+    dyn_counter counter)
 {
-    int bucketsize = 1;
-    module_conninfo *pmc;
-    dyn_counter psizes = NULL;
-    
-
-    /* If an old data file exists, open it, read in its contents
-     * and store them until they are integrated with the current
-     * data */
-    psizes = ReadOldFile(filename, bucketsize, 0, psizes);
-
-
-    /* fill out the array with data from the current connections */
-    for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
-	/* We only need the stats if it's the right port */
-	if (pmc->btype == btype) {
-	    if ((*p_tester)(pmc, &pmc->tcb_cache_a2b)) {
-		if (ldebug && (pmc->tcb_cache_a2b.numitems == 0))
-			printf("numitems: control %s has NONE\n",
-			       FormatBrief(pmc->ptp));
-		AddToCounter(&psizes, pmc->tcb_cache_a2b.numitems, 1);
-	    }
-	    if ((*p_tester)(pmc, &pmc->tcb_cache_b2a)) {
-		if (ldebug && (pmc->tcb_cache_b2a.numitems == 0))
-		    printf("numitems: control %s has NONE\n",
-			   FormatBrief(pmc->ptp));
-		AddToCounter(&psizes, pmc->tcb_cache_b2a.numitems, 1);
-	    }
-	}
-    }
+    int bucketsize = BUCKETSIZE_BURSTSIZE;
 
 
     /* store all the data (old and new) into the file */
-    StoreCounters(filename,"Total Articles", "% Conversation",
-		  bucketsize,psizes);
-
-    /* free the dynamic memory */
-    DestroyCounters(&psizes);
+    StoreCounters(filename,"Burst Size", "% Bursts",
+		  bucketsize, counter);
 }
+static void
+tcplib_do_GENERIC_nitems(
+    char *filename,		/* where to store the output */
+    dyn_counter counter)
+{
+    int bucketsize = BUCKETSIZE_NUMITEMS;
 
+
+    /* store all the data (old and new) into the file */
+    StoreCounters(filename,"Num Items", "% Conns",
+		  bucketsize, counter);
+}
+/* both ftp and nntp look the same */
+static void
+tcplib_do_GENERIC_idletime(
+    char *filename,		/* where to store the output */
+    dyn_counter counter)
+{
+    int bucketsize = BUCKETSIZE_BURSTIDLETIME;
+
+    /* store all the data (old and new) into the file */
+    StoreCounters(filename,"Idle Time", "% Bursts",
+		  bucketsize, counter);
+}
 
 static enum t_statsix
 traffic_type(
@@ -2776,14 +2955,15 @@ TrackEndpoints(
 	    struct module_conninfo_tcb *tcbc_control;
 	    tcbc_control = MostRecentFtpControl(pep);
 	    ++tcbc_control->numitems;
-	    if (ldebug) {
+	    if (ldebug>1) {
 		printf("Charging ftp data to %s, count %lu\n",
 		       FormatBrief(tcbc_control->ptcb->ptp),
 		       tcbc_control->numitems);
 	    }
 	} else {
-	    fprintf(stderr,"WARNING: no FTP control conn for %s???\n",
-		    FormatBrief(pmc->ptp));
+	    if (ldebug>1)
+		fprintf(stderr,"WARNING: no FTP control conn for %s???\n",
+			FormatBrief(pmc->ptp));
 	}
 
     }
