@@ -2044,7 +2044,7 @@ dotrace(
 	/* also see if any of them are DSACKS - weddy */
 	/* eventually may come back and fix this, what if we+++++
 	    if (ptcpo->sacks[0].sack_right <= th_ack) {
-	    if (ptcpo->sacks[0].sack_right < th_ack) ++thisdir->num_dsacks;
+	    if (ptcpo->sacks[0].sack_right <= th_ack) ++thisdir->num_dsacks;
 	    } else if (ptcpo->sack_count > 1) {
 	    else if (ptcpo->sack_count > 1) {
 	            && ptcpo->sacks[0].sack_left >= ptcpo->sacks[1].sack_left)

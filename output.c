@@ -282,6 +282,7 @@ PrintTrace(
     StatLineI("ack pkts sent","", pab->ack_pkts, pba->ack_pkts);
     StatLineI("pure acks sent","", pab->pureack_pkts, pba->pureack_pkts);
     StatLineI("sack pkts sent","", pab->num_sacks, pba->num_sacks);
+    StatLineI("dsack pkts sent","", pab->num_dsacks, pba->num_dsacks);
     StatLineI("max sack blks/ack","", pab->max_sack_blocks, pba->max_sack_blocks);
     StatLineI("unique bytes sent","",
 	      pab->unique_bytes, pba->unique_bytes);
