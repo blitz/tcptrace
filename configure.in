@@ -49,7 +49,7 @@ AC_TRY_RUN([
 
 int main ()
 {
-  char test[10];
+  char test[11];
   unsigned long long int num = 0xdeadbeef;
   sprintf (test, NIX, num);
   if (strcmp (test, "3735928559") == 0)
