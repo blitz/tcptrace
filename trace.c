@@ -179,6 +179,15 @@ tv_add(struct timeval *plhs, struct timeval rhs)
 }
 
 
+/* are the 2 times the same? */
+Bool
+tv_same(struct timeval lhs, struct timeval rhs)
+{
+    return((lhs.tv_sec  == rhs.tv_sec) &&
+	   (lhs.tv_usec == rhs.tv_usec));
+}
+
+
 /*  1: lhs >  rhs */
 /*  0: lhs == rhs */
 /* -1: lhs <  rhs */
@@ -999,7 +1008,7 @@ dotrace(
     /* do rtt stats */
     if (ACK_SET(ptcp)) {
 	ack_type = ack_in(otherdir,th_ack,tcp_data_length,eff_win);
-	ack_type = ack_in(otherdir,th_ack);
+	ack_type = ack_in(otherdir,th_ack,tcp_data_length);
 
 
     /* plot out-of-order segments, if asked */
@@ -1596,7 +1605,7 @@ ParseOptions: packet %lu too short to parse remaining options\n", pnum);
 
 #define CHECK_O_LEN(opt) \
 	if (*plen == 0) { \
-	if (*plen == 0) { fprintf(stderr, "\
+	if ((*plen == 0) && (warn_printtrunc)) { fprintf(stderr, "\
                                            pnum,opt); \
               pnum,opt); \
 	      popt = pdata; break;} \

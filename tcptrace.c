@@ -102,6 +102,7 @@ Bool do_udp = FALSE;
 Bool resolve_ipaddresses = TRUE;
 Bool resolve_ports = TRUE;
 Bool verify_checksums = FALSE;
+Bool triple_dupack_allows_data = FALSE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = 0;
@@ -159,7 +160,8 @@ static struct ext_bool_op {
      "resolve port numbers into names"},
     {"checksum", &verify_checksums,  TRUE,
      "verify IP and TCP checksums"},
-
+    {"dupack3_data", &triple_dupack_allows_data, TRUE,
+     "count a duplicate ACK carrying data as a triple dupack"},
     {"warn_ooo", &warn_ooo,  TRUE,
      "print warnings when packets timestamps are out of order"},
     {"warn_printtrunc", &warn_printtrunc,  TRUE,

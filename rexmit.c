@@ -483,7 +483,8 @@ rtt_retrans(
 enum t_ack
 ack_in(
     tcb *ptcb,
-    seqnum ack)
+    seqnum ack,
+    unsigned tcp_data_length)
 {
     quadrant *pquad;
     quadrant *pquad_prev;
@@ -530,8 +531,12 @@ ack_in(
 		++ptcb->rtt_dupack; /* one more duplicate ack */
 		ret = CUMUL;
 		if (pseg->acked == 4) {
-		    ++ptcb->rtt_triple_dupack;
-		    ret = TRIPLE;
+		    /* some people say these CAN'T have data */
+		    if ((tcp_data_length == 0) ||
+			triple_dupack_allows_data) {
+			++ptcb->rtt_triple_dupack;
+			ret = TRIPLE;
+		    }
 		}
 	    }
 	    continue;

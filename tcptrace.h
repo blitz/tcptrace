@@ -435,6 +435,7 @@ extern Bool hex;
 extern Bool ignore_non_comp;
 extern Bool resolve_ipaddresses;
 extern Bool resolve_ports;
+extern Bool triple_dupack_allows_data;
 extern Bool verify_checksums;
 extern Bool print_rtt;
 extern Bool print_cwin;
@@ -543,7 +544,7 @@ char *EndpointName(ipaddr,portnum);
 PLOTTER new_plotter(tcb *plast, char *filename, char *title,
 		    char *xlabel, char *ylabel, char *suffix);
 int rexmit(tcb *, seqnum, seglen, Bool *);
-enum t_ack ack_in(tcb *, seqnum);
+enum t_ack ack_in(tcb *, seqnum, unsigned tcp_data_length);
 void DoThru(tcb *ptcb, int nbytes);
 struct mfile *Mfopen(char *fname, char *mode);
 void Minit(void);
