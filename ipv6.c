@@ -73,6 +73,11 @@ ipv6_nextheader(
       case IPV6HDR_ROUTING:
       case IPV6HDR_DSTOPTS:
 	*pnextheader = pheader->ip6ext_nheader;
+
+	/* sanity check, if length is 0, terminate */
+	if (pheader->ip6ext_len == 0)
+	    return(NULL);
+	
 	return((struct ipv6_ext *)
 	       ((char *)pheader + pheader->ip6ext_len));
 
