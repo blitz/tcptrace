@@ -181,7 +181,7 @@ MakeUnaryNode(
     enum optype op,
     struct filter_node *pf_in)
 {
-    struct filter_node *pf = NULL;
+    struct filter_node *pf_ret = NULL;
     struct filter_node *pf1;
 
     /* walk everybody on the list and copy */
@@ -194,19 +194,19 @@ MakeUnaryNode(
 
 	pf_new = MallocZ(sizeof(struct filter_node));
 	pf_new->op = op;
-	pf_new->vartype = pf->vartype;
+	pf_new->vartype = pf1->vartype;
 	pf_new->un.unary.pf = pf1;
 
 	/* add to the linked list of unaries */
-	if (pf == NULL) {
-	    pf = pf_new;
+	if (pf_ret == NULL) {
+	    pf_ret = pf_new;
 	} else {
-	    pf_new->next_var = pf;
-	    pf = pf_new;
+	    pf_new->next_var = pf_ret;
+	    pf_ret = pf_new;
 	}
     }
 
-    return(pf);
+    return(pf_ret);
 }
 
 
@@ -221,6 +221,27 @@ MakeDisjunction(
     /* construct a high-level OR to hook them together */
     pf = MallocZ(sizeof(struct filter_node));
     pf->op = OP_OR;
+    pf->vartype = V_BOOL;
+
+    /* hook the two opnodes together */
+    pf->un.binary.left = left;
+    pf->un.binary.right = right;
+
+    /* return the OR node */
+    return(pf);
+}
+
+
+static struct filter_node *
+MakeConjunction(
+    struct filter_node *left,
+    struct filter_node *right)
+{
+    struct filter_node *pf;
+
+    /* construct a high-level AND to hook them together */
+    pf = MallocZ(sizeof(struct filter_node));
+    pf->op = OP_AND;
     pf->vartype = V_BOOL;
 
     /* hook the two opnodes together */
@@ -332,7 +353,7 @@ MakeBinaryNode(
     struct filter_node *pf_left,
     struct filter_node *pf_right)
 {
-    struct filter_node *pf = NULL;
+    struct filter_node *pf_ret = NULL;
     struct filter_node *pf1;
     struct filter_node *pf2;
 
@@ -341,9 +362,13 @@ MakeBinaryNode(
 	    struct filter_node *pf_new;
 	    /* make one copy */
 	    pf_new = MakeOneBinaryNode(op,pf1,pf2);
+	    if ((pf1->conjunction) || (pf2->conjunction))
+		pf_new->conjunction = TRUE;
 
 	    if (debug>1)
-		printf("MakeBinaryNode: made %s\n", Filter2Str(pf_new));
+		printf("MakeBinaryNode: made %s (%c)\n",
+		       Filter2Str(pf_new),
+		       pf_new->conjunction?'c':'d');
 
 	    /* hook together as appropriate */
 	    switch (op) {
@@ -353,11 +378,11 @@ MakeBinaryNode(
 	      case OP_DIVIDE:
 	      case OP_MOD:
 		/* just keep a list */
-		if (pf == NULL) {
-		    pf = pf_new;
+		if (pf_ret == NULL) {
+		    pf_ret = pf_new;
 		} else {
-		    pf_new->next_var = pf;
-		    pf = pf_new;
+		    pf_new->next_var = pf_ret;
+		    pf_ret = pf_new;
 		}
 		break;
 
@@ -369,11 +394,15 @@ MakeBinaryNode(
 	      case OP_GREATER_EQ:
 	      case OP_LESS:
 	      case OP_LESS_EQ:
-		/* terminate the wildcard list by making OR nodes */
-		if (pf == NULL)
-		    pf = pf_new;
-		else
-		    pf = MakeDisjunction(pf,pf_new);
+		/* terminate the wildcard list by making OR nodes or AND nodes*/
+		if (pf_ret == NULL)
+		    pf_ret = pf_new;
+		else {
+		    if ((pf1->conjunction) || (pf2->conjunction))
+			pf_ret = MakeConjunction(pf_ret,pf_new);
+		    else
+			pf_ret = MakeDisjunction(pf_ret,pf_new);
+		}
 		break;
 
 	      default:
@@ -385,7 +414,7 @@ MakeBinaryNode(
 	}
     }
 
-    return(pf);
+    return(pf_ret);
 }
 
 
@@ -401,8 +430,17 @@ MakeVarNode(
     } else if (strncasecmp(varname,"s_",2) == 0) {
 	/* just server */
 	pf = LookupVar(varname+2,FALSE);
+    } else if (strncasecmp(varname,"b_",2) == 0) {
+	/* they want a CONjunction, look up BOTH and return a list */
+	pf = LookupVar(varname+2,TRUE);/* client */
+	pf->next_var = LookupVar(varname+2,FALSE); /* server */
+	pf->conjunction = pf->next_var->conjunction = TRUE;
+    } else if (strncasecmp(varname,"e_",2) == 0) {
+	/* they want a DISjunction, look up BOTH and return a list */
+	pf = LookupVar(varname+2,TRUE);/* client */
+	pf->next_var = LookupVar(varname+2,FALSE); /* server */
     } else {
-	/* look up BOTH and return a list */
+	/* look up BOTH and return a list (same as e_) */
 	pf = LookupVar(varname,TRUE);/* client */
 	pf->next_var = LookupVar(varname,FALSE); /* server */
     }
@@ -489,7 +527,8 @@ PrintConst(
     switch (pf->vartype) {
       case V_ULLONG:
 	if (debug)
-	    sprintf(buf,"ULLONG(%llu)",pf->un.constant.u_longint);
+	    sprintf(buf,"ULLONG(%llu)",
+		    pf->un.constant.u_longint);
 	else
 	    sprintf(buf,"%llu",pf->un.constant.u_longint);
 	break;
@@ -531,11 +570,12 @@ PrintVar(
 
 
     if (debug)
-	sprintf(buf,"VAR(%s,'%s%s',%d)",
+	sprintf(buf,"VAR(%s,'%s%s',%d,%c)",
 		Vartype2Str(pf->vartype),
 		pf->un.variable.fclient?"c_":"s_",
 		pf->un.variable.name,
-		pf->un.variable.offset);
+		pf->un.variable.offset,
+		pf->conjunction?'c':'d');
     else
 	sprintf(buf,"%s%s",
 		pf->un.variable.fclient?"c_":"s_",
@@ -1444,7 +1484,10 @@ Filter Syntax:\n\
 	anything from the above table with a prefix of either 'c_' meaning\n\
         the one for the Client or 's_' meaning the value for the Server.  If\n\
 	the prefix is omitted, it means \"either one\" (effectively becoming\n\
-	\"c_VAR OR s_VAR)\").\n\
+	\"c_VAR OR s_VAR)\").  As shorthand for a conjunction instead, you can\n\
+	use the syntax 'b_' (as in b_mss>100), meaning 'B'oth, (effectively becoming\n\
+	\"c_VAR AND s_VAR)\").  For completeness, 'e_' means 'E'ither, which is\n\
+	the normal default with no prefix.\n\
      constant:\n\
 	strings:	anything in double quotes\n\
 	booleans:	TRUE FALSE\n\
@@ -1470,10 +1513,11 @@ Filter Syntax:\n\
      most common synonyms for NOT, AND, and OR also work (!,&&,||,-a,-o)\n\
 	(for those of us with very poor memories\n\
 Examples\n\
-  tcptrace '-fpackets>10' file\n\
-  tcptrace '-fc_packets>10 OR s_packets>20 ' file\n\
-  tcptrace '-f c_packets+10 > s_packets ' file\n\
+  tcptrace '-fsegs>10' file\n\
+  tcptrace '-fc_segs>10 OR s_segs>20 ' file\n\
+  tcptrace '-f c_segs+10 > s_segs ' file\n\
   tcptrace -f'thruput>10000 and segs > 100' file\n\
+  tcptrace '-fb_segs>10' file\n\
 ", PASS_FILTER_FILENAME, PASS_FILTER_FILENAME);
 }
 
