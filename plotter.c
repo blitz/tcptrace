@@ -230,7 +230,12 @@ new_plotter(
 	return(NO_PLOTTER);
     }
 
-    Mfprintf(f,"timeval unsigned\n");
+    /* ugly hack -- unsigned makes the graphs hard to work with and is
+       only needed for the time sequence graphs */
+    if (strcmp(ylabel,"sequence number") == 0)
+	Mfprintf(f,"timeval unsigned\n");
+    else
+	Mfprintf(f,"timeval signed\n");
     Mfprintf(f,"title\n%s\n", title);
     Mfprintf(f,"xlabel\n%s\n", xlabel);
     Mfprintf(f,"ylabel\n%s\n", ylabel);
