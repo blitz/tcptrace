@@ -40,13 +40,29 @@ static u_int SynCount(tcp_pair *);
 static u_int FinCount(tcp_pair *);
 static double Average(double, int);
 static double Stdev(double, double, int);
-static void StatLineI(char *, char *, char *, u_long, u_long);
+static void StatLineP(char *, char *, char *, void *, void *);
+static void StatLineI_L(char *, char *, u_long, u_long);
+#ifdef HAVE_LONG_LONG
+static void StatLineI_LL(char *, char *, u_llong, u_llong);
+static void StatLineFieldL(char *, char *, char *, u_llong, int);
+#endif  /* HAVE_LONG_LONG */
 static void StatLineF(char *, char *, char *, double, double);
 static void StatLineField(char *, char *, char *, u_long, int);
 static void StatLineFieldF(char *, char *, char *, double, int);
 static void StatLineOne(char *, char *, char *);
 static char *FormatBrief(tcp_pair *ptp);
 
+
+/* to support some of the counters being long long on some platforms, use this */
+/* macro... */
+#ifdef HAVE_LONG_LONG
+#define StatLineI(label,units,ul1,ul2)  \
+(sizeof((ul1)) == SIZEOF_UNSIGNED_LONG_LONG_INT)?\
+  StatLineI_LL((label),(units),(ul1),(ul2)):\
+  StatLineI_L ((label),(units),(ul1),(ul2))
+#else /* HAVE_LONG_LONG */
+#define StatLineI StatLineI_L
+#endif /* HAVE_LONG_LONG */
 
 
 
@@ -175,18 +191,31 @@ PrintBrief(
     if (TRUE) {
 	/* new version */
 	fprintf(stdout,"%*s", -max_width, FormatBrief(ptp));
+#ifdef HAVE_LONG_LONG
+	fprintf(stdout," %4llu>", pab->packets);
+	fprintf(stdout," %4llu<", pba->packets);
+#else /* HAVE_LONG_LONG */
 	fprintf(stdout," %4lu>", pab->packets);
 	fprintf(stdout," %4lu<", pba->packets);
+#endif /* HAVE_LONG_LONG */
     } else {
 	/* old version */
 	fprintf(stdout,"%s <==> %s",
 		ptp->a_endpoint,
 		ptp->b_endpoint);
+#ifdef HAVE_LONG_LONG
+	fprintf(stdout,"  %s2%s:%llu",
+#else /* HAVE_LONG_LONG */
 	fprintf(stdout,"  %s2%s:%lu",
+#endif /* HAVE_LONG_LONG */
 		pab->host_letter,
 		pba->host_letter,
 		pab->packets);
+#ifdef HAVE_LONG_LONG
+	fprintf(stdout,"  %s2%s:%llu",
+#else /* HAVE_LONG_LONG */
 	fprintf(stdout,"  %s2%s:%lu",
+#endif /* HAVE_LONG_LONG */
 		pba->host_letter,
 		pab->host_letter,
 		pba->packets);
@@ -239,81 +268,86 @@ PrintTrace(
 	    etime_secs % (60 * 60) / 60,
 	    (etime_secs % (60 * 60)) % 60,
 	    etime_usecs);
+
+#ifdef HAVE_LONG_LONG
+    fprintf(stdout,"\ttotal packets: %llu\n", ptp->packets);
+#else  /* HAVE_LONG_LONG */
     fprintf(stdout,"\ttotal packets: %lu\n", ptp->packets);
+#endif  /* HAVE_LONG_LONG */
 
     fprintf(stdout,"   %s->%s:			      %s->%s:\n",
 	    host1,host2,host2,host1);
 
-    StatLineI("total packets","","%8lu", pab->packets, pba->packets);
+    StatLineI("total packets","", pab->packets, pba->packets);
     if (pab->reset_count || pba->reset_count)
-	StatLineI("resets sent","","%8lu", pab->reset_count, pba->reset_count);
-    StatLineI("ack pkts sent","","%8lu", pab->ack_pkts, pba->ack_pkts);
-    StatLineI("unique bytes sent","","%8lu",
+	StatLineI("resets sent","", pab->reset_count, pba->reset_count);
+    StatLineI("ack pkts sent","", pab->ack_pkts, pba->ack_pkts);
+    StatLineI("unique bytes sent","",
 	      pab->data_bytes-pab->rexmit_bytes,
 	      pba->data_bytes-pba->rexmit_bytes);
 #ifdef OLD
-    StatLineI("unique packets","","%8lu",
+    StatLineI("unique packets","",
 	      pab->data_pkts-pab->rexmit_pkts,
 	      pba->data_pkts-pba->rexmit_pkts);
 #endif /* OLD */
-    StatLineI("actual data pkts","","%8lu", pab->data_pkts, pba->data_pkts);
-    StatLineI("actual data bytes","","%8lu", pab->data_bytes, pba->data_bytes);
-    StatLineI("rexmt data pkts","","%8lu", pab->rexmit_pkts, pba->rexmit_pkts);
-    StatLineI("rexmt data bytes","","%8lu",
+    StatLineI("actual data pkts","", pab->data_pkts, pba->data_pkts);
+    StatLineI("actual data bytes","", pab->data_bytes, pba->data_bytes);
+    StatLineI("rexmt data pkts","", pab->rexmit_pkts, pba->rexmit_pkts);
+    StatLineI("rexmt data bytes","",
 	      pab->rexmit_bytes, pba->rexmit_bytes);
-    StatLineI("outoforder pkts","","%8lu",
+    StatLineI("outoforder pkts","",
 	      pab->out_order_pkts, pba->out_order_pkts);
-    StatLineI("SYN/FIN pkts sent","","%s",
+    StatLineP("SYN/FIN pkts sent","","%s",
 	      (sprintf(bufl,"%d/%d",
-		       pab->syn_count, pab->fin_count),(int)bufl),
+		       pab->syn_count, pab->fin_count),bufl),
 	      (sprintf(bufr,"%d/%d",
-		       pba->syn_count, pba->fin_count),(int)bufr));
+		       pba->syn_count, pba->fin_count),bufr));
     if (pab->f1323_ws || pba->f1323_ws || pab->f1323_ts || pba->f1323_ts) {
-	StatLineI("req 1323 ws/ts","","%s",
+	StatLineP("req 1323 ws/ts","","%s",
 		  (sprintf(bufl,"%c/%c",
-		      pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),(int)bufl),
+		      pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),bufl),
 		  (sprintf(bufr,"%c/%c",
-		      pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'),(int)bufr));
+		      pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'),bufr));
     }
     if (pab->f1323_ws || pba->f1323_ws) {
-	StatLineI("adv wind scale","","%d",
-		  pab->window_scale, pba->window_scale);
+	StatLineI("adv wind scale","",
+		  (u_long)pab->window_scale, (u_long)pba->window_scale);
     }
     if (pab->fsack_req || pba->fsack_req) {
-	StatLineI("req sack","","%c",
-		  pab->fsack_req?'Y':'N',
-		  pba->fsack_req?'Y':'N');
-	StatLineI("sacks sent","","%d",
+	StatLineP("req sack","","%s",
+		  pab->fsack_req?"Y":"N",
+		  pba->fsack_req?"Y":"N");
+	StatLineI("sacks sent","",
 		  pab->sacks_sent,
 		  pba->sacks_sent);
     }
-    StatLineI("mss requested","bytes","%8lu", pab->mss, pba->mss);
-    StatLineI("max segm size","bytes","%8lu",
+    StatLineI("mss requested","bytes", pab->mss, pba->mss);
+    StatLineI("max segm size","bytes",
 	      pab->max_seg_size,
 	      pba->max_seg_size);
-    StatLineI("min segm size","bytes","%8lu",
+    StatLineI("min segm size","bytes",
 	      pab->min_seg_size,
 	      pba->min_seg_size);
-    StatLineI("avg segm size","bytes","%8lu",
+    StatLineI("avg segm size","bytes",
 	      (int)((double)pab->data_bytes / ((double)pab->data_pkts+.001)),
 	      (int)((double)pba->data_bytes / ((double)pba->data_pkts+.001)));
-    StatLineI("max win adv","bytes","%8lu", pab->win_max, pba->win_max);
-    StatLineI("min win adv","bytes","%8lu", pab->win_min, pba->win_min);
-    StatLineI("zero win adv","times","%8lu",
+    StatLineI("max win adv","bytes", pab->win_max, pba->win_max);
+    StatLineI("min win adv","bytes", pab->win_min, pba->win_min);
+    StatLineI("zero win adv","times",
 	      pab->win_zero_ct, pba->win_zero_ct);
-    StatLineI("avg win adv","bytes","%8lu",
+    StatLineI("avg win adv","bytes",
 	      pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
 	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
     if (print_cwin) {
-	StatLineI("max cwin","bytes","%8lu", pab->cwin_max, pba->cwin_max);
-	StatLineI("min cwin","bytes","%8lu", pab->cwin_min, pba->cwin_min);
-	StatLineI("avg cwin","bytes","%8lu",
+	StatLineI("max cwin","bytes", pab->cwin_max, pba->cwin_max);
+	StatLineI("min cwin","bytes", pab->cwin_min, pba->cwin_min);
+	StatLineI("avg cwin","bytes",
 		  pab->ack_pkts==0?0:pab->cwin_tot/pab->ack_pkts,
 		  pba->ack_pkts==0?0:pba->cwin_tot/pba->ack_pkts);
     }
-    StatLineI("initial window","bytes","%8lu",
+    StatLineI("initial window","bytes",
 	      pab->initialwin_bytes, pba->initialwin_bytes);
-    StatLineI("initial window","pkts","%8lu",
+    StatLineI("initial window","pkts",
 	      pab->initialwin_segs, pba->initialwin_segs);
 
 
@@ -322,22 +356,22 @@ PrintTrace(
        (N.B. not taking wrapped seq space into account) */
     if ((pab->syn_count > 0) && (pab->fin_count > 0) &&
 	(pba->syn_count > 0) && (pba->fin_count > 0)) {
-	StatLineI("ttl stream length","bytes","%8lu",
+	StatLineI("ttl stream length","bytes",
 		  pab->fin-pab->syn-1,
 		  pba->fin-pba->syn-1);
-	StatLineI("missed data","bytes","%8lu",
+	StatLineI("missed data","bytes",
 		  pab->fin-pab->syn-1-(pab->data_bytes-pab->rexmit_bytes),
 		  pba->fin-pba->syn-1-(pba->data_bytes-pba->rexmit_bytes));
     } else {
-	StatLineI("ttl stream length","","%s",(int)"NA",(int)"NA");
-	StatLineI("missed data","","%s",(int)"NA",(int)"NA");
+	StatLineP("ttl stream length","","%s","NA","NA");
+	StatLineP("missed data","","%s","NA","NA");
     }
 
     /* if we saved the contents, tell how much is missing */
     if (save_tcp_data) {
-	StatLineI("truncated data","bytes","%8lu",
+	StatLineI("truncated data","bytes",
 		  pab->trunc_bytes, pba->trunc_bytes);
-	StatLineI("truncated packets","pkts","%8lu",
+	StatLineI("truncated packets","pkts",
 		  pab->trunc_segs, pba->trunc_segs);
     }
 
@@ -346,20 +380,18 @@ PrintTrace(
 			  pab->last_data_time); /* in usecs */
     etime_data2 = elapsed(pba->first_data_time,
 			  pba->last_data_time); /* in usecs */
-    StatLineI("data xmit time","secs","%s",
+    StatLineP("data xmit time","secs","%s",
 	      (sprintf(bufl,"%lu.%03lu",
 		       (u_long)etime_data1 / 1000000,
-		       ((u_long)etime_data1%1000000)/1000),
-	       (int)bufl),
+		       ((u_long)etime_data1%1000000)/1000), bufl),
 	      (sprintf(bufr,"%lu.%03lu",
 		       (u_long)etime_data2 / 1000000,
-		       ((u_long)etime_data2%1000000)/1000),
-	       (int)bufr));
+		       ((u_long)etime_data2%1000000)/1000), bufr));
 
     /* do the throughput calcs */
     etime /= 1000000.0;  /* convert to seconds */
     if (etime == 0.0)
-	StatLineI("throughput","","%s",(int)"NA",(int)"NA");
+	StatLineP("throughput","","%s","NA","NA");
     else
 	StatLineF("throughput","Bps","%8.0f",
 		  (double) (pab->data_bytes-pab->rexmit_bytes) / etime,
@@ -367,7 +399,7 @@ PrintTrace(
 
     if (print_rtt) {
 	fprintf(stdout,"\n");
-	StatLineI("RTT samples","","%8lu", pab->rtt_count, pba->rtt_count);
+	StatLineI("RTT samples","", pab->rtt_count, pba->rtt_count);
 	StatLineF("RTT min","ms","%8.1f",
 		  (double)pab->rtt_min/1000.0,
 		  (double)pba->rtt_min/1000.0);
@@ -388,7 +420,7 @@ PrintTrace(
 \t  considered.  Times are taken from the last instance\n\
 \t  of a segment.\n\
 ");
-	    StatLineI("ambiguous acks","","%8lu",
+	    StatLineI("ambiguous acks","",
 		      pab->rtt_amback, pba->rtt_amback);
 	    StatLineF("RTT min (last)","ms","%8.1f",
 		      (double)pab->rtt_min_last/1000.0,
@@ -404,14 +436,14 @@ PrintTrace(
 		      Stdev(pba->rtt_sum_last, pba->rtt_sum2_last, pba->rtt_count_last) / 1000.0);
 
 	}
-	StatLineI("segs cum acked","","%8lu",
+	StatLineI("segs cum acked","",
 		  pab->rtt_cumack, pba->rtt_cumack);
-	StatLineI("duplicate acks","","%8lu",
+	StatLineI("duplicate acks","",
 		  pab->rtt_dupack, pba->rtt_dupack);
 	if (debug)
-	    StatLineI("unknown acks:","","%8lu",
+	    StatLineI("unknown acks:","",
 		      pab->rtt_unkack, pba->rtt_unkack);
-	StatLineI("max # retrans","","%8lu",
+	StatLineI("max # retrans","",
 		  pab->retr_max, pba->retr_max);
 	StatLineF("min retr time","ms","%8.1f",
 		  (double)((double)pab->retr_min_tm/1000.0),
@@ -431,17 +463,68 @@ PrintTrace(
 }
 
 
+/* with pointer args */
 static void
-StatLineI(
+StatLineP(
     char *label,
     char *units,
     char *format,
+    void *argleft,
+    void *argright)
+{
+    StatLineField(label,units,format,(u_long)argleft,0);
+    StatLineField(label,units,format,(u_long)argright,1);
+}
+
+
+/* with u_long args */
+static void
+StatLineI_L(
+    char *label,
+    char *units,
     u_long argleft,
     u_long argright)
 {
+    char *format = "%8lu";
     StatLineField(label,units,format,argleft,0);
     StatLineField(label,units,format,argright,1);
 }
+
+
+#ifdef HAVE_LONG_LONG
+/* with u_llong (long long) args, if supported */
+static void
+StatLineI_LL(
+    char *label,
+    char *units,
+    u_llong argleft,
+    u_llong argright)
+{
+    char *format = "%8llu";
+    StatLineFieldL(label,units,format,argleft,0);
+    StatLineFieldL(label,units,format,argright,1);
+}
+
+static void
+StatLineFieldL(
+    char *label,
+    char *units,
+    char *format,
+    u_llong arg,
+    int	f_rightside)
+{
+    char valbuf[20];
+    
+    /* determine the value to print */
+    sprintf(valbuf,format,arg);
+
+    /* print the field */
+    printf("     ");
+    StatLineOne(label, units, valbuf);
+    if (f_rightside)
+	printf("\n");
+}
+#endif /* HAVE_LONG_LONG */
 
 
 static void
@@ -478,6 +561,7 @@ StatLineField(
     if (f_rightside)
 	printf("\n");
 }
+
 
 
 static void
