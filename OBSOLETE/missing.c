@@ -2,13 +2,6 @@
    distribution, but an attempt to help out people that want to port
    this thing  */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <netinet/if_ether.h>
-
 #include "tcptrace.h"
 
 /*
