@@ -76,6 +76,8 @@ void * tcplib_newconn(tcp_pair *ptp);
 #define NUM_APPS 5
 #define BREAKDOWN_HASH 1000000
 
+#define DEFAULT_TCPLIB_DATADIR		"data"
+
 #define TCPLIB_TELNET_DURATION_FILE	"telnet.duration"
 #define TCPLIB_TELNET_PACKETSIZE_FILE	"telnet.pktsize"
 #define TCPLIB_TELNET_INTERARRIVAL_FILE	"telnet.interarrival"

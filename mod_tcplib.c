@@ -24,13 +24,14 @@
  * 		Ohio University
  * 		Athens, OH
  *		ehelvey@cs.ohiou.edu
+ * Modified:    Shawn Ostermann
  */
 static char const rcsid_tcplib[] =
    "$Id$";
 
 #ifdef LOAD_MODULE_TCPLIB
 
-/* ***************************************************************************
+/****************************************************************************
  * 
  * Module Title: Mod_TCPLib 
  * 
@@ -38,7 +39,7 @@ static char const rcsid_tcplib[] =
  * 
  * Purpose: To generate data files needed by TCPLib and TrafGen.
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 #include "tcptrace.h"
 #include "mod_tcplib.h"
 
@@ -74,8 +75,12 @@ static void tcplib_init_setup();
 static void do_tcplib_next_converse(tcp_pair *ptp);
 static void do_tcplib_final_converse();
 static struct tcplib_next_converse * file_extract(FILE* fil, int *lines, int *count);
+static void ParseArgs(char *argstring);
 char * namedfile(char * file);
 
+
+
+/* local routines */
 
 
 /* External global varialbes */
@@ -98,14 +103,14 @@ static int size_next_converse_breakdown = 0;
 static timeval last_converse;
 static int ipport_offset = IPPORT_OFFSET;
 static char *current_file = NULL;
-static char output_dir[128] = "";
+static char *output_dir = DEFAULT_TCPLIB_DATADIR;
 
 
 /* First section is comprised of functions that TCPTrace will call
  * for all modules.
  */
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_init
  * 
@@ -120,7 +125,7 @@ static char output_dir[128] = "";
  * Called by: LoadModules() in tcptrace.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 int tcplib_init(
     int argc,      /* Number of command line arguments */
     char *argv[]   /* Command line arguments */
@@ -128,120 +133,120 @@ int tcplib_init(
 {
     int i;             /* Runner for command line arguments */
     int enable = 0;    /* Do we turn on this module, or not? */
+    char *args = NULL;
 
     for(i = 0; i < argc; i++) {
-
-	if(!argv[i])
+	if (!argv[i])
 	    continue;
 
-	/* The "-F" flag currently triggers the tcplib module */
-	if(argv[i] && !strncmp(argv[i], "-x", 2)) {
-	    if(!strncasecmp(argv[i]+2, "tcplib", sizeof("tcplib")-1)) {
-		/* Calling the Tcplib part */
-		enable = 1;
+	/* See if they want to use us */
+	if ((argv[i] != NULL) && (strncmp(argv[i], "-xtcplib", 8) == 0)) {
+	    /* Calling the Tcplib part */
+	    enable = 1;
+	    args = argv[i]+(sizeof("-xtcplib")-1);
 
-		printf("Capturing TCPLib traffic\n");
+	    printf("Capturing TCPLib traffic\n");
 
- 	        /* We free this argument so that no other modules
-	         * or the main program mis-interprets this flag.
-	         */
-		argv[i] = NULL;
-
-		continue;
-	    }
-	}
-
-	/* The "-J ####" flag sets the offset that we're going
-	 * to consider for tcplib data files.  The reason is that
-	 * for verification purposes, when trafgen creates traffic 
-	 * it sends it to non-standard ports.  So, in order to get
-	 * a data set from generated traffic, we'd have to remove
-	 * the offset.  The -J allows us to do that.
-	 */
-	if(argv[i] && !strncmp(argv[i], "-J", 2)) {
-
-	    if(i >= argc-1) {
-		printf("Flag \"-J\" must have an integer argument.\n");
-		exit(1);
-	    }
-
-	    ipport_offset = atoi(argv[i+1]);
-
-	    if(!ipport_offset) {
-		printf("Invalid argument to flag \"-J\".  Must be integer value greater than 0.\n");
-		exit(1);
-	    }
-
-	    printf("TCPLib port offset - %d\n", ipport_offset);
-
-	    argv[i+1] = NULL;
+	    /* We free this argument so that no other modules
+	     * or the main program mis-interprets this flag.
+	     */
 	    argv[i] = NULL;
 
 	    continue;
 	}
-
-
-#ifdef OLD
-	/* -O not supported, that option is taken - sdo */
-
-	
-	/* We will probably need to add another flag here to
-	 * specify the directory in which to place the data
-	 * files.  And here it is.
-	 */
-	if(argv[i] && !strncmp(argv[i], "-O", 2)) {
-	    int dirlen = 0;    /* Length of the user specified directory name */
-
-	    if(i >= argc-1) {
-		printf("Flag \"-O\" must have a string argument.\n");
-		exit(1);
-	    }
-
-	    if(output_dir[0]) {
-		*output_dir = '\00';
-	    }
-
-	    dirlen = strlen(argv[i+1]);
-
-	    if(argv[i+1][dirlen - 1] == '/')
-		argv[i+1][dirlen - 1] = '\0';
-
-	    if(dirlen >= 127) {
-		printf("Output directory too long. Exiting.\n");
-		exit(1);
-	    }
-
-	    sprintf(output_dir, "%s/", argv[i+1]);
-
-	    printf("TCPLib output directory - %sdata\n", output_dir);
-
-	    argv[i+1] = NULL;
-	    argv[i] = NULL;
-
-	    continue;
-	}
-
-#endif /* OLD */
     }
 
     /* If enable is not true, then all tcplib functions will
      * be ignored during this run of the program.
      */
-    if(!enable)
-	return FALSE;
-    else {
-	tcplib_init_setup();
-	return TRUE;
+    if (!enable)
+	return(0);	/* don't call me again */
+
+    /* parse the encoded args */
+    ParseArgs(args);
+
+    /* init internal data */
+    tcplib_init_setup();
+
+    return TRUE;
+}
+
+
+static void
+ParseArgs(char *argstring)
+{
+    int argc;
+    char **argv;
+    int i;
+    
+    /* make sure there ARE arguments */
+    if (!(argstring && *argstring))
+	return;
+
+    /* break the string into normal arguments */
+    StringToArgv(argstring,&argc,&argv);
+
+    /* check the module args */
+    for (i=1; i < argc; ++i) {
+	/* The "-o####" flag sets the offset that we're going
+	 * to consider for tcplib data files.  The reason is that
+	 * for verification purposes, when trafgen creates traffic 
+	 * it sends it to non-standard ports.  So, in order to get
+	 * a data set from generated traffic, we'd have to remove
+	 * the offset.  The -o allows us to do that.
+	 */
+	if (argv[i] && !strncmp(argv[i], "-o", 2)) {
+	    ipport_offset = atoi(argv[i]+2);
+
+	    if (!ipport_offset) {
+		fprintf(stderr,
+			"Invalid argument to flag \"-o\".  Must be integer value greater than 0.\n");
+		exit(1);
+	    }
+
+	    printf("TCPLib port offset - %d\n", ipport_offset);
+	}
+
+
+	/* We will probably need to add another flag here to
+	 * specify the directory in which to place the data
+	 * files.  And here it is.
+	 */
+	else if (argv[i] && !strncmp(argv[i], "-d", 2)) {
+	    char *pdir = argv[i]+2;
+
+	    if (!pdir) {
+		fprintf(stderr,"argument -dDIR requires directory name\n");
+		exit(-1);
+	    }
+
+	    output_dir = strdup(pdir);
+
+	    printf("TCPLib output directory - %sdata\n", output_dir);
+
+	    /* make sure that the directory exists */
+	    if (access(output_dir,F_OK) != 0) {
+		if (mkdir(output_dir,0755) != 0) {
+		    perror(output_dir);
+		    exit(-1);
+		}
+	    }
+	}
+
+	/*  ... else invalid */
+	else {
+	    fprintf(stderr,"tcplib module: bad argument '%s'\n",
+		    argv[i]);
+	    exit(-1);
+	}
     }
+
 }
 
 
 
 
-
-
-
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_done
  * 
@@ -254,7 +259,7 @@ int tcplib_init(
  * Called by: FinishModules() in tcptrace.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_done()
 {
     /* Here's where I need to take the data that I've got
@@ -278,7 +283,7 @@ void tcplib_done()
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_read
  * 
@@ -292,7 +297,7 @@ void tcplib_done()
  * Called by: ModulesPerPacket() in tcptrace.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_read(
     struct ip *pip,    /* The packet */
     tcp_pair *ptp,     /* The pair of hosts - basically the conversation */
@@ -319,7 +324,7 @@ void tcplib_read(
      * kind of setup where the packet sizes are always optimal.  Because
      * of this, we need the size of each and every telnet packet that 
      * comes our way. */
-    if(   is_telnet_port(ptp->addr_pair.a_port)
+    if (   is_telnet_port(ptp->addr_pair.a_port)
        || is_telnet_port(ptp->addr_pair.b_port)) {
 	data_len = pip->ip_len - 
 	           (sizeof(int) * pip->ip_hl) - 
@@ -336,10 +341,10 @@ void tcplib_read(
      * conversation. */
     tcplib_add_telnet_interarrival(ptp, (struct timeval *)pmodstruct);
 
-    if((a2b_len = breakdown_type(ptp->addr_pair.a_port)) != -1)
+    if ((a2b_len = breakdown_type(ptp->addr_pair.a_port)) != -1)
 	tcplib_breakdown_interval[a2b_len] += ptp->a2b.data_bytes;
 
-    if((b2a_len = breakdown_type(ptp->addr_pair.b_port)) != -1)
+    if ((b2a_len = breakdown_type(ptp->addr_pair.b_port)) != -1)
 	tcplib_breakdown_interval[b2a_len] += ptp->b2a.data_bytes;
 
     /* This is just a sanity check to make sure that we've got at least
@@ -347,7 +352,7 @@ void tcplib_read(
      * file that we are. */
     data_len = (ptp->last_time.tv_sec - last_interval.tv_sec);
     
-    if(data_len >= TIMER_VAL) {
+    if (data_len >= TIMER_VAL) {
 	update_breakdown(ptp);
     }
 
@@ -360,7 +365,7 @@ void tcplib_read(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_newconn
  * 
@@ -372,7 +377,7 @@ void tcplib_read(
  * Called by: ModulesPerConn() in tcptrace.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void * tcplib_newconn(
     tcp_pair *ptp   /* This conversation */
     )
@@ -396,7 +401,7 @@ void * tcplib_newconn(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_newfile
  * 
@@ -410,7 +415,7 @@ void * tcplib_newconn(
  * Called by: ModulesPerFile() in tcptrace.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_newfile(
     char *filename,     /* Name of the file just opened. */
     u_long filesize,
@@ -421,7 +426,7 @@ void tcplib_newfile(
     /* If this isn't the first file that we've seen this run, then
      * we want to run do_final_breakdown on the file we ran BEFORE
      * this one. */
-    if(this_file) {
+    if (this_file) {
 	do_final_breakdown(current_file);
 	free(current_file);
 	current_file = (char *) strdup(filename);
@@ -448,7 +453,7 @@ void tcplib_newfile(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_usage
  * 
@@ -459,10 +464,16 @@ void tcplib_newfile(
  * Called by: ListModules() in tcptrace.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_usage()
 {
-    printf("\t-xtcplib\tgenerate tcplib-format data files from packets\n");
+    printf("\t-xtcplib\"[ARGS]\"\tgenerate tcplib-format data files from trace\n");
+    printf("\
+\t  -oN      set port offset to N, default is 0\n\
+\t           for example, we normally find telnet at 23, but\n\
+\t           if it's at 9023, then use \"-o9000\"\n\
+\t  -dDIR    store the results in directory DIR, default is \"data\"\n\
+");
 }
 
 /* End of the tcptrace standard function section */
@@ -474,7 +485,7 @@ void tcplib_usage()
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_init_setup
  * 
@@ -486,7 +497,7 @@ void tcplib_usage()
  * Called by: tcplib_init() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 static void tcplib_init_setup()
 {
     int i;   /* Loop Counter */
@@ -519,13 +530,7 @@ static void tcplib_init_setup()
 
 
 
-
-
-
-
-
-
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: setup_breakdown
  * 
@@ -538,12 +543,11 @@ static void tcplib_init_setup()
  *            tcplib_newfile()    in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 static void setup_breakdown()
 {
-    if(!(hist_file = fopen(namedfile(TCPLIB_BREAKDOWN_GRAPH_FILE), "w"))) {
-	printf("Error opening breakdown histogram file - %s.\n", 
-	       namedfile(TCPLIB_BREAKDOWN_GRAPH_FILE));
+    if (!(hist_file = fopen(namedfile(TCPLIB_BREAKDOWN_GRAPH_FILE), "w"))) {
+	perror(namedfile(TCPLIB_BREAKDOWN_GRAPH_FILE));
 	exit(1);
     }
 
@@ -553,10 +557,7 @@ static void setup_breakdown()
 
 
 
-
-
-
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: update_breakdown
  * 
@@ -570,7 +571,7 @@ static void setup_breakdown()
  * Called by: tcplib_read() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 static void update_breakdown(
     tcp_pair *ptp      /* This conversation */
     )
@@ -592,7 +593,7 @@ static void update_breakdown(
 	 * want to display any characters.  But if there was a little bit
 	 * of traffic, even much less than BREAKDOWN_HASH, we want to 
 	 * acknowledge it. */
-	if(!tcplib_breakdown_interval[i])
+	if (!tcplib_breakdown_interval[i])
 	    count--;
 
 	/* Print one hash char per count. */
@@ -622,13 +623,13 @@ static void update_breakdown(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: namedfile
  * 
  * Returns: Relative path name attached to output file name.
  *
- * Purpose: The namedfile uses the -O command line argument to take a data
+ * Purpose: The namedfile uses the -d command line argument to take a data
  *          directory and puts it together with its default file name to
  *          come up with the file name needed for output.
  *
@@ -643,13 +644,13 @@ static void update_breakdown(
  *            tcplib_do_nntp_itemsize() in mod_tcplib.c
  *            tcplib_do_http_itemsize() in mod_tcplib.c
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 char * namedfile(
     char * real)  /* Default file name for the output file */
 {
     static char buffer[256];    /* Buffer to store the full file name */
 
-    sprintf(buffer, "%s%s", output_dir, real);
+    sprintf(buffer, "%s/%s", output_dir, real);
 
     return buffer;
 }
@@ -657,7 +658,7 @@ char * namedfile(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: do_final_breakdown
  * 
@@ -671,7 +672,7 @@ char * namedfile(
  *            tcplib_newfile() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 static void do_final_breakdown(
     char* filename       /* The name of the current trace data file */
     )
@@ -688,7 +689,7 @@ static void do_final_breakdown(
      * modified to accomodate the additions that were made to TCPLib */
     char *header = "stub\tsmtp\tnntp\ttelnet\tftp\thttp\tphone\tconv\n";
 
-    if(!(fil = fopen(namedfile(TCPLIB_BREAKDOWN_FILE), "a"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_BREAKDOWN_FILE), "a"))) {
 	perror("Opening Breakdown File");
 	exit(1);
     }
@@ -702,7 +703,7 @@ static void do_final_breakdown(
      * trace file's data into the data from another trace.  This would
      * have the effect of creating a hybrid traffic pattern, that matches
      * neither of the sources, but shares characteristics of both. */
-    if(file_pos < strlen(header)) {
+    if (file_pos < strlen(header)) {
 	fprintf(fil, "%s", header);
     }
 
@@ -710,7 +711,7 @@ static void do_final_breakdown(
      * earlier revisions, sending a NULL filename signified the end of
      * all trace files.  At this point, a NULL file name has no useful
      * purpose, so we ignore it completely. */
-    if(filename) {
+    if (filename) {
 
 	/* The breakdown file line associated with each trace file is
 	 * prefaced with the trace file's name.  This was part of the
@@ -728,10 +729,10 @@ static void do_final_breakdown(
 	for(i = 0; i < num_tcp_pairs; i++) {
 	    ptp = ttp[i];
 
-	    if((a2b_len = breakdown_type(ptp->addr_pair.a_port)) != -1)
+	    if ((a2b_len = breakdown_type(ptp->addr_pair.a_port)) != -1)
 		tcplib_breakdown_total[a2b_len]++;
 	    
-	    if((b2a_len = breakdown_type(ptp->addr_pair.b_port)) != -1)
+	    if ((b2a_len = breakdown_type(ptp->addr_pair.b_port)) != -1)
 		tcplib_breakdown_total[b2a_len]++;
 	}
 
@@ -762,12 +763,7 @@ static void do_final_breakdown(
 
 
 
-
-
-
-
-
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: breakdown_type
  * 
@@ -782,7 +778,7 @@ static void do_final_breakdown(
  *            do_final_breakdown() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 static int breakdown_type(
     int port)   /* What real port to examine */
 {
@@ -842,7 +838,7 @@ static int breakdown_type(
 
 /* Begin Next Conversation Stuff */
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: do_tcplib_next_converse
  * 
@@ -858,7 +854,7 @@ static int breakdown_type(
  * Called by: tcplib_newconn() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 static void do_tcplib_next_converse(
     tcp_pair *ptp)    /* This conversation */
 {
@@ -872,7 +868,7 @@ static void do_tcplib_next_converse(
 
     /* The time 0.0 is what we'll get if this is the first conversation 
      * we've seen in this data file. */
-    if(   (last_converse.tv_sec == 0) 
+    if (   (last_converse.tv_sec == 0) 
        && (last_converse.tv_usec == 0)) {
 
 	/* All we do is store the time for this conversation as the
@@ -894,13 +890,13 @@ static void do_tcplib_next_converse(
     for(i = 0; i < size_next_converse_breakdown; i++) {
 
 	/* If this value of time is present, we're all set. */
-	if(next_converse_breakdown[i].time == time) {
+	if (next_converse_breakdown[i].time == time) {
 	    next_converse_breakdown[i].count++;
 	    last_converse.tv_sec = ptp->first_time.tv_sec;
 	    last_converse.tv_usec = ptp->first_time.tv_usec;
 	    
 	    return;
-	} else if(next_converse_breakdown[i].time > time)
+	} else if (next_converse_breakdown[i].time > time)
 
 	    /* If it's not present, it gets uglier */
 	    break;
@@ -956,7 +952,7 @@ static void do_tcplib_next_converse(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: file_extract
  * 
@@ -971,7 +967,7 @@ static void do_tcplib_next_converse(
  *            tcplib_do_telnet_duration() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 static struct tcplib_next_converse * file_extract(
     FILE* fil,    /* File we're extracting information from */
     int *lines,   /* Number of lines in the file */
@@ -1031,7 +1027,7 @@ static struct tcplib_next_converse * file_extract(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: do_tcplib_final_converse
  * 
@@ -1044,7 +1040,7 @@ static struct tcplib_next_converse * file_extract(
  * Called by: tcplib_done() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 static void do_tcplib_final_converse()
 {
     int i;                  /* Looping Variable */
@@ -1066,7 +1062,7 @@ static void do_tcplib_final_converse()
     /* First section is checking for a previous version of the breakdown file.
      * If one exists, we need to open it up, and pull all the data out of
      * it, so we can patch our data into what's already present. */
-    if((old = fopen(namedfile(TCPLIB_NEXT_CONVERSE_FILE), "r"))) {
+    if ((old = fopen(namedfile(TCPLIB_NEXT_CONVERSE_FILE), "r"))) {
 
 	old_stuff = file_extract(old, &filelines, &count);
 
@@ -1079,7 +1075,7 @@ static void do_tcplib_final_converse()
 	count += next_converse_breakdown[i].count;
     }
 
-    if(!(fil = fopen(namedfile(TCPLIB_NEXT_CONVERSE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_NEXT_CONVERSE_FILE), "w"))) {
 	perror("Error opening TCPLib Conversation Interarrival file");
 	exit(1);
     }
@@ -1091,7 +1087,7 @@ static void do_tcplib_final_converse()
     curr_count = 0;
 
     /* Setting up the conditions for the next loop */
-    if(old_stuff)
+    if (old_stuff)
 	j = 0;
     else
 	j = EMPTY;
@@ -1106,14 +1102,14 @@ static void do_tcplib_final_converse()
      * It just looks complicated. */
     while((i != EMPTY) || (j != EMPTY)) {
 
-	if(   (i != EMPTY)
+	if (   (i != EMPTY)
 	   && (   (j == EMPTY) 
 	       || (next_converse_breakdown[i].time < old_stuff[j].time))) {
 	    curr_count += next_converse_breakdown[i].count;
 	    temp = next_converse_breakdown[i].time;
 	    thisone = next_converse_breakdown[i].count;
 	    i++;
-	} else if(   (j != EMPTY)
+	} else if (   (j != EMPTY)
 		  && (   (i == EMPTY) 
 		      || (next_converse_breakdown[i].time > old_stuff[j].time))) {
 	    curr_count += old_stuff[j].count;
@@ -1131,12 +1127,12 @@ static void do_tcplib_final_converse()
    
 	/* We've run out of items in this set, so mark it as empty so
 	 * we don't bother checking anymore */
-	if(i >= size_next_converse_breakdown)
+	if (i >= size_next_converse_breakdown)
 	    i = EMPTY;
 
 	/* We've run out of items in this set, so mark it as empty so
 	 * we don't bother checking anymore */
-	if(j >= filelines)
+	if (j >= filelines)
 	    j = EMPTY;
 
 	/* Print out this line. */
@@ -1152,7 +1148,7 @@ static void do_tcplib_final_converse()
     fclose(fil);
 
     /* Let's go ahead and free up the data */
-    if(old_stuff) {
+    if (old_stuff) {
 	free(old_stuff);
 	old_stuff = NULL;
     }
@@ -1173,7 +1169,7 @@ static void do_tcplib_final_converse()
 
 /* Begin Telnet stuff */
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: is_telnet_port
  * 
@@ -1186,7 +1182,7 @@ static void do_tcplib_final_converse()
  *            tcplib_do_telnet_duration()  in mod_tcplib.c
  *            tcplib_add_telnet_interval() in mod_tcplib.c
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 int is_telnet_port(
     int port)       /* The port we're looking at */
 {
@@ -1219,7 +1215,7 @@ int is_telnet_port(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_do_telnet_duration
  * 
@@ -1232,7 +1228,7 @@ int is_telnet_port(
  * Called by: tcplib_do_telnet() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_do_telnet_duration()
 {
     int i;                   /* Looping variable */
@@ -1250,7 +1246,7 @@ void tcplib_do_telnet_duration()
 
     /* This section reads in the data from the existing telnet duration
      * file in preparation for merging with the current data. */
-    if((old = fopen(namedfile(TCPLIB_TELNET_DURATION_FILE), "r"))) {
+    if ((old = fopen(namedfile(TCPLIB_TELNET_DURATION_FILE), "r"))) {
 
 	old_stuff = file_extract(old, &filelines, &count);
 
@@ -1273,7 +1269,7 @@ void tcplib_do_telnet_duration()
 	pair = ttp[i];
 
 	/* We only need these stats if it's telnet */
-	if(   is_telnet_port(pair->addr_pair.a_port)
+	if (   is_telnet_port(pair->addr_pair.a_port)
 	   || is_telnet_port(pair->addr_pair.b_port)) {
 
 	    /* Find the conversation with the longest duration.
@@ -1284,7 +1280,7 @@ void tcplib_do_telnet_duration()
 		   ((pair->last_time.tv_usec - pair->first_time.tv_usec)/1000);
 
 	    /* Update the maximum duration */
-	    if(temp > max_size)
+	    if (temp > max_size)
 		max_size = temp;
 
 	    count++;
@@ -1304,7 +1300,7 @@ void tcplib_do_telnet_duration()
 	pair = ttp[i];
 
 	/* Only work this for telnet connections */
-	if(   is_telnet_port(pair->addr_pair.a_port)
+	if (   is_telnet_port(pair->addr_pair.a_port)
 	   || is_telnet_port(pair->addr_pair.b_port)) {
 
 	    /* convert the time difference to ms */
@@ -1320,12 +1316,12 @@ void tcplib_do_telnet_duration()
     }
 
     /* Integrate the old data */
-    if(old_stuff)
+    if (old_stuff)
 	for(i = 0; i < filelines; i++)
 	    count_list[(old_stuff[i].time/100)] += old_stuff[i].count;
 
     /* Open the file */
-    if(!(fil = fopen(namedfile(TCPLIB_TELNET_DURATION_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_TELNET_DURATION_FILE), "w"))) {
 	perror("Unable to open Telnet Duration Data file for TCPLib");
 	exit(1);
     }
@@ -1336,7 +1332,7 @@ void tcplib_do_telnet_duration()
     for(i = 0; i < ((max_size/100)+1); i++) {
 	curr_count += count_list[i];
 
-	if(count_list[i]) {
+	if (count_list[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
 		    (float)((i+1)*100),           /* Here is where we add that 100ms */
 		    (((float)curr_count)/count),
@@ -1350,7 +1346,7 @@ void tcplib_do_telnet_duration()
     /* freeing up the temporary things */
     free(count_list);
 
-    if(old_stuff)
+    if (old_stuff)
 	free(old_stuff);
 }
 
@@ -1362,7 +1358,7 @@ void tcplib_do_telnet_duration()
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_add_telnet_interarrival
  * 
@@ -1376,7 +1372,7 @@ void tcplib_do_telnet_duration()
  * Called by: tcplib_read() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_add_telnet_interarrival(
     tcp_pair *ptp,              /* This conversation */
     struct timeval* ptp_saved)  /* The time of the last packet in the conversation */
@@ -1394,11 +1390,11 @@ void tcplib_add_telnet_interarrival(
      * about a connection.  Quite handy.  Thanks, Dr. Ostermann */
 
     /* We only need to do this stuff if this connection is a telnet connection */
-    if(   is_telnet_port(ptp->addr_pair.a_port)
+    if (   is_telnet_port(ptp->addr_pair.a_port)
        || is_telnet_port(ptp->addr_pair.b_port)){
 
 	/* First packet has no interarrival time */
-	if(   (ptp->last_time.tv_sec == ptp->first_time.tv_sec)
+	if (   (ptp->last_time.tv_sec == ptp->first_time.tv_sec)
 	   && (ptp->last_time.tv_usec == ptp->first_time.tv_usec)) {
 
 	    /* If this is the first packet we've seen, then all we need
@@ -1421,7 +1417,7 @@ void tcplib_add_telnet_interarrival(
 	 * for a connection like that is not worth the effort, so we just
 	 * set a ceiling and if it's over the ceiling, we make it the
 	 * ceiling. */
-	if(temp > MAX_TEL_INTER_COUNT - 1)
+	if (temp > MAX_TEL_INTER_COUNT - 1)
 	    temp = MAX_TEL_INTER_COUNT - 1;
 
 	/* In this case, we know for a fact that we don't have a value of
@@ -1448,7 +1444,7 @@ void tcplib_add_telnet_interarrival(
 
 
     
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_do_telnet_interarrival
  * 
@@ -1460,7 +1456,7 @@ void tcplib_add_telnet_interarrival(
  * Called by: tcplib_do_telnet() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_do_telnet_interarrival()
 {
     int i;                 /* Looping variable */
@@ -1475,7 +1471,7 @@ void tcplib_do_telnet_interarrival()
 
     /* Reads in the existing data from the telnet inter-arrival file
      * in preparation for merging with the data from this run */
-    if((old = fopen(namedfile(TCPLIB_TELNET_INTERARRIVAL_FILE), "r"))) {
+    if ((old = fopen(namedfile(TCPLIB_TELNET_INTERARRIVAL_FILE), "r"))) {
 
 	old_stuff = file_extract(old, &filelines, &count);
 
@@ -1490,10 +1486,10 @@ void tcplib_do_telnet_interarrival()
 	 * them to the array we've kept */
 	for(i = 0; i < MAX_TEL_INTER_COUNT; i++) {
 	    while(old_stuff[j].time < i) {
-		if(++j >= filelines)
+		if (++j >= filelines)
 		    break;
 		    
-		if((j < filelines) && (old_stuff[j].time == i))
+		if ((j < filelines) && (old_stuff[j].time == i))
 		    tcplib_telnet_interarrival_count[i] += old_stuff[j].count;
 	    }
 	}
@@ -1508,7 +1504,7 @@ void tcplib_do_telnet_interarrival()
     }
 
     /* Dumping the data out to the data file */
-    if(!(fil = fopen(namedfile(TCPLIB_TELNET_INTERARRIVAL_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_TELNET_INTERARRIVAL_FILE), "w"))) {
 	perror("Error opening Telnet Interarrival file");
 	exit(1);
     }
@@ -1518,7 +1514,7 @@ void tcplib_do_telnet_interarrival()
     for(i = 0; i < MAX_TEL_INTER_COUNT; i++) {
 	curr_count += tcplib_telnet_interarrival_count[i];
 
-	if(tcplib_telnet_interarrival_count[i]) {
+	if (tcplib_telnet_interarrival_count[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
 		    (float)(i + 1),
 		    (((float)curr_count)/count),
@@ -1539,7 +1535,7 @@ void tcplib_do_telnet_interarrival()
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_do_telnet_packetsize
  * 
@@ -1552,7 +1548,7 @@ void tcplib_do_telnet_interarrival()
  * Called by: tcplib_do_telnet() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_do_telnet_packetsize()
 {
     int i;               /* Looping variable */
@@ -1569,7 +1565,7 @@ void tcplib_do_telnet_packetsize()
      * applying the data contained there to the data set that we've 
      * acquired during this run, and then dumping the merged data set
      * back out to the data file */
-    if((old = fopen(namedfile(TCPLIB_TELNET_PACKETSIZE_FILE), "r"))) {
+    if ((old = fopen(namedfile(TCPLIB_TELNET_PACKETSIZE_FILE), "r"))) {
 
 	/* Get the first line out of the way - first line is just text, no data */
 	fgets(buffer, 255, old);
@@ -1584,7 +1580,7 @@ void tcplib_do_telnet_packetsize()
 
 	    /* Making sure that the data we're reading is legal and that
 	     * we don't overstep our array boundaries */
-	    if(old_stuff.time >= MAX_TEL_PACK_SIZE_COUNT) {
+	    if (old_stuff.time >= MAX_TEL_PACK_SIZE_COUNT) {
 		printf("Telnet packet payload too high - %d.  Truncating.\n", old_stuff.count);
 		old_stuff.count = MAX_TEL_PACK_SIZE_COUNT - 1;
 	    }
@@ -1602,7 +1598,7 @@ void tcplib_do_telnet_packetsize()
     }
 
     /* Opening the file, preparing it form rewriting */
-    if(!(fil = fopen(namedfile(TCPLIB_TELNET_PACKETSIZE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_TELNET_PACKETSIZE_FILE), "w"))) {
 	perror("Error opening Telnet Packet Size file");
 	exit(1);
     }
@@ -1613,7 +1609,7 @@ void tcplib_do_telnet_packetsize()
     for(i = 0; i < MAX_TEL_PACK_SIZE_COUNT; i++) {
 	curr_count += tcplib_telnet_packetsize_count[i];
 
-	if(tcplib_telnet_packetsize_count[i]) {
+	if (tcplib_telnet_packetsize_count[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
 		    (float)(i + 1),
 		    (((float)curr_count)/count),
@@ -1632,7 +1628,7 @@ void tcplib_do_telnet_packetsize()
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_add_telnet_packetsize
  * 
@@ -1647,12 +1643,12 @@ void tcplib_do_telnet_packetsize()
  * Called by: tcplib_read() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_add_telnet_packetsize(
     int length)  /* The length of the packet to be added to the table */
 {
     /* Checking to make sure we don't overrun our array bounds */
-    if(length > MAX_TEL_PACK_SIZE_COUNT)
+    if (length > MAX_TEL_PACK_SIZE_COUNT)
 	length = MAX_TEL_PACK_SIZE_COUNT;
 
     /* Incrementing the table */
@@ -1665,7 +1661,7 @@ void tcplib_add_telnet_packetsize(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_do_telnet
  * 
@@ -1677,7 +1673,7 @@ void tcplib_add_telnet_packetsize(
  * Called by: tcplib_done() in mod_tcplib.c
  * 
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_do_telnet()
 {
     tcplib_do_telnet_duration();      /* Handles duration data */
@@ -1698,7 +1694,7 @@ void tcplib_do_telnet()
 
 /* Begin FTP Stuff */
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: is_ftp_data_port
  * 
@@ -1709,14 +1705,14 @@ void tcplib_do_telnet()
  *
  * Called by: tcplib_do_ftp_itemsize() in mod_tcplib.c
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 int is_ftp_data_port(
     int port)   /* Port number */
 {
     /* Removing the port offset */
     port -= ipport_offset;
 
-    if(port == IPPORT_FTP_DATA)
+    if (port == IPPORT_FTP_DATA)
 	return TRUE;
 
     return FALSE;
@@ -1727,7 +1723,7 @@ int is_ftp_data_port(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: is_ftp_control_port
  * 
@@ -1738,14 +1734,14 @@ int is_ftp_data_port(
  *
  * Called by: tcplib_do_ftp_control_size() in mod_tcplib.c
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 int is_ftp_control_port(
     int port)   /* Port number */
 {
     /* Removing the port offset */
     port -= ipport_offset;
 
-    if(port == IPPORT_FTP_CONTROL)
+    if (port == IPPORT_FTP_CONTROL)
 	return TRUE;
 
     return FALSE;
@@ -1753,7 +1749,7 @@ int is_ftp_control_port(
 
 
 
-/* **************************************************************************
+/***************************************************************************
  * 
  * Function Name: tcplib_do_ftp_itemsize
  * 
@@ -1765,7 +1761,7 @@ int is_ftp_control_port(
  *
  * Called by: tcplib_do_ftp() in mod_tcplib.c
  * 
- * ***************************************************************************/
+ ****************************************************************************/
 void tcplib_do_ftp_itemsize()
 {
     int i;                    /* Looping variable */
@@ -1785,7 +1781,7 @@ void tcplib_do_ftp_itemsize()
 
     /* If the an old data file exists, open it, read in its contents and store them
      * until they are integrated with the current data */
-    if((old = fopen(namedfile(TCPLIB_FTP_ITEMSIZE_FILE), "r"))) {
+    if ((old = fopen(namedfile(TCPLIB_FTP_ITEMSIZE_FILE), "r"))) {
 
 	/* Counting number of lines */
 	while(fgets(buffer, 255, old))
@@ -1824,7 +1820,7 @@ void tcplib_do_ftp_itemsize()
 	pair = ttp[i];
 
 	/* We only need the stats if it's FTP data */
-	if(   is_ftp_data_port(pair->addr_pair.a_port)
+	if (   is_ftp_data_port(pair->addr_pair.a_port)
 	   || is_ftp_data_port(pair->addr_pair.b_port)){
 	    
 	    /* Now we know we're only dealing with FTP data... so
@@ -1833,7 +1829,7 @@ void tcplib_do_ftp_itemsize()
 	     */
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if(temp > max_size)
+	    if (temp > max_size)
 		max_size = temp;
 
 	    count++;
@@ -1850,7 +1846,7 @@ void tcplib_do_ftp_itemsize()
 	pair = ttp[i];
 
 	/* We only need the stats if it's FTP data */
-	if(   is_ftp_data_port(pair->addr_pair.a_port)
+	if (   is_ftp_data_port(pair->addr_pair.a_port)
 	   || is_ftp_data_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
@@ -1860,11 +1856,11 @@ void tcplib_do_ftp_itemsize()
     }
 
     /* Integrate the old data */
-    if(old_stuff)
+    if (old_stuff)
 	for(i = 0; i < filelines; i++)
 	    size_list[(old_stuff[i].time)] += old_stuff[i].count;
 
-    if(!(fil = fopen(namedfile(TCPLIB_FTP_ITEMSIZE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_FTP_ITEMSIZE_FILE), "w"))) {
 	perror("Unable to open FTP Itemsize Data file for TCPLib");
 	exit(1);
     }
@@ -1876,7 +1872,7 @@ void tcplib_do_ftp_itemsize()
 
 	curr_count += size_list[i];
 
-	if(size_list[i]) {
+	if (size_list[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
 		    (float)temp,
 		    (((float)curr_count)/count),
@@ -1889,46 +1885,21 @@ void tcplib_do_ftp_itemsize()
 
     free(size_list);
 
-    if(old_stuff)
+    if (old_stuff)
 	free(old_stuff);
 
     return;
 }
 
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 void tcplib_do_ftp_num_items()
 {
-    /* No fucking clue ATM */
-
     /* Need to figure out how to know when the control connection has
      * spawned off new data connections.
      */
 }
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
+
 void tcplib_do_ftp_control_size()
 {
     int i;
@@ -1946,7 +1917,7 @@ void tcplib_do_ftp_control_size()
     float temp1, temp2;
     int j;
 
-    if((old = fopen(namedfile(TCPLIB_FTP_CTRLSIZE_FILE), "r"))) {
+    if ((old = fopen(namedfile(TCPLIB_FTP_CTRLSIZE_FILE), "r"))) {
 
 	/* Counting number of lines */
 	while(fgets(buffer, 255, old))
@@ -1981,7 +1952,7 @@ void tcplib_do_ftp_control_size()
 	pair = ttp[i];
 
 	/* We only need the stats if it's FTP data */
-	if(   is_ftp_control_port(pair->addr_pair.a_port)
+	if (   is_ftp_control_port(pair->addr_pair.a_port)
 	   || is_ftp_control_port(pair->addr_pair.b_port)){
 	    
 	    /* Now we know we're only dealing with FTP data... so
@@ -1990,7 +1961,7 @@ void tcplib_do_ftp_control_size()
 	     */
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if(temp > max_size) {
+	    if (temp > max_size) {
 		max_size = temp;
 	    }
 
@@ -2008,7 +1979,7 @@ void tcplib_do_ftp_control_size()
 	pair = ttp[i];
 
 	/* We only need the stats if it's FTP data */
-	if(   is_ftp_control_port(pair->addr_pair.a_port)
+	if (   is_ftp_control_port(pair->addr_pair.a_port)
 	   || is_ftp_control_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
@@ -2018,11 +1989,11 @@ void tcplib_do_ftp_control_size()
     }
 
     /* Integrate the old data */
-    if(old_stuff)
+    if (old_stuff)
 	for(i = 0; i < filelines; i++)
 	    size_list[(old_stuff[i].time)] += old_stuff[i].count;
 
-    if(!(fil = fopen(namedfile(TCPLIB_FTP_CTRLSIZE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_FTP_CTRLSIZE_FILE), "w"))) {
 	perror("Unable to open FTP Control size Data file for TCPLib");
 	exit(1);
     }
@@ -2032,7 +2003,7 @@ void tcplib_do_ftp_control_size()
     for(i = 0; i < (max_size+1); i++) {
 	curr_count += size_list[i];
 
-	if(size_list[i]) {
+	if (size_list[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
 		    (float)i,
 		    (((float)curr_count)/count),
@@ -2045,7 +2016,7 @@ void tcplib_do_ftp_control_size()
 
     free(size_list);
 
-    if(old_stuff)
+    if (old_stuff)
 	free(old_stuff);
 
     return;
@@ -2053,18 +2024,6 @@ void tcplib_do_ftp_control_size()
 
     
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 void tcplib_do_ftp()
 {
     tcplib_do_ftp_control_size();  /* Done */
@@ -2077,41 +2036,16 @@ void tcplib_do_ftp()
 /* End of FTP Stuff */
 
 /* Begin SMTP Stuff */
-
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 int is_smtp_port(int port)
 {
     port -= ipport_offset;
 
-    if(port == IPPORT_SMTP)
+    if (port == IPPORT_SMTP)
 	return TRUE;
 
     return FALSE;
 }
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 void tcplib_do_smtp()
 {
     int i;
@@ -2129,7 +2063,7 @@ void tcplib_do_smtp()
     float temp1, temp2;
     int j;
 
-    if((old = fopen(namedfile(TCPLIB_SMTP_ITEMSIZE_FILE), "r"))) {
+    if ((old = fopen(namedfile(TCPLIB_SMTP_ITEMSIZE_FILE), "r"))) {
 
 	/* Counting number of lines */
 	while(fgets(buffer, 255, old))
@@ -2164,7 +2098,7 @@ void tcplib_do_smtp()
 	pair = ttp[i];
 
 	/* We only need the stats if it's FTP data */
-	if(   is_smtp_port(pair->addr_pair.a_port)
+	if (   is_smtp_port(pair->addr_pair.a_port)
 	   || is_smtp_port(pair->addr_pair.b_port)){
 	    
 	    /* Now we know we're only dealing with SMTP data... so
@@ -2173,7 +2107,7 @@ void tcplib_do_smtp()
 	     */
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if(temp > max_size)
+	    if (temp > max_size)
 		max_size = temp;
 
 	    count++;
@@ -2190,7 +2124,7 @@ void tcplib_do_smtp()
 	pair = ttp[i];
 
 	/* We only need the stats if it's SMTP data */
-	if(   is_smtp_port(pair->addr_pair.a_port)
+	if (   is_smtp_port(pair->addr_pair.a_port)
 	   || is_smtp_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
@@ -2200,11 +2134,11 @@ void tcplib_do_smtp()
     }
 
     /* Integrate the old data */
-    if(old_stuff)
+    if (old_stuff)
 	for(i = 0; i < filelines; i++)
 	    size_list[(old_stuff[i].time/5)] += old_stuff[i].count;
 
-    if(!(fil = fopen(namedfile(TCPLIB_SMTP_ITEMSIZE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_SMTP_ITEMSIZE_FILE), "w"))) {
 	perror("Unable to open SMTP Itemsize Data file for TCPLib");
 	exit(1);
     }
@@ -2216,7 +2150,7 @@ void tcplib_do_smtp()
 
 	curr_count += size_list[i];
 
-	if(size_list[i]) {
+	if (size_list[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
 		    (float)temp,
 		    (((float)curr_count)/count),
@@ -2229,7 +2163,7 @@ void tcplib_do_smtp()
 
     free(size_list);
 
-    if(old_stuff)
+    if (old_stuff)
 	free(old_stuff);
 
     return;
@@ -2239,42 +2173,17 @@ void tcplib_do_smtp()
 
 
 /* Being NNTP Stuff */
-
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 int is_nntp_port(int port)
 {
     port -= ipport_offset;
 
-    if(port == IPPORT_NNTP)
+    if (port == IPPORT_NNTP)
 	return TRUE;
 
     return FALSE;
 }
 
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 void tcplib_do_nntp_itemsize()
 {
     int i;
@@ -2292,7 +2201,7 @@ void tcplib_do_nntp_itemsize()
     float temp1, temp2;
     int j;
 
-    if((old = fopen(namedfile(TCPLIB_NNTP_ITEMSIZE_FILE), "r")) != NULL) {
+    if ((old = fopen(namedfile(TCPLIB_NNTP_ITEMSIZE_FILE), "r")) != NULL) {
 
 	/* Counting number of lines */
 	while(fgets(buffer, 255, old))
@@ -2327,7 +2236,7 @@ void tcplib_do_nntp_itemsize()
 	pair = ttp[i];
 
 	/* We only need the stats if it's NNTP data */
-	if(   is_nntp_port(pair->addr_pair.a_port)
+	if (   is_nntp_port(pair->addr_pair.a_port)
 	   || is_nntp_port(pair->addr_pair.b_port)){
 	    
 	    /* Now we know we're only dealing with NNTP data... so
@@ -2336,7 +2245,7 @@ void tcplib_do_nntp_itemsize()
 	     */
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if(temp > max_size)
+	    if (temp > max_size)
 		max_size = temp;
 
 	    count++;
@@ -2353,7 +2262,7 @@ void tcplib_do_nntp_itemsize()
 	pair = ttp[i];
 
 	/* We only need the stats if it's NNTP data */
-	if(   is_nntp_port(pair->addr_pair.a_port)
+	if (   is_nntp_port(pair->addr_pair.a_port)
 	   || is_nntp_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
@@ -2363,11 +2272,11 @@ void tcplib_do_nntp_itemsize()
     }
 
     /* Integrate the old data */
-    if(old_stuff)
+    if (old_stuff)
 	for(i = 0; i < filelines; i++)
 	    size_list[(old_stuff[i].time)/1024] += old_stuff[i].count;
 
-    if(!(fil = fopen(namedfile(TCPLIB_NNTP_ITEMSIZE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_NNTP_ITEMSIZE_FILE), "w"))) {
 	perror("Unable to open NNTP Itemsize Data file for TCPLib");
 	exit(1);
     }
@@ -2377,7 +2286,7 @@ void tcplib_do_nntp_itemsize()
     for(i = 0; i < (max_size+1)/1024; i++) {
 	curr_count += size_list[i];
 
-	if(size_list[i]) {
+	if (size_list[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
 		    (float)i,
 		    (((float)curr_count)/count),
@@ -2390,29 +2299,15 @@ void tcplib_do_nntp_itemsize()
 
     free(size_list);
 
-    if(old_stuff)
+    if (old_stuff)
 	free(old_stuff);
 
     return;
 }
 
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 void tcplib_do_nntp_numitems()
 {
-    /* No fucking clue ATM */
-
     /* Basically we need to figure out how many different
      * articles are bundles up together?  I'm not quite sure
      * how the whole NNTP thing works anyways.
@@ -2420,18 +2315,6 @@ void tcplib_do_nntp_numitems()
 }
 
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 void tcplib_do_nntp()
 {
     tcplib_do_nntp_itemsize();  /* Done */
@@ -2442,41 +2325,17 @@ void tcplib_do_nntp()
 /* Done NNTP Stuff */
 
 /* Being HTTP Stuff */
-
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 int is_http_port(int port)
 {
     port -= ipport_offset;
 
-    if(port == IPPORT_HTTP)
+    if (port == IPPORT_HTTP)
 	return TRUE;
 
     return FALSE;
 }
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
+
 void tcplib_do_http_itemsize()
 {
     int i;
@@ -2494,7 +2353,7 @@ void tcplib_do_http_itemsize()
     float temp1, temp2;
     int j;
 
-    if((old = fopen(namedfile(TCPLIB_HTTP_ITEMSIZE_FILE), "r"))) {
+    if ((old = fopen(namedfile(TCPLIB_HTTP_ITEMSIZE_FILE), "r"))) {
 
 	/* Counting number of lines */
 	while(fgets(buffer, 255, old))
@@ -2529,7 +2388,7 @@ void tcplib_do_http_itemsize()
 	pair = ttp[i];
 
 	/* We only need the stats if it's HTTP data */
-	if(   is_http_port(pair->addr_pair.a_port)
+	if (   is_http_port(pair->addr_pair.a_port)
 	   || is_http_port(pair->addr_pair.b_port)){
 	    
 	    /* Now we know we're only dealing with HTTP data... so
@@ -2538,7 +2397,7 @@ void tcplib_do_http_itemsize()
 	     */
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if(temp > max_size)
+	    if (temp > max_size)
 		max_size = temp;
 
 	    count++;
@@ -2555,7 +2414,7 @@ void tcplib_do_http_itemsize()
 	pair = ttp[i];
 
 	/* We only need the stats if it's HTTP data */
-	if(   is_http_port(pair->addr_pair.a_port)
+	if (   is_http_port(pair->addr_pair.a_port)
 	   || is_http_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
@@ -2565,11 +2424,11 @@ void tcplib_do_http_itemsize()
     }
 
     /* Integrate the old data */
-    if(old_stuff)
+    if (old_stuff)
 	for(i = 0; i < filelines; i++)
 	    size_list[(old_stuff[i].time)] += old_stuff[i].count;
 
-    if(!(fil = fopen(namedfile(TCPLIB_HTTP_ITEMSIZE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile(TCPLIB_HTTP_ITEMSIZE_FILE), "w"))) {
 	perror("Unable to open HTTP Itemsize Data file for TCPLib");
 	exit(1);
     }
@@ -2581,7 +2440,7 @@ void tcplib_do_http_itemsize()
 
 	curr_count += size_list[i];
 
-	if(size_list[i]) {
+	if (size_list[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
 		    (float)temp,
 		    (((float)curr_count)/count),
@@ -2594,24 +2453,12 @@ void tcplib_do_http_itemsize()
 
     free(size_list);
 
-    if(old_stuff)
+    if (old_stuff)
 	free(old_stuff);
 }
 
     
 
-/* **************************************************************************
- * 
- * Function Name: 
- * 
- * Returns: 
- *
- * Purpose: 
- *
- * Called by: 
- * 
- * 
- * ***************************************************************************/
 void tcplib_do_http()
 {
     tcplib_do_http_itemsize();
