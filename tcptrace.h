@@ -131,7 +131,6 @@ typedef struct pl_line *PLINE;
 #define MAX_HOSTLETTER_LEN 8 
 
 
-
 /* several places in the code NEED numbers of a specific size. */
 /* since the definitions aren't standard across everything we're */
 /* trying to support, the types are gathered up here */
@@ -303,7 +302,8 @@ typedef struct tcb {
 	/* If we are using window scaling, have we adjusted the 
 	   win_min field from the non-scaled window size
 	   that appeared in the SYN packet?? */
-	Bool window_stats_updated_for_scaling;
+    Bool window_stats_updated_for_scaling;
+    u_llong     win_scaled_pkts; /* Used to calculate avg win adv */
 
     /* statistics added */
     u_llong	data_bytes;
@@ -316,7 +316,7 @@ typedef struct tcb {
     u_llong	pureack_pkts;	/* mallman - pure acks, no data */
     u_long	win_max;
     u_long	win_min;
-    u_long	win_tot;
+    u_llong	win_tot;
     u_long      win_last;  /* last advertised window size*/
     u_long	win_zero_ct;
     u_llong	packets;

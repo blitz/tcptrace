@@ -60,6 +60,7 @@ static char const rcsid[] =
 #include "tcptrace.h"
 #include "gcache.h"
 
+
 /* locally global variables */
 static int tcp_packet_count = 0;
 static int search_count = 0;
@@ -1167,7 +1168,7 @@ dotrace(
     int		dir;
     Bool	retrans;
     Bool 	probe;
-	Bool 	probe;
+    Bool	hw_dup = FALSE;	/* duplicate at the hardware level */
     Bool	ecn_ce = FALSE;
     Bool	ecn_echo = FALSE;
     Bool	cwr = FALSE;
@@ -1428,7 +1429,6 @@ dotrace(
 	thisdir->window_scale = ptcpo->ws;
 	thisdir->f1323_ws = TRUE;
     }
-
     if (ptcpo->tsval != -1) {
 	thisdir->f1323_ts = TRUE;
     }
@@ -1481,6 +1481,10 @@ dotrace(
     ++thisdir->packets;
 
     /* If we are using window scaling, update the win_scaled_pkts counter */
+    if (thisdir->window_stats_updated_for_scaling)
+	++thisdir->win_scaled_pkts;
+    
+    /* instantaneous throughput stats */
     if (graph_tput) {
 	DoThru(thisdir,tcp_data_length);
     }
@@ -1931,30 +1935,42 @@ dotrace(
 	    thisdir->win_max = eff_win;
 
 	/* If we *are* going to use window scaling,
-	/* If we *are* going to use window scaling, ignore the window
-	size that appeared in SYN packet as being counted as win_min 
-	for this direction. 
-	Instead, treat the smallest, window-scaled, window advertisement
-	as win_min. 
+	 * i.e., if we saw both SYN segments of the connection requesting
+	 * window scaling, we flush out all the window stats we gathered till
+	 * now from the SYN segments.
+	 * 
+	 * o We set the flag window_stats_updated_for_scaling to TRUE
+	 * o Set win_min and win_max to the value found in this first
+	 *   window-scaled segment
+	 * o Reset win_tot value too, as this is used to calculate the
+	 *   average window advertisement seen in this direction at the end
+	 * o We also use the field win_scaled_pkts for this purpose, so that
+	 *   in the end we calculate
+	 * 
+	 *   avg_win_adv = win_tot/win_scaled_pkts // Refer output.c
+	 * 
+	 * Note : for a connection that doesn't use window scaling,
+	 * 
+	 *   avg_win_adv = win_tot/packets        // Refer again to output.c
+	 */
 
-	We have a flag "window_stats_updated_for_scaling" 
-	in either direction of the connection, that gets turned ON, the 
-	moment we find that both sides have agreed to use window
-	scaling and this is the first packet in either direction
-	with scaled window. */
-	   
+	if ( (eff_win>0) && 
 	     ( thisdir->f1323_ws && otherdir->f1323_ws && !SYN_SET(ptcp) &&
 		!thisdir->window_stats_updated_for_scaling  
-		   (thisdir->window_scale > 0) &&
-		   !thisdir->window_stats_updated_for_scaling  
-	     ) ) {
-			thisdir->window_stats_updated_for_scaling=TRUE;
-			thisdir->win_min = eff_win;
+	     ) 
+	   ) {
+	     thisdir->window_stats_updated_for_scaling=TRUE;
+	     thisdir->win_min = thisdir->win_max = eff_win;
+	     thisdir->win_tot = 0;
+	     thisdir->win_scaled_pkts = 1;
+	}
 	else if ((eff_win > 0) &&
 	    ((thisdir->win_min == 0) ||
 	     (eff_win < thisdir->win_min)))
 	    thisdir->win_min = eff_win;
 	
+	/* Add the window advertisement to win_tot */
+	thisdir->win_tot += eff_win;
     }
 
     /* draw the ack and win in the other plotter */

@@ -506,3 +506,8 @@ based on the patch sent by Thomas Bohnert.
 6.4.4 : 19 MAY 2003 Wes
 -----
 Added dsack counter to long output format and dsack sample input and output
+
+6.4.5 : 13 JUN 2003 Mani
+-----
+Fixed bug in the calculation of the "avg win adv" field, so that now avg.
+falls in between min and max.
