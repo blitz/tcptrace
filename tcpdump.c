@@ -25,108 +25,23 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
-/* Added FDDI support 9/96 Jeffrey Semke, Pittsburgh Supercomputing Center */
-static char const copyright[] =
-    "@(#)Copyright (c) 1996 -- Ohio University.  All rights reserved.\n";
-static char const rcsid[] =
-    "@(#)$Header$";
-
-
-/* 
- * tcpdump.c - TCPDUMP specific file reading stuff
- *	       For the most part, we just use the PCAP library files, which
- *	       come with tcpdump.  They are not included here.
- */
-
 
 #include <stdio.h>
-#include <pcap.h>
 #include "tcptrace.h"
-
 
 #ifdef GROK_TCPDUMP
 
-
-pcap_t *pcap;
-
-
-/* ugly (necessary) interaction between the pread_tcpdump() routine and */
-/* the callback needed for pcap's pcap_offline_read routine		*/
-static struct ether_header *callback_pep;
-static struct pcap_pkthdr *callback_phdr;
-static int ip_buf[MAX_IP_PACKLEN];
-
-extern int pcap_offline_read();
-
-/* (Courtesy Jeffrey Semke, Pittsburgh Supercomputing Center) */
-/* locate ip within FDDI according to RFC 1188 */
-int find_ip_fddi(char* buf, int iplen) {
-      char* ptr, *ptr2;
-      int i;
-      char pattern[] = {0xAA, 0x03, 0x00, 0x00, 0x00, 0x08, 0x00};
-#define FDDIPATTERNLEN 7
-
-      ptr = ptr2 = buf;
-
-      for (i=0; i < FDDIPATTERNLEN; i++) {
-	    ptr2 = memchr(ptr,pattern[i],(iplen - (int)(ptr - buf)));
-	    if (!ptr2) 
-		  return (-1);
-	    if (i && (ptr2 != ptr)) {
-		  ptr2 = ptr2 - i - 1;
-		  i = -1;
-	    }
-	    ptr = ptr2 + 1;
-      }
-      return (ptr2 - buf + 1);
-      
-}
-
-static int callback(
-    char *user,
-    struct pcap_pkthdr *phdr,
-    char *buf)
-{
-    int type;
-    int iplen;
-    static int offset = -1;
-
-    iplen = phdr->caplen;
-    if (iplen > MAX_IP_PACKLEN)
-	iplen = MAX_IP_PACKLEN;
-
-    type = pcap_datalink(pcap);
-
-    /* remember the stuff we always save */
-    callback_phdr = phdr;
-    callback_pep = (struct ether_header *) buf;
-    
-    /* kindof ugly, but about the only way to make them fit together :-( */
-    switch (type) {
-      case DLT_EN10MB:
-	memcpy(ip_buf,buf+14,iplen);
-	break;
-      case DLT_SLIP:
-	callback_pep->ether_type = htons(ETHERTYPE_IP);
-	memcpy(ip_buf,buf+16,iplen);
-	break;
-      case DLT_FDDI:
-	callback_pep->ether_type = htons(ETHERTYPE_IP);
-	if (offset < 0)
-	      offset = find_ip_fddi(buf,iplen);
-	if (offset < 0)
-	      return(-1);
-	memcpy(ip_buf,buf+offset,iplen);
-	break;
-      default:
-	fprintf(stderr,"Don't understand packet format (%d)\n", type);
-	exit(1);
-    }
-
-    return(0);
-}
+#include "tcpdump.h"
 
 
+
+/* local globals */
+static struct ether_header *pep_buf;
+static struct ip *pip_buf;
+static struct dump_file_header dfh;
+
+
+/* return the next packet header */
 /* currently only works for ETHERNET and FDDI */
 static int
 pread_tcpdump(
@@ -137,55 +52,160 @@ pread_tcpdump(
     int			*pphystype,
     struct ip		**ppip)
 {
-    int ret;
+    struct packet_header hdr;
+    int rlen;
+    int iplen;
+    int type;
 
-    while (1) {
-	if ((ret = pcap_offline_read(pcap,1,callback,0)) != 1) {
-	    /* prob EOF */
-
-	    if (ret == -1) {
-		char *error;
-		error = pcap_geterr(pcap);
-
-		if (error && *error)
-		    fprintf(stderr,"PCAP error: '%s'\n",pcap_geterr(pcap));
-		/* else, it's just EOF */
-	    }
-	    
+    while (1) {  /* loop until we find an IP packet */
+	/* read the packet header */
+	if ((rlen=fread(&hdr,sizeof(hdr),1,stdin)) != 1) {
+	    if (rlen != 0)
+		fprintf(stderr,"Bad tcpdump packet header\n");
 	    return(0);
 	}
 
-	/* fill in all of the return values */
-	*pphys     = callback_pep;
-	*pphystype = PHYS_ETHER;
-	*ppip      = (struct ip *) ip_buf;
-	*ptime     = callback_phdr->ts;
-	*plen      = callback_phdr->len;
-	*ptlen     = callback_phdr->caplen;
+	/* convert the packet header to local byte order */
+	if (tcpdump_doswap)
+	    swap_phdr(&hdr);
 
-	/* if it's not TCP/IP, then skip it */
-	if ((ntohs(callback_pep->ether_type) != ETHERTYPE_IP) ||
-	    ((*ppip)->ip_p != IPPROTO_TCP)) {
-	    continue;
+	/* how much data is there? */
+	iplen = hdr.caplen;  /* less frame header, subracted below */
+
+
+	type = dfh.linktype;
+
+	if (debug > 1)
+	    printf("tcpdump_read: read from type %d (%s)\n",
+		   type,
+		   (type==DLT_EN10MB)?"Ethernet10":
+		   (type==DLT_SLIP)?"SLIP":
+		   (type==DLT_FDDI)?"FDDI":
+		   "<unknown>");
+
+	switch (type) {
+	  case DLT_EN10MB:
+	    /* read the ethernet header */
+	    if ((rlen=fread(pep_buf,sizeof(struct ether_header),1,stdin))
+		!= 1) {
+		if (rlen != 0)
+		    fprintf(stderr,"Bad tcpdump ethernet header (rlen %d)\n",
+			    rlen);
+		return(0);
+	    }
+	    if (ntohs(pep_buf->ether_type) != ETHERTYPE_IP) {
+		if (debug>1)
+		    printf("tcpdump_read: skipping non ETHER/IP packet\n");
+		/* throw away the rest */
+		fseek(stdin,iplen-sizeof(struct ether_header), SEEK_CUR);
+		continue;
+	    }
+	    *pphys  = pep_buf;
+	    iplen -= sizeof(struct ether_header);
+	    *pphystype = PHYS_ETHER;
+	    break;
+	  case DLT_SLIP:
+	    /* don't care about the 16 byte header */
+	    if (fseek(stdin,16,SEEK_CUR) != 0) {
+		perror("fseek");
+		fprintf(stderr,"tcpdump_SLIP: bad seek\n");
+		exit(-1);
+	    }
+	    *pphys  = NULL;
+	    *pphystype = PHYS_ETHER;  /* lie a little */
+	    break;
+	  case DLT_FDDI:
+	    *pphys  = NULL;
+	    *pphystype = PHYS_FDDI;  /* lie a little */
+	    break;
+	  default:
+	    if (debug>1)
+		printf("tcpdump_read: unknown phys frame type %d (%s)\n",
+		       type,
+		       (type==DLT_EN10MB)?"Ethernet10":
+		       (type==DLT_SLIP)?"SLIP":
+		       (type==DLT_FDDI)?"FDDI":
+		       "<unknown>");
+	    exit(-1);
 	}
 
-	return(1);
+	/* read the IP portion of the packet */
+	if ((rlen=fread(pip_buf,iplen,1,stdin)) != 1) {
+	    if (rlen != 0)
+		fprintf(stderr,"Bad tcpdump IP packet (rlen %d)\n",
+			rlen);
+	    return(0);
+	}
+
+	ptime->tv_sec  = hdr.ts_secs;
+	ptime->tv_usec = hdr.ts_usecs;
+	*plen          = hdr.len;
+	*ptlen         = hdr.caplen;
+
+	*ppip  = (struct ip *) pip_buf;
+
+	/* if it's not TCP/IP, then skip it */
+	if ((*ppip)->ip_p != IPPROTO_TCP) {
+	    if (debug>1)
+		printf("tcpdump_read: skipping non TCP packet\n");
+	    continue;
+	}
+	break;
     }
+
+    if (debug>2)
+	printf("tcpdump_read: returning packet\n");
+
+    return(1);
 }
+
 
 
 int (*is_tcpdump(void))()
 {
-    char errbuf[100];
+    int rlen;
 
-    if ((pcap = pcap_open_offline("-",errbuf)) == NULL) {
-	if (debug > 2)
-	    fprintf(stderr,"PCAP said: '%s'\n", errbuf);
+    if (debug)
+	printf("Using 'fread' version of tcpdump\n");
+
+    /* read the file header */
+    if ((rlen=fread(&dfh,sizeof(dfh),1,stdin)) != 1) {
 	rewind(stdin);
 	return(NULL);
     }
 
+    if (dfh.magic == TCPDUMP_MAGIC) {
+	if (debug>1)
+	    printf("tcpdump_mmap: saw magic number (native byte order)\n");
+	tcpdump_doswap = FALSE;
+    } else if (SWAPLONG(dfh.magic) == TCPDUMP_MAGIC) {
+	if (debug>1)
+	    printf("tcpdump_mmap: saw magic number (reverse byte order)\n");
+	tcpdump_doswap = TRUE;
+    } else {
+	/* not a tcpdump file */
+	rewind(stdin);
+	return(NULL);
+    }
+
+    if (tcpdump_doswap)
+	swap_hdr(&dfh);
+
+    if (debug) {
+	printf("This is a tcpdump file, header says:\n");
+	printf("\t version  %d.%d\n", dfh.version_major, dfh.version_minor);
+	printf("\t snaplen  %d\n", dfh.snaplen);
+	printf("\t linktype %d\n", dfh.linktype);
+    }
+    linktype = dfh.linktype;
+    snaplen = dfh.snaplen;
+
+    /* OK, it's mine.  Init some stuff */
+    pep_buf = MallocZ(sizeof(struct ether_header));
+    pip_buf = MallocZ(IP_MAXPACKET);
+    
     return(pread_tcpdump);
 }
+
 
 #endif /* GROK_TCPDUMP */
