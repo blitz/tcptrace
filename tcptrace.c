@@ -348,6 +348,19 @@ for other packet types, I just don't have a place to test them\n\n");
 	    sigprocmask(SIG_BLOCK, &mask, NULL);
 	}
     }
+
+    /* set ^C back to the default */
+    /* (so we can kill the output if needed) */
+    {
+	sigset_t mask;
+
+	sigemptyset(&mask);
+	sigaddset(&mask,SIGINT);
+
+	sigprocmask(SIG_UNBLOCK, &mask, NULL);
+	signal(SIGINT,SIG_DFL);
+    }
+
 }
 
 

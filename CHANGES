@@ -31,3 +31,6 @@
      allow connection reuse on same pair of IP addresses and ports
      4 minutes must have passed and either new segment has a SYN
      or old connection had seen both FINs
+  added fix to tcptrace.c so that ^C processing is re-enabled after
+     all packets read so that the output can be killed from the
+     keyboard
