@@ -200,6 +200,8 @@ typedef struct ipaddr {
 #define IP_V(pip)    ((pip)->ip_v)
 #define TH_X2(ptcp)  ((ptcp)->th_x2)
 #define TH_OFF(ptcp) ((ptcp)->th_off)
+/* some systems (darwin at least) use this for something else */
+#undef TH_FLAGS
 #define TH_FLAGS(ptcp) ((ptcp)->th_flags)
 
 /* One alternative looks like this:
