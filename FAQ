@@ -235,3 +235,22 @@ you're running the correct "xplot" program.  There are probably a lot of
 programs around with the same name.  You want the one from:
 
  	ftp://mercury.lcs.mit.edu/pub/shep/
+
+============================================================
+Tue Oct  6, 1998
+
+>> Do programs such as snoop identify the application (e.g. telnet,
+>> ftp) simply by knowledge of the standard port numbers, or is there
+>> something else in the packet somewhere that identifies it?
+
+It's just from the port numbers.  RFC 1700 
+
+	http://www.cis.ohio-state.edu/htbin/rfc/rfc1700.html
+
+gives the official purposes of all of the low-numbered ports.  Unix
+machines usually have a subset of this document in /etc/services,
+which is where snoop et. al. get their application information.  If
+you have a lot of traffic on official ports that AREN'T in this file,
+If you can add more entries and make the snoop (and tcptrace)
+information easier to read.
+
