@@ -567,3 +567,70 @@ plotter_text(
     /* way right now, and this works fine (famous last words) */
     DoPlot(pl,"%s", str);
 }
+
+
+/* high-level line-drawing package */
+struct pl_line {
+    char *color;
+    char *label;
+    int last_y;
+    timeval last_time;
+    PLOTTER plotter;
+    Bool labelled;
+};
+
+
+PLINE
+new_line(
+    PLOTTER plotter,
+    char *label,
+    char *color)
+{
+    struct pl_line *pl;
+
+    pl = MallocZ(sizeof(struct pl_line));
+    pl->plotter = plotter;
+    pl->label = label;
+    pl->color = color;
+
+    return(pl);
+}
+
+
+void
+extend_line(
+    PLINE pline,
+    timeval xval,
+    int yval)
+{
+    PLOTTER p;
+
+    if (!pline)
+	return;
+
+    p = pline->plotter;
+
+    /* attach a label to the first non-zero point */
+    if (!pline->labelled) {
+	if (yval != 0) {
+	    plotter_temp_color(p, pline->color);
+	    plotter_text(p, xval, yval, "l", pline->label);
+	    pline->labelled = 1;
+	}
+    }
+
+    /* draw a dot at the current point */
+    plotter_perm_color(p, pline->color);
+    plotter_dot(p, xval, yval);
+
+    /* if this isn't the FIRST point, connect with a line */
+    if (!ZERO_TIME(&pline->last_time)) {
+	plotter_line(p,
+		     xval, yval,
+		     pline->last_time, pline->last_y);
+    }
+
+    /* remember this point for the next line segment */
+    pline->last_time = xval;
+    pline->last_y = yval;
+}
