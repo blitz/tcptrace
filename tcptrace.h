@@ -220,6 +220,12 @@ typedef struct tcb {
     u_long num_hardware_dups;
     u_char hardware_dups_ix;
 
+    /* did I detect any "bad" tcp behavior? */
+    /* at present, this means: */
+    /*  - SYNs retransmitted with different sequence numbers */
+    /*  - FINs retransmitted with different sequence numbers */
+    Bool	bad_behavior;
+
     /* added for initial window stats (for Mallman) */
     u_long	initialwin_bytes;	/* initial window (in bytes) */
     u_long	initialwin_segs;	/* initial window (in segments) */
@@ -441,6 +447,7 @@ extern Bool warn_ooo;
 extern Bool warn_printtrunc;
 extern Bool warn_printbadmbz;
 extern Bool warn_printhwdups;
+extern Bool warn_printbad_syn_fin_seq;
 extern Bool show_out_order;
 extern Bool show_rexmit;
 extern Bool show_zero_window;

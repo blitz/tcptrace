@@ -787,10 +787,13 @@ dotrace(
 	if ((thisdir->syn_count > 1) && (thisdir->syn != start)) {
 	    /* it changed, that shouldn't happen! */
 	    if (warn_printbad_syn_fin_seq)
-	    fprintf(stderr, "\
-%s->%s: rexmitted SYN had diff. seqnum! (was %lu, now %lu)\n",
-		    thisdir->host_letter,thisdir->ptwin->host_letter,
-		    thisdir->syn, start);
+		fprintf(stderr, "\
+%s->%s: rexmitted SYN had diff. seqnum! (was %lu, now %lu, etime: %d sec)\n",
+			thisdir->host_letter,thisdir->ptwin->host_letter,
+			thisdir->syn, start,
+			(int)(elapsed(ptp_save->first_time,current_time)/1000000));
+	    thisdir->bad_behavior = TRUE;
+	}
 	thisdir->syn = start;
 	otherdir->ack = start;
 		/* bug fix for Rob Austein <sra@epilogue.com> */
@@ -803,10 +806,13 @@ dotrace(
 	if ((thisdir->fin_count > 1) && (thisdir->fin != fin)) {
 	    /* it changed, that shouldn't happen! */
 	    if (warn_printbad_syn_fin_seq)
-	    fprintf(stderr, "\
-%s->%s: rexmitted FIN had diff. seqnum! (was %lu, now %lu)\n",
-		   thisdir->host_letter,thisdir->ptwin->host_letter,
-		   thisdir->fin, fin);
+		fprintf(stderr, "\
+%s->%s: rexmitted FIN had diff. seqnum! (was %lu, now %lu, etime: %d sec)\n",
+			thisdir->host_letter,thisdir->ptwin->host_letter,
+			thisdir->fin, fin,
+			(int)(elapsed(ptp_save->first_time,current_time)/1000000));
+	    thisdir->bad_behavior = TRUE;
+	}
 	thisdir->fin = fin;
     }
 
