@@ -72,6 +72,8 @@ struct timeval current_time;
 
 /* locally global variables */
 static int pnum = 0;
+static u_long filesize = -1;
+
 
 
 static void
@@ -146,7 +148,7 @@ main(
     int argc,
     char *argv[])
 {
-
+    struct stat stat;
     ParseArgs(argc,argv);
 
     if (debug>1)
@@ -158,16 +160,15 @@ main(
     trace_init();
     plot_init();
 
+    /* check file size */
+    if (fstat(fileno(stdin),&stat) != 0) {
+	perror("fstat");
+	exit(1);
+    }
+    filesize = stat.st_size;
     if (debug) {
-	struct stat stat;
-	
 	/* print file size */
-	if (fstat(fileno(stdin),&stat) != 0) {
-	    perror("fstat");
-	    exit(1);
-	}
-	printf("Trace file size: %lu bytes\n", (u_long) stat.st_size);
-	
+	printf("Trace file size: %lu bytes\n", filesize);
     }
 
     /* do the real work */
@@ -240,11 +241,15 @@ ProcessFile(void)
 
 	/* progress counters */
 	if (!printem && printticks) {
-	    if ((pnum < 100) ||
-		((pnum < 1000) && (pnum % 25 == 0)) ||
-		((pnum < 10000) && (pnum % 100 == 0)) ||
-		((pnum >= 10000) && (pnum % 1000 == 0)))
-		fprintf(stderr,"%d\r", pnum);
+	    if (((pnum <    100) && (pnum %   10 == 0)) ||
+		((pnum <   1000) && (pnum %  100 == 0)) ||
+		((pnum <  10000) && (pnum % 1000 == 0)) ||
+		((pnum >= 10000) && (pnum % 1000 == 0))) {
+		off_t cur_pos;
+		cur_pos = lseek(fileno(stdin),0,SEEK_CUR);
+		fprintf(stderr ,"%d %lu%%\r",
+			pnum, (100*cur_pos)/filesize);
+	    }
 	    fflush(stderr);
 	}
 
