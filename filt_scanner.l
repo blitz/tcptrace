@@ -96,7 +96,7 @@
     return(STRING);
 }
 
-[a-zA-Z_][a-zA-Z_0-9]* {
+[a-zA-Z_][a-zA-Z_0-9\.]* {
     /* a variable (word) */
     yylval.string = strdup(yytext);  /* make a copy of the string */
     return(VARIABLE);
