@@ -104,6 +104,8 @@ ServiceName(
 }
 
 
+/* turn an ipaddr into a printable format */
+/* N.B. - result comes from static memory, save it before calling back! */
 char *
 HostAddr(
     ipaddr ipaddress)
