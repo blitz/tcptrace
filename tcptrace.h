@@ -117,8 +117,8 @@ typedef u_short hash;
 typedef struct {
 	u_long	a_address;
 	u_long	b_address;
-	u_long	a_port;
-	u_long	b_port;
+	u_short	a_port;
+	u_short	b_port;
 	hash	hash;
 } tcp_pair_addr;
 
@@ -211,7 +211,7 @@ u_long elapsed(struct timeval, struct timeval);
 int ConnReset(tcp_pair *);
 int ConnComplete(tcp_pair *);
 char *ts2ascii(struct timeval *);
-char *ServiceName(long);
+char *ServiceName(u_short);
 char *HostName(long);
 char *HostLetter(u_int);
 char *EndpointName(long, long);

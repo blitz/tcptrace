@@ -21,8 +21,8 @@ struct supported_formats {
 };
 
 /* for each file type GLORP you want to support, provide a boolean	*/
-/* function is_GLORP() that return NULL if the stdin file is NOT	*/
-/* of type GLORP, and return a pointer to a packet reading routine	*/
+/* function is_GLORP() that returns NULL if the stdin file is NOT	*/
+/* of type GLORP, and returns a pointer to a packet reading routine	*/
 /* if it is.  The packet reading routine is of the following type:	*/
 /*	int pread_GLORP(						*/
 /*	    struct timeval	*ptime,					*/
