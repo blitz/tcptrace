@@ -1,13 +1,31 @@
-/* 
- * tcptrace.h - turn protocol monitor traces into xplot
+/*
+ * Copyright (c) 1994, 1995, 1996
+ *	Ohio University.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that: (1) source code
+ * distributions retain the above copyright notice and this paragraph
+ * in its entirety, (2) distributions including binary code include
+ * the above copyright notice and this paragraph in its entirety in
+ * the documentation or other materials provided with the
+ * distribution, and (3) all advertising materials mentioning features
+ * or use of this software display the following acknowledgment:
+ * ``This product includes software developed by the Ohio University
+ * Internetworking Research Laboratory.''  Neither the name of the
+ * University nor the names of its contributors may be used to endorse
+ * or promote products derived from this software without specific
+ * prior written permission.
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  * 
  * Author:	Shawn Ostermann
- * 		Computer Science Department
+ * 		School of Electrical Engineering and Computer Science
  * 		Ohio University
- * Date:	Tue Nov  1, 1994
- *
- * Copyright (c) 1994 Shawn Ostermann
+ * 		Athens, OH
+ *		ostermann@cs.ohiou.edu
  */
+
 
 #include "config.h"
 
@@ -228,23 +246,24 @@ extern tcp_pair **ttp;		/* array of pointers to allocated pairs */
 
 
 /* option flags */
-extern int thru_interval;
 extern Bool colorplot;
-extern int debug;
+extern Bool dump_rtt;
+extern Bool graph_rtt;
+extern Bool graph_tput;
+extern Bool graph_tsg;
 extern Bool hex;
 extern Bool ignore_non_comp;
 extern Bool nonames;
-extern Bool plotem;
+extern Bool print_rtt;
 extern Bool printbrief;
 extern Bool printem;
 extern Bool printticks;
-extern Bool show_rexmit;
-extern Bool print_rtt;
-extern Bool graph_rtt;
-extern Bool dump_rtt;
 extern Bool show_out_order;
+extern Bool show_rexmit;
 extern Bool show_zero_window;
 extern Bool use_short_names;
+extern int debug;
+extern int thru_interval;
 
 extern timeval current_time;
 

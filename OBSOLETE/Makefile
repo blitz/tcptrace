@@ -57,7 +57,7 @@ ci:
 clean:
 	rm -f *.o tcptrace core *.xpl
 noplots:
-	rm -f *.xpl
+	rm -f *.xpl *.dat
 
 #
 # generate dependencies
