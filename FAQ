@@ -254,3 +254,28 @@ you have a lot of traffic on official ports that AREN'T in this file,
 If you can add more entries and make the snoop (and tcptrace)
 information easier to read.
 
+============================================================
+Wed Dec  2, 1998
+
+>> [...referring to the TSG graphs...] interpretation of some of the
+>> graphics, like the "3" and diamonds and arrows and such.
+
+"3" is a triple duplicate ACK, the kind of thing that usually triggers 
+fast retransmit in the sender.
+
+The "diamonds" are probably what you're seeing at the tops of some of
+the data segments.  That means the segment was sent with a PUSH.
+
+>> From the code, there are a bunch of types of ACKS and things. A
+>> bunch of different colors as well.
+
+SACKs are purple, normal ACKs are green.  SYNs and FINs are orange
+(unless they're retransmitted, then they're red)
+
+If there's a blue diamond on an ACK, that means that it doesn't create 
+a usable RTT sample (because something that preceeded that data was
+retransmitted)
+
+If there's a red diamond on an ACK, it ALSO means that there's no RTT
+sample for it, but in this case it's because the data being ACKed was
+retransmitted. 
