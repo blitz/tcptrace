@@ -49,7 +49,7 @@ TCP connection 1:
      initial window:            1 pkts      initial window:            2 pkts 
      ttl stream length:      1323 bytes     ttl stream length:      7273 bytes
      missed data:               1 bytes     missed data:               0 bytes
-     truncated data:          250 bytes     truncated data:         6549 bytes
+     truncated data:         1420 bytes     truncated data:         8421 bytes
      truncated packets:         5 pkts      truncated packets:         8 pkts 
      data xmit time:       18.748 secs      data xmit time:       22.985 secs 
      idletime max:         7279.5 ms        idletime max:         6176.1 ms   

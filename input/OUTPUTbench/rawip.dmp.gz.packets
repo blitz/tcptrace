@@ -103,7 +103,7 @@ Packet 4
 	     WIN: 32120
 	    HLEN: 20
 	   CKSUM: 0x4177 (too short to verify)
-	    DLEN: 390 (only 229 bytes in dump file)
+	    DLEN: 390 (only 28 bytes in dump file)
 	    data: 390 bytes
 Packet 5
 	Packet Length: 40
@@ -156,7 +156,7 @@ Packet 6
 	     WIN: 32736
 	    HLEN: 20
 	   CKSUM: 0x83af (too short to verify)
-	    DLEN: 1460 (only 229 bytes in dump file)
+	    DLEN: 1460 (only 28 bytes in dump file)
 	    data: 1460 bytes
 Packet 7
 	Packet Length: 1500 (saved length 68)
@@ -183,7 +183,7 @@ Packet 7
 	     WIN: 32736
 	    HLEN: 20
 	   CKSUM: 0xab99 (too short to verify)
-	    DLEN: 1460 (only 229 bytes in dump file)
+	    DLEN: 1460 (only 28 bytes in dump file)
 	    data: 1460 bytes
 Packet 8
 	Packet Length: 40
@@ -236,7 +236,7 @@ Packet 9
 	     WIN: 32736
 	    HLEN: 20
 	   CKSUM: 0x755e (too short to verify)
-	    DLEN: 1176 (only 229 bytes in dump file)
+	    DLEN: 1176 (only 28 bytes in dump file)
 	    data: 1176 bytes
 Packet 10
 	Packet Length: 40
@@ -289,7 +289,7 @@ Packet 11
 	     WIN: 32736
 	    HLEN: 20
 	   CKSUM: 0xf0ad (too short to verify)
-	    DLEN: 660 (only 229 bytes in dump file)
+	    DLEN: 660 (only 28 bytes in dump file)
 	    data: 660 bytes
 Packet 12
 	Packet Length: 40
