@@ -524,7 +524,7 @@ Dump File Names\n\
 	fprintf(stderr,"  --%-20s %s (default: '%s')\n",
 		buf,
 		pvop->var_descr,
-		pvop->var_popt);
+		(*pvop->var_popt)?*pvop->var_popt:"<NULL>");
     }
 
     fprintf(stderr,"\n\
