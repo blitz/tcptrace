@@ -98,6 +98,7 @@ Bool graph_seq_zero = FALSE;
 Bool graph_zero_len_pkts = TRUE;
 Bool plot_tput_instant = TRUE;
 Bool filter_output = FALSE;
+Bool show_title = TRUE;
 Bool do_udp = FALSE;
 Bool resolve_ipaddresses = TRUE;
 Bool resolve_ports = TRUE;
@@ -154,6 +155,8 @@ static struct ext_bool_op {
      "mark triple dupacks on time sequence graphs"},
     {"showzerolensegs", &graph_zero_len_pkts,  TRUE,
      "show zero length packets on time sequence graphs"},
+    {"showtitle", &show_title,  TRUE,
+     "show title on the graphs"},
     {"res_addr", &resolve_ipaddresses,  TRUE,
      "resolve IP addresses into names (may be slow)"},
     {"res_port", &resolve_ports,  TRUE,
