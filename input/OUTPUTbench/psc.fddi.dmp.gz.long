@@ -82,7 +82,7 @@ TCP connection 1:
      RTT avg (last):          3.3 ms        RTT avg (last):          0.0 ms   
      RTT sdv (last):          0.7 ms        RTT sdv (last):          0.0 ms   
      segs cum acked:           41           segs cum acked:           72      
-     duplicate acks:          189           duplicate acks:          172      
+     duplicate acks:           31           duplicate acks:            1      
      triple dupacks:            1           triple dupacks:            0      
      max # retrans:             1           max # retrans:             0      
      min retr time:          41.9 ms        min retr time:           0.0 ms   

@@ -217,7 +217,7 @@ TCP connection 3:
 
      post-loss acks:            2           post-loss acks:            0      
      segs cum acked:          289           segs cum acked:            0      
-     duplicate acks:          123           duplicate acks:          601      
+     duplicate acks:            1           duplicate acks:            1      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -299,8 +299,8 @@ TCP connection 4:
      RTT avg (last):          2.0 ms        RTT avg (last):          0.0 ms   
      RTT sdv (last):          0.1 ms        RTT sdv (last):          0.0 ms   
      segs cum acked:          263           segs cum acked:            0      
-     duplicate acks:          385           duplicate acks:          652      
-     triple dupacks:           62           triple dupacks:            0      
+     duplicate acks:          307           duplicate acks:            1      
+     triple dupacks:           51           triple dupacks:            0      
      max # retrans:             1           max # retrans:             0      
      min retr time:           9.3 ms        min retr time:           0.0 ms   
      max retr time:          18.2 ms        max retr time:           0.0 ms   
@@ -383,7 +383,7 @@ TCP connection 5:
      RTT avg (last):        359.2 ms        RTT avg (last):          0.0 ms   
      RTT sdv (last):        239.9 ms        RTT sdv (last):          0.0 ms   
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:           18           duplicate acks:           85      
+     duplicate acks:           18           duplicate acks:            0      
      triple dupacks:            4           triple dupacks:            0      
      max # retrans:             5           max # retrans:             0      
      min retr time:           1.0 ms        min retr time:           0.0 ms   

@@ -146,7 +146,7 @@ TCP connection 2:
 
      post-loss acks:            1           post-loss acks:            0      
      segs cum acked:            2           segs cum acked:            0      
-     duplicate acks:            0           duplicate acks:            6      
+     duplicate acks:            0           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             1           max # retrans:             0      
      min retr time:        1812.4 ms        min retr time:           0.0 ms   

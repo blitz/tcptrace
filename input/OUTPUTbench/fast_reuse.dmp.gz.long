@@ -149,7 +149,7 @@ TCP connection 2:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            4           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:           34      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -226,7 +226,7 @@ TCP connection 3:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            4           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:           54      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -303,7 +303,7 @@ TCP connection 4:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            4           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:           64      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -380,7 +380,7 @@ TCP connection 5:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -457,7 +457,7 @@ TCP connection 6:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            3           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            8      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -534,7 +534,7 @@ TCP connection 7:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -611,7 +611,7 @@ TCP connection 8:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -688,7 +688,7 @@ TCP connection 9:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -765,7 +765,7 @@ TCP connection 10:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -842,7 +842,7 @@ TCP connection 11:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -919,7 +919,7 @@ TCP connection 12:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -996,7 +996,7 @@ TCP connection 13:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -1073,7 +1073,7 @@ TCP connection 14:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -1150,7 +1150,7 @@ TCP connection 15:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -1227,7 +1227,7 @@ TCP connection 16:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -1304,7 +1304,7 @@ TCP connection 17:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            4           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:           24      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
@@ -1381,7 +1381,7 @@ TCP connection 18:
 
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
-     duplicate acks:            2           duplicate acks:            2      
+     duplicate acks:            1           duplicate acks:            0      
      triple dupacks:            0           triple dupacks:            0      
      max # retrans:             0           max # retrans:             0      
      min retr time:           0.0 ms        min retr time:           0.0 ms   
