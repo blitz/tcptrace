@@ -48,6 +48,7 @@ static char *PrintFilterInternal(struct filter_node *pf);
 static char *Res2Str(struct filter_res *pres);
 static struct filter_node *MustBeType(enum vartype var_needed, struct filter_node *pf);
 static struct filter_node *LookupVar(char *varname, Bool fclient);
+static void HelpFilterVariables(void);
 
 
 /* local globals */
@@ -726,6 +727,9 @@ LookupVar(
 
     /* not found */
     fprintf(stderr,"Variable \"%s\" not found\n", varname);
+
+    HelpFilterVariables();
+    
     exit(-1);
 }
 
@@ -1404,21 +1408,31 @@ PassesFilter(
 }
 
 
-void
-HelpFilter(void)
+static void
+HelpFilterVariables(void)
 {
     int i;
-    fprintf(stderr,"Filter Variables:\n");
 
+    fprintf(stderr,"Filter Variables:\n");
 
     fprintf(stderr,"\tvariable name        type       description\n");
     fprintf(stderr,"\t------------------   --------   -----------------------\n");
+
     for (i=0; i < NUM_FILTERS; ++i) {
 	struct filter_line *pf = &filters[i];
 
 	fprintf(stderr,"\t%-18s   %-8s   %s\n",
 		pf->varname, Vartype2BStr(pf->vartype),pf->descr);
     }
+}
+
+
+
+void
+HelpFilter(void)
+{
+    HelpFilterVariables();
+
     fprintf(stderr,"\n\
 Filter Syntax:\n\
   numbers:\n\
@@ -1486,13 +1500,21 @@ filter_getc()
 
     if (*pinput == '\00') {
 	static int doneyet = 0;
-	if (++doneyet>1)
-	    return(0);
-	else
+	if (++doneyet>1) {
+	    if (debug > 4)
+		printf("filter_getc() returns EOF\n");
+	    return(EOF);
+	} else {
+	    if (debug > 4)
+		printf("filter_getc() returns newline\n");
 	    return('\n');
+	}
     }
 
     ch = *pinput++;
+
+    if (debug > 4)
+	printf("filter_getc() returns char '%c'\n", ch);
 
     return(ch);
 }
