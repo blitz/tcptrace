@@ -143,17 +143,20 @@ http_init(
     int i;
     int enable=0;
 
+    /* look for "-xhttp[N]" */
     for (i=0; i < argc; ++i) {
-	if (strncmp(argv[i],"-H",2) == 0) {
-	    /* I want to be called */
-	    enable = 1;
-	    if (isdigit(argv[i][2])) {
-		httpd_port = atoi(argv[i]+2);
-	    } else {
-		httpd_port = DEFAULT_SERVER_PORT;
+	if (strncmp(argv[i],"-x",2) == 0) {
+	    if (strncasecmp(argv[i]+2,"http",4) == 0) {
+		/* I want to be called */
+		enable = 1;
+		if (isdigit(argv[i][6])) {
+		    httpd_port = atoi(argv[i]+6);
+		} else {
+		    httpd_port = DEFAULT_SERVER_PORT;
+		}
+		printf("mod_http: Capturing HTTP traffic (port %d)\n", httpd_port);
+		argv[i] = NULL;
 	    }
-	    printf("Capturing HTTP traffic (port %d)\n", httpd_port);
-	    argv[i] = NULL;
 	}
     }
 
@@ -666,11 +669,6 @@ FindGets(
 }
 
 
-#define NCOLORS 8
-char *ColorNames[NCOLORS] =
-{"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink" };
-
-
 static void
 HttpDoPlot()
 {
@@ -907,7 +905,7 @@ http_done(void)
 void
 http_usage(void)
 {
-    printf("\t\t-H[P]\tprint info about http traffic (on port P, default %d)\n",
+    printf("\t\t-xHTTP[P]\tprint info about http traffic (on port P, default %d)\n",
 	   DEFAULT_SERVER_PORT);
 }
 
