@@ -2,43 +2,70 @@
 # Makefile for tcptrace
 #
 
+#   
+# User-configurable constants
+#
+CC	= gcc
+
+#
+# tcptrace supports reading compressed files with a little help...
+# 1) If your system supports "gunzip", then uncomment the following line to
+#    support on-the-fly decompression of ".gz" and ".Z" files...
+COMPRESSION += -DGUNZIP="\"gunzip\""
+# 2) Otherwise, if your system supports standard Unix "uncompress",
+#    then uncomment the following line to support on-the-fly
+#    decompression of ".Z" files...
+#COMPRESSION += -DUNCOMPRESS="\"uncompress\""
+# - we'll do path search on the string you specify.  If the program
+#    isn't in your path, you'll need to give the absolute path name.
+# - if you want other formats, see the "compress.h' file.
+
+
 #
 # According to Jeff Semke, this define allows the program to compile
 # and run under NetBSD on a pentium box.
 #
 #DEFINES = -DI386_NBSD1
-
 #
 # According to Rich Jones at HP, there is no ether_ntoa under HPUX.
 # I added one in the file missing.c
 # If _YOU_ need it, just define NEED_ETHER_NTOA
 #
+# The same seems to hold for some versions of Linux.  Just define the
+# following:
+#
 #DEFINES = -DNEED_ETHER_NTOA
 #
 
 
-#   
-# User-configurable constants
 #
-CC	= gcc
+# If you're using linux, with it's weird include file changes, better
+# to use the ones supplied here, which are the standard (Public
+# Domain) versions (with a couple of minor edits by sdo)...
 #
-# If you're using the pcap library, you'll need to add its include
-# and library location, otherwise the default should be fine
+#INCS = -Ilinux-include
+
+#
+# If you're using the pcap library, you'll need to add its include and
+# library location, otherwise the default should be fine
 # 
-INCS	= -I/usr/local/include
-LDFLAGS = -L/usr/local/lib 
+INCS	+= -I/usr/local/include
+LDFLAGS = -L/usr/local/lib
 
 #
 # For HP:  (Rick Jones)
-# CFLAGS	= -Ae -Wall ${INCS}
+# CFLAGS	= -Ae -Wall ${INCS} ${COMPRESSION}
+#
+# For FreeBSD:
+# CFLAGS += -fno-builtin ${INCS} ${DEFINES} ${COMPRESSION}
 #
 # For Solaris:
 #   Warning, without -fno-builtin, a bug in gcc 2.7.2 forces an
 #   alignment error on my Sparc when it re-writes memcpy()...
 #
-#CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
+#CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES} ${COMPRESSION}
 #
-CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
+CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES} ${COMPRESSION}
 
 
 # for profiling (under Solaris 5.2)
@@ -65,6 +92,12 @@ CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 # for NetBSD
 # LDLIBS = -lpcap -lm
 #
+# for FreeBSD
+# LDLIBS = -lpcap -lm
+#
+# for Linux
+# LDLIBS = -lpcap -lm
+#
 # for general Unix boxes (I hope)
 # LDLIBS = -lpcap -lm
 #
@@ -78,7 +111,7 @@ MODULES= mod_http.c
 # Standard files
 CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
 	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c \
-	missing.c
+	missing.c compress.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
 
 
@@ -109,6 +142,7 @@ noplots:
 # for making distribution
 tarfile:
 	cd ..; /usr/sbin/tar -FFcfv $$HOME/tcptrace.tar tcptrace
+	gzip $$HOME/tcptrace.tar
 #
 # similar, but include RCS directory and etc
 bigtarfile:
@@ -134,6 +168,7 @@ tcpdump.o: tcptrace.h tcpdump.h config.h
 tcptrace.o: tcptrace.h config.h file_formats.h modules.h mod_http.h version.h
 thruput.o: tcptrace.h config.h
 trace.o: tcptrace.h config.h gcache.h
+compress.o: tcptrace.h config.h compress.h
 
 #
 # generate dependencies

@@ -8,11 +8,23 @@ FreeBSD
 Linux
 HPux
 
-by making some simple changes to the Makefile (look for comments for
-your target) and then just typing "make".  The program doesn't need to
-be setuid or anything, so once you get the "tcptrace" binary, just
-stuff it wherever you keep such things and you're all set!
+Step 1: Get pcap library
+  If you want to be able to read tcpdump format files, then you'll
+  need to have already installed the pcap library (see README.pcap).
+  If tcpdump was installed correctly, then you're probably all set.
+  If you don't HAVE this package and don't CARE about it, then comment
+  "GROK_TCPDUMP" out of "config.h" and we'll just skip it in the
+  compilation. 
+
+Step 2: Edit Makefile
+  Make some simple changes to the Makefile (look for comments for
+  your target) and then just typing "make".
+
+Step 3: Install
+  The program doesn't need to be setuid or anything, so once you get
+  the "tcptrace" binary, just stuff it wherever you keep such things
+  and you're all set.
 
 Shawn
 
-Fri Aug 15, 1997
+Wed Aug 20, 1997
