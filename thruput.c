@@ -41,6 +41,7 @@ DoThru(
 {
     double etime;
     double thruput;
+    char *myname, *hisname;
 
     /* init, if not already done */
     if (ZERO_TIME(&ptcb->thru_firsttime)) {
@@ -50,10 +51,19 @@ DoThru(
 	ptcb->thru_lasttime = current_time;
 	ptcb->thru_pkts = 1;
 	ptcb->thru_bytes = nbytes;
+	
 
+	/* bug fix from Michele Clark - UNC */
+	if (&ptcb->ptp->a2b == ptcb) {
+	    myname = ptcb->ptp->a_endpoint;
+	    hisname = ptcb->ptp->b_endpoint;
+	} else {
+	    myname = ptcb->ptp->b_endpoint;
+	    hisname = ptcb->ptp->a_endpoint;
+	}
 	/* create the plotter file */
 	sprintf(title,"%s_==>_%s (throughput)",
-		ptcb->ptp->a_endpoint, ptcb->ptp->b_endpoint);
+		myname, hisname);
 	ptcb->thru_plotter = new_plotter(ptcb,NULL,title,
 					 "time","thruput (bytes/sec)",
 					 THROUGHPUT_FILE_EXTENSION);
