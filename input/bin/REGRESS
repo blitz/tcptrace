@@ -28,10 +28,10 @@ for FILE in *.*; do
   ../tcptrace +t -nr ${FILE} 2>&1 | bin/cleanup > ${OUTDIR}/$FILE.short
   # long output format
   echo -n " long"
-  ../tcptrace +t -lnr ${FILE} 2>&1 | bin/cleanup  > ${OUTDIR}/$FILE.long
+  ../tcptrace +t -lnrW ${FILE} 2>&1 | bin/cleanup  > ${OUTDIR}/$FILE.long
   # first 100 packets
   echo -n " packets"
-  ../tcptrace +t -pn -E100 ${FILE} | bin/cleanup > ${OUTDIR}/$FILE.packets
+  ../tcptrace +t -pn -E100 --checksum ${FILE} | bin/cleanup > ${OUTDIR}/$FILE.packets
   # ALL PLOTS for first 1000 packets
   echo -n " plots"
   ../tcptrace +t -n -G -E1000 ${FILE} > /dev/null 2>&1
