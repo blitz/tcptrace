@@ -2,7 +2,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <time.h>
+#include <sys/time.h>
 #include <sys/socket.h>
 #include <net/if.h>
 #include <netinet/in.h>
@@ -12,6 +12,7 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <netdb.h>
+
 
 
 /* maximum number of TCP pairs to maintain */
@@ -27,36 +28,36 @@ typedef int PLOTTER;
 
 
 struct last {
-	/* parent pointer */
-	struct stcp_pair *ptp;
-	struct last	 *ptwin;
+    /* parent pointer */
+    struct stcp_pair *ptp;
+    struct last	 *ptwin;
 
-	/* TCP information */
-	u_long	ack;
-	u_long	seq;
-	u_long	windowend;
-	struct	timeval	time;
+    /* TCP information */
+    u_long	ack;
+    u_long	seq;
+    u_long	windowend;
+    struct	timeval	time;
 
-	/* statistics added */
-	u_long	data_bytes;
-	u_long	data_pkts;
-	u_long	rexmit_bytes;
-	u_long	rexmit_pkts;
-	u_long	ack_pkts;
-	u_long	win_max;
-	u_long	win_tot;
-	u_long	win_zero_ct;
-	u_long	min_seq;
-	u_long	packets;
-	u_short syn_count;
-	u_short fin_count;
+    /* statistics added */
+    u_long	data_bytes;
+    u_long	data_pkts;
+    u_long	rexmit_bytes;
+    u_long	rexmit_pkts;
+    u_long	ack_pkts;
+    u_long	win_max;
+    u_long	win_tot;
+    u_long	win_zero_ct;
+    u_long	min_seq;
+    u_long	packets;
+    u_short syn_count;
+    u_short fin_count;
 
-	/* plotter for this one */
-	PLOTTER	plotter;
-	char	*plotfile;
+    /* plotter for this one */
+    PLOTTER	plotter;
+    char	*plotfile;
 
-	/* host name letter(s) */
-	char	*host_letter;
+    /* host name letter(s) */
+    char	*host_letter;
 };
 
 typedef u_short hash;
@@ -71,24 +72,24 @@ typedef struct {
 
 
 struct stcp_pair {
-	/* are we ignoring this one?? */
-	int		ignore_pair;
+    /* are we ignoring this one?? */
+    int		ignore_pair;
 
-	/* endpoint identification */
-	tcp_pair_addr	addr_pair;
+    /* endpoint identification */
+    tcp_pair_addr	addr_pair;
 
-	/* connection information */
-	char		*a_endpoint;
-	char		*b_endpoint;
-	struct timeval	first_time;
-	struct timeval	last_time;
-	u_long		packets;
-	struct last	a2b;
-	struct last	b2a;
+    /* connection information */
+    char		*a_endpoint;
+    char		*b_endpoint;
+    struct timeval	first_time;
+    struct timeval	last_time;
+    u_long		packets;
+    struct last	a2b;
+    struct last	b2a;
 
-	/* linked list of usage */
-	struct stcp_pair *next;
-	struct stcp_pair *prev;
+    /* linked list of usage */
+    struct stcp_pair *next;
+    struct stcp_pair *prev;
 };
 typedef struct stcp_pair tcp_pair;
 
@@ -103,6 +104,7 @@ extern int ignore_non_comp;
 extern int printbrief;
 extern int printticks;
 extern int nonames;
+extern int hex;
 
 
 #define MAX_NAME 20
@@ -110,6 +112,7 @@ extern int nonames;
 /* understood file formats */
 #define SNOOP 1
 #define NETM  2
+#define TCPDUMP 3
 
 
 /* external routine decls */
@@ -120,10 +123,15 @@ void bzero();
 
 /* global routine decls */
 char *ts();
+
+int is_tcpdump();
 int is_netm();
 int is_snoop();
+
+int pread_tcpdump();
 int pread_netm();
 int pread_snoop();
+
 void dotrace();
 void plotter_darrow();
 void plotter_done();
