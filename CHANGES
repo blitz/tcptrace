@@ -103,3 +103,7 @@
   Minor mfiles bug fixes
   mod_http now generates plot files, still experimenting
   fixed tcpdump to allow files with DLT_NULL headers
+4.1.2
+  Added more module interface routines
+  Allow modules to have per-connection data structures
+  Fixed some compression bugs

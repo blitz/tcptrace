@@ -155,7 +155,7 @@ bigtarfile:
 etherpeek.o: tcptrace.h config.h
 gcache.o: tcptrace.h config.h gcache.h
 mfiles.o: tcptrace.h config.h
-mod_http.o: tcptrace.h config.h
+mod_http.o: tcptrace.h config.h mod_http.h
 names.o: tcptrace.h config.h gcache.h
 netm.o: tcptrace.h config.h
 output.o: tcptrace.h config.h gcache.h
