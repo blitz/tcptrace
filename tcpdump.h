@@ -56,6 +56,7 @@ static char const rcsid_tcpdump[] =
 #define PCAP_DLT_FDDI		10	/* FDDI */
 #define PCAP_DLT_ATM_RFC1483	11	/* LLC/SNAP encapsulated atm */
 #define PCAP_DLT_RAW		12	/* raw IP */
+#define PCAP_DLT_LINUX_SLL      113     /* Linux cooked socket */
 
 /* NOT currently supported */
 /* (mostly because I don't have an example file, send me one...) */
@@ -72,6 +73,7 @@ static char const rcsid_tcpdump[] =
 
 /* tcpdump file header */
 #define TCPDUMP_MAGIC 0xa1b2c3d4
+
 struct dump_file_header {
 	u_int	magic;
 	u_short version_major;

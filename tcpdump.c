@@ -120,11 +120,17 @@ static int callback(
 	memcpy((char *)ip_buf,buf+offset,iplen);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
+      case PCAP_DLT_LINUX_SLL:
+	/* linux cooked socket */
+	offset = 16;
+	memcpy((char *)ip_buf, buf+offset, iplen);
+	callback_plast = ip_buf+iplen-offset-1;
+	break;
       default:
 	fprintf(stderr,"Don't understand link-level format (%d)\n", type);
 	exit(1);
     }
-
+    
     return(0);
 }
 
@@ -254,6 +260,11 @@ case 100:
       case PCAP_DLT_RAW:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "RAW_IP";
+	break;
+      case PCAP_DLT_LINUX_SLL:
+	/* linux cooked socket type */
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "Linux Cooked Socket";
 	break;
       default:
 	if (debug)
