@@ -101,6 +101,11 @@ struct filter_line filters[] = {
     {"trunc_bytes",	V_ULLONG, PTCB_C_S(trunc_bytes), "number of bytes not in the file"},
     {"trunc_segs", 	V_ULLONG, PTCB_C_S(trunc_segs), "number of segments not in the file"},
 
+    /* HOST IP addresses */
+    {"hostaddr",	V_IPADDR,
+     PTP(addr_pair.a_address, addr_pair.b_address),
+     "IP Address (v4 or v6 in standard textual notation"},
+
     /* computed functions */
 
     /* throughput in bytes/second - 0 for infinite or none */

@@ -43,10 +43,11 @@ enum vartype {
     V_STRING	= 10,
     V_ULLONG	= 11,
     V_LLONG	= 12,
+    V_IPADDR	= 13,
 
     /* functions */
-    V_FUNC	=13,		/* function returning unsigned */
-    V_UFUNC	=14,		/* function returning signed */
+    V_FUNC	=14,		/* function returning unsigned */
+    V_UFUNC	=15,		/* function returning signed */
 };
 
 
@@ -92,6 +93,7 @@ union Constant {
     llong	longint;
     Bool	bool;
     char	*string;
+    ipaddr	*pipaddr;
 };
 
 /* Variable - keep the name and offset within a tcp_pair */
@@ -166,6 +168,7 @@ struct filter_node *MakeStringConstNode(char *val);
 struct filter_node *MakeBoolConstNode(Bool val);
 struct filter_node *MakeSignedConstNode(llong val);
 struct filter_node *MakeUnsignedConstNode(u_llong val);
+struct filter_node *MakeIPaddrConstNode(ipaddr *pipaddr);
 
 /* functions for calculated values */
 u_llong VFuncClntTput(tcp_pair *ptp);
