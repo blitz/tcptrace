@@ -78,5 +78,6 @@ struct supported_formats file_formats[] = {
 #ifdef GROK_NETM
 	{is_netm,	"netmetrix","Net Metrix -- Commercial program from HP"},
 #endif /* GROK_NETM */
-	{NULL,NULL},	/* You must NOT remove this entry */
 };
+
+#define NUM_FILE_FORMATS (sizeof(file_formats) / sizeof(struct supported_formats))
