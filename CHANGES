@@ -497,3 +497,8 @@ Fixed a bug in the processing of IPv6 extension headers in ipv6.c:findheader()
 -----
 Fixed the processing of duplicate ACKs as in the BSD stack to count towards
 the 3 dupacks required for fast-retransmit. 
+
+6.4.3 : 17 MAY 2003 Mani
+-----
+Fixed the bug in processing IPv6 extension headers in ipv6.c:gethdrlength()
+based on the patch sent by Thomas Bohnert.

@@ -355,14 +355,28 @@ int gethdrlength (struct ip *pip, void *plast)
 		pheader += 8;
 		length += 8;
 	    }
-	    if ((nextheader == IPPROTO_HOPOPTS) || (nextheader == IPPROTO_ROUTING)
-		|| (nextheader == IPPROTO_DSTOPTS))
+	    if ((nextheader == IPPROTO_HOPOPTS) || 
+		(nextheader == IPPROTO_ROUTING) ||
+		(nextheader == IPPROTO_DSTOPTS))
 	    {
-		nextheader = *pheader;
-		pheader += *(pheader + 1);
-		length += *(pheader + 1);
+	      // Thanks to patch sent by Thomas Bohnert
+	      // Header length field in these IPv6 extension headers
+	      // stores the length of the header in units of 8 bytes, 
+	      // *without* counting the mandatory 8 bytes
+	      
+	      nextheader = *pheader;
+	      length += (*(pheader+1) + 1) * 8;
+	      pheader += (*(pheader+1) + 1) * 8;
 	    }
-	    if (pheader > (char *)plast)
+	    // IPv6 encapsulated in IPv6
+	    if (nextheader == IPPROTO_IPV6)
+	    {
+	      pheader += 40;
+	      nextheader=*(pheader+6);
+	      length += 40;
+	    }
+
+	  if (pheader > (char *)plast)
 		return -1;
 	}
     }
