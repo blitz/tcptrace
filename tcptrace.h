@@ -263,17 +263,6 @@ extern timeval last_packet;
 extern u_long tcp_trace_count;
 extern u_long udp_trace_count;
 
-
-#ifdef OLD
-/* test 2 IP addresses for equality */
-#define IP_SAMEADDR(addr1,addr2) (((addr1).s_addr) == ((addr2).s_addr))
-/* test for an IP address lower than the second IP address */
-#define IP_LOWADDR(addr1,addr2) (((addr1).s_addr) < ((addr2).s_addr))
-
-/* copy IP addresses */
-#define IP_COPYADDR(toaddr,fromaddr) ((toaddr).s_addr = (fromaddr).s_addr)
-#endif
-
 typedef struct segment {
     seqnum	seq_firstbyte;	/* seqnumber of first byte */
     seqnum 	seq_lastbyte;	/* seqnumber of last byte */
@@ -874,9 +863,6 @@ void CompFormats(void);
 int CompIsCompressed(void);
 Bool FileIsStdin(char *filename);
 struct tcb *ptp2ptcb(tcp_pair *ptp, struct ip *pip, struct tcphdr *ptcp);
-void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr);
-int IP_SAMEADDR (ipaddr *addr1, ipaddr *addr2);
-int IP_LOWADDR (ipaddr *addr1, ipaddr *addr2);
 void PcapSavePacket(char *filename, struct ip *pip, void *plast);
 void StringToArgv(char *buf, int *pargc, char ***pargv);
 void CopyAddr(tcp_pair_addrblock *, struct ip *pip,portnum,portnum);
@@ -1170,7 +1156,75 @@ int snprintf_vms(char *str, size_t len, const char *fmt, ...);
 #define ADDR_ISV4(paddr) (ADDR_VERSION((paddr)) == 4)
 #define ADDR_ISV6(paddr) (ADDR_VERSION((paddr)) == 6)
 struct ipaddr *IPV4ADDR2ADDR(struct in_addr *addr4);    
-struct ipaddr *IPV6ADDR2ADDR(struct in6_addr *addr6);    
+struct ipaddr *IPV6ADDR2ADDR(struct in6_addr *addr6);
+
+
+
+/* 
+ * ipcopyaddr: copy an IPv4 or IPv6 address  
+ * (note: moved here as a static for compiler inlining)
+ */
+static inline void IP_COPYADDR (ipaddr *ptoaddr, ipaddr *pfromaddr)
+{
+    if (ADDR_ISV6(pfromaddr)) {
+	memcpy(ptoaddr->un.ip6.s6_addr, pfromaddr->un.ip6.s6_addr, 16);
+	ptoaddr->addr_vers = 6;
+    } else {
+	ptoaddr->un.ip4.s_addr = pfromaddr->un.ip4.s_addr;
+	ptoaddr->addr_vers = 4;
+    }
+}
+
+
+
+/*
+ * ipsameaddr: test for equality of two IPv4 or IPv6 addresses
+ * (note: moved here as a static for compiler inlining)
+ */
+static inline int IP_SAMEADDR (ipaddr *paddr1, ipaddr *paddr2)
+{
+    int ret = 0;
+    if (ADDR_ISV4(paddr1)) {
+	if (ADDR_ISV4(paddr2))
+	    ret = (paddr1->un.ip4.s_addr == paddr2->un.ip4.s_addr);
+    } else {
+	/* already know ADDR_ISV6(paddr1) */
+	if (ADDR_ISV6(paddr2))
+	    ret = (memcmp(paddr1->un.ip6.s6_addr,
+			  paddr2->un.ip6.s6_addr,16) == 0);
+    }
+    if (debug > 3)
+	printf("SameAddr(%s(%d),%s(%d)) returns %d\n",
+	       HostName(*paddr1), ADDR_VERSION(paddr1),
+	       HostName(*paddr2), ADDR_VERSION(paddr2),
+	       ret);
+    return ret;
+}
+
+/*  
+ *  iplowaddr: test if one IPv4 or IPv6 address is lower than the second one
+ * (note: moved here as a static for compiler inlining)
+ */
+static inline int IP_LOWADDR (ipaddr *paddr1, ipaddr *paddr2)
+{
+    int ret = 0;
+    if (ADDR_ISV6(paddr1)) {
+	if (ADDR_ISV6(paddr2))
+	    ret = (memcmp(paddr1->un.ip6.s6_addr,
+			  paddr2->un.ip6.s6_addr,16) < 0);
+    } else {
+	/* already know ADDR_ISV4(paddr1) */
+	if (ADDR_ISV4(paddr2))
+	    ret = (paddr1->un.ip4.s_addr < paddr2->un.ip4.s_addr);
+    }
+    if (debug > 3)
+	printf("LowAddr(%s(%d),%s(%d)) returns %d\n",
+	       HostName(*paddr1), ADDR_VERSION(paddr1),
+	       HostName(*paddr2), ADDR_VERSION(paddr2),
+	       ret);
+    return ret;
+}
+
 
 /*
  * Macros to check for congestion experienced bits
