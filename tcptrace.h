@@ -301,6 +301,10 @@ typedef struct tcb {
     PLINE	cwin_line;
     PLINE	cwin_avg_line;
 
+    /* for tracking unidirectional idle time */
+    timeval	last_time;	/* last packet SENT from this side */
+    u_long	idle_max;	/* maximum idle time observed (usecs) */
+
     /* host name letter(s) */
     char	*host_letter;
 } tcb;
@@ -347,9 +351,6 @@ struct stcp_pair {
 
     /* which file this connection is from */
     char		*filename;
-
-    /* linked list of usage */
-    struct stcp_pair *next;
 };
 typedef struct stcp_pair tcp_pair;
 
@@ -514,6 +515,8 @@ int tv_cmp(struct timeval lhs, struct timeval rhs);
 char *elapsed2str(double etime);
 int ConnReset(tcp_pair *);
 int ConnComplete(tcp_pair *);
+u_int SynCount(tcp_pair *ptp);
+u_int FinCount(tcp_pair *ptp);
 char *ts2ascii(timeval *);
 char *ts2ascii_date(timeval *);
 char *ServiceName(portnum);
