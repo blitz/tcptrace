@@ -58,8 +58,8 @@ static char const rcsid_version[] =
 /* source code version information */
 #define VERSION_MAJOR	"6"
 #define VERSION_MINOR	"4"
-#define VERSION_BUGFIX	"7"
-#define VERSION_DATE	"Fri Aug 1, 2003"
+#define VERSION_BUGFIX	"8"
+#define VERSION_DATE	"Mon Aug 4, 2003"
 
 #define VERSION_NUM   VERSION_MAJOR "." VERSION_MINOR "." VERSION_BUGFIX
 

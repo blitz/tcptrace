@@ -249,7 +249,7 @@ static void
 CheckPortNum(
     unsigned portnum)
 {
-    if ((portnum <= 0) || (portnum >= NUM_PORTS)) {
+    if (portnum >= NUM_PORTS) {
 	fprintf(stderr,"mod_traffic: Invalid port number '%d'\n", portnum);
 	traffic_usage();
 	exit(-1);
@@ -592,6 +592,7 @@ traffic_read(
 	    pci->wasopen = 1;
 	    pci->isopen = 1;
 	    ++num_opens;
+	    ++ttl_num_opens;
 	    ++open_conns;
 
 	    /* instantaneous opens and closes */
@@ -835,7 +836,12 @@ AgeTraffic(void)
 	extend_line(line_open_conns,current_time, open_conns);
 
 	/* reset interval counters */
-	ttl_num_opens += num_opens;
+	 
+// Counting ttl_num_opens instantaneously as and when num_opens is incremented,
+// so that ttl_num_opens is printed properly in traffic_stats.dat even 
+// when the -C(openclose) option is not given.
+// Hence commenting off the following line. - Mani, 4 Aug 2003.
+//	ttl_num_opens += num_opens;
 	ttl_num_closes += num_closes;
 	num_opens = 0;
 	num_closes = 0;
