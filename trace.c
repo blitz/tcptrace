@@ -1180,15 +1180,10 @@ dotrace(
    
 
     
-    /* draw the ack and win in the other plotter */
-    if (ACK_SET(ptcp)) {
-	unsigned int ack = th_ack;
+	thisdir->win_last=eff_win;
+	if (eff_win > thisdir->win_max)
 	unsigned int win = th_win << thisdir->window_scale;
-	unsigned int winend;
 
-	winend = ack + win;
-      
-	/* do window stats */
 	if (win > thisdir->win_max)
 	    thisdir->win_max = win;
 	if ((win > 0) &&
@@ -1196,6 +1191,16 @@ dotrace(
 	     (win < thisdir->win_min)))
 	    thisdir->win_min = win;
 	thisdir->win_tot += win;
+
+    /* draw the ack and win in the other plotter */
+    if (ACK_SET(ptcp)) {
+	seqnum ack = th_ack;
+	unsigned int ack = th_ack;
+	unsigned int win = th_win << thisdir->window_scale;
+	unsigned int winend;
+	winend = ack + eff_win;
+	winend = ack + win;
+	if (eff_win == 0) {
 	if (win == 0) {
 	    if (to_tsgpl != NO_PLOTTER && show_zero_window) {
 		plotter_temp_color(to_tsgpl, text_color);
