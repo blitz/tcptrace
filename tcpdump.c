@@ -76,6 +76,9 @@ static int callback(
 
     /* kindof ugly, but about the only way to make them fit together :-( */
     switch (type) {
+      case 100:
+	/* for some reason, the windows version of tcpdump is using */
+	/* this.  It looks just like ethernet to me */
       case DLT_EN10MB:
 	memcpy(&eth_header,buf,EH_SIZE);  /* save ether header */
 	memcpy(ip_buf,buf+EH_SIZE,iplen);
@@ -210,20 +213,17 @@ pread_f *is_tcpdump(void)
     if (debug) {
 	printf("Using 'pcap' version of tcpdump\n");
 	if (debug > 1) {
-	    struct pcap_file_header *pfhdr = (void *)pcap;
-	    printf("\tpcap->magic: %d\n", pfhdr->magic);
-	    printf("\tpcap->version_major: %d\n", pfhdr->version_major);
-	    printf("\tpcap->version_minor: %d\n", pfhdr->version_minor);
-	    printf("\tpcap->thiszone: %d\n", pfhdr->thiszone);
-	    printf("\tpcap->sigfigs: %d\n", pfhdr->sigfigs);
-	    printf("\tpcap->snaplen: %d\n", pfhdr->snaplen);
-	    printf("\tpcap->linktype: %d\n", pfhdr->linktype);
+	    printf("\tversion_major: %d\n", pcap_major_version(pcap));
+	    printf("\tversion_minor: %d\n", pcap_minor_version(pcap));
+	    printf("\tsnaplen: %d\n", pcap_snapshot(pcap));
+	    printf("\tlinktype: %d\n", pcap_datalink(pcap));
 	}
     }
 
     /* check the phys type (pretend everything is ethernet) */
     memset(&eth_header,0,EH_SIZE);
     switch (type = pcap_datalink(pcap)) {
+case 100:
       case DLT_EN10MB:
 	/* OK, we understand this one */
 	physname = "Ethernet";
