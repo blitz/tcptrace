@@ -101,6 +101,7 @@ DEFINES += -DGROK_ETHERPEEK
 ################################################################## 
 # Pathname of directory to install the binary
 BINDIR = /usr/local/bin
+MANDIR = /usr/local/man/
 
 
 ################################################################## 
@@ -231,6 +232,8 @@ bigtarfile:
 INSTALL = ./install-sh -c
 install: tcptrace
 	$(INSTALL) -m 755 -o bin -g bin tcptrace ${BINDIR}/tcptrace
+install-man: 
+	$(INSTALL) -m 444 -o bin -g bin tcptrace.man $(MANDIR)/man1/tcptrace.1
 
 #
 # static file dependencies
