@@ -273,8 +273,8 @@ PrintTrace(
 		  pab->owin_count==0?0:pab->owin_tot/pab->owin_count,
 		  pba->owin_count==0?0:pba->owin_tot/pba->owin_count);
 	StatLineI("wavg owin","bytes", 
-		  (u_llong)(pab->owin_wavg/((double)etime/1000000)), 
-		  (u_llong)(pba->owin_wavg/((double)etime/1000000)));
+		  (etime==0)?0:(u_llong)(pab->owin_wavg/((double)etime/1000000)), 
+		  (etime==0)?0:(u_llong)(pba->owin_wavg/((double)etime/1000000)));
     }
     StatLineI("initial window","bytes",
 	      pab->initialwin_bytes, pba->initialwin_bytes);
