@@ -312,4 +312,6 @@
   allow unambiguous prefixes of extended args (--foo)
   added --dump_packet_data to add TCP/UDP packet DATA printout along
     with individual packet dumps (--dump is good enough prefix)
+  bug fixed to the http module from Daikichi Osuga (byte sex problems)
+  added support for DLT_ATM_RFC1483-format tcpdump files
 
