@@ -413,7 +413,8 @@ MallocZ(
 		perror("Malloc failed, fatal\n");
 		exit(2);
 	}
-	bzero(ptr,nbytes);
+
+	memset(ptr,'\00',nbytes);  /* BZERO */
 
 	return(ptr);
 }
@@ -432,7 +433,7 @@ ReallocZ(
 		exit(2);
 	}
 	if (obytes < nbytes) {
-	    bzero((char *)ptr+obytes,nbytes-obytes);
+	    memset((char *)ptr+obytes,'\00',nbytes-obytes);  /* BZERO */
 	}
 
 	return(ptr);
