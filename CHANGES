@@ -515,3 +515,7 @@ falls in between min and max.
 6.4.6 :  1 JUL 2003 Mani
 -----
 Changes made to make gcc-3.3 make lesser warnings with tcptrace.
+
+6.4.7 :  1 AUG 2003 Mani
+-----
+Made the --csv/--tsv/--sv options' implementation better.

@@ -95,15 +95,6 @@ char *sp;  /* Separator used for long output with <SP>-separated-values */
 #define StatLineI StatLineI_L
 #endif /* HAVE_LONG_LONG */
 
-/* Size of header for comma-separated-values or tab-separated-values
- * The size is actually (SV_HEADER_COLUMN_COUNT - 1) & (SV__RTT_HEADER_COLUMN_COUNT - 1)
- * since there is a NULL at the end.
- * NOTE: If the exact number of fields are not printed for each connection,
- * the program will print out an error messages. This is a precautionary measure.
- */
-#define SV_HEADER_COLUMN_COUNT 88
-#define SV_RTT_HEADER_COLUMN_COUNT 51
-
 u_int
 SynCount(
     tcp_pair *ptp)
@@ -600,8 +591,10 @@ PrintTrace(
        * doesn't correspond to the actual fields expected.
        */
       if(sv_print_count != sv_expected_count) {
-	 fprintf(stderr, "output.c: Count of printed fields does not correspond to count of header fields for long output with comma/tab/<SP>-separated values.\n");
-	 exit(-1);
+	fprintf(stderr, "output.c: Count of printed fields does not correspond to count of header fields for long output with comma/tab/<SP>-separated values.\n");
+	fprintf(stderr,"sv_print_count=%u, sv_expected_count=%u\n",
+		sv_print_count, sv_expected_count);
+	exit(-1);
       }
    }
 }
@@ -972,13 +965,19 @@ void
 PrintSVHeader(
 	      void)
 {
-   /* NOTE: If you add new headers to the tables below, make sure you update the 
-    * constant defined at the top of this file to avoid getting error messages 
-    * during execution. This is a safety precausion.
+   /* NOTE: If you have added new fields of output to be printed in 
+    * PrintTrace(), make sure you update the header-list here too, so that the
+    * new field you have added also has a header in the --csv/--tsv/--sv 
+    * output.
     */
    
-   /* Headers for long output requested with comma/tab/<SP>-separated- values */
-   char *svHeader[SV_HEADER_COLUMN_COUNT] = {
+   /* Headers for long output requested with comma/tab/<SP>-separated- values
+    * Split up into two headers, since the OWIN stats printed when the 
+    * -lW option is given, generates fields of output that get printed in the 
+    * middle of the output generated with just the -l option.
+    */
+  
+   char *svHeader1[] = {
         "conn_#"                   ,
         "host_a"                   , "host_b",
 	"port_a"                   , "port_b",
@@ -988,6 +987,7 @@ PrintSVHeader(
 	"ack_pkts_sent_a2b"        , "ack_pkts_sent_b2a",
 	"pure_acks_sent_a2b"       , "pure_acks_sent_b2a",
 	"sack_pkts_sent_a2b"       , "sack_pkts_sent_b2a",
+        "dsack_pkts_sent_a2b"      , "dsack_pkts_sent_b2a",
 	"max_sack_blks/ack_a2b"    , "max_sack_blks/ack_b2a",
 	"unique_bytes_sent_a2b"    , "unique_bytes_sent_b2a",
 	"actual_data_pkts_a2b"     , "actual_data_pkts_b2a",
@@ -999,7 +999,7 @@ PrintSVHeader(
 	"outoforder_pkts_a2b"      , "outoforder_pkts_b2a",
 	"pushed_data_pkts_a2b"     , "pushed_data_pkts_b2a",
 	"SYN/FIN_pkts_sent_a2b"    , "SYN/FIN_pkts_sent_b2a",
-	"req_1323_ws/ts_a2b"       , "1323_ws/ts_b2a",
+	"req_1323_ws/ts_a2b"       , "req_1323_ws/ts_b2a",
 	"adv_wind_scale_a2b"       , "adv_wind_scale_b2a",
 	"req_sack_a2b"             , "req_sack_b2a",
 	"sacks_sent_a2b"           , "sacks_sent_b2a",
@@ -1012,24 +1012,42 @@ PrintSVHeader(
 	"max_win_adv_a2b"          , "max_win_adv_b2a",
 	"min_win_adv_a2b"          , "min_win_adv_b2a",
 	"zero_win_adv_a2b"         , "zero_win_adv_b2a",
-	"avg_win_adv_a2b"          , "avg_win_adv_b2a",
-	"initial_window_bytes_a2b" , "initial_window_bytes_b2a",
-	"initial_window_pkts_a2b"  , "initial_window_pkts_b2a",
-	"ttl_stream_length_a2b"    , "ttl_stream_length_b2a",
-	"missed_data_a2b"          , "missed_data_b2a",
-	"truncated_data_a2b"       , "truncated_data_b2a",
-	"truncated_packets_a2b"    , "truncated_packets_b2a",
-	"data_xmit_time_a2b"       , "data_xmit_time_b2a",
-	"idletime_max_a2b"         , "idletime_max_b2a",
-	"hardware_dups_a2b"        , "hardware_dups_b2a",
-	"throughput_a2b"           , "throughput_b2a",
-	NULL
+	"avg_win_adv_a2b"          , "avg_win_adv_b2a"
    };
-   
+   #define SV_HEADER1_COLUMN_COUNT (sizeof(svHeader1)/sizeof(char*))
+  
+   char *svHeader2[] = {
+       "initial_window_bytes_a2b" , "initial_window_bytes_b2a",
+       "initial_window_pkts_a2b"  , "initial_window_pkts_b2a",
+       "ttl_stream_length_a2b"    , "ttl_stream_length_b2a",
+       "missed_data_a2b"          , "missed_data_b2a",
+       "truncated_data_a2b"       , "truncated_data_b2a",
+       "truncated_packets_a2b"    , "truncated_packets_b2a",
+       "data_xmit_time_a2b"       , "data_xmit_time_b2a",
+       "idletime_max_a2b"         , "idletime_max_b2a",
+       "hardware_dups_a2b"        , "hardware_dups_b2a",
+       "throughput_a2b"           , "throughput_b2a"
+   };
+  
+   #define SV_HEADER2_COLUMN_COUNT (sizeof(svHeader2)/sizeof(char*))
+  
+   /* Headers to be printed if the OWIN stats are requested.
+    */
+  
+   char *svOWINHeader[] = {
+       "max_owin_a2b"             , "max_owin_b2a",
+       "min_non-zero_owin_a2b"    , "min_non-zero_owin_b2a",
+       "avg_owin_a2b"             , "avg_owin_b2a",
+       "wavg_owin_a2b"            , "wavg_owin_b2a"
+   };
+  
+   #define SV_OWIN_HEADER_COLUMN_COUNT (sizeof(svOWINHeader)/sizeof(char*))
+  
+      
    /* Headers for RTT, to be printed for long output requested with
     * comma/tab/<SP>-separated- values.
     */
-   char *svRTTHeader[SV_RTT_HEADER_COLUMN_COUNT] = {
+   char *svRTTHeader[] = {
         "RTT_samples_a2b"       , "RTT_samples_b2a",
 	"RTT_min_a2b"           , "RTT_min_b2a",
 	"RTT_max_a2b"           , "RTT_max_b2a",
@@ -1053,10 +1071,10 @@ PrintSVHeader(
 	"max_#_retrans_a2b"     , "max_#_retrans_b2a",
 	"min_retr_time_a2b"     , "min_retr_time_b2a",
 	"max_retr_time_a2b"     , "max_retr_time_b2a",
-	"avg_retr_time_ab2"     , "avg_retr_time_b2a",
-	"sdv_retr_time_a2b"     , "sdv_retr_time_b2a",
-	NULL
+	"avg_retr_time_a2b"     , "avg_retr_time_b2a",
+	"sdv_retr_time_a2b"     , "sdv_retr_time_b2a"
    };
+   #define SV_RTT_HEADER_COLUMN_COUNT (sizeof(svRTTHeader)/sizeof(char*))
    
    /* Local Variables */
    u_int i = 0; /* Counter */ 
@@ -1091,23 +1109,43 @@ PrintSVHeader(
      }
    
    /* Print the column headings (the field names) */
-   for(i = 0; i < SV_HEADER_COLUMN_COUNT-1; i++)
-     fprintf(stdout, "%s%s", svHeader[i], sp);
+    for (i=0; i<SV_HEADER1_COLUMN_COUNT; i++)
+      fprintf(stdout, "%s%s", svHeader1[i], sp);
+  
+    if (print_owin) {
+       for(i=0; i<SV_OWIN_HEADER_COLUMN_COUNT; i++)
+         fprintf(stdout, "%s%s", svOWINHeader[i], sp);
+    }
+
+    for (i=0; i<SV_HEADER2_COLUMN_COUNT; i++)
+      fprintf(stdout, "%s%s", svHeader2[i], sp);
+
 
    /* Print the RTT column headings (the field names) */   
    if(print_rtt)
-     for(i = 0; i < SV_RTT_HEADER_COLUMN_COUNT-1; i++)
+     for(i = 0; i < SV_RTT_HEADER_COLUMN_COUNT; i++)
        fprintf(stdout, "%s%s", svRTTHeader[i], sp);
      
    /* Improve readability */
    fprintf(stdout, "\n\n");
    
-   /* Set the number of columns expected to be printed.
-    * the subtraction is to exclude the 2 NULLS, one in each array.
-    */
-   
-   if(print_rtt)
-     sv_expected_count = SV_HEADER_COLUMN_COUNT + SV_RTT_HEADER_COLUMN_COUNT - 2;
-   else
-     sv_expected_count = SV_HEADER_COLUMN_COUNT - 1;
+   /* Set the number of columns expected to be printed. */
+   sv_expected_count=SV_HEADER1_COLUMN_COUNT + SV_HEADER2_COLUMN_COUNT;
+  
+   if (print_rtt)
+     sv_expected_count += SV_RTT_HEADER_COLUMN_COUNT;
+
+   if (print_owin)
+     sv_expected_count += SV_OWIN_HEADER_COLUMN_COUNT;
+
+   if (debug>3) {
+     fprintf(stderr,"SV_HEADER_COUNT : -l alone = %d\n", \
+            (SV_HEADER1_COLUMN_COUNT + SV_HEADER2_COLUMN_COUNT));
+     fprintf(stderr,"                : -W alone = %d\n", \
+            SV_OWIN_HEADER_COLUMN_COUNT);
+     fprintf(stderr,"                : -r alone = %d\n", \
+            SV_RTT_HEADER_COLUMN_COUNT);
+    
+     fprintf(stderr,"sv_expected_count=%u\n",sv_expected_count);
+   }
 }
