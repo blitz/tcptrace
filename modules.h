@@ -143,7 +143,7 @@ struct module modules[] = {
     /* ttl collie analysis */
     {TRUE,			/* make FALSE if you don't want to call it at all */
      "collie", "connection summary package",
-     collie_init, collie_read, collie_done,		
+     collie_init, NULL /* read */, collie_done,		
      collie_usage, NULL, collie_newconn},
 #endif /* LOAD_MODULE_COLLIE */
 };
