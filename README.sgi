@@ -37,3 +37,20 @@ would like to hear about this. Hope comes in handy.
 Alejandro Saez
 Software Engineer
 Silicon Chile S.A.
+
+------------------------------------------------------------
+Mon Sep 21, 1998
+
+
+[...] After I got your e-mail I did a full search and realized that
+the gcc distribution included the stdarg.h file (they were pretty
+hidden too, and undocumented ) . Funny since I've compiled with gcc on
+other SGI boxes and always used SGI's includes, and it made sense,
+they are the STANDARD libraries, it never ocurred to me that I needed
+two pairs of standard library headers, until now that this one include
+depended on a compiler internal.  So maybe is not a good idea to
+include the stuff in the notes, or at least say that it's only
+necessary if you are using the gcc compiler and SGI's header files,
+which of course doesn't make much sense.
+
+
