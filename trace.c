@@ -1655,23 +1655,41 @@ dotrace(
 			 current_time, SeqRep(thisdir,start+1));
 	} else if (FIN_SET(ptcp)) {	/* FIN  */
 	   /* Wed Sep 18, 2002 - bugfix
-	    /* we'll plot the FIN from 'end' to 'end+1' because the
-	       segment might have data in it too (normally not) */
-	    plotter_perm_color(from_tsgpl,
-			       hw_dup?hw_dup_color:
-			       retrans_num_bytes>0?retrans_color:
-			       synfin_color);
+	    * Check if data is present in the last packet.
+	    * We will draw the data bytes with the normal color
+	    * and then change the color for the last byte of FIN.
+	    */
+	    if(tcp_data_length > 0) { /* DATA + FIN */
+	       /* Data - default color */
+	       plotter_darrow(from_tsgpl, current_time, SeqRep(thisdir,start));
+	       plotter_line(from_tsgpl,
+			    current_time, SeqRep(thisdir,start),
+			    current_time, SeqRep(thisdir,end));
+	       /* FIN - synfin color */
+	       plotter_perm_color(from_tsgpl,
+				  hw_dup?hw_dup_color:
+				  retrans_num_bytes>0?retrans_color:
+				  synfin_color);
+	    }
+	    else { /* Only FIN */
+	       /* FIN - synfin color */	       
+	       plotter_perm_color(from_tsgpl,
+				  hw_dup?hw_dup_color:
+				  retrans_num_bytes>0?retrans_color:
+				  synfin_color);
+	       plotter_darrow(from_tsgpl, current_time, SeqRep(thisdir,end));
+	    }
+	    plotter_line(from_tsgpl,
+			 current_time, SeqRep(thisdir,end),
+			 current_time, SeqRep(thisdir,end+1));
+	    plotter_box(from_tsgpl, current_time, SeqRep(thisdir,end+1));
+	    plotter_text(from_tsgpl, current_time,
 			 SeqRep(thisdir,end+1), "a",
 			 hw_dup?"HD FIN":
 			 retrans_num_bytes>0?"R FIN":
 			 "FIN");
 	   
-
-	    plotter_box(from_tsgpl, current_time, SeqRep(thisdir,end+1));
-	    plotter_darrow(from_tsgpl, current_time, SeqRep(thisdir,end));
-	    plotter_line(from_tsgpl,
-			 current_time, SeqRep(thisdir,end),
-			 current_time, SeqRep(thisdir,end+1));
+	} else if (tcp_data_length > 0) {		/* DATA */
 	    if (hw_dup) {
 		plotter_perm_color(from_tsgpl, hw_dup_color);
 	    } else if (retrans) {
