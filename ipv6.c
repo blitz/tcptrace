@@ -492,3 +492,43 @@ str2ipaddr(
 
     return(pipaddr);
 }
+
+
+/* compare two IP addresses */
+/* result: */
+/*    -2: different address types */
+/*    -1: A < B */
+/*     0: A = B */
+/*     1: A > B */
+int IPcmp(
+    ipaddr *pipA,
+    ipaddr *pipB)
+{
+    int i;
+    int len = (pipA->addr_vers == 4)?4:6;
+    u_char *left = (char *)&pipA->un.ip4;
+    u_char *right = (char *)&pipB->un.ip4;
+
+    /* always returns -2 unless both same type */
+    if (pipA->addr_vers != pipB->addr_vers) {
+	if (debug>1) {
+	    printf("IPcmp %s", HostAddr(*pipA));
+	    printf("%s fails, different addr types\n",
+		   HostAddr(*pipB));
+	}
+	return(-2);
+    }
+
+
+    for (i=0; i < len; ++i) {
+	if (left[i] < right[i]) {
+	    return(-1);
+	} else if (left[i] > right[i]) {
+	    return(1);
+	}
+	/* else ==, keep going */
+    }
+
+    /* if we got here, they're the same */
+    return(0);
+}
