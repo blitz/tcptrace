@@ -1,0 +1,26 @@
+
+>> When I plot a2b_tput.xpl I get two curves, one red and one blue
+>> plus the yellow dots for packets. What is not clear for me is what
+>> are the blue and red curves represents with respect to throughput?
+
+Sorry, that stuff hasn't been documented very well, partly because I'm
+not sure how to display it more clearly, but here's what it means:
+
+The yellow dots are the instantaneous throughput samples.  They're
+calculated by using the time since the last segment for the connection
+and the size of the current segment to get bytes/second for this
+sample.
+
+The red line is the result of averaging together multiple yellow
+dots.  By default (see -A), the red line uses the last 10 segments to
+calculate a throughput.  Higher -A values give smoother curves.
+
+The blue line is simply a running average throughput from the
+beginning of the transfer, and it's final value is the same as what is
+reported for the connection's transfer rate.
+
+Hope that helps.  As I said, I'm not really sure what should be on
+this graph.  What's there is the stuff that we've wanted here locally,
+but I'd be glad to hear other ideas!
+
+Shawn
