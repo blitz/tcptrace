@@ -1,0 +1,26 @@
+3.2.2 - Late 1996
+  added better checking for looking too far into truncated
+    packets
+
+3.2.3 - Thu Jan 23, 1997
+  added a lot more truncation checking!
+
+3.2.4 - Tue Feb  4, 1997
+  changed plotter.c:HostLetter(ix)
+	to support unlimited (26**8) different endpoints (for mallman)
+  fixes from Bill Fenner, thanks
+	fixed bug in va_start/va_end in DoPlot.
+	fixed bug with temporary colors not being done correctly
+		when using text.  Caused by Changes to xplot at last
+		version and I didn't catch it
+3.2.5 - Wed Feb  5, 1997
+  fixed small "off by one" error introduced by the LAST fix
+3.2.6 - Thu Feb 13, 1997
+  fixed small bug in etherpeek reading.  slicelength stored as "0" when
+  entire packet was grabbed, didn't work before, now it does.
+3.2.7 - Fri Feb 14, 1997
+  fixes from Jeff Semke, PSC
+    fixed bug in output.c that make it fail on some machines
+    added FDDI support (untested by me, don't have FDDI)
+    added Makefile flags so that it will compile on a "NetBSD 1.2 on a
+	Pentium box"  (also untested by me, I don't have one)
