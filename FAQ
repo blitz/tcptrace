@@ -487,3 +487,18 @@ I'm told that there's one here:
   http://netgroup-serv.polito.it/analyzer/install/windump/default.htm
 
 but I've never used it.
+============================================================
+Tue Jun  1, 1999
+
+>> 2. I get some 'Z' letters printed out by xplot on a sequence number
+>> graph, and I couldn't find anything about this in the doc I found. Do
+>> you know what they mean ?
+
+Those are "zero windows".  That's when the receiver of the data
+advertises a receive window of 0, meaning that it can't accept any
+more data.  That normally means that the receiving application can't
+keep up.  Normally, they're followed by a "gratuitious ACK" from the
+receiver advertising additional buffer space, which will cause the
+sender to send more data.  If the sender is impatient (which it's
+allowed to be) or the gratuitious ACK is lost, the sender can send
+additional data anyway (a zero window probe).
