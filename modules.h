@@ -66,7 +66,7 @@ struct module {
 };
 
 
-#include "http.h"	/* for the HTTP package */
+#include "mod_http.h"	/* for the HTTP package */
 
 /* install the is_GLORP() routines supported */
 struct module modules[] = {
