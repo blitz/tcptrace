@@ -643,6 +643,8 @@ FindTTP(
 
 	    if (run_continuously) 
 	      (*tcp_ptr) = (ptp_ptr *)ptph->ptp;
+
+	    *pdir = dir;
 	    return (ptp);
 	}
 	ptph_last = ptph;
