@@ -32,7 +32,7 @@ static char const rcsid_version[] =
 /* source code version information */
 #define VERSION_MAJOR	5
 #define VERSION_MINOR	1
-#define VERSION_BUGFIX	5b
+#define VERSION_BUGFIX	5c
 #define VERSION_DATE	"Wed Feb 24, 1999"
 
 
