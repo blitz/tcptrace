@@ -9,6 +9,8 @@ static FILE **fplot;
 static tcb **p2plast;
 static PLOTTER plotter_ix = NO_PLOTTER;
 
+static char *temp_color = NULL;
+
 
 /*
  * Return a string suitable for use as a timestamp in the xplot output.
@@ -116,6 +118,11 @@ static void DoPlot(pl, fmt, va_alist)
     if ((f = fplot[pl]) == NULL)
 	return;
 
+    if (temp_color) {
+	fprintf(f,"%s ",temp_color);
+	temp_color = NULL;
+    }
+
     vfprintf(f,fmt,ap);
     fprintf (f,"\n");
 
@@ -187,6 +194,26 @@ plotter_done()
     }
 }
 
+
+
+void
+plotter_temp_color(pl,color)
+     PLOTTER pl;
+     char *color;
+{
+    if (colorplot)
+	temp_color = color;
+}
+
+
+void
+plotter_perm_color(pl,color)
+     PLOTTER pl;
+     char *color;
+{
+    if (colorplot)
+	DoPlot(pl,"%s",color);
+}
 
 
 void

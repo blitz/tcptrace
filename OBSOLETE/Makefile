@@ -11,8 +11,8 @@ OPTIM = -g -Wall -pg
 OPTIM = -g -Wall
 OPTIM = -g -Wall
 OPTIM = -O2 -Wall
-OPTIM = -O2
 OPTIM = -O2 -g -Wall
+OPTIM = -O2
 #
 INCS=-I/usr/local/include
 CFLAGS = ${OPTIM} ${INCS}

@@ -137,6 +137,7 @@ typedef struct tcphdr tcphdr;
 
 
 /* option flags */
+extern int colorplot;
 extern int debug;
 extern int dortt;
 extern int hex;
@@ -188,6 +189,8 @@ void plotter_uarrow();
 void plotter_utick();
 void plotter_diamond();
 void plotter_box();
+void plotter_temp_color(PLOTTER,char*);
+void plotter_perm_color(PLOTTER,char*);
 void printeth();     
 void printpacket();     
 void printtcp();     
