@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996
+ * Copyright (c) 1994, 1995, 1996, 1997
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -194,12 +194,27 @@ http_read(
 	if (lastbyte > ph->highest_data)
 	    ph->highest_data = lastbyte;
     }
+#ifdef OLD
     if (client && ACK_SET(ptcp)) {
 	/* does this ACK "highest_data"? */
 	if (SEQ_GREATERTHAN(ptcp->th_ack,ph->highest_data)) {
 	    ph->lastack_time = current_time;
 	}
     }
+#else /* OLD */
+    /* Allman's hack */
+    if (client && ACK_SET(ptcp)
+	&& !ph->fin_time.tv_sec && !ph->fin_time.tv_usec) {
+	/* does this ACK "highest_data"? */
+	if ((!FIN_SET (ptcp) && 
+	     SEQ_GREATERTHAN(ptcp->th_ack,ph->highest_data)) ||
+	    (FIN_SET (ptcp) &&
+	     SEQ_GREATERTHAN(ptcp->th_ack,ph->highest_data + 1))) {
+	    ph->lastack_time = current_time;
+	}
+    }
+
+#endif /* OLD */
 
     /* look for Content_Length: */
     if (!client && (ph->content_length == 0)) {
