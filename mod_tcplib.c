@@ -1858,8 +1858,8 @@ void tcplib_do_ftp_itemsize()
 	pair = ttp[i];
 
 	/* We only need the stats if it's FTP data */
-	if (   is_ftp_data_port(pair->addr_pair.a_port)
-	   || is_ftp_data_port(pair->addr_pair.b_port)){
+	if (is_ftp_data_port(pair->addr_pair.a_port) ||
+	    is_ftp_data_port(pair->addr_pair.b_port)){
 	    
 	    /* Now we know we're only dealing with FTP data... so
 	     * we need to find the conversation with the largest
@@ -1867,12 +1867,21 @@ void tcplib_do_ftp_itemsize()
 	     */
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
+/* 	    printf("i: %d, max: %d, temp: %d, a2b: %lld, b2a: %lld\n", */
+/* 		   i, */
+/* 		   max_size, temp, */
+/* 		   pair->a2b.data_bytes, */
+/* 		   pair->b2a.data_bytes); */
+/* 	    PrintTrace(pair); */
+
 	    if (temp > max_size)
 		max_size = temp;
 
 	    count++;
 	}
     }
+
+/*     printf("ftp_itemsize: max is %d\n", max_size); */
 
     size_list = MallocZ(sizeof(int) * ((max_size/5)+1));
 
@@ -1886,10 +1895,14 @@ void tcplib_do_ftp_itemsize()
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if ((temp/5) >= (max_size/5)+1)
-		printf("ftp_itemsize: %d\n", temp/5);
+/* 	    if ((temp/5) >= (max_size/5)+1) */
+/* 		printf("ftp_itemsize: %d\n", temp/5); */
 
 	    size_list[temp/5]++;
+
+/* 	    printf("ftp_itemsize: sample of %d goes in bucket[%d] (%d)\n", */
+/* 		   temp, temp/5, size_list[temp/5]); */
+
 	}
     }
 
@@ -1909,6 +1922,9 @@ void tcplib_do_ftp_itemsize()
 	temp = i;
 
 	curr_count += size_list[i];
+
+/* 	printf("size_list[%d]: %d, curr_count = %d\n", */
+/* 	       i, size_list[i], curr_count); */
 
 	if (size_list[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
@@ -2018,8 +2034,8 @@ void tcplib_do_ftp_control_size()
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if ((temp) >= (max_size)+1)
-		printf("ftp_control: %d\n", temp);
+/* 	    if ((temp) >= (max_size)+1) */
+/* 		printf("ftp_control: %d\n", temp); */
 
 	    size_list[temp]++;
 	}
@@ -2162,8 +2178,8 @@ void tcplib_do_smtp()
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if ((temp/5) >= (max_size/5)+1)
-		printf("ftp_control: %d\n", temp/5);
+/* 	    if ((temp/5) >= (max_size/5)+1) */
+/* 		printf("ftp_control: %d\n", temp/5); */
 
 	    size_list[(temp/5)]++;
 	}
@@ -2299,8 +2315,8 @@ void tcplib_do_nntp_itemsize()
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if ((temp/1024) >= (max_size/1024)+1)
-		printf("nntp_itemsize: %d\n", temp/1024);
+/* 	    if ((temp/1024) >= (max_size/1024)+1) */
+/* 		printf("nntp_itemsize: %d\n", temp/1024); */
 
 	    size_list[temp/1024]++;
 	}
@@ -2450,8 +2466,8 @@ void tcplib_do_http_itemsize()
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
 
-	    if ((temp) >= (max_size+1))
-		printf("ftp_http_itemsize: %d\n", temp);
+/* 	    if ((temp) >= (max_size+1)) */
+/* 		printf("ftp_http_itemsize: %d\n", temp); */
 
 	    size_list[temp]++;
 	}
