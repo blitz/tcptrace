@@ -25,6 +25,8 @@ TCP connection 1:
      actual data bytes:         0           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          0           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/0           SYN/FIN pkts sent:       0/0      
@@ -86,6 +88,8 @@ TCP connection 2:
      actual data bytes:         0           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          0           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/0           SYN/FIN pkts sent:       0/0      
@@ -146,6 +150,8 @@ TCP connection 3:
      actual data bytes:    819200           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           2           outoforder pkts:           0      
      pushed data pkts:         39           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -206,6 +212,8 @@ TCP connection 4:
      actual data bytes:    888196           actual data bytes:         0      
      rexmt data pkts:          51           rexmt data pkts:           0      
      rexmt data bytes:      68996           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:        216           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -275,6 +283,8 @@ TCP connection 5:
      actual data bytes:    114688           actual data bytes:         0      
      rexmt data pkts:          64           rexmt data pkts:           0      
      rexmt data bytes:      85806           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:         12           pushed data pkts:          0      
      SYN/FIN pkts sent:       2/2           SYN/FIN pkts sent:       1/0      
@@ -292,8 +302,8 @@ TCP connection 5:
      wavg owin:              3995 bytes     wavg owin:                 0 bytes
      initial window:         1436 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
-     ttl stream length:        NA           ttl stream length:        NA      
-     missed data:              NA           missed data:              NA      
+     ttl stream length:     28884 bytes     ttl stream length:        NA      
+     missed data:               0 bytes     missed data:              NA      
      truncated data:       111160 bytes     truncated data:            0 bytes
      truncated packets:        84 pkts      truncated packets:         0 pkts 
      data xmit time:       12.652 secs      data xmit time:        0.000 secs 

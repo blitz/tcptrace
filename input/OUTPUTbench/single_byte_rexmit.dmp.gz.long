@@ -25,6 +25,8 @@ TCP connection 1:
      actual data bytes:      1615           actual data bytes:      8733      
      rexmt data pkts:           1           rexmt data pkts:           2      
      rexmt data bytes:        293           rexmt data bytes:       1461      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           1      
      pushed data pkts:          5           pushed data pkts:          8      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/2      

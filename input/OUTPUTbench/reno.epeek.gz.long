@@ -24,6 +24,8 @@ TCP connection 1:
      actual data bytes:         0           actual data bytes:    338100      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          0           pushed data pkts:          0      
      SYN/FIN pkts sent:       0/0           SYN/FIN pkts sent:       0/0      

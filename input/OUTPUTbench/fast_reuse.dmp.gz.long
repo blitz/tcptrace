@@ -26,6 +26,8 @@ TCP connection 1:
      actual data bytes:         0           actual data bytes:      8146      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          0           pushed data pkts:          1      
      SYN/FIN pkts sent:       0/1           SYN/FIN pkts sent:       0/1      
@@ -87,6 +89,8 @@ TCP connection 2:
      actual data bytes:     32198           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:         23           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -151,6 +155,8 @@ TCP connection 3:
      actual data bytes:     45516           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:         43           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -215,6 +221,8 @@ TCP connection 4:
      actual data bytes:     51643           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:         53           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -279,6 +287,8 @@ TCP connection 5:
      actual data bytes:      1193           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -343,6 +353,8 @@ TCP connection 6:
      actual data bytes:     11424           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -407,6 +419,8 @@ TCP connection 7:
      actual data bytes:       806           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -471,6 +485,8 @@ TCP connection 8:
      actual data bytes:      1670           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -535,6 +551,8 @@ TCP connection 9:
      actual data bytes:      2521           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -599,6 +617,8 @@ TCP connection 10:
      actual data bytes:      1380           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -663,6 +683,8 @@ TCP connection 11:
      actual data bytes:        20           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -727,6 +749,8 @@ TCP connection 12:
      actual data bytes:        20           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -791,6 +815,8 @@ TCP connection 13:
      actual data bytes:       657           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -855,6 +881,8 @@ TCP connection 14:
      actual data bytes:       941           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -919,6 +947,8 @@ TCP connection 15:
      actual data bytes:      2550           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -983,6 +1013,8 @@ TCP connection 16:
      actual data bytes:        20           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -1047,6 +1079,8 @@ TCP connection 17:
      actual data bytes:     23987           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:         13           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
@@ -1111,6 +1145,8 @@ TCP connection 18:
      actual data bytes:      1124           actual data bytes:         0      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          0      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      

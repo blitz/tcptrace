@@ -24,6 +24,8 @@ TCP connection 1:
      actual data bytes:       390           actual data bytes:      4756      
      rexmt data pkts:           0           rexmt data pkts:           0      
      rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          2      
      SYN/FIN pkts sent:       1/0           SYN/FIN pkts sent:       1/1      
@@ -41,8 +43,8 @@ TCP connection 1:
      wavg owin:                32 bytes     wavg owin:               645 bytes
      initial window:          390 bytes     initial window:         2920 bytes
      initial window:            1 pkts      initial window:            2 pkts 
-     ttl stream length:        NA           ttl stream length:        NA      
-     missed data:              NA           missed data:              NA      
+     ttl stream length:        NA           ttl stream length:      4756 bytes
+     missed data:              NA           missed data:               0 bytes
      truncated data:          161 bytes     truncated data:         3840 bytes
      truncated packets:         1 pkts      truncated packets:         4 pkts 
      data xmit time:        0.000 secs      data xmit time:        0.860 secs 
