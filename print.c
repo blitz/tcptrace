@@ -712,6 +712,7 @@ printipv6(
 
     while (pheader) {
 	u_char old_nextheader = nextheader;
+
 	pheader = ipv6_nextheader(pheader,&nextheader);
 
 	/* if there isn't a "next", then this isn't an extension header */
@@ -735,7 +736,6 @@ ipv6addr2str(
 {
     static char adr[INET6_ADDRSTRLEN];
     my_inet_ntop(AF_INET6, (char *)&addr, (char *)adr, INET6_ADDRSTRLEN);
-    snprintf(adr,sizeof(adr),"%s", adr);
     return(adr);
 }
 

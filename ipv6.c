@@ -101,11 +101,18 @@ ipv6_nextheader(
 	*pnextheader = pheader->ip6ext_nheader;
 
 	/* sanity check, if length is 0, terminate */
-	if (pheader->ip6ext_len == 0)
-	    return(NULL);
-	
+  	/* As per RFC 2460 : ip6ext_len specifies the extended
+   	 	 header length, in units of 8 octets *not including* the
+	 	 first 8 octets.  So ip6ext_len can be 0 and hence,
+		 we cannot perform the sanity check any more.
+
+		 Hence commenting out the sanity check - Mani*/
+		 
+	/* if (pheader->ip6ext_len == 0)
+	    return(NULL); */
+
 	return((struct ipv6_ext *)
-	       ((char *)pheader + pheader->ip6ext_len));
+		   ((char *)pheader + 8 + (pheader->ip6ext_len)*8));
 
 	/* I don't understand them.  Just save the type and return a NULL */
       default:
@@ -228,9 +235,11 @@ findheader(
 	      }
 
 	      /* otherwise it's either an entire segment or the first fragment */
-	      nextheader = pheader->ip6ext_nheader;
+	      nextheader = pfrag->ip6ext_fr_nheader;
+		  /* Pass to the next octet following the fragmentation
+		     header */
 	      pheader = (struct ipv6_ext *)
-		  ((char *)pheader + pheader->ip6ext_len);
+		  ((char *)pheader + sizeof(struct ipv6_ext_frag));
 	      break;
 	  }
 
@@ -239,9 +248,13 @@ findheader(
 	  case IPPROTO_ROUTING:
 	  case IPPROTO_DSTOPTS:
 	      nextheader = pheader->ip6ext_nheader;
+
+		  /* As per RFC 2460 : ip6ext_len specifies the extended
+		     header length, in units of 8 octets *not including* the
+			 first 8 octets. */
+		  
 	      pheader = (struct ipv6_ext *)
-		  ((char *)pheader + pheader->ip6ext_len);
-	      break;
+		  ((char *)pheader + 8 + (pheader->ip6ext_len)*8);
 
 	    /* non-tcp protocols, so we're finished. */
 	  case IPPROTO_NONE:
@@ -251,8 +264,9 @@ findheader(
 	  /* I "think" that we can just skip over it, but better be careful */
 	  default:
 	      nextheader = pheader->ip6ext_nheader;
+
 	      pheader = (struct ipv6_ext *)
-		  ((char *)pheader + pheader->ip6ext_len);
+		  ((char *)pheader + 8 + (pheader->ip6ext_len)*8);
 	      break;
 
 	} /* end switch */
