@@ -179,6 +179,7 @@ pread_tcpdump(
 	*pphystype = PHYS_ETHER; /* everything assumed to be ethernet */
 	*ppip      = (struct ip *) ip_buf;
 	*pplast    = callback_plast; /* last byte in IP packet */
+	/* (copying time structure in 2 steps to avoid RedHat brain damage) */
 	ptime->tv_usec = callback_phdr->ts.tv_usec;
 	ptime->tv_sec = callback_phdr->ts.tv_sec;
 	*plen      = callback_phdr->len;
@@ -313,6 +314,7 @@ PcapSavePacket(
     }
 
     /* create the packet header */
+    /* (copying time structure in 2 steps to avoid RedHat brain damage) */
     phdr.ts.tv_sec = current_time.tv_sec;
     phdr.ts.tv_usec = current_time.tv_usec;
     phdr.caplen = (unsigned)plast - (unsigned)pip + 1;
