@@ -51,8 +51,6 @@ static char const rcsid_tcptrace[] =
 #include <stdarg.h>
 #include <stdlib.h>
 
-
-
 /* type for plotting into a file */
 typedef int PLOTTER;
 #define NO_PLOTTER -1
@@ -283,8 +281,10 @@ extern timeval current_time;
 /* external routine decls */
 double sqrt(double x);
 char *ether_ntoa();
+#ifndef I386_NBSD1
 void bzero(void *, int);
 void bcopy(void *, void *,int);
+#endif
 void free(void *);
 int finite(double);
 
@@ -377,7 +377,7 @@ struct tcp_options *ParseOptions(struct tcphdr *ptcp, void *plast);
 
 /* physical layers currently understood					*/
 #define PHYS_ETHER	1
-
+#define PHYS_FDDI       2
 
 /*
  * SEQCMP - sequence space comparator
