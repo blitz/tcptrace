@@ -77,8 +77,10 @@ Bool print_cwin = FALSE;
 Bool printbrief = TRUE;
 Bool printsuppress = FALSE;
 Bool printem = FALSE;
+Bool printallofem = FALSE;
 Bool printticks = FALSE;
 Bool printtrunc = FALSE;
+Bool printbadmbz = TRUE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
 Bool graph_seq_zero = FALSE;
@@ -104,6 +106,7 @@ char **filenames = NULL;
 u_int numfiles;
 char *cur_filename;
 static char *progname;
+char *output_filename = NULL;
 
 
 
@@ -366,14 +369,16 @@ Graphing detail options\n\
   -y      omit the (yellow) instantaneous throughput points in tput graph\n\
 Misc options\n\
   -Z      dump raw rtt sample times to file[s]\n\
-  -p      print individual packet contents (can be very long)\n\
+  -p      print all packet contents (can be very long)\n\
+  -P      print packet contents for selected connections\n\
   -t      'tick' off the packet numbers as a progress indication\n\
-  -f EXPR output filtering (see -hfilter)\n\
+  -fEXPR  output filtering (see -hfilter)\n\
   -v      print version information and exit\n\
-  -w      print warning message when packets are too short to process\n\
+  -w      print various warning messages\n\
   -d      whistle while you work (enable debug, use -d -d for more output)\n\
   -e      extract contents of each TCP stream into file\n\
   -h      print help messages\n\
+  -Ofile  dump matched packets to tcpdump file 'file'\n\
   +[v]    reverse the setting of the -[v] flag (for booleans)\n\
 Dump File Names\n\
   Anything else in the arguments is taken to be one or more filenames.\n\
@@ -625,7 +630,7 @@ rather than:
 
 
 	/* progress counters */
-	if (!printem && printticks) {
+	if (!printem && !printallofem && printticks) {
 	    if (CompIsCompressed())
 		location += tlen;  /* just guess... */
 	    if (((fpnum <    100) && (fpnum %    10 == 0)) ||
@@ -697,7 +702,7 @@ for other packet types, I just don't have a place to test them\n\n");
 	}
 
 	/* print the packet, if requested */
-	if (printem) {
+	if (printallofem) {
 	    printf("Packet %lu\n", pnum);
 	    printpacket(len,tlen,phys,phystype,pip,plast);
 	}
@@ -1024,7 +1029,8 @@ ParseArgs(
 		  case 'h': Help(argv[i]+1); *(argv[i]+1) = '\00'; break;
 		  case 'l': printbrief = FALSE; break;
 		  case 'n': nonames = TRUE; break;
-		  case 'p': printem = TRUE; break;
+		  case 'p': printallofem = TRUE; break;
+		  case 'P': printem = TRUE; break;
 		  case 'r': print_rtt = TRUE; break;
 		  case 's': use_short_names = TRUE; break;
 		  case 't': printticks = TRUE; break;
@@ -1061,6 +1067,16 @@ ParseArgs(
 		    } else {
 			/* -f EXPR */
 			BadArg(argsource, "-f requires a filter\n");
+		    }
+		    break;
+		  case 'O':
+		    if (*(argv[i]+1)) {
+			/* -Ofile */
+			output_filename = strdup(argv[i]+1);
+			*(argv[i]+1) = '\00';
+		    } else {
+			/* -O file */
+			BadArg(argsource, "-Ofile requires a file name\n");
 		    }
 		    break;
 		  case 'i':
@@ -1117,7 +1133,8 @@ ParseArgs(
 		  case 'e': save_tcp_data = FALSE; break;
 		  case 'l': printbrief = !FALSE; break;
 		  case 'n': nonames = !TRUE; break;
-		  case 'p': printem = !TRUE; break;
+		  case 'p': printallofem = !TRUE; break;
+		  case 'P': printem = !TRUE; break;
 		  case 'r': print_rtt = !TRUE; break;
 		  case 's': use_short_names = !TRUE; break;
 		  case 't': printticks = !TRUE; break;
@@ -1170,6 +1187,7 @@ DumpFlags(void)
 	fprintf(stderr,"hex printing:     %d\n", hex);
 	fprintf(stderr,"ignore_non_comp:  %d\n", ignore_non_comp);
 	fprintf(stderr,"printem:          %d\n", printem);
+	fprintf(stderr,"printallofem:     %d\n", printallofem);
 	fprintf(stderr,"printticks:       %d\n", printticks);
 	fprintf(stderr,"no names:         %d\n", nonames);
 	fprintf(stderr,"use_short_names:  %d\n", use_short_names);
