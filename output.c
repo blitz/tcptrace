@@ -179,6 +179,9 @@ PrintBrief(
 	
 	for (ix = 0; ix <= num_tcp_pairs; ++ix) {
 	    tmp_ptp = ttp[ix];
+	    if (tmp_ptp->ignore_pair)
+		continue;
+	    
 	    len = strlen(FormatBrief(tmp_ptp));
 	    if (len > max_width)
 		max_width = len;
