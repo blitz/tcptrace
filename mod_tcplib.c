@@ -128,7 +128,6 @@ int tcplib_init(
 {
     int i;             /* Runner for command line arguments */
     int enable = 0;    /* Do we turn on this module, or not? */
-    int dirlen = 0;    /* Length of the user specified directory name */
 
     for(i = 0; i < argc; i++) {
 
@@ -182,11 +181,16 @@ int tcplib_init(
 	}
 
 
+#ifdef OLD
+	/* -O not supported, that option is taken - sdo */
+
+	
 	/* We will probably need to add another flag here to
 	 * specify the directory in which to place the data
 	 * files.  And here it is.
 	 */
 	if(argv[i] && !strncmp(argv[i], "-O", 2)) {
+	    int dirlen = 0;    /* Length of the user specified directory name */
 
 	    if(i >= argc-1) {
 		printf("Flag \"-O\" must have a string argument.\n");
@@ -217,6 +221,7 @@ int tcplib_init(
 	    continue;
 	}
 
+#endif /* OLD */
     }
 
     /* If enable is not true, then all tcplib functions will
