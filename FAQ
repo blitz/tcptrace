@@ -378,9 +378,28 @@ then just use something like
 
 to get bytes/second between the hosts for all traffic.
 
---sdo
+============================================================
+Tue Jan 12, 1999
 
+>> I get the message indicating that there is the presence of hardware 
+>> duplicates. What exactly does that mean? Two ethernet cards with 
+>> the same MAC address? I don't think it could be a duplicate IP 
+>> address.
 
+That's a sanity check.  It means that tcptrace saw 2 packets with the
+same TCP header and identical ID fields at the IP level.  Because the
+IP headers (IPv4) are the same, it's unlikely that this is a
+retransmission.  Most likely, it means that those packets are crossing
+the local network twice, as in:
 
+       Router                Sender                  Receiver
+         |                     |                         |
+       ==========================================================
+pkt1:    ^---------------------<
+pkt2:    >-----------------------------------------------^
 
-
+once from the sender to a router (or hub), and then again from the router to
+the receiver.  Tcptrace flags the situation because otherwise those packets would
+be seen as retransmissions when they really aren't.  If you're seeing a lot of
+these (well, probably any at all), then there's a bad setup on your network.
+    
