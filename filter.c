@@ -758,6 +758,9 @@ LookupVar(
 	      case V_UFUNC:	
 		pf->vartype = V_ULLONG; /* we'll promote on the fly */
 		break;
+	      case V_BOOL:	
+		pf->vartype = V_BOOL;
+		break;
 	      default:
 		pf->vartype = pf->vartype; 
 	    }
