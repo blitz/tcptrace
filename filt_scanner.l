@@ -49,6 +49,7 @@ extern YYSTYPE yylval;
 "-" 	        { return(MINUS); } 
 "*" 	        { return(TIMES); } 
 "/" 	        { return(DIVIDE); } 
+"%" 	        { return(MOD); } 
 "(" 	        { return(LPAREN); } 
 ")" 	        { return(RPAREN); } 
 "<" 	        { return(LESS); } 

@@ -64,15 +64,14 @@
 
 /* PLUS and MINUS group left to right, lower prec then TIMES and DIVIDE */
 %left PLUS MINUS
-%left TIMES DIVIDE
-
+%left TIMES DIVIDE MOD
 
 %token <string> VARIABLE STRING
 %token <signed_long> SIGNED
 %token <unsigned_long> UNSIGNED
 %token <bool> BOOL
 %type <op> relop
-%type <pf> expr leaf number term
+%type <pf> expr leaf number
 
 
 
@@ -88,12 +87,7 @@ expr	: expr AND expr
 		{ $$ = MakeBinaryNode(OP_OR,$1,$3);}
 	| NOT expr
 		{ $$ = MakeUnaryNode(OP_NOT,$2); }
-	| term
-		{ $$ = $1; }
-	;
-
-/* relational operators and function of constants and variables */
-term	: number relop number
+	| number relop number
 		{ $$ = MakeBinaryNode($2,$1,$3);}
 	| number
 		{ $$ = $1; }
@@ -109,6 +103,8 @@ number	: number PLUS number
 		{ $$ = MakeBinaryNode(OP_TIMES,$1,$3);}
 	| number DIVIDE number
 		{ $$ = MakeBinaryNode(OP_DIVIDE,$1,$3);}
+	| number MOD number
+		{ $$ = MakeBinaryNode(OP_MOD,$1,$3);}
 	| LPAREN expr RPAREN
 		{ $$ = $2; }
 	| leaf
