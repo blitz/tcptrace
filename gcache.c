@@ -41,6 +41,11 @@ static char const rcsid[] =
 #include "gcache.h"
 
 
+/* Let's use ANSI C rather than old BSD calls... */
+#define bzero(ptr,nbytes) memset(ptr,0,nbytes)
+#define bcopy(from_ptr,to_ptr,nbytes) memcpy(to_ptr,from_ptr,nbytes)
+
+
 
 static int ca_enabled;
 
