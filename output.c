@@ -298,6 +298,15 @@ PrintTrace(
     StatlineI("avg win adv","bytes","%8lu",
 	      pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
 	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
+    StatlineI("max cwin","bytes","%8lu", pab->cwin_max, pba->cwin_max);
+    StatlineI("min cwin","bytes","%8lu", pab->cwin_min, pba->cwin_min);
+    StatlineI("avg cwin","bytes","%8lu",
+	      pab->ack_pkts==0?0:pab->cwin_tot/pab->ack_pkts,
+	      pba->ack_pkts==0?0:pba->cwin_tot/pba->ack_pkts);
+    StatlineI("initial window","bytes","%8lu",
+	      pab->initialwin_bytes, pba->initialwin_bytes);
+    StatlineI("initial window","pkts","%8lu",
+	      pab->initialwin_segs, pba->initialwin_segs);
 
 
     /* do the throughput calcs */
