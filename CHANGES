@@ -199,6 +199,10 @@
 5.0.11 - Mon Oct 19, 1998
   Brian Utterback found another case where I was splicing connections
     together.  Bad unsigned match caused it...  fixed (knock, knock)
-
-	
-
+5.0.12 - Mon Nov  2, 1998
+  Added generic, high-level line drawing functions to plotter.c
+  Used same in mod_traffic to add an overall RTT plot
+  Added one more minor patch to the connection splicing heuristic
+  Lots of changes to make the RTT calculation better in cases of
+    retransmissions and etc
+  Added RTT graph to the traffic module
