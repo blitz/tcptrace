@@ -444,3 +444,19 @@ Somebody pointed out that there's now a windows port of tcpdump.  I
 don't know anything about it except the URL:
 
 http://netgroup-serv.polito.it/tools/analyzer/Install/windump/
+============================================================
+Tue Apr 27, 1999
+
+>> What does the "truncated data" and "truncated packets" mean ??  I
+>> ask this because I do not see any anomalies using our sniffer and
+>> tcpdump, but this field has us confused.
+
+"truncated" refers to the difference between the size of the packets
+"on the wire" and the number of bytes saved in the dump file.  With
+tcpdump and snoop, for example, you can set the "snap length", which
+controls the maximum amount of data saved from each packet.  A
+1500-byte packet grabbed with a 128-byte snap-length is "truncated".
+Because some of the analysis from various modules and features
+requires full packet data, tcptrace counts and prints the truncated
+segments ("truncated packets") and the amount of missing data
+("truncated data"). 
