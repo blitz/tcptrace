@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *               2002, 2003, 2004
  *	Ohio University.
  *
  * ---
@@ -52,7 +53,7 @@
  *		http://www.tcptrace.org/
  */
 /* Added FDDI support 9/96 Jeffrey Semke, Pittsburgh Supercomputing Center */
-static char const rcsid_tcpdump[] =
+static char const GCC_UNUSED rcsid_tcpdump[] =
     "@(#)$Header$";
 
 

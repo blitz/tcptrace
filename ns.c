@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *               2002, 2003, 2004
  *	Ohio University.
  *
  * ---
@@ -51,14 +52,15 @@
  *		ostermann@cs.ohiou.edu
  *		http://www.tcptrace.org/
  */
-static char const copyright[] =
-    "@(#)Copyright (c) 2001 -- Ohio University.\n";
+#include "tcptrace.h"
+static char const GCC_UNUSED copyright[] =
+    "@(#)Copyright (c) 2004 -- Ohio University.\n";
 
 /*
  * Kevin Lahey (kml@patheticgeek.net)
  */
 
-static char const rcsid[] =
+static char const GCC_UNUSED rcsid[] =
     "@(#)$Header$";
 
 
@@ -67,7 +69,6 @@ static char const rcsid[] =
  */
 
 
-#include "tcptrace.h"
 
 #ifdef GROK_NS
 

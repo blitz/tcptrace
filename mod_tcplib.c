@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *               2002, 2003, 2004
  *	Ohio University.
  *
  * ---
@@ -52,7 +53,8 @@
  *		http://www.tcptrace.org/
  * Extensively Modified:    Shawn Ostermann
  */
-static char const rcsid[] =
+#include "tcptrace.h"
+static char const GCC_UNUSED rcsid[] =
    "$Header$";
 
 #ifdef LOAD_MODULE_TCPLIB
@@ -66,7 +68,6 @@ static char const rcsid[] =
  * Purpose: To generate data files needed by TCPLib and TrafGen.
  * 
  ****************************************************************************/
-#include "tcptrace.h"
 #include "mod_tcplib.h"
 #include "dyncounter.h"
 

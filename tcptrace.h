@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *               2002, 2003, 2004
  *	Ohio University.
  *
  * ---
@@ -51,7 +52,19 @@
  *		ostermann@cs.ohiou.edu
  *		http://www.tcptrace.org/
  */
-static char const rcsid_tcptrace[] =
+
+
+/*
+ *
+ * The newest gcc (3.3) is much pickier about the unused variables that
+ * we define for Copyright and RCSid, so this will shut it up.
+ *
+ */
+#ifdef __GNUC__
+#define GCC_UNUSED __attribute__((unused))
+#endif
+
+static char const GCC_UNUSED rcsid_tcptrace[] =
     "@(#)$Header$";
 
 
@@ -894,6 +907,8 @@ void freequad(quadrant **);
 /* AVL tree support routines */
 enum AVLRES SnapInsert(ptp_snap **n, ptp_snap *new_node);
 enum AVLRES SnapRemove(ptp_snap **n, tcp_pair_addrblock address);
+int AVL_CheckHash(tcp_pair_addrblock *ptpa1,
+		  tcp_pair_addrblock *ptpa2, int *pdir);
 
 /* high-level line drawing */
 PLINE new_line(PLOTTER pl, char *label, char *color);

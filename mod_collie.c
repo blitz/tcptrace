@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *               2002, 2003, 2004
  *	Ohio University.
  *
  * ---
@@ -51,12 +52,12 @@
  *		ostermann@cs.ohiou.edu
  *		http://www.tcptrace.org/
  */
-static char const rcsid[] =
+#include "tcptrace.h"
+static char const GCC_UNUSED rcsid[] =
    "$Header$";
 
 #ifdef LOAD_MODULE_COLLIE
 
-#include "tcptrace.h"
 #include "mod_collie.h"
 
 /* this module was written as a favor for a friend, but serves as a */

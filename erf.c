@@ -39,16 +39,16 @@
  * $Id$
  */
 
-static char const copyright[] =
+#include "tcptrace.h"
+static char const GCC_UNUSED copyright[] =
     "@(#)Copyright (c) 2003 -- Endace Technology Ltd, Hamilton, New Zealand\n";
-static char const rcsid[] =
+static char const GCC_UNUSED rcsid[] =
     "@(#)$Header$";
 
 /* 
  * erf - Endace ERF (Extensible Record Format) specific file reading stuff
  */
 
-#include "tcptrace.h"
 
 #ifdef GROK_ERF
 
