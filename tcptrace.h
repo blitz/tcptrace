@@ -188,6 +188,7 @@ typedef struct tcb {
     u_llong	data_bytes;
     u_llong	data_pkts;
     u_llong	data_pkts_push;
+    u_llong	unique_bytes;	/* bytes sent (-FIN/SYN), excluding rexmits */
     u_llong	rexmit_bytes;
     u_llong	rexmit_pkts;
     u_llong	ack_pkts;
