@@ -172,7 +172,7 @@ CompReopenFile(
     int fd;
     long pos;
 
-    if (debug)
+    if (debug>1)
 	fprintf(stderr,"CompReopenFile('%s') called\n", filename);
 
     /* we need to switch from the header file to a pipe connected */
@@ -249,7 +249,7 @@ CompSaveHeader(
     }
 
     header_length = len;
-    if (debug)
+    if (debug>1)
 	fprintf(stderr,"Saved %d bytes from stream into temp header file '%s'\n",
 		len, tempfile);
 
@@ -260,7 +260,7 @@ CompSaveHeader(
 	exit(-1);
     }
 
-    if (debug)
+    if (debug>1)
 	fprintf(stderr,"Saved the file header into temp file '%s'\n",
 		tempfile);
 
@@ -295,7 +295,7 @@ CompOpenPipe(
     int i;
     char *args[COMP_MAX_ARGS];
 
-    if (debug)
+    if (debug>1)
 	fprintf(stderr,"CompOpenPipe('%s') called\n", filename);
 
     abspath = FindBinary(pf->comp_bin);
@@ -402,7 +402,7 @@ FILE *
 CompOpenFile(
     char *filename)
 {
-    if (debug)
+    if (debug>1)
 	fprintf(stderr,"CompOpenFile('%s') called\n", filename);
 
     /* if it isn't compressed, just leave it at stdin */
