@@ -9,6 +9,15 @@
 #DEFINES = -DI386_NBSD1
 
 #
+# According to Rich Jones at HP, there is no ether_ntoa under HPUX.
+# I added one in the file missing.c
+# If _YOU_ need it, just define NEED_ETHER_NTOA
+#
+#DEFINES = -DNEED_ETHER_NTOA
+#
+
+
+#   
 # User-configurable constants
 #
 CC	= gcc
@@ -18,10 +27,16 @@ CC	= gcc
 # 
 INCS	= -I/usr/local/include
 LDFLAGS = -L/usr/local/lib
+
 #
+# For HP:  (Rick Jones)
+# CFLAGS	= -Ae -Wall ${INCS}
 #
-# Warning, without -fno-builtin, a bug in gcc 2.7.2 forces an alignment
-# error on my Sparc when it re-writes memcpy()... 
+# For Solaris:
+#   Warning, without -fno-builtin, a bug in gcc 2.7.2 forces an
+#   alignment error on my Sparc when it re-writes memcpy()...
+#
+#CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 #
 CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 
@@ -32,7 +47,10 @@ CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 # Math library required (on most machines, at least)
 #
 # For Solaris
-# LDLIBS = -lpcap -lnsl -lsocket -lucb -lelf -lm
+# LDLIBS = -lpcap -lnsl -lsocket -lm
+#
+# For HP
+# LDLIBS = -lpcap -lstr -lm
 #
 # for general Unix boxes (I hope)
 # LDLIBS = -lpcap -lm
