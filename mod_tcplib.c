@@ -98,8 +98,29 @@ typedef struct module_conninfo {
 
     /* previous connection in linked list of all connections */
     struct module_conninfo *prev;
+
+    /* if it's FTP CONTROL or NNTP, we track numitems */
+    u_long numitems;
+
+    /* next connection in linked list by endpoint pairs */
+    struct module_conninfo *next_pair;
 } module_conninfo;
 module_conninfo *module_conninfo_tail = NULL;
+
+
+/* data structure to store endpoint pairs */
+typedef struct endpoint_pair {
+    /* endpoint identification */
+    tcp_pair_addrblock	addr_pair;
+
+    /* linked list of connections using that pair */
+    module_conninfo *pmchead;
+
+    /* next address pair */
+    struct endpoint_pair *pepnext;
+} endpoint_pair;
+#define ENDPOINT_PAIR_HASHSIZE 1023
+
 
 
 static struct tcplibstats {
@@ -120,6 +141,9 @@ static struct tcplibstats {
     timeval last_interval;
     int tcplib_breakdown_interval[NUM_APPS];
 
+    /* FTP endpoints hash table */
+    endpoint_pair *ftp_endpoints[ENDPOINT_PAIR_HASHSIZE];
+
     /* histogram files */
     FILE *hist_file;
 
@@ -127,6 +151,7 @@ static struct tcplibstats {
     dyn_counter throughput;
     int throughput_bytes;
 } *global_pstats[NUM_TCB_TYPES] = {NULL};
+
 
 /* local debugging flag */
 static int ldebug = 0;
@@ -205,10 +230,10 @@ static void tcplib_add_telnet_packetsize(struct tcplibstats *pstats,
 					 int length);
 static void tcplib_do_ftp_control_size(char *filename, f_testinside p_tester);
 static void tcplib_do_ftp_itemsize(char *filename, f_testinside p_tester);
-static void tcplib_do_ftp_num_items(void);
+static void tcplib_do_ftp_numitems(char *filename, f_testinside p_tester);
 static void tcplib_do_http_itemsize(char *filename, f_testinside p_tester);
 static void tcplib_do_nntp_itemsize(char *filename, f_testinside p_tester);
-static void tcplib_do_nntp_numitems(void);
+static void tcplib_do_nntp_numitems(char *filename, f_testinside p_tester);
 static void tcplib_do_smtp_itemsize(char *filename, f_testinside p_tester);
 static void tcplib_do_telnet_duration(char *filename, f_testinside p_tester);
 static void tcplib_do_telnet_interarrival(char *filename,
@@ -220,6 +245,7 @@ static void update_breakdown(tcp_pair *ptp, struct tcplibstats *pstats);
 module_conninfo *FindPrevConnection(module_conninfo *pmc,
 					   enum t_statsix ttype);
 static char *FormatBrief(tcp_pair *ptp);
+static char *FormatAddrBrief(tcp_pair_addrblock *addr_pair);
 static void ModuleConnFillcache(void);
 
 
@@ -236,10 +262,24 @@ static int InsideBytes(module_conninfo*, f_testinside);
 static enum t_statsix traffic_type(module_conninfo *pmc,
 				   module_conninfo_tcb *ptcbc);
 
+/* prototypes for endpoint pairs */
+static void TrackEndpoints(module_conninfo *pmc);
+static hash EndpointHash(module_conninfo *pmc);
+static Bool SameEndpoint(tcp_pair_addrblock addr_pair1,
+			 tcp_pair_addrblock addr_pair2);
+static module_conninfo *MostRecentFtpControl(endpoint_pair *pep);
+static void AddEndpointPair(endpoint_pair *hashtable[],
+			    module_conninfo *pmc);
+static endpoint_pair *FindEndpointPair(endpoint_pair *hashtable[],
+				       module_conninfo *pmc);
+
+
 /* various helper routines used by many others -- sdo */
 static void tcplib_do_GENERIC_itemsize(
     char *filename, Bool (*f_whichport)(module_conninfo *),
     f_testinside p_tester, int bucketsize);
+static void tcplib_do_GENERIC_numitems(
+    char *filename, Bool (*f_whichport)(module_conninfo *));
 static void StoreCounters(char *filename, char *header1, char *header2,
 		       int bucketsize, dyn_counter psizes);
 static dyn_counter ReadOldFile(char *filename, int bucketsize,
@@ -655,7 +695,7 @@ void tcplib_done()
 	printf("tcplib: running ftp\n");
     RunAllFour(tcplib_do_ftp_control_size,TCPLIB_FTP_CTRLSIZE_FILE);
     RunAllFour(tcplib_do_ftp_itemsize,TCPLIB_FTP_ITEMSIZE_FILE);
-    tcplib_do_ftp_num_items();     /* Not Done */
+    RunAllFour(tcplib_do_ftp_numitems,TCPLIB_FTP_NITEMS_FILE);
 
 
 
@@ -670,7 +710,7 @@ void tcplib_done()
     if (ldebug)
 	printf("tcplib: running nntp\n");
     RunAllFour(tcplib_do_nntp_itemsize,TCPLIB_NNTP_ITEMSIZE_FILE);
-    tcplib_do_nntp_numitems();	/* Not Done */
+    RunAllFour(tcplib_do_nntp_numitems,TCPLIB_NNTP_NITEMS_FILE);
 
 
     /* do HTTP */
@@ -1054,6 +1094,9 @@ tcplib_newconn(
     /* chain it in */
     pmc->prev = module_conninfo_tail;
     module_conninfo_tail = pmc;
+
+    /* add to list of endpoints we track */
+    TrackEndpoints(pmc);
 
     return (pmc);
 }
@@ -1728,7 +1771,7 @@ do_tcplib_conv_duration(
     char *filename,
     dyn_counter psizes)
 {
-    const int bucketsize = 1;
+    const int bucketsize = 50;
 
     psizes = ReadOldFile(filename, bucketsize, 0, psizes);
 
@@ -2234,11 +2277,11 @@ void tcplib_do_ftp_itemsize(
 }
 
 
-void tcplib_do_ftp_num_items(void)
+void tcplib_do_ftp_numitems(
+    char *filename,		/* where to store the output */
+    f_testinside p_tester)	/* functions to test "insideness" */
 {
-    /* Need to figure out how to know when the control connection has
-     * spawned off new data connections.
-     */
+    tcplib_do_GENERIC_numitems(filename, is_ftp_control_conn);
 }
 
 
@@ -2314,12 +2357,11 @@ static void tcplib_do_nntp_itemsize(
 
 
 static void
-tcplib_do_nntp_numitems(void)
+tcplib_do_nntp_numitems(
+    char *filename,		/* where to store the output */
+    f_testinside p_tester)	/* functions to test "insideness" */
 {
-    /* Basically we need to figure out how many different
-     * articles are bundles up together?  I'm not quite sure
-     * how the whole NNTP thing works anyways.
-     */
+    tcplib_do_GENERIC_numitems(filename, is_nntp_conn);
 }
 /* Done NNTP Stuff */
 
@@ -2510,6 +2552,41 @@ tcplib_do_GENERIC_itemsize(
 }
 
 
+/* both ftp and nntp look the same */
+static void
+tcplib_do_GENERIC_numitems(
+    char *filename,		/* where to store the output */
+    Bool (*f_whichport)(module_conninfo *))
+{
+    int bucketsize = 1;
+    module_conninfo *pmc;
+    dyn_counter psizes = NULL;
+    
+
+    /* If an old data file exists, open it, read in its contents
+     * and store them until they are integrated with the current
+     * data */
+    psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+
+
+    /* fill out the array with data from the current connections */
+    for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
+	/* We only need the stats if it's the right port */
+	if ((*f_whichport)(pmc)) {
+	    AddToCounter(&psizes, pmc->numitems, 1);
+	}
+    }
+
+
+    /* store all the data (old and new) into the file */
+    StoreCounters(filename,"Total Articles", "% Conversation",
+		  bucketsize,psizes);
+
+    /* free the dynamic memory */
+    DestroyCounters(&psizes);
+}
+
+
 static enum t_statsix
 traffic_type(
     module_conninfo *pmc,
@@ -2544,4 +2621,173 @@ FormatBrief(
 	    pab->host_letter, pba->host_letter);
     return(infobuf);
 }
+
+static char *
+FormatAddrBrief(
+    tcp_pair_addrblock	*paddr_pair)
+{
+    static char infobuf[100];
+    char infobuf1[100];
+    char infobuf2[100];
+
+    sprintf(infobuf1,"%s", HostName(paddr_pair->a_address));
+    sprintf(infobuf2,"%s", HostName(paddr_pair->b_address));
+    sprintf(infobuf,"%s - %s", infobuf1, infobuf2);
+
+    return(infobuf);
+}
+
+
+/* find a connection pair */
+static endpoint_pair *
+FindEndpointPair(
+    endpoint_pair *hashtable[],
+    module_conninfo *pmc)
+{
+    endpoint_pair **ppep_head;
+    endpoint_pair *pep_search;
+
+    /* find the correct hash bucket */
+    ppep_head = &hashtable[EndpointHash(pmc)];
+
+    /* search the bucket for the correct pair */
+    for (pep_search = *ppep_head; pep_search;
+	 pep_search = pep_search->pepnext) {
+
+	/* see if it's the same connection */
+	if (SameEndpoint(pep_search->addr_pair,
+			 pmc->ptp->addr_pair))
+	    return(pep_search);
+    }
+
+    /* after loop, pep_search is NON-NULL if we found it */
+
+    return(NULL);
+}
+
+
+
+
+/* add a connection to the list of all connections on that address pair */
+static void
+AddEndpointPair(
+    endpoint_pair *hashtable[],
+    module_conninfo *pmc)
+{
+    endpoint_pair **ppep_head;
+    endpoint_pair *pep_search;
+
+    /* search the bucket for the correct pair */
+    ppep_head = &hashtable[EndpointHash(pmc)];
+    pep_search = FindEndpointPair(hashtable,pmc);
+
+    if (pep_search == NULL) {
+	/* not found, create it */
+	pep_search = MallocZ(sizeof(endpoint_pair));
+
+	/* fill in the address info */
+	pep_search->addr_pair = pmc->ptp->addr_pair;
+
+	/* put at the front of the bucket */
+	pep_search->pepnext = *ppep_head;
+	*ppep_head = pep_search;
+    }
+
+    /* put the new connection at the front of the list for this
+       endpoint pair */
+    pmc->next_pair = pep_search->pmchead;
+    pep_search->pmchead = pmc;
+
+    if (ldebug>1) {
+	printf("\nEndpoint pair bucket\n");
+
+	/* for each thing on the bucket list */
+	for (pep_search = *ppep_head; pep_search;
+	     pep_search = pep_search->pepnext) {
+	    module_conninfo *pmc;
+	    printf("  %s:\n", FormatAddrBrief(&pep_search->addr_pair));
+	    /* for each connection on that pair */
+	    for (pmc = pep_search->pmchead; pmc; pmc = pmc->next_pair) {
+		printf("    %u <-> %u\n",
+		       pmc->tcb_cache_a2b.port,
+		       pmc->tcb_cache_b2a.port);
+	    }
+	}
+    }
+}
+
+static void
+TrackEndpoints(
+    module_conninfo *pmc)
+{
+    module_conninfo_tcb *ptcbc = &pmc->tcb_cache_a2b; /* always A2b */
+    struct tcplibstats *pstats = global_pstats[traffic_type(pmc,ptcbc)];
+
+    if (is_ftp_control_conn(pmc)) {
+	AddEndpointPair(pstats->ftp_endpoints,pmc);
+    }
+
+    /* if it's an FTP data connection, find the control conn */
+    if (is_ftp_data_conn(pmc)) {
+	endpoint_pair *pep;
+
+	pep = FindEndpointPair(pstats->ftp_endpoints, pmc);
+
+	if (pep) {
+	    /* "charge" this new DATA connection to the most
+	       recently-active ftp control connection */
+	    pmc = MostRecentFtpControl(pep);
+	    ++pmc->numitems;
+	    if (ldebug) {
+		printf("Charging ftp data to %s, count %lu\n",
+		       FormatBrief(pmc->ptp),
+		       pmc->numitems);
+	    }
+	} else {
+	    fprintf(stderr,"WARNING: no FTP control conn for %s???\n",
+		    FormatBrief(pmc->ptp));
+	}
+
+    }
+
+}
+
+static module_conninfo *
+MostRecentFtpControl(
+    endpoint_pair *pep)
+{
+    /* NOT DONE */
+#define NOT_DONE
+#define NOT_DONE
+    return(pep->pmchead);
+}
+
+
+static hash EndpointHash(
+    module_conninfo *pmc)
+{
+    hash hval;
+
+    hval = 1;
+
+    return(hval % ENDPOINT_PAIR_HASHSIZE);
+}
+
+static Bool
+SameEndpoint(
+    tcp_pair_addrblock	ap1,
+    tcp_pair_addrblock	ap2)
+{
+    if ((IPcmp(&ap1.a_address,&ap2.a_address) == 0) &&
+	(IPcmp(&ap1.b_address,&ap2.b_address) == 0))
+	return(TRUE);
+
+    if ((IPcmp(&ap1.a_address,&ap2.b_address) == 0) &&
+	(IPcmp(&ap1.b_address,&ap2.a_address) == 0))
+	return(TRUE);
+
+    return(FALSE);
+}
+
+
 #endif /* LOAD_MODULE_TCPLIB */
