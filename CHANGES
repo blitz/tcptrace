@@ -304,3 +304,6 @@
   added extended arg for triple dupack stats (--dupack3_data)
     by default: if a segment has data, it can't be a triple dupack
     optional:   if a segment has data, it CAN be a triple dupack
+  bug fix from Brian Utterback in snoop.c.  Obscure alignment problem fixed.
+  added "total data" graph to traffic module
+  made counters "long long" in traffic module
