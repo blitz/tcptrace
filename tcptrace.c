@@ -408,7 +408,8 @@ main(
 
     /* read each file in turn */
     for (i=0; i < argc; ++i) {
-	printf("Running file '%s'\n", filenames[i]);
+	if (debug || (argc > 1))
+	    printf("Running file '%s'\n", filenames[i]);
 
 	/* do the real work */
 	ProcessFile(filenames[i]);
