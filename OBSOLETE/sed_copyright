@@ -1,5 +1,0 @@
-#!/bin/ksh
-
-for FILE in $*; do
-   sed 's/Copyright (c) 199[678] -- Ohio/Copyright (c) 1998 -- Shawn Ostermann -- Ohio/g' $FILE > NEW/$FILE
-done
