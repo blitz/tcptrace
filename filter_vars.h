@@ -49,6 +49,7 @@ struct filter_line filters[] = {
     {"rexmit_bytes",	V_ULLONG, PTCB_C_S(rexmit_bytes),"retransmitted bytes"},
     {"rexmit_segs",	V_ULLONG, PTCB_C_S(rexmit_pkts),"segments w/ retransmitted data"},
     {"ack_segs",	V_ULLONG, PTCB_C_S(ack_pkts),"segments containing ACK"},
+    {"pureack_segs",	V_ULLONG, PTCB_C_S(pureack_pkts),"segments containing PURE ACK (no data/syn/fin/reset)"},
     {"win_max",		V_ULONG,  PTCB_C_S(win_max),"MAX window advertisement"},
     {"win_min",		V_ULONG,  PTCB_C_S(win_min),"MIN window advertisement"},
     {"win_zero_ct",	V_ULONG,  PTCB_C_S(win_zero_ct),"number of ZERO windows advertised"},

@@ -301,6 +301,7 @@ PrintTrace(
     if (pab->reset_count || pba->reset_count)
 	StatLineI("resets sent","", pab->reset_count, pba->reset_count);
     StatLineI("ack pkts sent","", pab->ack_pkts, pba->ack_pkts);
+    StatLineI("pure acks sent","", pab->pureack_pkts, pba->pureack_pkts);
     StatLineI("unique bytes sent","",
 	      pab->data_bytes-pab->rexmit_bytes,
 	      pba->data_bytes-pba->rexmit_bytes);

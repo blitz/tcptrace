@@ -175,6 +175,7 @@ typedef struct tcb {
     u_llong	rexmit_bytes;
     u_llong	rexmit_pkts;
     u_llong	ack_pkts;
+    u_llong	pureack_pkts;	/* mallman - pure acks, no data */
     u_long	win_max;
     u_long	win_min;
     u_long	win_tot;
