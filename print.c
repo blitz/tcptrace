@@ -101,7 +101,7 @@ printeth_packet(
     struct ether_header *pep)
 {
     printf("\tETH Srce: %s\n", ether_ntoa((struct ether_addr *)&pep->ether_shost));
-    printf("\t    Dest: %s\n", ether_ntoa((struct ether_addr *)&pep->ether_dhost));
+    printf("\tETH Dest: %s\n", ether_ntoa((struct ether_addr *)&pep->ether_dhost));
 
     printf(
 	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
@@ -129,7 +129,7 @@ printip_packet(
     printf("\tIP  Srce: %s %s\n",
 	   inet_ntoa(pip->ip_src),
 	   ParenHostName(pip->ip_src));
-    printf("\t    Dest: %s %s\n",
+    printf("\tIP  Dest: %s %s\n",
 	   inet_ntoa(pip->ip_dst),
 	   ParenHostName(pip->ip_dst));
 
