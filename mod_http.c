@@ -613,7 +613,7 @@ WhenAcked(
     for (pts = phead->next; pts != NULL; pts = pts->next) {
 /* 	fprintf(stderr,"Checking pos %ld against %ld\n", */
 /* 		position, pts->position); */
-	if (pts->position >= position) {
+	if (pts->position > position) {
 	    /* sent after this one */
 	    return(pts->thetime);
 	}
