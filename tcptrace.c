@@ -433,11 +433,11 @@ Dump File Names\n\
     rather than from a file\n\
 ");
 
-    fprintf(stderr,"\nObscure options\n");
+    fprintf(stderr,"\nExtended boolean options, mostly for graphing options\n");
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
-	fprintf(stderr,"--%-20s %s\n", pbop->bool_optname, pbop->bool_descr);
-	fprintf(stderr,"--no%-18s DON'T %s\n", pbop->bool_optname, pbop->bool_descr);
+	fprintf(stderr,"  --%-20s %s\n", pbop->bool_optname, pbop->bool_descr);
+	fprintf(stderr,"  --no%-18s DON'T %s\n", pbop->bool_optname, pbop->bool_descr);
     }
 
     fprintf(stderr,"\n\
