@@ -175,8 +175,19 @@ pread_f *is_tcpdump(void)
     }
 
 
-    if (debug)
+    if (debug) {
 	printf("Using 'pcap' version of tcpdump\n");
+	if (debug > 1) {
+	    struct pcap_file_header *pfhdr = (void *)pcap;
+	    printf("\tpcap->magic: %d\n", pfhdr->magic);
+	    printf("\tpcap->version_major: %d\n", pfhdr->version_major);
+	    printf("\tpcap->version_minor: %d\n", pfhdr->version_minor);
+	    printf("\tpcap->thiszone: %d\n", pfhdr->thiszone);
+	    printf("\tpcap->sigfigs: %d\n", pfhdr->sigfigs);
+	    printf("\tpcap->snaplen: %d\n", pfhdr->snaplen);
+	    printf("\tpcap->linktype: %d\n", pfhdr->linktype);
+	}
+    }
 
     /* check the phys type (pretend everything is ethernet) */
     memset(&eth_header,0,EH_SIZE);
@@ -263,7 +274,7 @@ PcapSavePacket(
     phdr.ts = current_time;
     phdr.caplen = (unsigned)plast - (unsigned)pip + 1;
     phdr.caplen += EH_SIZE;	/* add in the ether header */
-    phdr.len = phdr.caplen;	/* we don't know */
+    phdr.len = EH_SIZE + pip->ip_len;	/* probably this */
 
     /* write the packet header */
     fwrite(&phdr, sizeof(phdr), 1, f_savefile);

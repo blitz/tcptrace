@@ -210,3 +210,6 @@
   Added triple dupack tick on TSG graphs
   Added dongles to ACKS on the TSG graphs to distinguish different kinds of
     ACKS that need to be handled differently for RTT calculation
+5.0.13 - Wed Nov  4, 1998
+  Fixed tcpdump OUTPUT bug, created files generated "truncated-ip"
+    warnings from real tcpdump program, I fixed it.
