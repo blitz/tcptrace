@@ -43,7 +43,10 @@ case "$target_os" in
   *inux*)	V_INCLS="$V_INCLS -Ilinux-include";;
 esac
 
-
+dnl define _BSD_SOURCE for libc-2.2
+if [[ -f /lib/libc-2.2* ]]; then
+ V_DEFINES="$V_DEFINES -D_BSD_SOURCE"
+fi
 
 AC_SUBST(V_CCOPT)
 AC_SUBST(V_INCLS)
