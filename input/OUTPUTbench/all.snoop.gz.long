@@ -37,6 +37,10 @@ TCP connection 1:
      min win adv:            2684 bytes     min win adv:            4083 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4063 bytes     avg win adv:            4095 bytes
+     max owin:                 14 bytes     max owin:               1413 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  7 bytes     avg owin:                593 bytes
+     wavg owin:                 2 bytes     wavg owin:               320 bytes
      initial window:            8 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -93,6 +97,10 @@ TCP connection 2:
      min win adv:             394 bytes     min win adv:            4096 bytes
      zero win adv:              2 times     zero win adv:              0 times
      avg win adv:            1084 bytes     avg win adv:            4096 bytes
+     max owin:                  1 bytes     max owin:               2049 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:      1025 bytes
+     avg owin:                  0 bytes     avg owin:               1281 bytes
+     wavg owin:                 0 bytes     wavg owin:              1459 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -149,6 +157,10 @@ TCP connection 3:
      min win adv:           16384 bytes     min win adv:            4095 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:           16384 bytes     avg win adv:            4095 bytes
+     max owin:                  2 bytes     max owin:                533 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                 81 bytes
+     wavg owin:                 0 bytes     wavg owin:               147 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -205,6 +217,10 @@ TCP connection 4:
      min win adv:            4042 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4070 bytes     avg win adv:            4096 bytes
+     max owin:                  1 bytes     max owin:                 55 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:        24 bytes
+     avg owin:                  0 bytes     avg owin:                 39 bytes
+     wavg owin:                 0 bytes     wavg owin:                38 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -261,6 +277,10 @@ TCP connection 5:
      min win adv:            4093 bytes     min win adv:              89 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4095 bytes     avg win adv:             155 bytes
+     max owin:                 22 bytes     max owin:                  3 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  3 bytes     avg owin:                  1 bytes
+     wavg owin:                 1 bytes     wavg owin:                 0 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -317,6 +337,10 @@ TCP connection 6:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4096 bytes
+     max owin:                  3 bytes     max owin:                 56 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                 11 bytes
+     wavg owin:                 0 bytes     wavg owin:                 1 bytes
      initial window:            3 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -373,6 +397,10 @@ TCP connection 7:
      min win adv:              83 bytes     min win adv:            8774 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             104 bytes     avg win adv:            8774 bytes
+     max owin:                  2 bytes     max owin:                  8 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         2 bytes
+     avg owin:                  1 bytes     avg owin:                  3 bytes
+     wavg owin:                 0 bytes     wavg owin:                 2 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -429,6 +457,10 @@ TCP connection 8:
      min win adv:            6144 bytes     min win adv:            4093 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            6144 bytes     avg win adv:            4095 bytes
+     max owin:                  3 bytes     max owin:                721 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                411 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:            3 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -485,6 +517,10 @@ TCP connection 9:
      min win adv:             394 bytes     min win adv:            4096 bytes
      zero win adv:              2 times     zero win adv:              0 times
      avg win adv:            1084 bytes     avg win adv:            4096 bytes
+     max owin:                  1 bytes     max owin:               2049 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:      1025 bytes
+     avg owin:                  0 bytes     avg owin:               1281 bytes
+     wavg owin:                 0 bytes     wavg owin:              1246 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -541,6 +577,10 @@ TCP connection 10:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4096 bytes
+     max owin:                  4 bytes     max owin:                  4 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  2 bytes     avg owin:                  3 bytes
+     wavg owin:                 1 bytes     wavg owin:                 1 bytes
      initial window:            3 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -597,6 +637,10 @@ TCP connection 11:
      min win adv:            6144 bytes     min win adv:            4093 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            6144 bytes     avg win adv:            4095 bytes
+     max owin:                  4 bytes     max owin:                426 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  2 bytes     avg owin:                198 bytes
+     wavg owin:                 1 bytes     wavg owin:               287 bytes
      initial window:            3 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -653,6 +697,10 @@ TCP connection 12:
      min win adv:            9112 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            9112 bytes     avg win adv:               0 bytes
+     max owin:                 11 bytes     max owin:                  0 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         0 bytes
+     avg owin:                  2 bytes     avg owin:                  0 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:           34 bytes     initial window:            0 bytes
      initial window:           16 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -711,6 +759,10 @@ TCP connection 13:
      min win adv:            4096 bytes     min win adv:            2048 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            2048 bytes
+     max owin:                154 bytes     max owin:                  1 bytes
+     min non-zero owin:         2 bytes     min non-zero owin:         1 bytes
+     avg owin:                 31 bytes     avg owin:                  1 bytes
+     wavg owin:                73 bytes     wavg owin:                 0 bytes
      initial window:           16 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -767,6 +819,10 @@ TCP connection 14:
      min win adv:            6144 bytes     min win adv:            4091 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            6144 bytes     avg win adv:            4094 bytes
+     max owin:                  5 bytes     max owin:                565 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  2 bytes     avg owin:                226 bytes
+     wavg owin:                 3 bytes     wavg owin:                20 bytes
      initial window:            5 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -823,6 +879,10 @@ TCP connection 15:
      min win adv:             123 bytes     min win adv:           16384 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             154 bytes     avg win adv:           16384 bytes
+     max owin:                  3 bytes     max owin:                165 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                 34 bytes
+     wavg owin:                 0 bytes     wavg owin:                10 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -879,6 +939,10 @@ TCP connection 16:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4096 bytes
+     max owin:                437 bytes     max owin:                  1 bytes
+     min non-zero owin:       437 bytes     min non-zero owin:         1 bytes
+     avg owin:                437 bytes     avg owin:                  1 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:          437 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -935,6 +999,10 @@ TCP connection 17:
      min win adv:            1024 bytes     min win adv:            7791 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            1024 bytes     avg win adv:            7794 bytes
+     max owin:                  2 bytes     max owin:                  2 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                  1 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -991,6 +1059,10 @@ TCP connection 18:
      min win adv:            2048 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            2048 bytes     avg win adv:            4096 bytes
+     max owin:                  4 bytes     max owin:                252 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  2 bytes     avg owin:                 55 bytes
+     wavg owin:                 0 bytes     wavg owin:               128 bytes
      initial window:            3 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1047,6 +1119,10 @@ TCP connection 19:
      min win adv:              94 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             121 bytes     avg win adv:            4096 bytes
+     max owin:                  2 bytes     max owin:                  9 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         4 bytes
+     avg owin:                  1 bytes     avg owin:                  8 bytes
+     wavg owin:                 0 bytes     wavg owin:                 7 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1103,6 +1179,10 @@ TCP connection 20:
      min win adv:            4096 bytes     min win adv:           61440 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:           61440 bytes
+     max owin:                 55 bytes     max owin:                  1 bytes
+     min non-zero owin:        55 bytes     min non-zero owin:         1 bytes
+     avg owin:                 55 bytes     avg owin:                  1 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:           55 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1159,6 +1239,10 @@ TCP connection 21:
      min win adv:            4096 bytes     min win adv:            7244 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4608 bytes     avg win adv:            8101 bytes
+     max owin:               2178 bytes     max owin:                  1 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                645 bytes     avg owin:                  1 bytes
+     wavg owin:               451 bytes     wavg owin:                 0 bytes
      initial window:           42 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1215,6 +1299,10 @@ TCP connection 22:
      min win adv:            9112 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            9112 bytes     avg win adv:            4096 bytes
+     max owin:                327 bytes     max owin:                  1 bytes
+     min non-zero owin:       327 bytes     min non-zero owin:         1 bytes
+     avg owin:                327 bytes     avg owin:                  1 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:          327 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1271,6 +1359,10 @@ TCP connection 23:
      min win adv:            4096 bytes     min win adv:             164 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:             164 bytes
+     max owin:                164 bytes     max owin:                  1 bytes
+     min non-zero owin:        82 bytes     min non-zero owin:         1 bytes
+     avg owin:                102 bytes     avg owin:                  1 bytes
+     wavg owin:                45 bytes     wavg owin:                 0 bytes
      initial window:          164 bytes     initial window:            0 bytes
      initial window:            2 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1327,6 +1419,10 @@ TCP connection 24:
      min win adv:              95 bytes     min win adv:            4093 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             119 bytes     avg win adv:            4095 bytes
+     max owin:                  4 bytes     max owin:                 16 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                  3 bytes
+     wavg owin:                 0 bytes     wavg owin:                 1 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1383,6 +1479,10 @@ TCP connection 25:
      min win adv:              92 bytes     min win adv:            4095 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             101 bytes     avg win adv:            4095 bytes
+     max owin:                  2 bytes     max owin:                  6 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                  3 bytes
+     wavg owin:                 0 bytes     wavg owin:                 3 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1439,6 +1539,10 @@ TCP connection 26:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4096 bytes
+     max owin:                  2 bytes     max owin:                  5 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                  4 bytes
+     wavg owin:                 0 bytes     wavg owin:                 3 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1495,6 +1599,10 @@ TCP connection 27:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4096 bytes
+     max owin:                 37 bytes     max owin:                  1 bytes
+     min non-zero owin:        37 bytes     min non-zero owin:         1 bytes
+     avg owin:                 37 bytes     avg owin:                  1 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:           37 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1551,6 +1659,10 @@ TCP connection 28:
      min win adv:            4096 bytes     min win adv:             123 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:             123 bytes
+     max owin:                 38 bytes     max owin:                  1 bytes
+     min non-zero owin:        38 bytes     min non-zero owin:         1 bytes
+     avg owin:                 38 bytes     avg owin:                  1 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:           38 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1607,6 +1719,10 @@ TCP connection 29:
      min win adv:              87 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:              95 bytes     avg win adv:            4096 bytes
+     max owin:                  3 bytes     max owin:                  7 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         2 bytes
+     avg owin:                  1 bytes     avg owin:                  3 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1663,6 +1779,10 @@ TCP connection 30:
      min win adv:            4079 bytes     min win adv:           16384 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4095 bytes     avg win adv:           16384 bytes
+     max owin:                  3 bytes     max owin:                218 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         2 bytes
+     avg owin:                  1 bytes     avg owin:                 24 bytes
+     wavg owin:                 0 bytes     wavg owin:                35 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1719,6 +1839,10 @@ TCP connection 31:
      min win adv:            3802 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4048 bytes     avg win adv:            4096 bytes
+     max owin:                  2 bytes     max owin:                280 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         8 bytes
+     avg owin:                  1 bytes     avg owin:                 82 bytes
+     wavg owin:                 0 bytes     wavg owin:                23 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1775,6 +1899,10 @@ TCP connection 32:
      min win adv:            2048 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            2048 bytes     avg win adv:            4096 bytes
+     max owin:                  1 bytes     max owin:                351 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                134 bytes
+     wavg owin:                 0 bytes     wavg owin:                20 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1831,6 +1959,10 @@ TCP connection 33:
      min win adv:             658 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             972 bytes     avg win adv:            4096 bytes
+     max owin:                  3 bytes     max owin:                367 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                 84 bytes
+     wavg owin:                 0 bytes     wavg owin:               114 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1887,6 +2019,10 @@ TCP connection 34:
      min win adv:             512 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             512 bytes     avg win adv:            4096 bytes
+     max owin:                  1 bytes     max owin:                 73 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                 37 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1943,6 +2079,10 @@ TCP connection 35:
      min win adv:            4096 bytes     min win adv:            4093 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4095 bytes
+     max owin:                  3 bytes     max owin:                355 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                133 bytes
+     wavg owin:                 1 bytes     wavg owin:               118 bytes
      initial window:            3 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -1999,6 +2139,10 @@ TCP connection 36:
      min win adv:            9112 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            9112 bytes     avg win adv:            4096 bytes
+     max owin:                 78 bytes     max owin:                  1 bytes
+     min non-zero owin:        16 bytes     min non-zero owin:         1 bytes
+     avg owin:                 42 bytes     avg owin:                  1 bytes
+     wavg owin:                27 bytes     wavg owin:                 0 bytes
      initial window:           25 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2055,6 +2199,10 @@ TCP connection 37:
      min win adv:            9112 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            9112 bytes     avg win adv:            4096 bytes
+     max owin:                 38 bytes     max owin:                  1 bytes
+     min non-zero owin:        26 bytes     min non-zero owin:         1 bytes
+     avg owin:                 31 bytes     avg owin:                  1 bytes
+     wavg owin:                26 bytes     wavg owin:                 0 bytes
      initial window:           26 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2111,6 +2259,10 @@ TCP connection 38:
      min win adv:            4096 bytes     min win adv:              92 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:             127 bytes
+     max owin:                 38 bytes     max owin:                  1 bytes
+     min non-zero owin:        26 bytes     min non-zero owin:         1 bytes
+     avg owin:                 31 bytes     avg owin:                  1 bytes
+     wavg owin:                25 bytes     wavg owin:                 0 bytes
      initial window:           26 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2167,6 +2319,10 @@ TCP connection 39:
      min win adv:           61440 bytes     min win adv:            4093 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:           61440 bytes     avg win adv:            4095 bytes
+     max owin:                  3 bytes     max owin:                881 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                379 bytes
+     wavg owin:                 1 bytes     wavg owin:               607 bytes
      initial window:            3 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2223,6 +2379,10 @@ TCP connection 40:
      min win adv:             148 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             148 bytes     avg win adv:               0 bytes
+     max owin:                  0 bytes     max owin:                  0 bytes
+     min non-zero owin:         0 bytes     min non-zero owin:         0 bytes
+     avg owin:                  0 bytes     avg owin:                  0 bytes
+     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2279,6 +2439,10 @@ TCP connection 41:
      min win adv:             126 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             126 bytes     avg win adv:               0 bytes
+     max owin:                  0 bytes     max owin:                  0 bytes
+     min non-zero owin:         0 bytes     min non-zero owin:         0 bytes
+     avg owin:                  0 bytes     avg owin:                  0 bytes
+     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2335,6 +2499,10 @@ TCP connection 42:
      min win adv:             512 bytes     min win adv:            7903 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             512 bytes     avg win adv:            7903 bytes
+     max owin:                  1 bytes     max owin:                  2 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                  1 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2391,6 +2559,10 @@ TCP connection 43:
      min win adv:            4096 bytes     min win adv:           61440 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:           61440 bytes
+     max owin:                512 bytes     max owin:                  1 bytes
+     min non-zero owin:       121 bytes     min non-zero owin:         1 bytes
+     avg owin:                347 bytes     avg owin:                  1 bytes
+     wavg owin:               318 bytes     wavg owin:                 0 bytes
      initial window:          921 bytes     initial window:            0 bytes
      initial window:            2 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2447,6 +2619,10 @@ TCP connection 44:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            8192 bytes     avg win adv:            4096 bytes
+     max owin:                  1 bytes     max owin:                  0 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         0 bytes
+     avg owin:                  1 bytes     avg owin:                  0 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2503,6 +2679,10 @@ TCP connection 45:
      min win adv:             162 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             163 bytes     avg win adv:            4096 bytes
+     max owin:                  2 bytes     max owin:                100 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         3 bytes
+     avg owin:                  1 bytes     avg owin:                 67 bytes
+     wavg owin:                 0 bytes     wavg owin:                 3 bytes
      initial window:            2 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2559,6 +2739,10 @@ TCP connection 46:
      min win adv:            4096 bytes     min win adv:            4094 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4095 bytes
+     max owin:                  2 bytes     max owin:                165 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                  1 bytes     avg owin:                 83 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:            2 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2615,6 +2799,10 @@ TCP connection 47:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4096 bytes
+     max owin:                 16 bytes     max owin:               2382 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:       772 bytes
+     avg owin:                  7 bytes     avg owin:               1538 bytes
+     wavg owin:                 2 bytes     wavg owin:               704 bytes
      initial window:           12 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2671,6 +2859,10 @@ TCP connection 48:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4096 bytes
+     max owin:                 34 bytes     max owin:                  1 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                 12 bytes     avg owin:                  1 bytes
+     wavg owin:                32 bytes     wavg owin:                 0 bytes
      initial window:           34 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2727,6 +2919,10 @@ TCP connection 49:
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4096 bytes
+     max owin:                126 bytes     max owin:                 57 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         7 bytes
+     avg owin:                 57 bytes     avg owin:                 35 bytes
+     wavg owin:                70 bytes     wavg owin:                34 bytes
      initial window:          118 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2783,6 +2979,10 @@ TCP connection 50:
      min win adv:             151 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             151 bytes     avg win adv:            4096 bytes
+     max owin:                  0 bytes     max owin:                 83 bytes
+     min non-zero owin:         0 bytes     min non-zero owin:        83 bytes
+     avg owin:                  0 bytes     avg owin:                 83 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2839,6 +3039,10 @@ TCP connection 51:
      min win adv:             127 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             127 bytes     avg win adv:               0 bytes
+     max owin:                  0 bytes     max owin:                  0 bytes
+     min non-zero owin:         0 bytes     min non-zero owin:         0 bytes
+     avg owin:                  0 bytes     avg owin:                  0 bytes
+     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2895,6 +3099,10 @@ TCP connection 52:
      min win adv:            4096 bytes     min win adv:            4016 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            4096 bytes     avg win adv:            4016 bytes
+     max owin:                 80 bytes     max owin:                  1 bytes
+     min non-zero owin:        80 bytes     min non-zero owin:         1 bytes
+     avg owin:                 80 bytes     avg owin:                  1 bytes
+     wavg owin:                 0 bytes     wavg owin:                 0 bytes
      initial window:           80 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2951,6 +3159,10 @@ TCP connection 53:
      min win adv:           16384 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:           16384 bytes     avg win adv:               0 bytes
+     max owin:                  1 bytes     max owin:                  0 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         0 bytes
+     avg owin:                  1 bytes     avg owin:                  0 bytes
+     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -3007,6 +3219,10 @@ TCP connection 54:
      min win adv:             164 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:             164 bytes     avg win adv:               0 bytes
+     max owin:                  0 bytes     max owin:                  0 bytes
+     min non-zero owin:         0 bytes     min non-zero owin:         0 bytes
+     avg owin:                  0 bytes     avg owin:                  0 bytes
+     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -3063,6 +3279,10 @@ TCP connection 55:
      min win adv:            9112 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            9112 bytes     avg win adv:               0 bytes
+     max owin:                267 bytes     max owin:                  0 bytes
+     min non-zero owin:       267 bytes     min non-zero owin:         0 bytes
+     avg owin:                267 bytes     avg owin:                  0 bytes
+     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
      initial window:          267 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      

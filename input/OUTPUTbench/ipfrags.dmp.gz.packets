@@ -14,7 +14,7 @@ Packet 1
 	     TTL: 56
 	     LEN: 1496
 	      ID: 14095
-	   CKSUM: 0x8e6f
+	   CKSUM: 0x8e6f (CORRECT)
 	  OFFSET: 0x4001 (frag: 1476 bytes at offset 8 - Last Frag)  Don't Fragment
 
 Packet 2
@@ -31,7 +31,7 @@ Packet 2
 	     TTL: 56
 	     LEN: 1496
 	      ID: 15129
-	   CKSUM: 0x8a65
+	   CKSUM: 0x8a65 (CORRECT)
 	  OFFSET: 0x4001 (frag: 1476 bytes at offset 8 - Last Frag)  Don't Fragment
 
 Packet 3
@@ -48,7 +48,7 @@ Packet 3
 	     TTL: 56
 	     LEN: 1496
 	      ID: 17365
-	   CKSUM: 0x81a9
+	   CKSUM: 0x81a9 (CORRECT)
 	  OFFSET: 0x4001 (frag: 1476 bytes at offset 8 - Last Frag)  Don't Fragment
 
 Packet 4
@@ -65,7 +65,7 @@ Packet 4
 	     TTL: 56
 	     LEN: 1496
 	      ID: 21486
-	   CKSUM: 0x7190
+	   CKSUM: 0x7190 (CORRECT)
 	  OFFSET: 0x4001 (frag: 1476 bytes at offset 8 - Last Frag)  Don't Fragment
 
 Packet 5
@@ -82,9 +82,11 @@ Packet 5
 	     TTL: 56
 	     LEN: 1496
 	      ID: 30140
-	   CKSUM: 0x4fc2
+	   CKSUM: 0x4fc2 (CORRECT)
 	  OFFSET: 0x4001 (frag: 1476 bytes at offset 8 - Last Frag)  Don't Fragment
 
 5 packets seen, 0 TCP packets traced
 trace file elapsed time: 0:00:22.460000
+bad IP checksums:  0
+bad TCP checksums: 0
 no traced TCP packets

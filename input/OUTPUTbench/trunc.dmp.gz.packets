@@ -14,9 +14,11 @@ Packet 1
 	     TTL: 56
 	     LEN: 28
 	      ID: 47376
-	   CKSUM: 0xf22a
+	   CKSUM: 0xf22a (CORRECT)
 	  OFFSET: 0x6000 (frag: 8 bytes at offset 0 - More Frags)  Don't Fragment
 
 1 packets seen, 0 TCP packets traced
 trace file elapsed time: 0:00:00.000000
+bad IP checksums:  0
+bad TCP checksums: 0
 no traced TCP packets

@@ -14,7 +14,7 @@ Packet 1
 	     TTL: 255
 	     LEN: 82
 	      ID: 61485
-	   CKSUM: 0x7a82
+	   CKSUM: 0x7a82 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -34,7 +34,7 @@ Packet 2
 	     TTL: 255
 	     LEN: 82
 	      ID: 26265
-	   CKSUM: 0x0417
+	   CKSUM: 0x0417 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -54,7 +54,7 @@ Packet 3
 	     TTL: 255
 	     LEN: 82
 	      ID: 61486
-	   CKSUM: 0x7a81
+	   CKSUM: 0x7a81 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -74,7 +74,7 @@ Packet 4
 	     TTL: 255
 	     LEN: 82
 	      ID: 26266
-	   CKSUM: 0x0416
+	   CKSUM: 0x0416 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -94,7 +94,7 @@ Packet 5
 	     TTL: 255
 	     LEN: 82
 	      ID: 61487
-	   CKSUM: 0x7a80
+	   CKSUM: 0x7a80 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -114,7 +114,7 @@ Packet 6
 	     TTL: 255
 	     LEN: 82
 	      ID: 26267
-	   CKSUM: 0x0415
+	   CKSUM: 0x0415 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -134,7 +134,7 @@ Packet 7
 	     TTL: 255
 	     LEN: 82
 	      ID: 61488
-	   CKSUM: 0x7a7f
+	   CKSUM: 0x7a7f (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -154,7 +154,7 @@ Packet 8
 	     TTL: 255
 	     LEN: 82
 	      ID: 26268
-	   CKSUM: 0x0414
+	   CKSUM: 0x0414 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -174,7 +174,7 @@ Packet 9
 	     TTL: 255
 	     LEN: 82
 	      ID: 61489
-	   CKSUM: 0x7a7e
+	   CKSUM: 0x7a7e (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -194,7 +194,7 @@ Packet 10
 	     TTL: 255
 	     LEN: 82
 	      ID: 26269
-	   CKSUM: 0x0413
+	   CKSUM: 0x0413 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -214,7 +214,7 @@ Packet 11
 	     TTL: 255
 	     LEN: 82
 	      ID: 61490
-	   CKSUM: 0x7a7d
+	   CKSUM: 0x7a7d (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -234,7 +234,7 @@ Packet 12
 	     TTL: 255
 	     LEN: 82
 	      ID: 26270
-	   CKSUM: 0x0412
+	   CKSUM: 0x0412 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -254,7 +254,7 @@ Packet 13
 	     TTL: 255
 	     LEN: 82
 	      ID: 61491
-	   CKSUM: 0x7a7c
+	   CKSUM: 0x7a7c (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -274,7 +274,7 @@ Packet 14
 	     TTL: 255
 	     LEN: 82
 	      ID: 26271
-	   CKSUM: 0x0411
+	   CKSUM: 0x0411 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -294,7 +294,7 @@ Packet 15
 	     TTL: 255
 	     LEN: 82
 	      ID: 61492
-	   CKSUM: 0x7a7b
+	   CKSUM: 0x7a7b (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -314,7 +314,7 @@ Packet 16
 	     TTL: 255
 	     LEN: 82
 	      ID: 26272
-	   CKSUM: 0x0410
+	   CKSUM: 0x0410 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -334,7 +334,7 @@ Packet 17
 	     TTL: 255
 	     LEN: 82
 	      ID: 61493
-	   CKSUM: 0x7a7a
+	   CKSUM: 0x7a7a (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -354,7 +354,7 @@ Packet 18
 	     TTL: 255
 	     LEN: 82
 	      ID: 26273
-	   CKSUM: 0x040f
+	   CKSUM: 0x040f (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -374,7 +374,7 @@ Packet 19
 	     TTL: 255
 	     LEN: 82
 	      ID: 61494
-	   CKSUM: 0x7a79
+	   CKSUM: 0x7a79 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 35142 
@@ -394,7 +394,7 @@ Packet 20
 	     TTL: 255
 	     LEN: 82
 	      ID: 26274
-	   CKSUM: 0x040e
+	   CKSUM: 0x040e (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	UDP SPRT: 7 
@@ -402,4 +402,6 @@ Packet 20
 	    DLEN: 62 (only 26 bytes in dump file)
 20 packets seen, 0 TCP packets traced
 trace file elapsed time: 0:00:00.030178
+bad IP checksums:  0
+bad TCP checksums: 0
 no traced TCP packets

@@ -35,6 +35,10 @@ TCP connection 1:
      min win adv:            8640 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:            9216 bytes     avg win adv:               0 bytes
+     max owin:                125 bytes     max owin:                  0 bytes
+     min non-zero owin:         2 bytes     min non-zero owin:         0 bytes
+     avg owin:                 65 bytes     avg owin:                  0 bytes
+     wavg owin:                43 bytes     wavg owin:                 0 bytes
      initial window:          122 bytes     initial window:            0 bytes
      initial window:            6 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -91,6 +95,10 @@ TCP connection 2:
      min win adv:            8640 bytes     min win adv:               0 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:           25807 bytes     avg win adv:               0 bytes
+     max owin:             204803 bytes     max owin:                  0 bytes
+     min non-zero owin:      1442 bytes     min non-zero owin:         0 bytes
+     avg owin:             104607 bytes     avg owin:                  0 bytes
+     wavg owin:             87986 bytes     wavg owin:                 0 bytes
      initial window:       204800 bytes     initial window:            0 bytes
      initial window:          150 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      

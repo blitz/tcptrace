@@ -14,7 +14,7 @@ Packet 1
 	     TTL: 60
 	     LEN: 48
 	      ID: 1319
-	   CKSUM: 0x441c
+	   CKSUM: 0x441c (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 119 
 	    DPRT: 2380 
@@ -23,7 +23,7 @@ Packet 1
 	     ACK: 0x090918d4
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x9fd3
+	   CKSUM: 0x9fd3 (too short to verify)
 	    DLEN: 8 (none of it in dump file)
 	    data: 8 bytes
 Packet 2
@@ -40,7 +40,7 @@ Packet 2
 	     TTL: 30
 	     LEN: 40
 	      ID: 58951
-	   CKSUM: 0xe27e
+	   CKSUM: 0xe27e (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 17157 
 	    DPRT: 23 
@@ -49,7 +49,7 @@ Packet 2
 	     ACK: 0x2115129e
 	     WIN: 2048
 	    HLEN: 20
-	   CKSUM: 0x5d9c
+	   CKSUM: 0x5d9c (CORRECT)
 	    DLEN: 0
 Packet 3
 	Packet Length: 1078 (saved length 54)
@@ -65,7 +65,7 @@ Packet 3
 	     TTL: 60
 	     LEN: 1064
 	      ID: 1320
-	   CKSUM: 0xa1ae
+	   CKSUM: 0xa1ae (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 17157 
@@ -74,7 +74,7 @@ Packet 3
 	     ACK: 0xba61450d
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xe86d
+	   CKSUM: 0xe86d (too short to verify)
 	    DLEN: 1024 (none of it in dump file)
 	    data: 1024 bytes
 Packet 4
@@ -91,7 +91,7 @@ Packet 4
 	     TTL: 60
 	     LEN: 1064
 	      ID: 1321
-	   CKSUM: 0xa1ad
+	   CKSUM: 0xa1ad (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 17157 
@@ -100,7 +100,7 @@ Packet 4
 	     ACK: 0xba61450d
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xb685
+	   CKSUM: 0xb685 (too short to verify)
 	    DLEN: 1024 (none of it in dump file)
 	    data: 1024 bytes
 Packet 5
@@ -117,7 +117,7 @@ Packet 5
 	     TTL: 30
 	     LEN: 40
 	      ID: 58952
-	   CKSUM: 0xe27d
+	   CKSUM: 0xe27d (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 17157 
 	    DPRT: 23 
@@ -126,7 +126,7 @@ Packet 5
 	     ACK: 0x2115169e
 	     WIN: 1024
 	    HLEN: 20
-	   CKSUM: 0x5d9c
+	   CKSUM: 0x5d9c (CORRECT)
 	    DLEN: 0
 Packet 6
 	Packet Length: 60 (saved length 54)
@@ -142,7 +142,7 @@ Packet 6
 	     TTL: 30
 	     LEN: 40
 	      ID: 58953
-	   CKSUM: 0xe27c
+	   CKSUM: 0xe27c (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 17157 
 	    DPRT: 23 
@@ -151,7 +151,7 @@ Packet 6
 	     ACK: 0x21151a9e
 	     WIN: 0
 	    HLEN: 20
-	   CKSUM: 0x5d9c
+	   CKSUM: 0x5d9c (CORRECT)
 	    DLEN: 0
 Packet 7
 	Packet Length: 60 (saved length 54)
@@ -167,7 +167,7 @@ Packet 7
 	     TTL: 60
 	     LEN: 41
 	      ID: 50919
-	   CKSUM: 0xa98d
+	   CKSUM: 0xa98d (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 1022 
 	    DPRT: 513 
@@ -176,7 +176,7 @@ Packet 7
 	     ACK: 0x2a486969
 	     WIN: 16384
 	    HLEN: 20
-	   CKSUM: 0x1cd5
+	   CKSUM: 0x1cd5 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 8
@@ -193,7 +193,7 @@ Packet 8
 	     TTL: 60
 	     LEN: 41
 	      ID: 1322
-	   CKSUM: 0x6b4b
+	   CKSUM: 0x6b4b (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 513 
 	    DPRT: 1022 
@@ -202,7 +202,7 @@ Packet 8
 	     ACK: 0x021343d9
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x4cd4
+	   CKSUM: 0x4cd4 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 9
@@ -219,7 +219,7 @@ Packet 9
 	     TTL: 60
 	     LEN: 40
 	      ID: 1323
-	   CKSUM: 0x3d61
+	   CKSUM: 0x3d61 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 1835 
 	    DPRT: 1729 
@@ -228,7 +228,7 @@ Packet 9
 	     ACK: 0x068cc5cd
 	     WIN: 4073
 	    HLEN: 20
-	   CKSUM: 0xeca0
+	   CKSUM: 0xeca0 (CORRECT)
 	    DLEN: 0
 Packet 10
 	Packet Length: 60 (saved length 54)
@@ -244,7 +244,7 @@ Packet 10
 	     TTL: 60
 	     LEN: 40
 	      ID: 1324
-	   CKSUM: 0x6d8c
+	   CKSUM: 0x6d8c (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 32023 
@@ -253,7 +253,7 @@ Packet 10
 	     ACK: 0x3d7294a3
 	     WIN: 4094
 	    HLEN: 20
-	   CKSUM: 0xe5b9
+	   CKSUM: 0xe5b9 (CORRECT)
 	    DLEN: 0
 Packet 11
 	Packet Length: 60 (saved length 54)
@@ -269,7 +269,7 @@ Packet 11
 	     TTL: 44
 	     LEN: 43
 	      ID: 60446
-	   CKSUM: 0x7c49
+	   CKSUM: 0x7c49 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2770 
 	    DPRT: 23 
@@ -278,7 +278,7 @@ Packet 11
 	     ACK: 0x24bec127
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x3cbf
+	   CKSUM: 0x3cbf (too short to verify)
 	    DLEN: 3 (none of it in dump file)
 	    data: 3 bytes
 Packet 12
@@ -295,7 +295,7 @@ Packet 12
 	     TTL: 60
 	     LEN: 44
 	      ID: 1325
-	   CKSUM: 0x533a
+	   CKSUM: 0x533a (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 2770 
@@ -304,7 +304,7 @@ Packet 12
 	     ACK: 0x00abebde
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x38a5
+	   CKSUM: 0x38a5 (too short to verify)
 	    DLEN: 4 (none of it in dump file)
 	    data: 4 bytes
 Packet 13
@@ -321,7 +321,7 @@ Packet 13
 	     TTL: 60
 	     LEN: 41
 	      ID: 1326
-	   CKSUM: 0x6d89
+	   CKSUM: 0x6d89 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 32023 
@@ -330,7 +330,7 @@ Packet 13
 	     ACK: 0x3d7294a3
 	     WIN: 4094
 	    HLEN: 20
-	   CKSUM: 0x75b0
+	   CKSUM: 0x75b0 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 14
@@ -347,7 +347,7 @@ Packet 14
 	     TTL: 55
 	     LEN: 552
 	      ID: 52842
-	   CKSUM: 0x7de0
+	   CKSUM: 0x7de0 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2380 
 	    DPRT: 119 
@@ -356,7 +356,7 @@ Packet 14
 	     ACK: 0x2e71ab99
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x90a7
+	   CKSUM: 0x90a7 (too short to verify)
 	    DLEN: 512 (none of it in dump file)
 	    data: 512 bytes
 Packet 15
@@ -373,7 +373,7 @@ Packet 15
 	     TTL: 30
 	     LEN: 40
 	      ID: 30005
-	   CKSUM: 0x1b83
+	   CKSUM: 0x1b83 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 32023 
 	    DPRT: 23 
@@ -382,7 +382,7 @@ Packet 15
 	     ACK: 0x083c5685
 	     WIN: 89
 	    HLEN: 20
-	   CKSUM: 0xf55d
+	   CKSUM: 0xf55d (CORRECT)
 	    DLEN: 0
 Packet 16
 	Packet Length: 566 (saved length 54)
@@ -398,7 +398,7 @@ Packet 16
 	     TTL: 55
 	     LEN: 552
 	      ID: 52843
-	   CKSUM: 0x7ddf
+	   CKSUM: 0x7ddf (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2380 
 	    DPRT: 119 
@@ -407,7 +407,7 @@ Packet 16
 	     ACK: 0x2e71ab99
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xcf61
+	   CKSUM: 0xcf61 (too short to verify)
 	    DLEN: 512 (none of it in dump file)
 	    data: 512 bytes
 Packet 17
@@ -424,7 +424,7 @@ Packet 17
 	     TTL: 60
 	     LEN: 40
 	      ID: 1327
-	   CKSUM: 0x441c
+	   CKSUM: 0x441c (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 119 
 	    DPRT: 2380 
@@ -433,7 +433,7 @@ Packet 17
 	     ACK: 0x09091cd4
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x60a4
+	   CKSUM: 0x60a4 (CORRECT)
 	    DLEN: 0
 Packet 18
 	Packet Length: 566 (saved length 54)
@@ -449,7 +449,7 @@ Packet 18
 	     TTL: 55
 	     LEN: 552
 	      ID: 52844
-	   CKSUM: 0x7dde
+	   CKSUM: 0x7dde (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2380 
 	    DPRT: 119 
@@ -458,7 +458,7 @@ Packet 18
 	     ACK: 0x2e71ab99
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x68bc
+	   CKSUM: 0x68bc (too short to verify)
 	    DLEN: 512 (none of it in dump file)
 	    data: 512 bytes
 Packet 19
@@ -475,7 +475,7 @@ Packet 19
 	     TTL: 55
 	     LEN: 328
 	      ID: 52845
-	   CKSUM: 0x7ebd
+	   CKSUM: 0x7ebd (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2380 
 	    DPRT: 119 
@@ -484,7 +484,7 @@ Packet 19
 	     ACK: 0x2e71ab99
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xd943
+	   CKSUM: 0xd943 (too short to verify)
 	    DLEN: 288 (none of it in dump file)
 	    data: 288 bytes
 Packet 20
@@ -501,7 +501,7 @@ Packet 20
 	     TTL: 60
 	     LEN: 53
 	      ID: 1328
-	   CKSUM: 0x440e
+	   CKSUM: 0x440e (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 119 
 	    DPRT: 2380 
@@ -510,7 +510,7 @@ Packet 20
 	     ACK: 0x09091ff4
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x9cc4
+	   CKSUM: 0x9cc4 (too short to verify)
 	    DLEN: 13 (none of it in dump file)
 	    data: 13 bytes
 Packet 21
@@ -527,7 +527,7 @@ Packet 21
 	     TTL: 30
 	     LEN: 41
 	      ID: 30006
-	   CKSUM: 0x1844
+	   CKSUM: 0x1844 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 26638 
 	    DPRT: 23 
@@ -536,7 +536,7 @@ Packet 21
 	     ACK: 0x44444a8d
 	     WIN: 130
 	    HLEN: 20
-	   CKSUM: 0x5805
+	   CKSUM: 0x5805 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 22
@@ -553,7 +553,7 @@ Packet 22
 	     TTL: 60
 	     LEN: 41
 	      ID: 50920
-	   CKSUM: 0xa98c
+	   CKSUM: 0xa98c (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 1022 
 	    DPRT: 513 
@@ -562,7 +562,7 @@ Packet 22
 	     ACK: 0x2a48696a
 	     WIN: 16384
 	    HLEN: 20
-	   CKSUM: 0x0fd3
+	   CKSUM: 0x0fd3 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 23
@@ -579,7 +579,7 @@ Packet 23
 	     TTL: 48
 	     LEN: 40
 	      ID: 14479
-	   CKSUM: 0xe31a
+	   CKSUM: 0xe31a (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3043 
 	    DPRT: 5000 
@@ -588,7 +588,7 @@ Packet 23
 	     ACK: 0x1c2e99dc
 	     WIN: 6144
 	    HLEN: 20
-	   CKSUM: 0xcc3c
+	   CKSUM: 0xcc3c (CORRECT)
 	    DLEN: 0
 Packet 24
 	Packet Length: 61 (saved length 54)
@@ -604,7 +604,7 @@ Packet 24
 	     TTL: 255
 	     LEN: 47
 	      ID: 27736
-	   CKSUM: 0x001b
+	   CKSUM: 0x001b (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 23 
@@ -614,7 +614,7 @@ Packet 24
 	     ACK: 0x3d9bf35d
 	     WIN: 8774
 	    HLEN: 20
-	   CKSUM: 0x896d
+	   CKSUM: 0x896d (too short to verify)
 	    DLEN: 7 (none of it in dump file)
 	    data: 7 bytes
 Packet 25
@@ -631,7 +631,7 @@ Packet 25
 	     TTL: 55
 	     LEN: 86
 	      ID: 52847
-	   CKSUM: 0x7fad
+	   CKSUM: 0x7fad (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2380 
 	    DPRT: 119 
@@ -640,7 +640,7 @@ Packet 25
 	     ACK: 0x2e71aba6
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xc49d
+	   CKSUM: 0xc49d (too short to verify)
 	    DLEN: 46 (none of it in dump file)
 	    data: 46 bytes
 Packet 26
@@ -657,7 +657,7 @@ Packet 26
 	     TTL: 30
 	     LEN: 40
 	      ID: 30007
-	   CKSUM: 0x1844
+	   CKSUM: 0x1844 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 26638 
 	    DPRT: 23 
@@ -666,7 +666,7 @@ Packet 26
 	     ACK: 0x44444a94
 	     WIN: 123
 	    HLEN: 20
-	   CKSUM: 0x780d
+	   CKSUM: 0x780d (CORRECT)
 	    DLEN: 0
 Packet 27
 	Packet Length: 60 (saved length 54)
@@ -682,7 +682,7 @@ Packet 27
 	     TTL: 30
 	     LEN: 40
 	      ID: 58956
-	   CKSUM: 0xe395
+	   CKSUM: 0xe395 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 24077 
 	    DPRT: 23 
@@ -691,7 +691,7 @@ Packet 27
 	     ACK: 0x1c620145
 	     WIN: 1418
 	    HLEN: 20
-	   CKSUM: 0x398d
+	   CKSUM: 0x398d (CORRECT)
 	    DLEN: 0
 Packet 28
 	Packet Length: 1078 (saved length 54)
@@ -707,7 +707,7 @@ Packet 28
 	     TTL: 60
 	     LEN: 1064
 	      ID: 1329
-	   CKSUM: 0xa2c1
+	   CKSUM: 0xa2c1 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 24077 
@@ -716,7 +716,7 @@ Packet 28
 	     ACK: 0xba5967ba
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x09bf
+	   CKSUM: 0x09bf (too short to verify)
 	    DLEN: 1024 (none of it in dump file)
 	    data: 1024 bytes
 Packet 29
@@ -733,7 +733,7 @@ Packet 29
 	     TTL: 60
 	     LEN: 41
 	      ID: 1330
-	   CKSUM: 0x6b43
+	   CKSUM: 0x6b43 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 513 
 	    DPRT: 1022 
@@ -742,7 +742,7 @@ Packet 29
 	     ACK: 0x021343da
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x3fd2
+	   CKSUM: 0x3fd2 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 30
@@ -759,7 +759,7 @@ Packet 30
 	     TTL: 30
 	     LEN: 40
 	      ID: 58957
-	   CKSUM: 0xe394
+	   CKSUM: 0xe394 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 24077 
 	    DPRT: 23 
@@ -768,7 +768,7 @@ Packet 30
 	     ACK: 0x1c620545
 	     WIN: 394
 	    HLEN: 20
-	   CKSUM: 0x398d
+	   CKSUM: 0x398d (CORRECT)
 	    DLEN: 0
 Packet 31
 	Packet Length: 75 (saved length 54)
@@ -784,7 +784,7 @@ Packet 31
 	     TTL: 60
 	     LEN: 61
 	      ID: 1331
-	   CKSUM: 0x6d70
+	   CKSUM: 0x6d70 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 32023 
@@ -793,7 +793,7 @@ Packet 31
 	     ACK: 0x3d7294a3
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xe012
+	   CKSUM: 0xe012 (too short to verify)
 	    DLEN: 21 (none of it in dump file)
 	    data: 21 bytes
 Packet 32
@@ -810,7 +810,7 @@ Packet 32
 	     TTL: 60
 	     LEN: 43
 	      ID: 5848
-	   CKSUM: 0x4c1c
+	   CKSUM: 0x4c1c (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3711 
 	    DPRT: 23 
@@ -819,7 +819,7 @@ Packet 32
 	     ACK: 0x5d8fc762
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xe29f
+	   CKSUM: 0xe29f (too short to verify)
 	    DLEN: 3 (none of it in dump file)
 	    data: 3 bytes
 Packet 33
@@ -836,7 +836,7 @@ Packet 33
 	     TTL: 30
 	     LEN: 40
 	      ID: 30008
-	   CKSUM: 0x1b80
+	   CKSUM: 0x1b80 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 32023 
 	    DPRT: 23 
@@ -845,7 +845,7 @@ Packet 33
 	     ACK: 0x083c569a
 	     WIN: 164
 	    HLEN: 20
-	   CKSUM: 0xf4fd
+	   CKSUM: 0xf4fd (CORRECT)
 	    DLEN: 0
 Packet 34
 	Packet Length: 60 (saved length 54)
@@ -861,7 +861,7 @@ Packet 34
 	     TTL: 60
 	     LEN: 43
 	      ID: 1332
-	   CKSUM: 0x5dc0
+	   CKSUM: 0x5dc0 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 3711 
@@ -870,7 +870,7 @@ Packet 34
 	     ACK: 0x4345ce36
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xe290
+	   CKSUM: 0xe290 (too short to verify)
 	    DLEN: 3 (none of it in dump file)
 	    data: 3 bytes
 Packet 35
@@ -887,7 +887,7 @@ Packet 35
 	     TTL: 44
 	     LEN: 40
 	      ID: 60460
-	   CKSUM: 0x7c3e
+	   CKSUM: 0x7c3e (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2770 
 	    DPRT: 23 
@@ -896,7 +896,7 @@ Packet 35
 	     ACK: 0x24bec12b
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x9c12
+	   CKSUM: 0x9c12 (CORRECT)
 	    DLEN: 0
 Packet 36
 	Packet Length: 60 (saved length 54)
@@ -912,7 +912,7 @@ Packet 36
 	     TTL: 60
 	     LEN: 41
 	      ID: 1333
-	   CKSUM: 0x5335
+	   CKSUM: 0x5335 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 2770 
@@ -921,7 +921,7 @@ Packet 36
 	     ACK: 0x00abebde
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x5809
+	   CKSUM: 0x5809 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 37
@@ -938,7 +938,7 @@ Packet 37
 	     TTL: 43
 	     LEN: 43
 	      ID: 57961
-	   CKSUM: 0x8f17
+	   CKSUM: 0x8f17 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 1211 
 	    DPRT: 5000 
@@ -947,7 +947,7 @@ Packet 37
 	     ACK: 0x1c0d82cf
 	     WIN: 6144
 	    HLEN: 20
-	   CKSUM: 0x36d9
+	   CKSUM: 0x36d9 (too short to verify)
 	    DLEN: 3 (none of it in dump file)
 	    data: 3 bytes
 Packet 38
@@ -964,7 +964,7 @@ Packet 38
 	     TTL: 254
 	     LEN: 41
 	      ID: 46086
-	   CKSUM: 0xa87b
+	   CKSUM: 0xa87b (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 23 
@@ -974,7 +974,7 @@ Packet 38
 	     ACK: 0x76540554
 	     WIN: 9112
 	    HLEN: 20
-	   CKSUM: 0x3fad
+	   CKSUM: 0x3fad (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 39
@@ -991,7 +991,7 @@ Packet 39
 	     TTL: 254
 	     LEN: 41
 	      ID: 46086
-	   CKSUM: 0xa87b
+	   CKSUM: 0xa87b (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 23 
@@ -1001,7 +1001,7 @@ Packet 39
 	     ACK: 0x76540554
 	     WIN: 9112
 	    HLEN: 20
-	   CKSUM: 0x3fad
+	   CKSUM: 0x3fad (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 40
@@ -1018,7 +1018,7 @@ Packet 40
 	     TTL: 60
 	     LEN: 56
 	      ID: 1334
-	   CKSUM: 0xa590
+	   CKSUM: 0xa590 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 3592 
@@ -1027,7 +1027,7 @@ Packet 40
 	     ACK: 0xb9ddaccf
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x524c
+	   CKSUM: 0x524c (too short to verify)
 	    DLEN: 16 (none of it in dump file)
 	    data: 16 bytes
 Packet 41
@@ -1044,7 +1044,7 @@ Packet 41
 	     TTL: 48
 	     LEN: 45
 	      ID: 14480
-	   CKSUM: 0xe314
+	   CKSUM: 0xe314 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3054 
 	    DPRT: 5000 
@@ -1053,7 +1053,7 @@ Packet 41
 	     ACK: 0x1f31cfe4
 	     WIN: 6144
 	    HLEN: 20
-	   CKSUM: 0xadfc
+	   CKSUM: 0xadfc (too short to verify)
 	    DLEN: 5 (none of it in dump file)
 	    data: 5 bytes
 Packet 42
@@ -1070,7 +1070,7 @@ Packet 42
 	     TTL: 60
 	     LEN: 40
 	      ID: 1335
-	   CKSUM: 0x4414
+	   CKSUM: 0x4414 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 119 
 	    DPRT: 2380 
@@ -1079,7 +1079,7 @@ Packet 42
 	     ACK: 0x09092022
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x5d49
+	   CKSUM: 0x5d49 (CORRECT)
 	    DLEN: 0
 Packet 43
 	Packet Length: 60 (saved length 54)
@@ -1095,7 +1095,7 @@ Packet 43
 	     TTL: 30
 	     LEN: 41
 	      ID: 30009
-	   CKSUM: 0x1a7f
+	   CKSUM: 0x1a7f (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 11049 
 	    DPRT: 23 
@@ -1104,7 +1104,7 @@ Packet 43
 	     ACK: 0x737e6856
 	     WIN: 164
 	    HLEN: 20
-	   CKSUM: 0x4c52
+	   CKSUM: 0x4c52 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 44
@@ -1121,7 +1121,7 @@ Packet 44
 	     TTL: 60
 	     LEN: 40
 	      ID: 21946
-	   CKSUM: 0xb9ef
+	   CKSUM: 0xb9ef (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 5000 
 	    DPRT: 3054 
@@ -1130,7 +1130,7 @@ Packet 44
 	     ACK: 0x1e049d9c
 	     WIN: 4091
 	    HLEN: 20
-	   CKSUM: 0x6686
+	   CKSUM: 0x6686 (CORRECT)
 	    DLEN: 0
 Packet 45
 	Packet Length: 60 (saved length 54)
@@ -1146,7 +1146,7 @@ Packet 45
 	     TTL: 60
 	     LEN: 40
 	      ID: 21947
-	   CKSUM: 0x0ac9
+	   CKSUM: 0x0ac9 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 5000 
 	    DPRT: 1211 
@@ -1155,7 +1155,7 @@ Packet 45
 	     ACK: 0x38fde37c
 	     WIN: 4093
 	    HLEN: 20
-	   CKSUM: 0xadf1
+	   CKSUM: 0xadf1 (CORRECT)
 	    DLEN: 0
 Packet 46
 	Packet Length: 491 (saved length 54)
@@ -1171,7 +1171,7 @@ Packet 46
 	     TTL: 60
 	     LEN: 477
 	      ID: 21948
-	   CKSUM: 0x101a
+	   CKSUM: 0x101a (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 5000 
 	    DPRT: 1783 
@@ -1180,7 +1180,7 @@ Packet 46
 	     ACK: 0x0c65d838
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x2f5c
+	   CKSUM: 0x2f5c (too short to verify)
 	    DLEN: 437 (none of it in dump file)
 	    data: 437 bytes
 Packet 47
@@ -1197,7 +1197,7 @@ Packet 47
 	     TTL: 60
 	     LEN: 41
 	      ID: 55470
-	   CKSUM: 0x9909
+	   CKSUM: 0x9909 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 11049 
@@ -1206,7 +1206,7 @@ Packet 47
 	     ACK: 0x3db4abf5
 	     WIN: 16384
 	    HLEN: 20
-	   CKSUM: 0x0cf5
+	   CKSUM: 0x0cf5 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 48
@@ -1223,7 +1223,7 @@ Packet 48
 	     TTL: 60
 	     LEN: 41
 	      ID: 50921
-	   CKSUM: 0xa98b
+	   CKSUM: 0xa98b (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 1022 
 	    DPRT: 513 
@@ -1232,7 +1232,7 @@ Packet 48
 	     ACK: 0x2a48696b
 	     WIN: 16384
 	    HLEN: 20
-	   CKSUM: 0x53d1
+	   CKSUM: 0x53d1 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 49
@@ -1249,7 +1249,7 @@ Packet 49
 	     TTL: 30
 	     LEN: 40
 	      ID: 30010
-	   CKSUM: 0x1a7f
+	   CKSUM: 0x1a7f (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 11049 
 	    DPRT: 23 
@@ -1258,7 +1258,7 @@ Packet 49
 	     ACK: 0x737e6857
 	     WIN: 163
 	    HLEN: 20
-	   CKSUM: 0xb15a
+	   CKSUM: 0xb15a (CORRECT)
 	    DLEN: 0
 Packet 50
 	Packet Length: 60 (saved length 54)
@@ -1274,7 +1274,7 @@ Packet 50
 	     TTL: 30
 	     LEN: 41
 	      ID: 30011
-	   CKSUM: 0x1b7c
+	   CKSUM: 0x1b7c (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 32023 
 	    DPRT: 23 
@@ -1283,7 +1283,7 @@ Packet 50
 	     ACK: 0x083c569a
 	     WIN: 164
 	    HLEN: 20
-	   CKSUM: 0x87f4
+	   CKSUM: 0x87f4 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 51
@@ -1300,7 +1300,7 @@ Packet 51
 	     TTL: 60
 	     LEN: 41
 	      ID: 11123
-	   CKSUM: 0x36df
+	   CKSUM: 0x36df (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 28930 
 	    DPRT: 23 
@@ -1309,7 +1309,7 @@ Packet 51
 	     ACK: 0x22832b16
 	     WIN: 1024
 	    HLEN: 20
-	   CKSUM: 0x2bed
+	   CKSUM: 0x2bed (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 52
@@ -1326,7 +1326,7 @@ Packet 52
 	     TTL: 32
 	     LEN: 40
 	      ID: 2056
-	   CKSUM: 0x764b
+	   CKSUM: 0x764b (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 28930 
@@ -1335,7 +1335,7 @@ Packet 52
 	     ACK: 0x0015849a
 	     WIN: 7798
 	    HLEN: 20
-	   CKSUM: 0x317f
+	   CKSUM: 0x317f (CORRECT)
 	    DLEN: 0
 Packet 53
 	Packet Length: 60 (saved length 54)
@@ -1351,7 +1351,7 @@ Packet 53
 	     TTL: 32
 	     LEN: 41
 	      ID: 2057
-	   CKSUM: 0x7649
+	   CKSUM: 0x7649 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 28930 
@@ -1360,7 +1360,7 @@ Packet 53
 	     ACK: 0x0015849a
 	     WIN: 7798
 	    HLEN: 20
-	   CKSUM: 0x1176
+	   CKSUM: 0x1176 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 54
@@ -1377,7 +1377,7 @@ Packet 54
 	     TTL: 60
 	     LEN: 40
 	      ID: 11379
-	   CKSUM: 0x35e0
+	   CKSUM: 0x35e0 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 28930 
 	    DPRT: 23 
@@ -1386,7 +1386,7 @@ Packet 54
 	     ACK: 0x22832b17
 	     WIN: 1024
 	    HLEN: 20
-	   CKSUM: 0x4bec
+	   CKSUM: 0x4bec (CORRECT)
 	    DLEN: 0
 Packet 55
 	Packet Length: 60 (saved length 54)
@@ -1402,7 +1402,7 @@ Packet 55
 	     TTL: 30
 	     LEN: 41
 	      ID: 30012
-	   CKSUM: 0x183e
+	   CKSUM: 0x183e (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 26638 
 	    DPRT: 23 
@@ -1411,7 +1411,7 @@ Packet 55
 	     ACK: 0x44444a94
 	     WIN: 123
 	    HLEN: 20
-	   CKSUM: 0x0a04
+	   CKSUM: 0x0a04 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 56
@@ -1428,7 +1428,7 @@ Packet 56
 	     TTL: 60
 	     LEN: 40
 	      ID: 5850
-	   CKSUM: 0x4c1d
+	   CKSUM: 0x4c1d (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3711 
 	    DPRT: 23 
@@ -1437,7 +1437,7 @@ Packet 56
 	     ACK: 0x5d8fc765
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x3ef4
+	   CKSUM: 0x3ef4 (CORRECT)
 	    DLEN: 0
 Packet 57
 	Packet Length: 60 (saved length 54)
@@ -1453,7 +1453,7 @@ Packet 57
 	     TTL: 255
 	     LEN: 41
 	      ID: 27737
-	   CKSUM: 0x0020
+	   CKSUM: 0x0020 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 23 
@@ -1463,7 +1463,7 @@ Packet 57
 	     ACK: 0x3d9bf35e
 	     WIN: 8774
 	    HLEN: 20
-	   CKSUM: 0xe837
+	   CKSUM: 0xe837 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 58
@@ -1480,7 +1480,7 @@ Packet 58
 	     TTL: 30
 	     LEN: 41
 	      ID: 30013
-	   CKSUM: 0x1a7b
+	   CKSUM: 0x1a7b (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 11049 
 	    DPRT: 23 
@@ -1489,7 +1489,7 @@ Packet 58
 	     ACK: 0x737e6857
 	     WIN: 163
 	    HLEN: 20
-	   CKSUM: 0x3a51
+	   CKSUM: 0x3a51 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 59
@@ -1506,7 +1506,7 @@ Packet 59
 	     TTL: 60
 	     LEN: 43
 	      ID: 5851
-	   CKSUM: 0x4c19
+	   CKSUM: 0x4c19 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3711 
 	    DPRT: 23 
@@ -1515,7 +1515,7 @@ Packet 59
 	     ACK: 0x5d8fc765
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xe299
+	   CKSUM: 0xe299 (too short to verify)
 	    DLEN: 3 (none of it in dump file)
 	    data: 3 bytes
 Packet 60
@@ -1532,7 +1532,7 @@ Packet 60
 	     TTL: 60
 	     LEN: 41
 	      ID: 55471
-	   CKSUM: 0x9908
+	   CKSUM: 0x9908 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 11049 
@@ -1541,7 +1541,7 @@ Packet 60
 	     ACK: 0x3db4abf6
 	     WIN: 16384
 	    HLEN: 20
-	   CKSUM: 0xfaf2
+	   CKSUM: 0xfaf2 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 61
@@ -1558,7 +1558,7 @@ Packet 61
 	     TTL: 30
 	     LEN: 43
 	      ID: 58960
-	   CKSUM: 0xe272
+	   CKSUM: 0xe272 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2065 
 	    DPRT: 23 
@@ -1567,7 +1567,7 @@ Packet 61
 	     ACK: 0x09832f11
 	     WIN: 2048
 	    HLEN: 20
-	   CKSUM: 0x697d
+	   CKSUM: 0x697d (too short to verify)
 	    DLEN: 3 (none of it in dump file)
 	    data: 3 bytes
 Packet 62
@@ -1584,7 +1584,7 @@ Packet 62
 	     TTL: 30
 	     LEN: 40
 	      ID: 30014
-	   CKSUM: 0x183d
+	   CKSUM: 0x183d (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 26638 
 	    DPRT: 23 
@@ -1593,7 +1593,7 @@ Packet 62
 	     ACK: 0x44444a95
 	     WIN: 122
 	    HLEN: 20
-	   CKSUM: 0x780c
+	   CKSUM: 0x780c (CORRECT)
 	    DLEN: 0
 Packet 63
 	Packet Length: 72 (saved length 54)
@@ -1609,7 +1609,7 @@ Packet 63
 	     TTL: 60
 	     LEN: 58
 	      ID: 1338
-	   CKSUM: 0xa58a
+	   CKSUM: 0xa58a (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 2065 
@@ -1618,7 +1618,7 @@ Packet 63
 	     ACK: 0xba3a1303
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x4374
+	   CKSUM: 0x4374 (too short to verify)
 	    DLEN: 18 (none of it in dump file)
 	    data: 18 bytes
 Packet 64
@@ -1635,7 +1635,7 @@ Packet 64
 	     TTL: 30
 	     LEN: 40
 	      ID: 30015
-	   CKSUM: 0x1a7a
+	   CKSUM: 0x1a7a (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 11049 
 	    DPRT: 23 
@@ -1644,7 +1644,7 @@ Packet 64
 	     ACK: 0x737e6858
 	     WIN: 162
 	    HLEN: 20
-	   CKSUM: 0xb159
+	   CKSUM: 0xb159 (CORRECT)
 	    DLEN: 0
 Packet 65
 	Packet Length: 60 (saved length 54)
@@ -1660,7 +1660,7 @@ Packet 65
 	     TTL: 30
 	     LEN: 41
 	      ID: 30016
-	   CKSUM: 0x1b77
+	   CKSUM: 0x1b77 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 32301 
 	    DPRT: 23 
@@ -1669,7 +1669,7 @@ Packet 65
 	     ACK: 0x1a2e948d
 	     WIN: 153
 	    HLEN: 20
-	   CKSUM: 0xbe53
+	   CKSUM: 0xbe53 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 66
@@ -1686,7 +1686,7 @@ Packet 66
 	     TTL: 15
 	     LEN: 40
 	      ID: 48962
-	   CKSUM: 0xd548
+	   CKSUM: 0xd548 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 1783 
 	    DPRT: 5000 
@@ -1695,7 +1695,7 @@ Packet 66
 	     ACK: 0x27b57891
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xe92b
+	   CKSUM: 0xe92b (CORRECT)
 	    DLEN: 0
 Packet 67
 	Packet Length: 62 (saved length 54)
@@ -1711,7 +1711,7 @@ Packet 67
 	     TTL: 60
 	     LEN: 48
 	      ID: 1339
-	   CKSUM: 0x6d75
+	   CKSUM: 0x6d75 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 32301 
@@ -1720,7 +1720,7 @@ Packet 67
 	     ACK: 0x3d910136
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x0094
+	   CKSUM: 0x0094 (too short to verify)
 	    DLEN: 8 (none of it in dump file)
 	    data: 8 bytes
 Packet 68
@@ -1737,7 +1737,7 @@ Packet 68
 	     TTL: 44
 	     LEN: 40
 	      ID: 60480
-	   CKSUM: 0x7c2a
+	   CKSUM: 0x7c2a (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2770 
 	    DPRT: 23 
@@ -1746,7 +1746,7 @@ Packet 68
 	     ACK: 0x24bec12c
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x9c11
+	   CKSUM: 0x9c11 (CORRECT)
 	    DLEN: 0
 Packet 69
 	Packet Length: 60 (saved length 54)
@@ -1762,7 +1762,7 @@ Packet 69
 	     TTL: 30
 	     LEN: 40
 	      ID: 30017
-	   CKSUM: 0x1b77
+	   CKSUM: 0x1b77 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 32301 
 	    DPRT: 23 
@@ -1771,7 +1771,7 @@ Packet 69
 	     ACK: 0x1a2e9495
 	     WIN: 145
 	    HLEN: 20
-	   CKSUM: 0x375c
+	   CKSUM: 0x375c (CORRECT)
 	    DLEN: 0
 Packet 70
 	Packet Length: 60 (saved length 54)
@@ -1787,7 +1787,7 @@ Packet 70
 	     TTL: 30
 	     LEN: 40
 	      ID: 58961
-	   CKSUM: 0xe274
+	   CKSUM: 0xe274 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3592 
 	    DPRT: 23 
@@ -1796,7 +1796,7 @@ Packet 70
 	     ACK: 0x5474ae38
 	     WIN: 2048
 	    HLEN: 20
-	   CKSUM: 0x5c61
+	   CKSUM: 0x5c61 (CORRECT)
 	    DLEN: 0
 Packet 71
 	Packet Length: 60 (saved length 54)
@@ -1812,7 +1812,7 @@ Packet 71
 	     TTL: 60
 	     LEN: 43
 	      ID: 1340
-	   CKSUM: 0xa597
+	   CKSUM: 0xa597 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 3592 
@@ -1821,7 +1821,7 @@ Packet 71
 	     ACK: 0xb9ddaccf
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x404c
+	   CKSUM: 0x404c (too short to verify)
 	    DLEN: 3 (none of it in dump file)
 	    data: 3 bytes
 Packet 72
@@ -1838,7 +1838,7 @@ Packet 72
 	     TTL: 60
 	     LEN: 95
 	      ID: 21949
-	   CKSUM: 0x9266
+	   CKSUM: 0x9266 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 5000 
 	    DPRT: 4427 
@@ -1847,7 +1847,7 @@ Packet 72
 	     ACK: 0x68966b10
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x464b
+	   CKSUM: 0x464b (too short to verify)
 	    DLEN: 55 (none of it in dump file)
 	    data: 55 bytes
 Packet 73
@@ -1864,7 +1864,7 @@ Packet 73
 	     TTL: 60
 	     LEN: 93
 	      ID: 21950
-	   CKSUM: 0xb9b6
+	   CKSUM: 0xb9b6 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 5000 
 	    DPRT: 3054 
@@ -1873,7 +1873,7 @@ Packet 73
 	     ACK: 0x1e049d9c
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xf804
+	   CKSUM: 0xf804 (too short to verify)
 	    DLEN: 53 (none of it in dump file)
 	    data: 53 bytes
 Packet 74
@@ -1890,7 +1890,7 @@ Packet 74
 	     TTL: 60
 	     LEN: 364
 	      ID: 21951
-	   CKSUM: 0x0981
+	   CKSUM: 0x0981 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 5000 
 	    DPRT: 1211 
@@ -1899,7 +1899,7 @@ Packet 74
 	     ACK: 0x38fde37c
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xc4ae
+	   CKSUM: 0xc4ae (too short to verify)
 	    DLEN: 324 (none of it in dump file)
 	    data: 324 bytes
 Packet 75
@@ -1916,7 +1916,7 @@ Packet 75
 	     TTL: 254
 	     LEN: 42
 	      ID: 46087
-	   CKSUM: 0xa879
+	   CKSUM: 0xa879 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 23 
@@ -1926,7 +1926,7 @@ Packet 75
 	     ACK: 0x76540554
 	     WIN: 9112
 	    HLEN: 20
-	   CKSUM: 0x3b8b
+	   CKSUM: 0x3b8b (too short to verify)
 	    DLEN: 2 (none of it in dump file)
 	    data: 2 bytes
 Packet 76
@@ -1943,7 +1943,7 @@ Packet 76
 	     TTL: 254
 	     LEN: 42
 	      ID: 46087
-	   CKSUM: 0xa879
+	   CKSUM: 0xa879 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 23 
@@ -1953,7 +1953,7 @@ Packet 76
 	     ACK: 0x76540554
 	     WIN: 9112
 	    HLEN: 20
-	   CKSUM: 0x3b8b
+	   CKSUM: 0x3b8b (too short to verify)
 	    DLEN: 2 (none of it in dump file)
 	    data: 2 bytes
 Packet 77
@@ -1970,7 +1970,7 @@ Packet 77
 	     TTL: 30
 	     LEN: 41
 	      ID: 30018
-	   CKSUM: 0x1b75
+	   CKSUM: 0x1b75 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 32023 
 	    DPRT: 23 
@@ -1979,7 +1979,7 @@ Packet 77
 	     ACK: 0x083c569a
 	     WIN: 164
 	    HLEN: 20
-	   CKSUM: 0x93f3
+	   CKSUM: 0x93f3 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 78
@@ -1996,7 +1996,7 @@ Packet 78
 	     TTL: 60
 	     LEN: 40
 	      ID: 1341
-	   CKSUM: 0x6b39
+	   CKSUM: 0x6b39 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 513 
 	    DPRT: 1022 
@@ -2005,7 +2005,7 @@ Packet 78
 	     ACK: 0x021343db
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0xb1d9
+	   CKSUM: 0xb1d9 (CORRECT)
 	    DLEN: 0
 Packet 79
 	Packet Length: 60 (saved length 54)
@@ -2021,7 +2021,7 @@ Packet 79
 	     TTL: 60
 	     LEN: 40
 	      ID: 1342
-	   CKSUM: 0x6d7a
+	   CKSUM: 0x6d7a (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 32023 
@@ -2030,7 +2030,7 @@ Packet 79
 	     ACK: 0x3d7294a5
 	     WIN: 4095
 	    HLEN: 20
-	   CKSUM: 0xe5a0
+	   CKSUM: 0xe5a0 (CORRECT)
 	    DLEN: 0
 Packet 80
 	Packet Length: 60 (saved length 54)
@@ -2046,7 +2046,7 @@ Packet 80
 	     TTL: 60
 	     LEN: 40
 	      ID: 1343
-	   CKSUM: 0x5db8
+	   CKSUM: 0x5db8 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 3711 
@@ -2055,7 +2055,7 @@ Packet 80
 	     ACK: 0x4345ce39
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x3ef1
+	   CKSUM: 0x3ef1 (CORRECT)
 	    DLEN: 0
 Packet 81
 	Packet Length: 60 (saved length 54)
@@ -2071,7 +2071,7 @@ Packet 81
 	     TTL: 60
 	     LEN: 41
 	      ID: 50922
-	   CKSUM: 0xa98a
+	   CKSUM: 0xa98a (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 1022 
 	    DPRT: 513 
@@ -2080,7 +2080,7 @@ Packet 81
 	     ACK: 0x2a48696b
 	     WIN: 16384
 	    HLEN: 20
-	   CKSUM: 0x1ed0
+	   CKSUM: 0x1ed0 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 82
@@ -2097,7 +2097,7 @@ Packet 82
 	     TTL: 30
 	     LEN: 41
 	      ID: 30019
-	   CKSUM: 0x1837
+	   CKSUM: 0x1837 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 26638 
 	    DPRT: 23 
@@ -2106,7 +2106,7 @@ Packet 82
 	     ACK: 0x44444a95
 	     WIN: 122
 	    HLEN: 20
-	   CKSUM: 0x0903
+	   CKSUM: 0x0903 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 83
@@ -2123,7 +2123,7 @@ Packet 83
 	     TTL: 255
 	     LEN: 41
 	      ID: 27738
-	   CKSUM: 0x001f
+	   CKSUM: 0x001f (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 23 
@@ -2133,7 +2133,7 @@ Packet 83
 	     ACK: 0x3d9bf35f
 	     WIN: 8774
 	    HLEN: 20
-	   CKSUM: 0xe735
+	   CKSUM: 0xe735 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 84
@@ -2150,7 +2150,7 @@ Packet 84
 	     TTL: 60
 	     LEN: 41
 	      ID: 1344
-	   CKSUM: 0x6b35
+	   CKSUM: 0x6b35 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 513 
 	    DPRT: 1022 
@@ -2159,7 +2159,7 @@ Packet 84
 	     ACK: 0x021343dc
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x83cf
+	   CKSUM: 0x83cf (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 85
@@ -2176,7 +2176,7 @@ Packet 85
 	     TTL: 30
 	     LEN: 40
 	      ID: 58963
-	   CKSUM: 0xe272
+	   CKSUM: 0xe272 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 2065 
 	    DPRT: 23 
@@ -2185,7 +2185,7 @@ Packet 85
 	     ACK: 0x09832f23
 	     WIN: 2048
 	    HLEN: 20
-	   CKSUM: 0xc5ce
+	   CKSUM: 0xc5ce (CORRECT)
 	    DLEN: 0
 Packet 86
 	Packet Length: 60 (saved length 54)
@@ -2201,7 +2201,7 @@ Packet 86
 	     TTL: 30
 	     LEN: 40
 	      ID: 30020
-	   CKSUM: 0x1837
+	   CKSUM: 0x1837 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 26638 
 	    DPRT: 23 
@@ -2210,7 +2210,7 @@ Packet 86
 	     ACK: 0x44444a96
 	     WIN: 121
 	    HLEN: 20
-	   CKSUM: 0x780b
+	   CKSUM: 0x780b (CORRECT)
 	    DLEN: 0
 Packet 87
 	Packet Length: 60 (saved length 54)
@@ -2226,7 +2226,7 @@ Packet 87
 	     TTL: 30
 	     LEN: 41
 	      ID: 30021
-	   CKSUM: 0x1a73
+	   CKSUM: 0x1a73 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 11049 
 	    DPRT: 23 
@@ -2235,7 +2235,7 @@ Packet 87
 	     ACK: 0x737e6858
 	     WIN: 162
 	    HLEN: 20
-	   CKSUM: 0x4250
+	   CKSUM: 0x4250 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 88
@@ -2252,7 +2252,7 @@ Packet 88
 	     TTL: 60
 	     LEN: 41
 	      ID: 55473
-	   CKSUM: 0x9906
+	   CKSUM: 0x9906 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 11049 
@@ -2261,7 +2261,7 @@ Packet 88
 	     ACK: 0x3db4abf7
 	     WIN: 16384
 	    HLEN: 20
-	   CKSUM: 0x02f1
+	   CKSUM: 0x02f1 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 89
@@ -2278,7 +2278,7 @@ Packet 89
 	     TTL: 30
 	     LEN: 41
 	      ID: 30022
-	   CKSUM: 0x1b71
+	   CKSUM: 0x1b71 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 32301 
 	    DPRT: 23 
@@ -2287,7 +2287,7 @@ Packet 89
 	     ACK: 0x1a2e9495
 	     WIN: 145
 	    HLEN: 20
-	   CKSUM: 0xc852
+	   CKSUM: 0xc852 (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 90
@@ -2304,7 +2304,7 @@ Packet 90
 	     TTL: 60
 	     LEN: 41
 	      ID: 50923
-	   CKSUM: 0xa989
+	   CKSUM: 0xa989 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 1022 
 	    DPRT: 513 
@@ -2313,7 +2313,7 @@ Packet 90
 	     ACK: 0x2a48696c
 	     WIN: 16384
 	    HLEN: 20
-	   CKSUM: 0x74ce
+	   CKSUM: 0x74ce (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 91
@@ -2330,7 +2330,7 @@ Packet 91
 	     TTL: 60
 	     LEN: 41
 	      ID: 1345
-	   CKSUM: 0x6b34
+	   CKSUM: 0x6b34 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 513 
 	    DPRT: 1022 
@@ -2339,7 +2339,7 @@ Packet 91
 	     ACK: 0x021343dd
 	     WIN: 4095
 	    HLEN: 20
-	   CKSUM: 0x4ece
+	   CKSUM: 0x4ece (too short to verify)
 	    DLEN: 1 (none of it in dump file)
 	    data: 1 bytes
 Packet 92
@@ -2356,7 +2356,7 @@ Packet 92
 	     TTL: 30
 	     LEN: 40
 	      ID: 30023
-	   CKSUM: 0x1a72
+	   CKSUM: 0x1a72 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 11049 
 	    DPRT: 23 
@@ -2365,7 +2365,7 @@ Packet 92
 	     ACK: 0x737e6859
 	     WIN: 161
 	    HLEN: 20
-	   CKSUM: 0xb158
+	   CKSUM: 0xb158 (CORRECT)
 	    DLEN: 0
 Packet 93
 	Packet Length: 60 (saved length 54)
@@ -2381,7 +2381,7 @@ Packet 93
 	     TTL: 60
 	     LEN: 44
 	      ID: 1348
-	   CKSUM: 0x6d1d
+	   CKSUM: 0x6d1d (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3141 
 	    DPRT: 9100 
@@ -2390,7 +2390,7 @@ Packet 93
 	     ACK: 0x00000000
 	     WIN: 4096
 	    HLEN: 24 (only 20 bytes in dump file)
-	   CKSUM: 0xadce
+	   CKSUM: 0xadce (too short to verify)
 	    DLEN: 0
 	    OPTS: 4 bytes (none of it in dump file)	
 Packet 94
@@ -2407,7 +2407,7 @@ Packet 94
 	     TTL: 60
 	     LEN: 48
 	      ID: 1349
-	   CKSUM: 0x6d6b
+	   CKSUM: 0x6d6b (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 32301 
@@ -2416,7 +2416,7 @@ Packet 94
 	     ACK: 0x3d910137
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x0a8b
+	   CKSUM: 0x0a8b (too short to verify)
 	    DLEN: 8 (none of it in dump file)
 	    data: 8 bytes
 Packet 95
@@ -2433,7 +2433,7 @@ Packet 95
 	     TTL: 60
 	     LEN: 44
 	      ID: 1528
-	   CKSUM: 0x6c69
+	   CKSUM: 0x6c69 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 9100 
 	    DPRT: 3141 
@@ -2442,7 +2442,7 @@ Packet 95
 	     ACK: 0x301b6e01
 	     WIN: 8760
 	    HLEN: 24 (only 20 bytes in dump file)
-	   CKSUM: 0x7365
+	   CKSUM: 0x7365 (too short to verify)
 	    DLEN: 0
 	    OPTS: 4 bytes (none of it in dump file)	
 Packet 96
@@ -2459,7 +2459,7 @@ Packet 96
 	     TTL: 60
 	     LEN: 40
 	      ID: 1350
-	   CKSUM: 0x6d1f
+	   CKSUM: 0x6d1f (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3141 
 	    DPRT: 9100 
@@ -2468,7 +2468,7 @@ Packet 96
 	     ACK: 0x0003281e
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x9d5a
+	   CKSUM: 0x9d5a (CORRECT)
 	    DLEN: 0
 Packet 97
 	Packet Length: 381 (saved length 54)
@@ -2484,7 +2484,7 @@ Packet 97
 	     TTL: 241
 	     LEN: 367
 	      ID: 16286
-	   CKSUM: 0x4171
+	   CKSUM: 0x4171 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 2000 
@@ -2494,7 +2494,7 @@ Packet 97
 	     ACK: 0x704c23a5
 	     WIN: 9112
 	    HLEN: 20
-	   CKSUM: 0xf455
+	   CKSUM: 0xf455 (too short to verify)
 	    DLEN: 327 (none of it in dump file)
 	    data: 327 bytes
 Packet 98
@@ -2511,7 +2511,7 @@ Packet 98
 	     TTL: 60
 	     LEN: 82
 	      ID: 1351
-	   CKSUM: 0x6cf4
+	   CKSUM: 0x6cf4 (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 3141 
 	    DPRT: 9100 
@@ -2520,7 +2520,7 @@ Packet 98
 	     ACK: 0x0003281e
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x121b
+	   CKSUM: 0x121b (too short to verify)
 	    DLEN: 42 (none of it in dump file)
 	    data: 42 bytes
 Packet 99
@@ -2537,7 +2537,7 @@ Packet 99
 	     TTL: 60
 	     LEN: 122
 	      ID: 1352
-	   CKSUM: 0x6d1e
+	   CKSUM: 0x6d1e (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 22058 
@@ -2546,7 +2546,7 @@ Packet 99
 	     ACK: 0x3d457089
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x6e7e
+	   CKSUM: 0x6e7e (too short to verify)
 	    DLEN: 82 (none of it in dump file)
 	    data: 82 bytes
 Packet 100
@@ -2563,7 +2563,7 @@ Packet 100
 	     TTL: 60
 	     LEN: 122
 	      ID: 1353
-	   CKSUM: 0x6d1d
+	   CKSUM: 0x6d1d (CORRECT)
 	  OFFSET: 0x0000
 	TCP SPRT: 23 
 	    DPRT: 22058 
@@ -2572,11 +2572,13 @@ Packet 100
 	     ACK: 0x3d457089
 	     WIN: 4096
 	    HLEN: 20
-	   CKSUM: 0x3330
+	   CKSUM: 0x3330 (too short to verify)
 	    DLEN: 82 (none of it in dump file)
 	    data: 82 bytes
 100 packets seen, 100 TCP packets traced
 trace file elapsed time: 0:00:00.629282
+bad IP checksums:  0
+bad TCP checksums: 0
 TCP connection info:
 *** 4 packets were too short to process at some point
 	(use -w option to show details)

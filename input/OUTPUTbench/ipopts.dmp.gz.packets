@@ -14,7 +14,7 @@ Packet 1
 	     TTL: 255
 	     LEN: 124
 	      ID: 21572
-	   CKSUM: 0xf892
+	   CKSUM: 0xf892 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 	 Options: 40 bytes
 	    IP option 7 (copy:N  class:ctrl  number:7)
@@ -45,7 +45,7 @@ Packet 2
 	     TTL: 245
 	     LEN: 124
 	      ID: 10801
-	   CKSUM: 0x1a7b
+	   CKSUM: 0x1a7b (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 	 Options: 40 bytes
 	    IP option 7 (copy:N  class:ctrl  number:7)
@@ -76,7 +76,7 @@ Packet 3
 	     TTL: 255
 	     LEN: 124
 	      ID: 21573
-	   CKSUM: 0xf891
+	   CKSUM: 0xf891 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 	 Options: 40 bytes
 	    IP option 7 (copy:N  class:ctrl  number:7)
@@ -107,7 +107,7 @@ Packet 4
 	     TTL: 245
 	     LEN: 124
 	      ID: 10802
-	   CKSUM: 0x2a7a
+	   CKSUM: 0x2a7a (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 	 Options: 40 bytes
 	    IP option 7 (copy:N  class:ctrl  number:7)
@@ -138,7 +138,7 @@ Packet 5
 	     TTL: 255
 	     LEN: 124
 	      ID: 21574
-	   CKSUM: 0xf890
+	   CKSUM: 0xf890 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 	 Options: 40 bytes
 	    IP option 7 (copy:N  class:ctrl  number:7)
@@ -169,7 +169,7 @@ Packet 6
 	     TTL: 245
 	     LEN: 124
 	      ID: 10803
-	   CKSUM: 0x1a79
+	   CKSUM: 0x1a79 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 	 Options: 40 bytes
 	    IP option 7 (copy:N  class:ctrl  number:7)
@@ -200,7 +200,7 @@ Packet 7
 	     TTL: 255
 	     LEN: 124
 	      ID: 21575
-	   CKSUM: 0xf88f
+	   CKSUM: 0xf88f (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 	 Options: 40 bytes
 	    IP option 7 (copy:N  class:ctrl  number:7)
@@ -231,7 +231,7 @@ Packet 8
 	     TTL: 245
 	     LEN: 124
 	      ID: 10804
-	   CKSUM: 0x2a78
+	   CKSUM: 0x2a78 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 	 Options: 40 bytes
 	    IP option 7 (copy:N  class:ctrl  number:7)
@@ -250,4 +250,6 @@ Packet 8
 
 8 packets seen, 0 TCP packets traced
 trace file elapsed time: 0:00:03.065961
+bad IP checksums:  0
+bad TCP checksums: 0
 no traced TCP packets

@@ -21,7 +21,7 @@ Packet 1
 	     ACK: 0x00000000
 	     WIN: 8640
 	    HLEN: 24
-	   CKSUM: 0x4a00
+	   CKSUM: 0x4a00 (CORRECT)
 	    DLEN: 0
 	    OPTS: 4 bytes	 MSS(1440)
 Packet 2
@@ -45,7 +45,7 @@ Packet 2
 	     ACK: 0x8a0e0946
 	     WIN: 8640
 	    HLEN: 24
-	   CKSUM: 0x7bf7
+	   CKSUM: 0x7bf7 (CORRECT)
 	    DLEN: 0
 	    OPTS: 4 bytes	 MSS(1440)
 Packet 3
@@ -69,7 +69,7 @@ Packet 3
 	     ACK: 0x8e963f62
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x93a0
+	   CKSUM: 0x93a0 (CORRECT)
 	    DLEN: 0
 Packet 4
 	Packet Length: 86
@@ -120,7 +120,7 @@ Packet 6
 	     ACK: 0x8a0e0946
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x11dc
+	   CKSUM: 0x11dc (CORRECT)
 	    DLEN: 62
 	    data: 62 bytes
 Packet 7
@@ -144,7 +144,7 @@ Packet 7
 	     ACK: 0x8e963fa0
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xeaba
+	   CKSUM: 0xeaba (CORRECT)
 	    DLEN: 11
 	    data: 11 bytes
 Packet 8
@@ -168,7 +168,7 @@ Packet 8
 	     ACK: 0x8a0e0951
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xbcde
+	   CKSUM: 0xbcde (CORRECT)
 	    DLEN: 33
 	    data: 33 bytes
 Packet 9
@@ -192,7 +192,7 @@ Packet 9
 	     ACK: 0x8e963fc1
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x9336
+	   CKSUM: 0x9336 (CORRECT)
 	    DLEN: 0
 Packet 10
 	Packet Length: 91
@@ -215,7 +215,7 @@ Packet 10
 	     ACK: 0x8e963fc1
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x13c2
+	   CKSUM: 0x13c2 (CORRECT)
 	    DLEN: 17
 	    data: 17 bytes
 Packet 11
@@ -239,7 +239,7 @@ Packet 11
 	     ACK: 0x8a0e0962
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x9325
+	   CKSUM: 0x9325 (CORRECT)
 	    DLEN: 0
 Packet 12
 	Packet Length: 100
@@ -262,7 +262,7 @@ Packet 12
 	     ACK: 0x8a0e0962
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x9ceb
+	   CKSUM: 0x9ceb (CORRECT)
 	    DLEN: 26
 	    data: 26 bytes
 Packet 13
@@ -286,7 +286,7 @@ Packet 13
 	     ACK: 0x8e963fdb
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x930b
+	   CKSUM: 0x930b (CORRECT)
 	    DLEN: 0
 Packet 14
 	Packet Length: 82
@@ -309,7 +309,7 @@ Packet 14
 	     ACK: 0x8e963fdb
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xc109
+	   CKSUM: 0xc109 (CORRECT)
 	    DLEN: 8
 	    data: 8 bytes
 Packet 15
@@ -333,7 +333,7 @@ Packet 15
 	     ACK: 0x8a0e096a
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x0004
+	   CKSUM: 0x0004 (CORRECT)
 	    DLEN: 20
 	    data: 20 bytes
 Packet 16
@@ -357,7 +357,7 @@ Packet 16
 	     ACK: 0x8e963fef
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x92ef
+	   CKSUM: 0x92ef (CORRECT)
 	    DLEN: 0
 Packet 17
 	Packet Length: 55
@@ -373,7 +373,7 @@ Packet 17
 	     TTL: 255
 	     LEN: 41
 	      ID: 37181
-	   CKSUM: 0x7aa9
+	   CKSUM: 0x7aa9 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -383,7 +383,7 @@ Packet 17
 	     ACK: 0xea9f797d
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x345a
+	   CKSUM: 0x345a (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 18
@@ -400,7 +400,7 @@ Packet 18
 	     TTL: 252
 	     LEN: 41
 	      ID: 4075
-	   CKSUM: 0xfefb
+	   CKSUM: 0xfefb (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -410,7 +410,7 @@ Packet 18
 	     ACK: 0x6607b42d
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x3459
+	   CKSUM: 0x3459 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 19
@@ -427,7 +427,7 @@ Packet 19
 	     TTL: 255
 	     LEN: 40
 	      ID: 37182
-	   CKSUM: 0x7aa9
+	   CKSUM: 0x7aa9 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -437,7 +437,7 @@ Packet 19
 	     ACK: 0xea9f797e
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x9961
+	   CKSUM: 0x9961 (CORRECT)
 	    DLEN: 0
 Packet 20
 	Packet Length: 55
@@ -453,7 +453,7 @@ Packet 20
 	     TTL: 255
 	     LEN: 41
 	      ID: 37183
-	   CKSUM: 0x7aa7
+	   CKSUM: 0x7aa7 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -463,7 +463,7 @@ Packet 20
 	     ACK: 0xea9f797e
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x2158
+	   CKSUM: 0x2158 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 21
@@ -480,7 +480,7 @@ Packet 21
 	     TTL: 252
 	     LEN: 41
 	      ID: 4076
-	   CKSUM: 0xfefa
+	   CKSUM: 0xfefa (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -490,7 +490,7 @@ Packet 21
 	     ACK: 0x6607b42e
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x2157
+	   CKSUM: 0x2157 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 22
@@ -507,7 +507,7 @@ Packet 22
 	     TTL: 255
 	     LEN: 40
 	      ID: 37184
-	   CKSUM: 0x7aa7
+	   CKSUM: 0x7aa7 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -517,7 +517,7 @@ Packet 22
 	     ACK: 0xea9f797f
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x995f
+	   CKSUM: 0x995f (CORRECT)
 	    DLEN: 0
 Packet 23
 	Packet Length: 55
@@ -533,7 +533,7 @@ Packet 23
 	     TTL: 255
 	     LEN: 41
 	      ID: 37185
-	   CKSUM: 0x7aa5
+	   CKSUM: 0x7aa5 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -543,7 +543,7 @@ Packet 23
 	     ACK: 0xea9f797f
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x3056
+	   CKSUM: 0x3056 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 24
@@ -560,7 +560,7 @@ Packet 24
 	     TTL: 252
 	     LEN: 41
 	      ID: 4077
-	   CKSUM: 0xfef9
+	   CKSUM: 0xfef9 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -570,7 +570,7 @@ Packet 24
 	     ACK: 0x6607b42f
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x3055
+	   CKSUM: 0x3055 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 25
@@ -587,7 +587,7 @@ Packet 25
 	     TTL: 255
 	     LEN: 40
 	      ID: 37186
-	   CKSUM: 0x7aa5
+	   CKSUM: 0x7aa5 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -597,7 +597,7 @@ Packet 25
 	     ACK: 0xea9f7980
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x995d
+	   CKSUM: 0x995d (CORRECT)
 	    DLEN: 0
 Packet 26
 	Packet Length: 55
@@ -613,7 +613,7 @@ Packet 26
 	     TTL: 255
 	     LEN: 41
 	      ID: 37187
-	   CKSUM: 0x7aa3
+	   CKSUM: 0x7aa3 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -623,7 +623,7 @@ Packet 26
 	     ACK: 0xea9f7980
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x2554
+	   CKSUM: 0x2554 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 27
@@ -640,7 +640,7 @@ Packet 27
 	     TTL: 252
 	     LEN: 41
 	      ID: 4078
-	   CKSUM: 0xfef8
+	   CKSUM: 0xfef8 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -650,7 +650,7 @@ Packet 27
 	     ACK: 0x6607b430
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x2553
+	   CKSUM: 0x2553 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 28
@@ -667,7 +667,7 @@ Packet 28
 	     TTL: 255
 	     LEN: 40
 	      ID: 37188
-	   CKSUM: 0x7aa3
+	   CKSUM: 0x7aa3 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -677,7 +677,7 @@ Packet 28
 	     ACK: 0xea9f7981
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x995b
+	   CKSUM: 0x995b (CORRECT)
 	    DLEN: 0
 Packet 29
 	Packet Length: 55
@@ -693,7 +693,7 @@ Packet 29
 	     TTL: 255
 	     LEN: 41
 	      ID: 37189
-	   CKSUM: 0x7aa1
+	   CKSUM: 0x7aa1 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -703,7 +703,7 @@ Packet 29
 	     ACK: 0xea9f7981
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x8c52
+	   CKSUM: 0x8c52 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 30
@@ -720,7 +720,7 @@ Packet 30
 	     TTL: 252
 	     LEN: 42
 	      ID: 4079
-	   CKSUM: 0xfef6
+	   CKSUM: 0xfef6 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -730,7 +730,7 @@ Packet 30
 	     ACK: 0x6607b431
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x8c46
+	   CKSUM: 0x8c46 (CORRECT)
 	    DLEN: 2
 	    data: 2 bytes
 Packet 31
@@ -747,7 +747,7 @@ Packet 31
 	     TTL: 255
 	     LEN: 40
 	      ID: 37190
-	   CKSUM: 0x7aa1
+	   CKSUM: 0x7aa1 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -757,7 +757,7 @@ Packet 31
 	     ACK: 0xea9f7983
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x9958
+	   CKSUM: 0x9958 (CORRECT)
 	    DLEN: 0
 Packet 32
 	Packet Length: 63
@@ -773,7 +773,7 @@ Packet 32
 	     TTL: 252
 	     LEN: 49
 	      ID: 4080
-	   CKSUM: 0xfeee
+	   CKSUM: 0xfeee (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -783,7 +783,7 @@ Packet 32
 	     ACK: 0x6607b431
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0xd4c7
+	   CKSUM: 0xd4c7 (CORRECT)
 	    DLEN: 9
 	    data: 9 bytes
 Packet 33
@@ -800,7 +800,7 @@ Packet 33
 	     TTL: 255
 	     LEN: 40
 	      ID: 37191
-	   CKSUM: 0x7aa0
+	   CKSUM: 0x7aa0 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -810,7 +810,7 @@ Packet 33
 	     ACK: 0xea9f798c
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x994f
+	   CKSUM: 0x994f (CORRECT)
 	    DLEN: 0
 Packet 34
 	Packet Length: 60
@@ -826,7 +826,7 @@ Packet 34
 	     TTL: 252
 	     LEN: 42
 	      ID: 4081
-	   CKSUM: 0xfef4
+	   CKSUM: 0xfef4 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -836,7 +836,7 @@ Packet 34
 	     ACK: 0x6607b431
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x7525
+	   CKSUM: 0x7525 (CORRECT)
 	    DLEN: 2
 	    data: 2 bytes
 Packet 35
@@ -853,7 +853,7 @@ Packet 35
 	     TTL: 255
 	     LEN: 40
 	      ID: 37192
-	   CKSUM: 0x7a9f
+	   CKSUM: 0x7a9f (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -863,7 +863,7 @@ Packet 35
 	     ACK: 0xea9f798e
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x994d
+	   CKSUM: 0x994d (CORRECT)
 	    DLEN: 0
 Packet 36
 	Packet Length: 55
@@ -879,7 +879,7 @@ Packet 36
 	     TTL: 255
 	     LEN: 41
 	      ID: 37193
-	   CKSUM: 0x7a9d
+	   CKSUM: 0x7a9d (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -889,7 +889,7 @@ Packet 36
 	     ACK: 0xea9f798e
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x3444
+	   CKSUM: 0x3444 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 37
@@ -906,7 +906,7 @@ Packet 37
 	     TTL: 255
 	     LEN: 41
 	      ID: 37194
-	   CKSUM: 0x7a9c
+	   CKSUM: 0x7a9c (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -916,7 +916,7 @@ Packet 37
 	     ACK: 0xea9f798e
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x3444
+	   CKSUM: 0x3444 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 38
@@ -933,7 +933,7 @@ Packet 38
 	     TTL: 255
 	     LEN: 41
 	      ID: 37195
-	   CKSUM: 0x7a9b
+	   CKSUM: 0x7a9b (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -943,7 +943,7 @@ Packet 38
 	     ACK: 0xea9f798e
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x344c
+	   CKSUM: 0x344c (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 39
@@ -960,7 +960,7 @@ Packet 39
 	     TTL: 252
 	     LEN: 41
 	      ID: 4086
-	   CKSUM: 0xfef0
+	   CKSUM: 0xfef0 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -970,7 +970,7 @@ Packet 39
 	     ACK: 0x6607b432
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x3443
+	   CKSUM: 0x3443 (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 40
@@ -987,7 +987,7 @@ Packet 40
 	     TTL: 255
 	     LEN: 43
 	      ID: 37196
-	   CKSUM: 0x7a98
+	   CKSUM: 0x7a98 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -997,7 +997,7 @@ Packet 40
 	     ACK: 0xea9f798f
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0xacd6
+	   CKSUM: 0xacd6 (CORRECT)
 	    DLEN: 3
 	    data: 3 bytes
 Packet 41
@@ -1014,7 +1014,7 @@ Packet 41
 	     TTL: 252
 	     LEN: 43
 	      ID: 4087
-	   CKSUM: 0xfeed
+	   CKSUM: 0xfeed (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -1024,7 +1024,7 @@ Packet 41
 	     ACK: 0x6607b435
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0xacd3
+	   CKSUM: 0xacd3 (CORRECT)
 	    DLEN: 3
 	    data: 3 bytes
 Packet 42
@@ -1041,7 +1041,7 @@ Packet 42
 	     TTL: 255
 	     LEN: 41
 	      ID: 37197
-	   CKSUM: 0x7a99
+	   CKSUM: 0x7a99 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -1051,7 +1051,7 @@ Packet 42
 	     ACK: 0xea9f7992
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x8c3c
+	   CKSUM: 0x8c3c (CORRECT)
 	    DLEN: 1
 	    data: 1 bytes
 Packet 43
@@ -1068,7 +1068,7 @@ Packet 43
 	     TTL: 252
 	     LEN: 42
 	      ID: 4088
-	   CKSUM: 0xfeed
+	   CKSUM: 0xfeed (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -1078,7 +1078,7 @@ Packet 43
 	     ACK: 0x6607b436
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x8c30
+	   CKSUM: 0x8c30 (CORRECT)
 	    DLEN: 2
 	    data: 2 bytes
 Packet 44
@@ -1095,7 +1095,7 @@ Packet 44
 	     TTL: 255
 	     LEN: 40
 	      ID: 37198
-	   CKSUM: 0x7a99
+	   CKSUM: 0x7a99 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -1105,7 +1105,7 @@ Packet 44
 	     ACK: 0xea9f7994
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x9942
+	   CKSUM: 0x9942 (CORRECT)
 	    DLEN: 0
 Packet 45
 	Packet Length: 60
@@ -1121,7 +1121,7 @@ Packet 45
 	     TTL: 252
 	     LEN: 40
 	      ID: 4089
-	   CKSUM: 0xfeee
+	   CKSUM: 0xfeee (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -1131,7 +1131,7 @@ Packet 45
 	     ACK: 0x6607b436
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x9941
+	   CKSUM: 0x9941 (CORRECT)
 	    DLEN: 0
 Packet 46
 	Packet Length: 54
@@ -1147,7 +1147,7 @@ Packet 46
 	     TTL: 255
 	     LEN: 40
 	      ID: 37199
-	   CKSUM: 0x7a98
+	   CKSUM: 0x7a98 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -1157,7 +1157,7 @@ Packet 46
 	     ACK: 0xea9f7995
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x9941
+	   CKSUM: 0x9941 (CORRECT)
 	    DLEN: 0
 Packet 47
 	Packet Length: 54
@@ -1173,7 +1173,7 @@ Packet 47
 	     TTL: 255
 	     LEN: 40
 	      ID: 37200
-	   CKSUM: 0x7a97
+	   CKSUM: 0x7a97 (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 1023 
@@ -1183,7 +1183,7 @@ Packet 47
 	     ACK: 0xea9f7995
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x9940
+	   CKSUM: 0x9940 (CORRECT)
 	    DLEN: 0
 Packet 48
 	Packet Length: 60
@@ -1199,7 +1199,7 @@ Packet 48
 	     TTL: 252
 	     LEN: 40
 	      ID: 4090
-	   CKSUM: 0xfeed
+	   CKSUM: 0xfeed (CORRECT)
 	  OFFSET: 0x4000  Don't Fragment
 
 	TCP SPRT: 513 
@@ -1209,7 +1209,7 @@ Packet 48
 	     ACK: 0x6607b437
 	     WIN: 8760
 	    HLEN: 20
-	   CKSUM: 0x9940
+	   CKSUM: 0x9940 (CORRECT)
 	    DLEN: 0
 Packet 49
 	Packet Length: 139
@@ -1232,7 +1232,7 @@ Packet 49
 	     ACK: 0x8e963fef
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x2f94
+	   CKSUM: 0x2f94 (CORRECT)
 	    DLEN: 65
 	    data: 65 bytes
 Packet 50
@@ -1256,7 +1256,7 @@ Packet 50
 	     ACK: 0x8a0e09ab
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xd99f
+	   CKSUM: 0xd99f (CORRECT)
 	    DLEN: 30
 	    data: 30 bytes
 Packet 51
@@ -1280,7 +1280,7 @@ Packet 51
 	     ACK: 0x8e96400d
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x0d22
+	   CKSUM: 0x0d22 (CORRECT)
 	    DLEN: 16
 	    data: 16 bytes
 Packet 52
@@ -1304,7 +1304,7 @@ Packet 52
 	     ACK: 0x00000000
 	     WIN: 25920
 	    HLEN: 24
-	   CKSUM: 0x981f
+	   CKSUM: 0x981f (CORRECT)
 	    DLEN: 0
 	    OPTS: 4 bytes	 MSS(1440)
 Packet 53
@@ -1328,7 +1328,7 @@ Packet 53
 	     ACK: 0x8f39727b
 	     WIN: 8640
 	    HLEN: 24
-	   CKSUM: 0x4c9b
+	   CKSUM: 0x4c9b (CORRECT)
 	    DLEN: 0
 	    OPTS: 4 bytes	 MSS(1440)
 Packet 54
@@ -1352,7 +1352,7 @@ Packet 54
 	     ACK: 0x8ab20442
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x20c4
+	   CKSUM: 0x20c4 (CORRECT)
 	    DLEN: 0
 Packet 55
 	Packet Length: 152
@@ -1375,7 +1375,7 @@ Packet 55
 	     ACK: 0x8a0e09bb
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x1e85
+	   CKSUM: 0x1e85 (CORRECT)
 	    DLEN: 78
 	    data: 78 bytes
 Packet 56
@@ -1399,7 +1399,7 @@ Packet 56
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x643a
+	   CKSUM: 0x643a (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 57
@@ -1423,7 +1423,7 @@ Packet 57
 	     ACK: 0x8ab209e2
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x1b24
+	   CKSUM: 0x1b24 (CORRECT)
 	    DLEN: 0
 Packet 58
 	Packet Length: 1514
@@ -1446,7 +1446,7 @@ Packet 58
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x7620
+	   CKSUM: 0x7620 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 59
@@ -1470,7 +1470,7 @@ Packet 59
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x9e71
+	   CKSUM: 0x9e71 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 60
@@ -1494,7 +1494,7 @@ Packet 60
 	     ACK: 0x8ab21522
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x0fe4
+	   CKSUM: 0x0fe4 (CORRECT)
 	    DLEN: 0
 Packet 61
 	Packet Length: 1514
@@ -1517,7 +1517,7 @@ Packet 61
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x5872
+	   CKSUM: 0x5872 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 62
@@ -1541,7 +1541,7 @@ Packet 62
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xe8fb
+	   CKSUM: 0xe8fb (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 63
@@ -1565,7 +1565,7 @@ Packet 63
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xc084
+	   CKSUM: 0xc084 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 64
@@ -1589,7 +1589,7 @@ Packet 64
 	     ACK: 0x8e96405b
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x9232
+	   CKSUM: 0x9232 (CORRECT)
 	    DLEN: 0
 Packet 65
 	Packet Length: 74
@@ -1612,7 +1612,7 @@ Packet 65
 	     ACK: 0x8ab22442
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x00c4
+	   CKSUM: 0x00c4 (CORRECT)
 	    DLEN: 0
 Packet 66
 	Packet Length: 1514
@@ -1635,7 +1635,7 @@ Packet 66
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x93be
+	   CKSUM: 0x93be (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 67
@@ -1659,7 +1659,7 @@ Packet 67
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x0970
+	   CKSUM: 0x0970 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 68
@@ -1683,7 +1683,7 @@ Packet 68
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa659
+	   CKSUM: 0xa659 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 69
@@ -1707,7 +1707,7 @@ Packet 69
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x894d
+	   CKSUM: 0x894d (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 70
@@ -1731,7 +1731,7 @@ Packet 70
 	     ACK: 0x8ab229e2
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xfb23
+	   CKSUM: 0xfb23 (CORRECT)
 	    DLEN: 0
 Packet 71
 	Packet Length: 74
@@ -1754,7 +1754,7 @@ Packet 71
 	     ACK: 0x8ab23522
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xefe3
+	   CKSUM: 0xefe3 (CORRECT)
 	    DLEN: 0
 Packet 72
 	Packet Length: 1514
@@ -1777,7 +1777,7 @@ Packet 72
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x5ab2
+	   CKSUM: 0x5ab2 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 73
@@ -1801,7 +1801,7 @@ Packet 73
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x7755
+	   CKSUM: 0x7755 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 74
@@ -1825,7 +1825,7 @@ Packet 74
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x3b9f
+	   CKSUM: 0x3b9f (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 75
@@ -1849,7 +1849,7 @@ Packet 75
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xbab8
+	   CKSUM: 0xbab8 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 76
@@ -1873,7 +1873,7 @@ Packet 76
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x52a5
+	   CKSUM: 0x52a5 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 77
@@ -1897,7 +1897,7 @@ Packet 77
 	     ACK: 0x8ab249e2
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xdb23
+	   CKSUM: 0xdb23 (CORRECT)
 	    DLEN: 0
 Packet 78
 	Packet Length: 1514
@@ -1920,7 +1920,7 @@ Packet 78
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xab06
+	   CKSUM: 0xab06 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 79
@@ -1944,7 +1944,7 @@ Packet 79
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x07e0
+	   CKSUM: 0x07e0 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 80
@@ -1968,7 +1968,7 @@ Packet 80
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xd6a8
+	   CKSUM: 0xd6a8 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 81
@@ -1992,7 +1992,7 @@ Packet 81
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x72b6
+	   CKSUM: 0x72b6 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 82
@@ -2016,7 +2016,7 @@ Packet 82
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xb0cd
+	   CKSUM: 0xb0cd (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 83
@@ -2040,7 +2040,7 @@ Packet 83
 	     ACK: 0x8ab26062
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xc4a3
+	   CKSUM: 0xc4a3 (CORRECT)
 	    DLEN: 0
 Packet 84
 	Packet Length: 1514
@@ -2063,7 +2063,7 @@ Packet 84
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa520
+	   CKSUM: 0xa520 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 85
@@ -2087,7 +2087,7 @@ Packet 85
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x9b1e
+	   CKSUM: 0x9b1e (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 86
@@ -2111,7 +2111,7 @@ Packet 86
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x87a8
+	   CKSUM: 0x87a8 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 87
@@ -2135,7 +2135,7 @@ Packet 87
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x46a0
+	   CKSUM: 0x46a0 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 88
@@ -2159,7 +2159,7 @@ Packet 88
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x97ce
+	   CKSUM: 0x97ce (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 89
@@ -2183,7 +2183,7 @@ Packet 89
 	     ACK: 0x8ab28062
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa4a3
+	   CKSUM: 0xa4a3 (CORRECT)
 	    DLEN: 0
 Packet 90
 	Packet Length: 1514
@@ -2206,7 +2206,7 @@ Packet 90
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa771
+	   CKSUM: 0xa771 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 91
@@ -2230,7 +2230,7 @@ Packet 91
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x202b
+	   CKSUM: 0x202b (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 92
@@ -2254,7 +2254,7 @@ Packet 92
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa979
+	   CKSUM: 0xa979 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 93
@@ -2278,7 +2278,7 @@ Packet 93
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x742a
+	   CKSUM: 0x742a (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 94
@@ -2302,7 +2302,7 @@ Packet 94
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xff0d
+	   CKSUM: 0xff0d (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 95
@@ -2326,7 +2326,7 @@ Packet 95
 	     ACK: 0x8ab2a442
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x80c3
+	   CKSUM: 0x80c3 (CORRECT)
 	    DLEN: 0
 Packet 96
 	Packet Length: 1514
@@ -2349,7 +2349,7 @@ Packet 96
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xba15
+	   CKSUM: 0xba15 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 97
@@ -2373,7 +2373,7 @@ Packet 97
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xbbb4
+	   CKSUM: 0xbbb4 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 98
@@ -2397,7 +2397,7 @@ Packet 98
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x5b6d
+	   CKSUM: 0x5b6d (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 99
@@ -2421,7 +2421,7 @@ Packet 99
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xf8fd
+	   CKSUM: 0xf8fd (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 100
@@ -2445,11 +2445,13 @@ Packet 100
 	     ACK: 0x8f39727b
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x021e
+	   CKSUM: 0x021e (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 100 packets seen, 98 TCP packets traced
 trace file elapsed time: 0:01:24.825100
+bad IP checksums:  0
+bad TCP checksums: 0
 TCP connection info:
   1: fe80::0002:0a00:20ff:fe22:e80f:33793 - fe80::0001:0a00:20ff:fe22:ddb7:21 (a2b)   11>    8<
   2: 198.119.6.39:1023 - 128.183.34.146:513 (c2d)                                     20>   12<

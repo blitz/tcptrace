@@ -21,7 +21,7 @@ Packet 1
 	     ACK: 0x00000000
 	     WIN: 8640
 	    HLEN: 24
-	   CKSUM: 0xd232
+	   CKSUM: 0xd232 (CORRECT)
 	    DLEN: 0
 	    OPTS: 4 bytes	 MSS(1440)
 Packet 2
@@ -45,7 +45,7 @@ Packet 2
 	     ACK: 0x0a8c379d
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xa7a2
+	   CKSUM: 0xa7a2 (CORRECT)
 	    DLEN: 0
 Packet 3
 	Packet Length: 74
@@ -68,7 +68,7 @@ Packet 3
 	     ACK: 0x0a8c37db
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xa764
+	   CKSUM: 0xa764 (CORRECT)
 	    DLEN: 0
 Packet 4
 	Packet Length: 85
@@ -91,7 +91,7 @@ Packet 4
 	     ACK: 0x0a8c37db
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xfebc
+	   CKSUM: 0xfebc (CORRECT)
 	    DLEN: 11
 	    data: 11 bytes
 Packet 5
@@ -115,7 +115,7 @@ Packet 5
 	     ACK: 0x0a8c37fc
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xa738
+	   CKSUM: 0xa738 (CORRECT)
 	    DLEN: 0
 Packet 6
 	Packet Length: 89
@@ -138,7 +138,7 @@ Packet 6
 	     ACK: 0x0a8c37fc
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x433e
+	   CKSUM: 0x433e (CORRECT)
 	    DLEN: 15
 	    data: 15 bytes
 Packet 7
@@ -162,7 +162,7 @@ Packet 7
 	     ACK: 0x0a8c3816
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xa70f
+	   CKSUM: 0xa70f (CORRECT)
 	    DLEN: 0
 Packet 8
 	Packet Length: 82
@@ -185,7 +185,7 @@ Packet 8
 	     ACK: 0x0a8c3816
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xd50d
+	   CKSUM: 0xd50d (CORRECT)
 	    DLEN: 8
 	    data: 8 bytes
 Packet 9
@@ -209,7 +209,7 @@ Packet 9
 	     ACK: 0x0a8c382a
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xa6f3
+	   CKSUM: 0xa6f3 (CORRECT)
 	    DLEN: 0
 Packet 10
 	Packet Length: 140
@@ -232,7 +232,7 @@ Packet 10
 	     ACK: 0x0a8c382a
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x396b
+	   CKSUM: 0x396b (CORRECT)
 	    DLEN: 66
 	    data: 66 bytes
 Packet 11
@@ -256,7 +256,7 @@ Packet 11
 	     ACK: 0x0a8c3848
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0x2125
+	   CKSUM: 0x2125 (CORRECT)
 	    DLEN: 16
 	    data: 16 bytes
 Packet 12
@@ -280,7 +280,7 @@ Packet 12
 	     ACK: 0x0ab92681
 	     WIN: 8640
 	    HLEN: 24
-	   CKSUM: 0x9cd0
+	   CKSUM: 0x9cd0 (CORRECT)
 	    DLEN: 0
 	    OPTS: 4 bytes	 MSS(1440)
 Packet 13
@@ -304,7 +304,7 @@ Packet 13
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa4d1
+	   CKSUM: 0xa4d1 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 14
@@ -328,7 +328,7 @@ Packet 14
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xdfc2
+	   CKSUM: 0xdfc2 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 15
@@ -352,7 +352,7 @@ Packet 15
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x31f6
+	   CKSUM: 0x31f6 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 16
@@ -376,7 +376,7 @@ Packet 16
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xf6ed
+	   CKSUM: 0xf6ed (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 17
@@ -400,7 +400,7 @@ Packet 17
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x5761
+	   CKSUM: 0x5761 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 18
@@ -424,7 +424,7 @@ Packet 18
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x7d26
+	   CKSUM: 0x7d26 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 19
@@ -448,7 +448,7 @@ Packet 19
 	     ACK: 0x0a8c3896
 	     WIN: 8640
 	    HLEN: 20
-	   CKSUM: 0xa635
+	   CKSUM: 0xa635 (CORRECT)
 	    DLEN: 0
 Packet 20
 	Packet Length: 1514
@@ -471,7 +471,7 @@ Packet 20
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xe1f4
+	   CKSUM: 0xe1f4 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 21
@@ -495,7 +495,7 @@ Packet 21
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x3611
+	   CKSUM: 0x3611 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 22
@@ -519,7 +519,7 @@ Packet 22
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x0315
+	   CKSUM: 0x0315 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 23
@@ -543,7 +543,7 @@ Packet 23
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xbac1
+	   CKSUM: 0xbac1 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 24
@@ -567,7 +567,7 @@ Packet 24
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xb842
+	   CKSUM: 0xb842 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 25
@@ -591,7 +591,7 @@ Packet 25
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xe219
+	   CKSUM: 0xe219 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 26
@@ -615,7 +615,7 @@ Packet 26
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x4faa
+	   CKSUM: 0x4faa (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 27
@@ -639,7 +639,7 @@ Packet 27
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x9db5
+	   CKSUM: 0x9db5 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 28
@@ -663,7 +663,7 @@ Packet 28
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x418f
+	   CKSUM: 0x418f (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 29
@@ -687,7 +687,7 @@ Packet 29
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xf7b8
+	   CKSUM: 0xf7b8 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 30
@@ -711,7 +711,7 @@ Packet 30
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x1d4e
+	   CKSUM: 0x1d4e (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 31
@@ -735,7 +735,7 @@ Packet 31
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x01cb
+	   CKSUM: 0x01cb (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 32
@@ -759,7 +759,7 @@ Packet 32
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xecd9
+	   CKSUM: 0xecd9 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 33
@@ -783,7 +783,7 @@ Packet 33
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x4842
+	   CKSUM: 0x4842 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 34
@@ -807,7 +807,7 @@ Packet 34
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xd2fb
+	   CKSUM: 0xd2fb (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 35
@@ -831,7 +831,7 @@ Packet 35
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xddc8
+	   CKSUM: 0xddc8 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 36
@@ -855,7 +855,7 @@ Packet 36
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x6716
+	   CKSUM: 0x6716 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 37
@@ -879,7 +879,7 @@ Packet 37
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x356b
+	   CKSUM: 0x356b (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 38
@@ -903,7 +903,7 @@ Packet 38
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x2987
+	   CKSUM: 0x2987 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 39
@@ -927,7 +927,7 @@ Packet 39
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x3eb5
+	   CKSUM: 0x3eb5 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 40
@@ -951,7 +951,7 @@ Packet 40
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x426a
+	   CKSUM: 0x426a (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 41
@@ -975,7 +975,7 @@ Packet 41
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xc42c
+	   CKSUM: 0xc42c (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 42
@@ -999,7 +999,7 @@ Packet 42
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa924
+	   CKSUM: 0xa924 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 43
@@ -1023,7 +1023,7 @@ Packet 43
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x4221
+	   CKSUM: 0x4221 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 44
@@ -1047,7 +1047,7 @@ Packet 44
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xecc4
+	   CKSUM: 0xecc4 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 45
@@ -1071,7 +1071,7 @@ Packet 45
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xbd6b
+	   CKSUM: 0xbd6b (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 46
@@ -1095,7 +1095,7 @@ Packet 46
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xaf55
+	   CKSUM: 0xaf55 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 47
@@ -1119,7 +1119,7 @@ Packet 47
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x1745
+	   CKSUM: 0x1745 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 48
@@ -1143,7 +1143,7 @@ Packet 48
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x703e
+	   CKSUM: 0x703e (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 49
@@ -1167,7 +1167,7 @@ Packet 49
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x6402
+	   CKSUM: 0x6402 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 50
@@ -1191,7 +1191,7 @@ Packet 50
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xcbbc
+	   CKSUM: 0xcbbc (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 51
@@ -1215,7 +1215,7 @@ Packet 51
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x1393
+	   CKSUM: 0x1393 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 52
@@ -1239,7 +1239,7 @@ Packet 52
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xb2e6
+	   CKSUM: 0xb2e6 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 53
@@ -1263,7 +1263,7 @@ Packet 53
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xed0a
+	   CKSUM: 0xed0a (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 54
@@ -1287,7 +1287,7 @@ Packet 54
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x000a
+	   CKSUM: 0x000a (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 55
@@ -1311,7 +1311,7 @@ Packet 55
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xca37
+	   CKSUM: 0xca37 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 56
@@ -1335,7 +1335,7 @@ Packet 56
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x2b38
+	   CKSUM: 0x2b38 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 57
@@ -1359,7 +1359,7 @@ Packet 57
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x6604
+	   CKSUM: 0x6604 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 58
@@ -1383,7 +1383,7 @@ Packet 58
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x2484
+	   CKSUM: 0x2484 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 59
@@ -1407,7 +1407,7 @@ Packet 59
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x66d8
+	   CKSUM: 0x66d8 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 60
@@ -1431,7 +1431,7 @@ Packet 60
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x867a
+	   CKSUM: 0x867a (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 61
@@ -1455,7 +1455,7 @@ Packet 61
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xf568
+	   CKSUM: 0xf568 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 62
@@ -1479,7 +1479,7 @@ Packet 62
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x446c
+	   CKSUM: 0x446c (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 63
@@ -1503,7 +1503,7 @@ Packet 63
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x7758
+	   CKSUM: 0x7758 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 64
@@ -1527,7 +1527,7 @@ Packet 64
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xfef9
+	   CKSUM: 0xfef9 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 65
@@ -1551,7 +1551,7 @@ Packet 65
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xaa4b
+	   CKSUM: 0xaa4b (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 66
@@ -1575,7 +1575,7 @@ Packet 66
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa285
+	   CKSUM: 0xa285 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 67
@@ -1599,7 +1599,7 @@ Packet 67
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x8a57
+	   CKSUM: 0x8a57 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 68
@@ -1623,7 +1623,7 @@ Packet 68
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa3d3
+	   CKSUM: 0xa3d3 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 69
@@ -1647,7 +1647,7 @@ Packet 69
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xc0b6
+	   CKSUM: 0xc0b6 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 70
@@ -1671,7 +1671,7 @@ Packet 70
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x9f63
+	   CKSUM: 0x9f63 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 71
@@ -1695,7 +1695,7 @@ Packet 71
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xc044
+	   CKSUM: 0xc044 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 72
@@ -1719,7 +1719,7 @@ Packet 72
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x0b7b
+	   CKSUM: 0x0b7b (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 73
@@ -1743,7 +1743,7 @@ Packet 73
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xacbe
+	   CKSUM: 0xacbe (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 74
@@ -1767,7 +1767,7 @@ Packet 74
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xafa7
+	   CKSUM: 0xafa7 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 75
@@ -1791,7 +1791,7 @@ Packet 75
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x69b2
+	   CKSUM: 0x69b2 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 76
@@ -1815,7 +1815,7 @@ Packet 76
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xf80e
+	   CKSUM: 0xf80e (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 77
@@ -1839,7 +1839,7 @@ Packet 77
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x6676
+	   CKSUM: 0x6676 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 78
@@ -1863,7 +1863,7 @@ Packet 78
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x3c6d
+	   CKSUM: 0x3c6d (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 79
@@ -1887,7 +1887,7 @@ Packet 79
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa39d
+	   CKSUM: 0xa39d (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 80
@@ -1911,7 +1911,7 @@ Packet 80
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x0456
+	   CKSUM: 0x0456 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 81
@@ -1935,7 +1935,7 @@ Packet 81
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x29c5
+	   CKSUM: 0x29c5 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 82
@@ -1959,7 +1959,7 @@ Packet 82
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x4b93
+	   CKSUM: 0x4b93 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 83
@@ -1983,7 +1983,7 @@ Packet 83
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xc472
+	   CKSUM: 0xc472 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 84
@@ -2007,7 +2007,7 @@ Packet 84
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x1148
+	   CKSUM: 0x1148 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 85
@@ -2031,7 +2031,7 @@ Packet 85
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xfcfd
+	   CKSUM: 0xfcfd (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 86
@@ -2055,7 +2055,7 @@ Packet 86
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xcae3
+	   CKSUM: 0xcae3 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 87
@@ -2079,7 +2079,7 @@ Packet 87
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x0fbb
+	   CKSUM: 0x0fbb (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 88
@@ -2103,7 +2103,7 @@ Packet 88
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x5f02
+	   CKSUM: 0x5f02 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 89
@@ -2127,7 +2127,7 @@ Packet 89
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xb0cb
+	   CKSUM: 0xb0cb (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 90
@@ -2151,7 +2151,7 @@ Packet 90
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xff05
+	   CKSUM: 0xff05 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 91
@@ -2175,7 +2175,7 @@ Packet 91
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa72a
+	   CKSUM: 0xa72a (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 92
@@ -2199,7 +2199,7 @@ Packet 92
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa2a3
+	   CKSUM: 0xa2a3 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 93
@@ -2223,7 +2223,7 @@ Packet 93
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xdafe
+	   CKSUM: 0xdafe (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 94
@@ -2247,7 +2247,7 @@ Packet 94
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x4617
+	   CKSUM: 0x4617 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 95
@@ -2271,7 +2271,7 @@ Packet 95
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x4dd5
+	   CKSUM: 0x4dd5 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 96
@@ -2295,7 +2295,7 @@ Packet 96
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x8637
+	   CKSUM: 0x8637 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 97
@@ -2319,7 +2319,7 @@ Packet 97
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xd798
+	   CKSUM: 0xd798 (CORRECT)
 	    DLEN: 992
 	    data: 992 bytes
 Packet 98
@@ -2343,7 +2343,7 @@ Packet 98
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0x7240
+	   CKSUM: 0x7240 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 99
@@ -2367,7 +2367,7 @@ Packet 99
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xa2d7
+	   CKSUM: 0xa2d7 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 Packet 100
@@ -2391,11 +2391,13 @@ Packet 100
 	     ACK: 0x0ab92681
 	     WIN: 25920
 	    HLEN: 20
-	   CKSUM: 0xb977
+	   CKSUM: 0xb977 (CORRECT)
 	    DLEN: 1440
 	    data: 1440 bytes
 100 packets seen, 100 TCP packets traced
 trace file elapsed time: 0:00:22.778442
+bad IP checksums:  0
+bad TCP checksums: 0
 TCP connection info:
   1: fe80::0002:0a00:20ff:fe22:e80f:32797 - fe80::0001:0a00:20ff:fe22:ddb7:21 (a2b)   12>    0<  (unidirectional)
   2: fe80::0002:0a00:20ff:fe22:e80f:32798 - fe80::0001:0a00:20ff:fe22:ddb7:20 (c2d)   88>    0<  (unidirectional)
