@@ -1,7 +1,7 @@
 1 arg remaining, starting with 'rawppp.pcap.gz'
 
 25 packets seen, 25 TCP packets traced
-trace file elapsed time: 0:00:06.002288
+trace file elapsed time: 0:00:06.002289
 TCP connection info:
 2 TCP connections traced:
 TCP connection 1:
@@ -10,7 +10,7 @@ TCP connection 1:
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Wed Jun 18 06:52:15.003386 2003
 	last packet:   Wed Jun 18 06:52:17.006419 2003
-	elapsed time:  0:00:02.003033
+	elapsed time:  0:00:02.003032
 	total packets: 5
 	filename:      rawppp.pcap.gz
    a->b:			      b->a:

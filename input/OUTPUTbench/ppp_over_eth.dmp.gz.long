@@ -1,7 +1,7 @@
 1 arg remaining, starting with 'ppp_over_eth.dmp.gz'
 
 10 packets seen, 10 TCP packets traced
-trace file elapsed time: 0:00:00.508968
+trace file elapsed time: 0:00:00.508969
 TCP connection info:
 1 TCP connection traced:
 TCP connection 1:
@@ -10,7 +10,7 @@ TCP connection 1:
 	complete conn: yes
 	first packet:  Mon Jul 14 05:53:06.705270 2003
 	last packet:   Mon Jul 14 05:53:07.214239 2003
-	elapsed time:  0:00:00.508968
+	elapsed time:  0:00:00.508969
 	total packets: 10
 	filename:      ppp_over_eth.dmp.gz
    a->b:			      b->a:

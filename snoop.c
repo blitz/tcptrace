@@ -345,6 +345,7 @@ pread_snoop(
 	} else {
 	    printf("snoop hardware type %d not understood\n",
 		   snoop_mac_type);
+	   
 	    exit(-1);
 	}
 
@@ -428,6 +429,7 @@ Tcptrace is only known to work with version 2\n",
 	if (debug)
 	    printf("Snoop hw type: %ld (unknown)\n", buf.mac_type);
 	printf("snoop hardware type %ld not understood\n", buf.mac_type);
+       
 	exit(-1);
     }
 

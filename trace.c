@@ -295,9 +295,9 @@ CopyAddr(
  */
 
 int
-WhichDir(
-    tcp_pair_addrblock *ptpa1,
-    tcp_pair_addrblock *ptpa2)
+AVL_CheckDir(
+	     tcp_pair_addrblock *ptpa1,
+	     tcp_pair_addrblock *ptpa2)
 {
    /* same as first packet */
    
@@ -402,10 +402,10 @@ WhichDir(
 
 
 int
-SameConn(
-    tcp_pair_addrblock *ptpa1,
-    tcp_pair_addrblock *ptpa2,
-    int      *pdir)
+AVL_CheckHash(
+	      tcp_pair_addrblock *ptpa1,
+	      tcp_pair_addrblock *ptpa2,
+	      int      *pdir)
 {
    /* Check if the hash value is lesser or greater than the other */
    if (ptpa1->hash < ptpa2->hash)
@@ -414,9 +414,68 @@ SameConn(
      return(HIGH);
    
    /* If hash is the same, check the position of node in the AVL tree */
-   *pdir = WhichDir(ptpa1,ptpa2);
+   *pdir = AVL_CheckDir(ptpa1,ptpa2);
    return(*pdir); 
 }
+
+int
+  WhichDir(
+	       tcp_pair_addrblock *ptpa1,
+	       tcp_pair_addrblock *ptpa2)
+{
+#ifdef BROKEN_COMPILER
+   /* sorry for the ugly nested 'if', but a 4-way conjunction broke my*/
+   /* Optimizer (under 'gcc version cygnus-2.0.2')*/
+   
+   /* same as first packet */
+   if (IP_SAMEADDR(ptpa1->a_address, ptpa2->a_address))
+     if (IP_SAMEADDR(ptpa1->b_address, ptpa2->b_address))
+       if ((ptpa1->a_port == ptpa2->a_port))
+	 if ((ptpa1->b_port == ptpa2->b_port))
+	   return(A2B);
+   
+   /* reverse of first packet */
+   if (IP_SAMEADDR(ptpa1->a_address, ptpa2->b_address))
+     if (IP_SAMEADDR(ptpa1->b_address, ptpa2->a_address))
+       if ((ptpa1->a_port == ptpa2->b_port))
+	 if ((ptpa1->b_port == ptpa2->a_port))
+	   return(B2A);
+#else /* BROKEN_COMPILER */
+   /* same as first packet */
+   if (IP_SAMEADDR(ptpa1->a_address, ptpa2->a_address) &&
+       IP_SAMEADDR(ptpa1->b_address, ptpa2->b_address) &&
+       (ptpa1->a_port == ptpa2->a_port) &&
+       (ptpa1->b_port == ptpa2->b_port))
+     return(A2B);
+   
+   /* reverse of first packet */
+   if (IP_SAMEADDR(ptpa1->a_address, ptpa2->b_address) &&
+       IP_SAMEADDR(ptpa1->b_address, ptpa2->a_address) &&
+       (ptpa1->a_port == ptpa2->b_port) &&
+       (ptpa1->b_port == ptpa2->a_port))
+     return(B2A);
+#endif /* BROKEN_COMPILER */
+   
+   /* different connection */
+   return(0);
+}
+
+int
+SameConn(
+	 tcp_pair_addrblock *ptpa1,
+	 tcp_pair_addrblock *ptpa2,
+	 int      *pdir)
+{
+   
+   /* if the hash values are different, they can't be the same */
+   if (ptpa1->hash != ptpa2->hash)
+     return(0);
+   
+   /* OK, they hash the same, are they REALLY the same function */
+   *pdir = WhichDir(ptpa1,ptpa2);
+   return(*pdir != 0);
+}
+
 
 
 static tcp_pair *
@@ -699,7 +758,7 @@ FindTTP(
        /* Check if connection already seen or traverse the AVL tree
 	* to see the connection node position */
        
-       conn_status = SameConn(&tp_in,&ptph->addr_pair,&dir); 
+       conn_status = AVL_CheckHash(&tp_in,&ptph->addr_pair,&dir); 
        
        if (conn_status == A2B || conn_status == B2A) {
 

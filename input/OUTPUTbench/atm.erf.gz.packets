@@ -362,7 +362,7 @@ Packet 13
 	    DLEN: 0
 	    OPTS: 12 bytes (none of it in dump file)	
 13 packets seen, 13 TCP packets traced
-trace file elapsed time: 0:00:01.191703
+trace file elapsed time: 0:00:01.191704
 bad IP checksums:  0
 bad TCP checksums: 0
 TCP connection info:

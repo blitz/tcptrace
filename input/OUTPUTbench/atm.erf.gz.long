@@ -1,7 +1,7 @@
 1 arg remaining, starting with 'atm.erf.gz'
 
 13 packets seen, 13 TCP packets traced
-trace file elapsed time: 0:00:01.191703
+trace file elapsed time: 0:00:01.191704
 TCP connection info:
 1 TCP connection traced:
 *** 13 packets were too short to process at some point
@@ -12,7 +12,7 @@ TCP connection 1:
 	complete conn: no	(SYNs: 1)  (FINs: 1)
 	first packet:  Tue Jun 12 14:00:04.558952 2001
 	last packet:   Tue Jun 12 14:00:05.750656 2001
-	elapsed time:  0:00:01.191703
+	elapsed time:  0:00:01.191704
 	total packets: 13
 	filename:      atm.erf.gz
    a->b:			      b->a:

@@ -269,7 +269,7 @@ Packet 10
 	    DLEN: 0
 	    OPTS: 12 bytes	 TS(1316588264,2155)
 10 packets seen, 10 TCP packets traced
-trace file elapsed time: 0:00:00.508968
+trace file elapsed time: 0:00:00.508969
 bad IP checksums:  0
 bad TCP checksums: 0
 TCP connection info:

@@ -666,7 +666,7 @@ Packet 25
 	    DLEN: 1460
 	    data: 1460 bytes
 25 packets seen, 25 TCP packets traced
-trace file elapsed time: 0:00:06.002288
+trace file elapsed time: 0:00:06.002289
 bad IP checksums:  0
 bad TCP checksums: 0
 TCP connection info:
