@@ -15,8 +15,8 @@
 /* local routines */
 static seg_rec *newseg();
 static void unlinkseg(seg_rec *);
-static void ack_in(tcb *, struct timeval, struct tcphdr *, struct ip *);
-static void seg_out(tcb *, struct timeval, struct tcphdr *, struct ip *);
+static void ack_in(tcb *, struct tcphdr *, struct ip *);
+static void seg_out(tcb *, struct tcphdr *, struct ip *);
 
 
 
@@ -57,7 +57,6 @@ unlinkseg(
 static void
 ack_in(
     tcb *ptcb,
-    struct timeval time,
     struct tcphdr *ptcp,
     struct ip *pip)
 {
@@ -81,7 +80,7 @@ ack_in(
 	    ++found;
 
 	    /* how long did it take */
-	    etime = elapsed(pseg->time,time);
+	    etime = elapsed(pseg->time,current_time);
 
 	    if (pseg->retrans == 0) {
 		if ((ptcb->rtt_min == 0) || (ptcb->rtt_min > etime))
@@ -124,86 +123,3 @@ ack_in(
 
 
 
-static void
-seg_out(
-    tcb *ptcb,
-    struct timeval time,
-    struct tcphdr *ptcp,
-    struct ip *pip)
-{
-    unsigned long etime;
-    u_long start;
-    u_long len;
-    seg_rec *pseg;
-    
-    /* find packet data */
-    start = ntohl(ptcp->th_seq);
-
-    /* calculate data length */
-    len = ntohs(pip->ip_len) - (4 * pip->ip_hl) - (4 * ptcp->th_off);
-
-    /* if it's a SYN or FIN, add one to length (for each) */
-    if (SYN_SET(ptcp)) ++len;
-    if (FIN_SET(ptcp)) ++len;
-
-    /* ignore zero-data segments (no SYN or FIN either) */
-    if (len == 0)
-	return;
-
-    /* see if it's already there */
-    pseg = ptcb->seglist_head.next;
-    while (pseg != &ptcb->seglist_tail) {
-	/* currently only works for 'exact matches' */
-	if (pseg->seq == start)
-	    break;
-	pseg = pseg->next;
-    }
-
-    if (pseg != &ptcb->seglist_tail) {
-	/* it's already there, must be retrans */
-	++pseg->retrans;
-
-	etime = elapsed(pseg->time,time);
-	if (pseg->retrans > ptcb->retr_max)
-	    ptcb->retr_max = pseg->retrans;
-
-	if (etime > ptcb->retr_max_tm)
-	    ptcb->retr_max_tm = etime;
-	if ((ptcb->retr_min_tm == 0) || (etime < ptcb->retr_min_tm))
-	    ptcb->retr_min_tm = etime;
-
-	ptcb->retr_tm_sum += etime;
-	ptcb->retr_tm_sum2 += (double)etime*(double)etime;
-	++ptcb->retr_tm_count;
-
-	pseg->time = time;
-    } else {
-	/* not found, put at end */
-
-	/* fill in fields in new seg entry */
-	pseg = newseg();
-	pseg->seq = start;
-	pseg->ackedby = start + len;
-	pseg->time = time;
-
-	/* put at the end of the list */
-	pseg->prev = ptcb->seglist_tail.prev;
-	pseg->next = &ptcb->seglist_tail;
-	ptcb->seglist_tail.prev->next = pseg;
-	ptcb->seglist_tail.prev = pseg;
-    }
-}
-
-
-
-
-void
-calc_rtt(
-    tcb *ptcb,
-    struct timeval time,
-    struct tcphdr *ptcp,
-    struct ip *pip)
-{
-    seg_out(ptcb,time,ptcp,pip);
-    ack_in(ptcb->ptwin,time,ptcp,pip);
-}
