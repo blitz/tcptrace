@@ -5,7 +5,7 @@
 typedef u_short	tcelen;		/* length of a cached entry		*/
 typedef u_short	tceix;		/* index of a cached entry		*/
 typedef u_int	thval;		/* type of the hashed value of a key	*/
-typedef u_int	ttstamp;	/* type of a timestamp			*/
+typedef time_t	ttstamp;	/* type of a timestamp			*/
 
 
 /* configuration constants */
