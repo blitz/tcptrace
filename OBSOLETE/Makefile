@@ -45,10 +45,10 @@ ci:
 	ci -q -l -t-initial -mlatest Makefile *.h *.c
 
 clean:
-	rm -f *.o tcptrace core [a-z]2[a-z] [a-z][a-z]2[a-z][a-z] *.PS.?
+	rm -f *.o tcptrace core [a-z]2[a-z].xpl [a-z][a-z]2[a-z][a-z].xpl *.PS.?
 
 tidy:
-	rm -f core [a-z]2[a-z] [a-z][a-z]2[a-z][a-z] *.PS.?
+	rm -f core [a-z]2[a-z].xpl [a-z][a-z]2[a-z][a-z].xpl *.PS.?
 
 depend:
 #	mkdep *.c
