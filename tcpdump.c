@@ -152,6 +152,24 @@ static int callback(
 	memcpy((char *)ip_buf, buf+offset, iplen);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
+      // Patch sent by Brandon Eisenamann to passby 802.11, LLC/SNAP
+      // and Prism2 headers to get to the IP packet.
+      case PCAP_DLT_IEEE802_11:
+	offset=24+8;// 802.11 header + LLC/SNAP header
+	memcpy((char *)ip_buf, buf+offset, iplen);
+	callback_plast = ip_buf+iplen-offset-1;
+	break;
+      case PCAP_DLT_IEEE802_11_RADIO:
+	offset=64+24;//WLAN header + 802.11 header
+	memcpy(&eth_header,buf,EH_SIZE); // save ethernet header
+	memcpy((char *)ip_buf, buf+offset, iplen);
+	callback_plast = ip_buf+iplen-offset-1;
+	break;
+      case PCAP_DLT_PRISM2:
+	offset=144+24+8; // PRISM2+IEEE 802.11+ LLC/SNAP headers
+	memcpy((char *)ip_buf, buf+offset, iplen);
+	callback_plast = ip_buf+iplen-offset-1;
+	break;
       default:
 	fprintf(stderr,"Don't understand link-level format (%d)\n", type);
 	exit(1);
@@ -295,6 +313,18 @@ case 100:
 	/* linux cooked socket type */
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "Linux Cooked Socket";
+	break;
+      case PCAP_DLT_IEEE802_11:
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "IEEE802_11";
+	break;
+      case PCAP_DLT_IEEE802_11_RADIO:
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "IEEE802_11_RADIO";
+	break;
+      case PCAP_DLT_PRISM2:
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "PRISM2";
 	break;
       default:
 	if (debug)

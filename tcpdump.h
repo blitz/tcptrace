@@ -82,7 +82,10 @@ static char const rcsid_tcpdump[] =
 #define PCAP_DLT_FDDI		10	/* FDDI */
 #define PCAP_DLT_ATM_RFC1483	11	/* LLC/SNAP encapsulated atm */
 #define PCAP_DLT_RAW		12	/* raw IP */
+#define PCAP_DLT_IEEE802_11     105     /* IEEE 802.11 wireless */
 #define PCAP_DLT_LINUX_SLL      113     /* Linux cooked socket */
+#define PCAP_DLT_PRISM2         119     /* Prism2 raw capture header */
+#define PCAP_DLT_IEEE802_11_RADIO 127   /* 802.11 plus WLAN header */
 
 /* NOT currently supported */
 /* (mostly because I don't have an example file, send me one...) */
