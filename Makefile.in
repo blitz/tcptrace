@@ -52,6 +52,10 @@ DEFINES += -DLOAD_MODULE_HTTP
 # 
 DEFINES += -DLOAD_MODULE_TRAFFIC
 # 
+# Experimental traffic data by time slices module
+# 
+DEFINES += -DLOAD_MODULE_SLICE
+# 
 # Experimental round trip time graphs
 # 
 DEFINES += -DLOAD_MODULE_RTTGRAPH
