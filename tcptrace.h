@@ -350,6 +350,7 @@ void plotter_arrow(PLOTTER, timeval, u_long, char);
 void plot_init(void);
 tcp_pair *dotrace(struct ip *, void *plast);
 void PrintRawData(char *label, void *pfirst, void *plast);
+void PrintRawDataHex(char *label, void *pfirst, void *plast);
 void PrintTrace(tcp_pair *);
 void PrintBrief(tcp_pair *);
 void OnlyConn(int);

@@ -339,3 +339,32 @@ PrintRawData(
 }
 
 
+void
+PrintRawDataHex(
+    char *label,
+    void *pfirst,
+    void *plast)
+{
+    int lcount = 0;
+    int count = (unsigned)plast - (unsigned)pfirst + 1;
+    u_char *pch = pfirst;
+
+    if (count <= 0)
+	return;
+
+    printf("========================================\n");
+    printf("%s (%d bytes):\n\t", label, count);
+
+    while (pch <= (u_char *) plast) {
+	printf("%02x ", *pch);
+
+	if (++lcount > 15) {
+	    printf("\n\t");
+	    lcount = 0;
+	}
+	++pch;
+    }
+    printf("\n");
+}
+
+
