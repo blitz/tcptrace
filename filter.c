@@ -562,9 +562,9 @@ ParseFilter(
 	printf("Parsefilter('%s') called\n", expr);
 
     if (debug > 1)
-	yyfdebug = 1;
+	filtyydebug = 1;
 
-    if (yyfparse() == 0) {
+    if (filtyyparse() == 0) {
 	/* it worked */
 	printf("Output filter: %s\n", Filter2Str(filter_root));
     } else {
@@ -1476,8 +1476,7 @@ InstallFilter(
 
 
 int
-filter_getc(
-    void *in_junk)
+filter_getc()
 {
     static char *pinput = NULL;
     int ch;

@@ -141,7 +141,7 @@ relop	: GREATER
 %%
 
 void
-yyerror(char *error_string, ...)
+filtyyerror(char *error_string, ...)
 {
     fprintf(stderr,"Bad filter expr: '%s'\n", error_string);
 }

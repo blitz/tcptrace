@@ -31,13 +31,18 @@
 #include <string.h>
 #include "tcptrace.h"
 #include "filter.h"
+
+#define yylval filtyylval
+
 #include "y.tab.h"
 
-extern YYSTYPE yylval;
-
 /* define our own input routine using filter_getc() */
-#undef input
-#define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):filter_getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
+#define YY_INPUT(buf,result,max_size) \
+         { \
+         int c = filter_getc(); \
+         result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+         }
+
 %}
 
 %%
@@ -109,6 +114,9 @@ extern YYSTYPE yylval;
 
 int yywrap(void)
 {
+    if (0)
+	unput(0);  /* never really called, but shuts up gcc */
+
     return(1);
 }
 

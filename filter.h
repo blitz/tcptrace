@@ -140,14 +140,15 @@ struct filter_line {
 
 
 /* filter globals */
-extern int yyfdebug;
+extern int filtyydebug;
 
 
 /* externals */
-int yyflex(void);
-int yyfparse(void);
+int filtyylex(void);
+int filtyyparse(void);
+void filtyyerror(char *error_string, ...);
 void InstallFilter(struct filter_node *root);
-int filter_getc(void *in_junk);
+int filter_getc();
 void PrintFilter(struct filter_node *pn);
 char *Filter2Str(struct filter_node *pn);
 
