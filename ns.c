@@ -148,7 +148,9 @@ pread_ns(
 	    return(0);
 	}
 
-	tcpb->th_sport = tcpb->th_dport = iteration;
+        // find out who put in this line of code, because I'd love
+        // to know what their reasoning was
+	//tcpb->th_sport = tcpb->th_dport = iteration;
 
 	is_tcp = strcmp(type, "tcp") == 0;
 	is_ack = strcmp(type, "ack") == 0;
@@ -247,7 +249,6 @@ pread_ns(
   printf("timestamp %g, type %s, plen %d, seq %d, id %d\n",
   timestamp, type, *plen, seq, ipb->ip_id);
 */
-
 	return(1);
     }
 }
@@ -318,7 +319,7 @@ int pread_ns_fulltcp(
 	    return(0);
 	}
 
-	tcpb->th_sport = tcpb->th_dport = iteration;
+	//tcpb->th_sport = tcpb->th_dport = iteration;
 	is_tcp = strcmp(type, "tcp") == 0;
 	is_ack = strcmp(type, "ack") == 0;
 	
@@ -390,6 +391,7 @@ int pread_ns_fulltcp(
 
 	return(1);
     }
+
 return(0);
 }
 
