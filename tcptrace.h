@@ -57,6 +57,7 @@ static char const rcsid_tcptrace[] =
 
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
