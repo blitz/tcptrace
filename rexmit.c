@@ -118,7 +118,7 @@ int rexmit(
 
 
 /********************************************************************/
-int
+static int
 addseg(
     tcb *ptcb,
     quadrant *pquad,
@@ -211,7 +211,7 @@ addseg(
 
 
 /**********************************************************************/
-segment *
+static segment *
 create_seg(
     seqnum seq,
     seglen len)
@@ -228,7 +228,7 @@ create_seg(
 }
 
 /**********************************************************************/
-quadrant *
+static quadrant *
 create_quadrant(void)
 {
     quadrant *pquad;
@@ -240,7 +240,7 @@ create_quadrant(void)
 
 /********************************************************************/
 
-quadrant *
+static quadrant *
 whichquad(
     seqspace *sspace,
     seqnum seq)
@@ -298,7 +298,8 @@ whichquad(
 
 
 /*********************************************************************/
-void collapse_quad(
+static void
+collapse_quad(
     quadrant *pquad)
 {
     Bool freed;

@@ -351,7 +351,7 @@ for other packet types, I just don't have a place to test them\n\n");
 }
 
 
-void
+static void
 QuitSig(
     int signum)
 {
