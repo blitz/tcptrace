@@ -633,9 +633,9 @@ FindTTP(
 		 (thisdir->syn != ntohl(ptcp->th_seq)))) {
 		
 		if (debug>1) {
-		    printf("%s: Marking 0x%08x %s<->%s INACTIVE (idle: %f sec)\n",
+		    printf("%s: Marking %p %s<->%s INACTIVE (idle: %f sec)\n",
 			   ts2ascii(&current_time),
-			   (unsigned) ptp,
+			   ptp,
 			   ptp->a_endpoint, ptp->b_endpoint,
 			   elapsed(ptp->last_time,
 				   current_time)/1000000);
@@ -719,7 +719,7 @@ dotrace(
     ptp_ptr	*tcp_ptr = NULL;
     /* make sure we have enough of the packet */
     if ((char *)ptcp + sizeof(struct tcphdr)-1 > (char *)plast) {
-    if ((unsigned)ptcp + sizeof(struct tcphdr)-1 > (unsigned)plast) {
+	if (warn_printtrunc)
 	    fprintf(stderr,
 		    "TCP packet %lu truncated too short to trace, ignored\n",
 		    pnum);
@@ -812,7 +812,7 @@ dotrace(
     /* calculate data length */
     tcp_length = getpayloadlength(pip, plast);
     tcp_data_length = tcp_length - (4 * TH_OFF(ptcp));
-    tcp_data_length = tcp_length - (4 * ptcp->th_off);
+
     /* calc. data range */
     start = th_seq;
     end = start + tcp_data_length;
@@ -887,7 +887,7 @@ dotrace(
 	printf("Packet %lu\n", pnum);
 	printpacket(0,		/* original length not available */
 		    (char *)plast - (char *)pip + 1,
-		    (unsigned)plast - (unsigned)pip + 1,
+		    NULL,0,	/* physical stuff not known here */
 		    pip,plast,thisdir);
 		    pip,plast);
 
@@ -994,13 +994,13 @@ dotrace(
     /* save the stream contents, if requested */
     if (tcp_data_length > 0) {
 	u_char *pdata = (u_char *)ptcp + TH_OFF(ptcp)*4;
-	u_char *pdata = (u_char *)ptcp + ptcp->th_off*4;
+	u_long saved;
 	u_long	missing;
 
 	saved = tcp_data_length;
 	if ((char *)pdata + tcp_data_length > ((char *)plast+1))
-	if ((u_long)pdata + tcp_data_length > ((u_long)plast+1))
-	    saved = (u_long)plast - (u_long)pdata + 1;
+	    saved = (char *)plast - (char *)pdata + 1;
+
 	/* see what's missing */
 	missing = tcp_data_length - saved;
 	if (missing > 0) {
@@ -1656,7 +1656,7 @@ ParseOptions(
 
     popt  = (u_char *)ptcp + sizeof(struct tcphdr);
     pdata = (u_char *)ptcp + TH_OFF(ptcp)*4;
-    pdata = (u_char *)ptcp + ptcp->th_off*4;
+
     /* init the options structure */
     memset(&tcpo,0,sizeof(tcpo));
     tcpo.mss = tcpo.ws = tcpo.tsval = tcpo.tsecr = -1;
@@ -1668,10 +1668,10 @@ ParseOptions(
     /* a quick sanity check, the unused (MBZ) bits must BZ! */
     if (warn_printbadmbz) {
 	if (TH_X2(ptcp) != 0) {
-	if (ptcp->th_x2 != 0) {
+	    fprintf(stderr,
 		    "TCP packet %lu: 4 reserved bits are not zero (0x%01x)\n",
 		    pnum, TH_X2(ptcp));
-		    pnum, ptcp->th_x2);
+	}
 	if ((ptcp->th_flags & 0xc0) != 0) {
 	    fprintf(stderr,
 		    "TCP packet %lu: upper flag bits are not zero (0x%02x)\n",
@@ -1681,7 +1681,7 @@ ParseOptions(
 	static int warned = 0;
 	if (!warned &&
 	    ((TH_X2(ptcp) != 0) || ((ptcp->th_flags & 0xc0) != 0))) {
-	    ((ptcp->th_x2 != 0) || ((ptcp->th_flags & 0xc0) != 0))) {
+	    warned = 1;
 	    fprintf(stderr, "\
 TCP packet %lu: reserved bits are not all zero.  \n\
 \tFurther warnings disabled, use '-w' for more info\n",
@@ -1695,7 +1695,7 @@ TCP packet %lu: reserved bits are not all zero.  \n\
 
 	/* check for truncation error */
 	if ((char *)popt > (char *)plast) {
-	if ((unsigned)popt > (unsigned)plast) {
+	    if (warn_printtrunc)
 		fprintf(stderr,"\
 ParseOptions: packet %lu too short to parse remaining options\n", pnum);
 	    ++ctrunc;
@@ -1709,7 +1709,7 @@ ParseOptions: packet %lu %s option has length 0, skipping other options\n", \
                                            pnum,opt); \
 	    popt = pdata; break;} \
 	if ((char *)popt + *plen - 1 > (char *)(plast)) { \
-	if ((unsigned)popt + *plen - 1 > (unsigned)(plast)) { \
+	    if (warn_printtrunc) \
 		fprintf(stderr, "\
 ParseOptions: packet %lu %s option truncated, skipping other options\n", \
               pnum,opt); \
@@ -1773,7 +1773,7 @@ ParseOptions: packet %lu %s option truncated, skipping other options\n", \
 	    psack = (sack_block *)(popt+2);  /* past the kind and length */
 	    popt += *plen;
 	    while ((char *)psack < (char *)popt) {
-	    while ((unsigned)psack < (unsigned)popt) {
+		struct sack_block *psack_local =
 		    &tcpo.sacks[(unsigned)tcpo.sack_count];
 		/* warning, possible alignment problem here, so we'll
 		   use memcpy() and hope for the best */
@@ -1787,7 +1787,7 @@ ParseOptions: packet %lu %s option truncated, skipping other options\n", \
 
 		++psack;
 		if ((char *)psack > ((char *)plast+1)) {
-		if ((unsigned)psack > ((unsigned)plast+1)) {
+		    /* this SACK block isn't all here */
 		    if (warn_printtrunc)
 			fprintf(stderr,
 				"packet %lu: SACK block truncated\n",
@@ -2078,12 +2078,12 @@ ip_cksum(
 
     /* quick sanity check, if the packet is truncated, pretend it's valid */
     if ((char *)plast < (char *)((char *)pip+IP_HL(pip)*4-1)) {
-    if (plast < (void *)((char *)pip+pip->ip_hl*4-1)) {
+	return(0);
     }
 
     /* ... else IPv4 */
     sum = cksum(pip, IP_HL(pip)*4);
-    sum = cksum(pip, pip->ip_hl*4);
+    return(sum);
 }
 
 
@@ -2131,7 +2131,7 @@ tcp_cksum(
 	   pretend it's valid */
 	/* Thu Jul  6, 2000 - bugfix, bad check */
 	if (((ntohs(pip->ip_off) << 2) & 0xffff) != 0) {
-	if (((ntohs(pip->ip_off) << 2) & 0xffff) != 0) {
+	if (((ntohs(IP_OFF(pip)) << 2) & 0xffff) != 0) {
 	    /* (we shifted off the DF bit, which might be on) */
 	    return(0);
 	}
@@ -2144,7 +2144,7 @@ tcp_cksum(
 
 	/* length (TCP header length + TCP data length) */
 	tcp_length = ntohs(pip->ip_len) - (4 * IP_HL(pip));
-	tcp_length = ntohs(pip->ip_len) - (4 * pip->ip_hl);
+	sum += (u_short) tcp_length;
 	sum += (u_short) htons(tcp_length);
               
 	static Bool warned = FALSE;
@@ -2160,7 +2160,7 @@ tcp_cksum(
    
 
     if ((char *)plast < (char *)((char *)ptcp+tcp_length-1)) {
-    if (plast < (void *)((char *)ptcp+tcp_length-1)) {
+	return(0);
     }
 
     /* checksum the TCP header and data */
@@ -2227,7 +2227,7 @@ udp_cksum(
    
 
     if ((char *)plast < (char *)((char *)pudp+udp_length-1)) {
-    if (plast < (void *)((char *)pudp+udp_length-1)) {
+	return(0);
     }
 
 

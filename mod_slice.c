@@ -45,7 +45,7 @@ static timeval tv_slice_interval;
 static enum t_time_format time_format = tf_brief;
 
 /* local debugging flag */
-static int debug = 0;
+static int ldebug = 0;
 
 
 
@@ -125,7 +125,7 @@ slice_init(
     /* tell them what's happening */
     printf("mod_slice: generating data in %.3fsec slices to file %s\n",
 	   slice_interval, SLICE_FILENAME);
-    if (debug)
+    if (ldebug)
 	printf("Slice interval tv: %u.%06u\n",
 	       (unsigned)tv_slice_interval.tv_sec,
 	       (unsigned)tv_slice_interval.tv_usec);
@@ -317,10 +317,10 @@ ParseArgs(char *argstring)
     /* check the module args */
     for (i=1; i < argc; ++i) {
 	float interval;
-	if (debug > 1)
+	if (ldebug > 1)
 	    printf("Checking argv[%d]: '%s'\n", i, argv[i]);
 	if (strcmp(argv[i],"-d") == 0) {
-	    ++debug;
+	    ++ldebug;
 	} else if (strncmp(argv[i],"-t",2) == 0) {
 	    switch (argv[i][2]) {
 	      case 'u': time_format = tf_unix; break;
@@ -334,7 +334,7 @@ ParseArgs(char *argstring)
 	    }
 	} else if (sscanf(argv[i],"-i%f", &interval) == 1) {
 	    slice_interval = interval;
-	    if (debug)
+	    if (ldebug)
 		printf("mod_slice: setting slice interval to %.3f seconds\n",
 		       slice_interval);
 	} else {

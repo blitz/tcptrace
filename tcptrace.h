@@ -70,14 +70,17 @@ typedef long long int llong;
 /* The test is located in configure.in */
 #ifdef USE_LLU
 #define FS_ULL "llu" /* For most systems use llu */
+#define FS_LL  "lld" /* For most systems use ll */
 #else /* USE_LLU */
 #define FS_ULL "qu"  /* MacOSX use qu */
+#define FS_LL  "qd"  /* MacOSX use qd */
 #endif /* USE_LLU */
 
 #else /* LONG LONG */
 typedef unsigned long int u_llong;
 typedef long int llong;
-#define FS_ULL "lu" /* For most systems use llu */
+#define FS_ULL "lu" /* No long long unsigned, so  use lu */
+#define FS_LL  "ld" /* No long long ints, so use ld */
 #endif /* LONG LONG */
 
 /* plotter information */
@@ -110,6 +113,15 @@ typedef struct ipaddr {
 	struct in6_addr  ip6;
     } un;
 } ipaddr;
+
+
+/* some machines (TRUE64 for one) handle the 4-bit TCP/IP fields
+   differently, so this macro simplifies life */
+#define IP_HL(pip)   (pip->ip_hl)
+#define IP_OFF(pip)  (pip->ip_off)
+#define TH_OFF(ptcp) (ptcp->th_off)
+#define TH_X2(ptcp)  (ptcp->th_x2)
+
 
 
 /* type for a timestamp */
@@ -632,8 +644,8 @@ Bool PassesFilter(tcp_pair *ptp);
 #define URGENT_SET(ptcp)((ptcp)->th_flags & TH_URG)
 #define FLAG6_SET(ptcp)((ptcp)->th_flags & 0x40)
 #define FLAG7_SET(ptcp)((ptcp)->th_flags & 0x80)
-#define CWR_SET(ptcp)((ptcp)->th_x2 & TH_CWR)
-#define ECN_ECHO_SET(ptcp)((ptcp)->th_x2 & TH_ECN_ECHO)
+#define CWR_SET(ptcp)     (TH_X2((ptcp)) & TH_CWR)
+#define ECN_ECHO_SET(ptcp)(TH_X2((ptcp)) & TH_ECN_ECHO)
 
 
 /* connection directions */

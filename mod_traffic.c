@@ -216,7 +216,7 @@ static u_int rtt_maxvalid = 0xffffffff; /* maximum RTT to consider (ms) */
 
 
 /* local debugging flag */
-static int debug = 0;
+static int ldebug = 0;
 
 
 static void
@@ -239,7 +239,7 @@ ExcludePorts(
     CheckPortNum(firstport);
     CheckPortNum(lastport);
 
-    if (debug)
+    if (ldebug)
 	printf("mod_traffic: excluding ports [%d-%d]\n", firstport, lastport);
 
     while (firstport <= lastport)
@@ -255,7 +255,7 @@ IncludePorts(
     CheckPortNum(firstport);
     CheckPortNum(lastport);
 
-    if (debug)
+    if (ldebug)
 	printf("mod_traffic: including ports [%d-%d]\n", firstport, lastport);
 
     while (firstport <= lastport)
@@ -469,7 +469,7 @@ MakeTrafficRec(
 
     pti = MallocZ(sizeof(struct traffic_info));
 
-    if (debug>10)
+    if (ldebug>10)
 	printf("MakeTrafficRec(%d) called\n", (int)port);
 
     /* init */
@@ -543,7 +543,7 @@ traffic_read(
     void *plast,		/* past byte in the packet */
     void *mod_data)		/* connection info for this one */
 {
-    struct tcphdr *ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
+    struct tcphdr *ptcp = (struct tcphdr *) ((char *)pip + 4*IP_HL(pip));
     struct traffic_info *pti1 = FindPort(ntohs(ptcp->th_sport));
     struct traffic_info *pti2 = FindPort(ntohs(ptcp->th_dport));
     u_long bytes = ntohs(pip->ip_len);
@@ -680,7 +680,7 @@ traffic_read(
 	    if ((rtt_min == -1) || (rtt_min > rtt))
 		rtt_min = rtt;
 
-	    if (debug > 9)
+	    if (ldebug > 9)
 		printf("Rtt: %d,  min:%d,  max:%d\n",
 		       rtt, rtt_min, rtt_max);
 	}
@@ -699,7 +699,7 @@ traffic_read(
     if (ACK_SET(ptcp)) {
 	int tcp_length, tcp_data_length;
 	tcp_length = getpayloadlength(pip, plast);
-	tcp_data_length = tcp_length - (4 * ptcp->th_off);
+	tcp_data_length = tcp_length - (4 * TH_OFF(ptcp));
 	if (tcp_data_length == 0) {
 	    if (pti1) {
 		++pti1->npureacks;
@@ -750,7 +750,7 @@ AgeTraffic(void)
 
     /* check elapsed time */
     etime = elapsed(last_time, current_time);
-    if (debug>1)
+    if (ldebug>1)
 	printf("AgeTraffic called, elapsed time is %.3f seconds\n", etime/1000000);
     if (etime == 0.0)
 	return;
@@ -867,7 +867,7 @@ AgeTraffic(void)
     /* ============================================================ */
     /* print them out */
     for (pti=traffichead; pti; pti=pti->next) {
-	if (debug>1)
+	if (ldebug>1)
 	    printf("  Aging Port %u   bytes: %lu  packets: %lu\n",
 		   pti->port, pti->nbytes, pti->npackets);
 
@@ -1116,13 +1116,13 @@ ParseArgs(char *argstring)
     /* check the module args */
     for (i=1; i < argc; ++i) {
 	float interval;
-	if (debug > 1)
+	if (ldebug > 1)
 	    printf("Checking argv[%d]: '%s'\n", i, argv[i]);
 	if (strcmp(argv[i],"-d") == 0) {
-	    ++debug;
+	    ++ldebug;
 	} else if (sscanf(argv[i],"-i%f", &interval) == 1) {
 	    age_interval = interval;
-	    if (debug)
+	    if (ldebug)
 		printf("mod_traffic: setting age interval to %.3f seconds\n",
 		       age_interval);
 	} else if (strcmp(argv[i],"-G") == 0) {
@@ -1138,48 +1138,48 @@ ParseArgs(char *argstring)
 	    doplot_i_open = TRUE;
 	    doplot_packets = TRUE;
 	    doplot_pureacks = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating all graphs\n");
 	} else if (strcmp(argv[i],"-A") == 0) {
 	    doplot_active = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'active' graph into '%s'\n",
 			PLOTTER_ACTIVE_FILENAME);
 	} else if (strcmp(argv[i],"-B") == 0) {
 	    doplot_bytes = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'bytes' graph into '%s'\n",
 			PLOTTER_BYTES_FILENAME);
 	} else if (strcmp(argv[i],"-H") == 0) {
 	    doplot_halfopen = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'halfopen' graph into '%s'\n",
 			PLOTTER_HALFOPEN_FILENAME);
 	} else if (strcmp(argv[i],"-Q") == 0) {
 	    doplot_idle = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'idle' graph into '%s'\n",
 			PLOTTER_IDLE_FILENAME);
 	} else if (strcmp(argv[i],"-K") == 0) {
 	    doplot_pureacks = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'pureacks' graph into '%s'\n",
 			PLOTTER_PUREACKS_FILENAME);
 	} else if (strcmp(argv[i],"-L") == 0) {
 	    doplot_loss = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'loss' graph into '%s'\n",
 			PLOTTER_LOSS_FILENAME);
 	} else if (strcmp(argv[i],"-T") == 0) {
 	    doplot_data = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'total data' graph into '%s'\n",
 			PLOTTER_DATA_FILENAME);
@@ -1195,39 +1195,39 @@ ParseArgs(char *argstring)
 		}
 
 	    }
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'long duration' graph (%d secs) into '%s'\n",
 			longconn_duration,
 			PLOTTER_LONG_FILENAME);
 	} else if (strcmp(argv[i],"-O") == 0) {
 	    doplot_open = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'open' graph into '%s'\n",
 			PLOTTER_OPEN_FILENAME);
 	} else if (strcmp(argv[i],"-C") == 0) {
 	    doplot_openclose = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'openclose' graph into '%s'\n",
 			PLOTTER_OPENCLOSE_FILENAME);
 	} else if (strcmp(argv[i],"-I") == 0) {
 	    doplot_i_open = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'instantaneous openclose' graph into '%s'\n",
 			PLOTTER_I_OPEN_FILENAME);
 	} else if (strcmp(argv[i],"-P") == 0) {
 	    doplot_packets = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'packets' graph into '%s'\n",
 			PLOTTER_PACKETS_FILENAME);
 	} else if (strncmp(argv[i],"-R",2) == 0) {
 	    int nargs;
 	    doplot_rtt = TRUE;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,
 			"mod_traffic: generating 'rtt' graph into '%s'\n",
 			PLOTTER_RTT_FILENAME);

@@ -356,16 +356,16 @@ http_read(
     struct http_info *ph = mod_data;
 
     /* find the start of the TCP header */
-    ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
-    tcp_length = ntohs(pip->ip_len) - (4 * pip->ip_hl);
-    tcp_data_length = tcp_length - (4 * ptcp->th_off);
+    ptcp = (struct tcphdr *) ((char *)pip + 4*IP_HL(pip));
+    tcp_length = ntohs(pip->ip_len) - (4 * IP_HL(pip));
+    tcp_data_length = tcp_length - (4 * TH_OFF(ptcp));
 
     /* verify port */
     if ((ntohs(ptcp->th_sport) != httpd_port) && (ntohs(ptcp->th_dport) != httpd_port))
 	return;
 
     /* find the data */
-    pdata = (char *)ptcp + (unsigned)ptcp->th_off*4;
+    pdata = (char *)ptcp + (unsigned)TH_OFF(ptcp)*4;
 
     /* for client, record both ACKs and DATA time stamps */
     if (ph && IS_CLIENT(ptcp)) {
@@ -455,7 +455,7 @@ MFMap(
 		 MAP_PRIVATE,	/* won't be sharing...	*/
 		 fd,		/* attach to 'fd'	*/
 		 (off_t) 0);	/* ... offset 0 in 'fd'	*/
-    if (vaddr == (void *) -1) {
+    if (vaddr == (char *) -1) {
 	perror("mmap");
 	exit(-1);
     }

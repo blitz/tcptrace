@@ -113,7 +113,7 @@ findheader(
 
 	/* check the fragment field, if it's not the first fragment,
 	   it's useless (offset part of field must be 0 */
-	if ((ntohs(pip->ip_off)&0x1fff) != 0) {
+	if ((ntohs(IP_OFF(pip))&0x1fff) != 0) {
 	    if (debug>1) {
 		printf("gettcp: Skipping IPv4 non-initial fragment\n");
 		if (debug > 2) {
@@ -124,18 +124,18 @@ findheader(
 	}
 
 	/* OK, it starts here */
-	theheader = ((char *)pip + 4*pip->ip_hl);
+	theheader = ((char *)pip + 4*IP_HL(pip));
 
 	/* adjust plast in accordance with ip_len (really short packets get garbage) */
-	if (((unsigned)pip + ntohs(pip->ip_len) - 1) < (unsigned)(*pplast)) {
-	    *pplast = (void *)((unsigned)pip + ntohs(pip->ip_len));
+	if (((char *)pip + ntohs(pip->ip_len) - 1) < (char *)(*pplast)) {
+	    *pplast = (char *)((char *)pip + ntohs(pip->ip_len));
 	}
 
 #ifdef OLD
 	/* this is better verified when used, the error message is better */
 
 	/* make sure the whole header is there */
-	if ((u_long)ptcp + (sizeof struct tcphdr) - 1 > (u_long)*pplast) {
+	if ((char *)ptcp + (sizeof struct tcphdr) - 1 > (char *)*pplast) {
 	    /* part of the header is missing */
 	    return(NULL);
 	}
@@ -156,7 +156,7 @@ findheader(
     while (1) {
 	/* sanity check, if we're reading bogus header, the length might */
 	/* be wonky, so make sure before you dereference anything!! */
-	if ((void *)pheader < (void *)pip) {
+	if ((char *)pheader < (char *)pip) {
 	    if (debug>1)
 		printf("findheader: bad extension header math, skipping packet\n");
 	    return(NULL);
@@ -164,7 +164,7 @@ findheader(
 	
 	/* make sure we're still within the packet */
 	/* might be truncated, or might be bad header math */
-	if ((void *)pheader > *pplast) {
+	if ((char *)pheader > (char *)*pplast) {
 	    if (debug>3)
 		printf("findheader: packet truncated before finding header\n");
 	    return(NULL);
@@ -306,7 +306,7 @@ int gethdrlength (struct ip *pip, void *plast)
     }
     else
     {
-	return pip->ip_hl * 4;
+	return IP_HL(pip) * 4;
     }
 }
 
@@ -321,7 +321,7 @@ int getpayloadlength (struct ip *pip, void *plast)
 	pipv6 = (struct ipv6 *) pip;  /* how about all headers */
 	return ntohs(pipv6->ip6_lngth);
     }
-    return ntohs(pip->ip_len) - (pip->ip_hl * 4);
+    return ntohs(pip->ip_len) - (IP_HL(pip) * 4);
 }
 
 
@@ -537,8 +537,8 @@ int IPcmp(
 {
     int i;
     int len = (pipA->addr_vers == 4)?4:6;
-    u_char *left = (char *)&pipA->un.ip4;
-    u_char *right = (char *)&pipB->un.ip4;
+    u_char *left = (u_char *)&pipA->un.ip4;
+    u_char *right = (u_char *)&pipB->un.ip4;
 
     /* always returns -2 unless both same type */
     if (pipA->addr_vers != pipB->addr_vers) {

@@ -1218,12 +1218,12 @@ void tcplib_read(
 
 
     /* Setting a pointer to the beginning of the TCP header */
-    tcp = (struct tcphdr *) ((char *)pip + (4 * pip->ip_hl));
+    tcp = (struct tcphdr *) ((char *)pip + (4 * IP_HL(pip)));
 
     /* calculate the amount of user data */
     data_len = pip->ip_len -	/* size of entire IP packet (and IP header) */
-	(4 * pip->ip_hl) -	/* less the IP header */
-	(4 * tcp->th_off);	/* less the TCP header */
+	(4 * IP_HL(pip)) -	/* less the IP header */
+	(4 * TH_OFF(tcp));	/* less the TCP header */
 
     /* stats */
     debug_total_bytes += data_len;
@@ -1312,8 +1312,8 @@ void tcplib_read(
 	trafgen_generated &&
 	(ptcb->data_bytes == data_len) &&
 	data_len >= sizeof(struct burstkey)) {
-	u_char *pdata = (u_char *)tcp + tcp->th_off*4;
-	int available =  (u_long)plast - (u_long)pdata + 1;
+	u_char *pdata = (u_char *)tcp + TH_OFF(tcp)*4;
+	int available =  (char *)plast - (char *)pdata + 1;
 	struct burstkey *pburst;
 
 	if (0)

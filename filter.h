@@ -47,7 +47,7 @@ enum vartype {
 
     /* functions */
     V_FUNC	=14,		/* function returning unsigned */
-    V_UFUNC	=15,		/* function returning signed */
+    V_UFUNC	=15		/* function returning signed */
 };
 
 
@@ -83,7 +83,7 @@ enum optype {
 
     /* bitwise arithmetic */
     OP_BAND	  = 118,
-    OP_BOR	  = 119,
+    OP_BOR	  = 119
 };
 
 
@@ -99,7 +99,7 @@ union Constant {
 /* Variable - keep the name and offset within a tcp_pair */
 struct Variable {
     char 	*name;
-    u_int	offset;
+    u_long 	offset;
     Bool	fclient;	/* from the client or server side? */
     enum vartype realtype;
 };

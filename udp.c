@@ -178,7 +178,7 @@ udpdotrace(
     u_short	uh_ulen;	/* data length */
 
     /* make sure we have enough of the packet */
-    if ((unsigned)pudp + sizeof(struct udphdr)-1 > (unsigned)plast) {
+    if ((char *)pudp + sizeof(struct udphdr)-1 > (char *)plast) {
 	if (warn_printtrunc)
 	    fprintf(stderr,
 		    "UDP packet %lu truncated too short to trace, ignored\n",
@@ -219,7 +219,7 @@ udpdotrace(
     if (printem && !printallofem) {
 	printf("Packet %lu\n", pnum);
 	printpacket(0,		/* original length not available */
-		    (unsigned)plast - (unsigned)pip + 1,
+		    (char *)plast - (char *)pip + 1,
 		    NULL,0,	/* physical stuff not known here */
 		    pip,plast);
     }

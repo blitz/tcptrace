@@ -199,7 +199,7 @@ pread_snoop(
 	    }
 
 	    /* find the offset of the IP header inside the FDDI frame */
-	    if ((offset = find_ip_fddi((char *)pip_buf,len)) == -1) {
+	    if ((offset = find_ip_fddi((void *)pip_buf,len)) == -1) {
 		/* not found */
 		if (debug)
 		    printf("snoop.c: couldn't find next IP within FDDI\n");
@@ -211,7 +211,7 @@ pread_snoop(
 	    memmove(pip_buf,(char *)pip_buf+offset,len-offset);
 
 	    /* point to first and last char in IP packet */
-	    *ppip  = (struct ip *) ((char *)pip_buf);
+	    *ppip  = (struct ip *) ((void *)pip_buf);
 	    *pplast = (char *)pip_buf+len-offset-1;
 
 	    /* assume it's IP (else find_ip_fddi would have failed) */

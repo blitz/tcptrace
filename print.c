@@ -131,7 +131,7 @@ printip_packet(
 {
     /* print an ipv6 header */
     if (PIP_ISV6(pip)) {
-	if ((unsigned)pip+sizeof(struct ipv6)-1 > (unsigned)plast) {
+	if ((char *)pip+sizeof(struct ipv6)-1 > (char *)plast) {
 	    if (warn_printtrunc)
 		printf("\t[packet truncated too short for IP details]\n");
 	    ++ctrunc;
@@ -143,7 +143,7 @@ printip_packet(
 
     if (PIP_ISV4(pip)) {
 	/* make sure we have enough of the packet */
-	if ((unsigned)pip+sizeof(struct ip)-1 > (unsigned)plast) {
+	if ((char *)pip+sizeof(struct ip)-1 > (char *)plast) {
 	    if (warn_printtrunc)
 		printf("\t[packet truncated too short for IP details]\n");
 	    ++ctrunc;
@@ -168,7 +168,7 @@ printipv4(
     Bool mf;
     
     /* make sure we have enough of the packet */
-    if ((unsigned)pip+sizeof(struct ip)-1 > (unsigned)plast) {
+    if ((char *)pip+sizeof(struct ip)-1 > (char *)plast) {
 	if (warn_printtrunc)
 	    printf("\t[packet truncated too short for IP details]\n");
 	++ctrunc;
@@ -193,7 +193,7 @@ printipv4(
 	(pip->ip_p == IPPROTO_EGP)?"(EGP)":
 	"");
 
-    printf("\t    HLEN: %d\n", pip->ip_hl*4);
+    printf("\t    HLEN: %d\n", IP_HL(pip)*4);
     printf("\t     TTL: %d\n", pip->ip_ttl);
     printf("\t     LEN: %d\n", ntohs(pip->ip_len));
     printf("\t      ID: %d\n", ntohs(pip->ip_id));
@@ -203,32 +203,32 @@ printipv4(
     printf("\n");
 
     /* fragmentation stuff */
-    offset = ntohs(pip->ip_off) << 3;
-    mf = (ntohs(pip->ip_off) & IP_MF) != 0;
+    offset = ntohs(IP_OFF(pip)) << 3;
+    mf = (ntohs(IP_OFF(pip)) & IP_MF) != 0;
     if ((offset == 0) && (!mf)) {
-	printf("\t  OFFSET: 0x%04x", ntohs(pip->ip_off));
+	printf("\t  OFFSET: 0x%04x", ntohs(IP_OFF(pip)));
     } else {
 	printf("\t  OFFSET: 0x%04x (frag: %d bytes at offset %u - %s)",
-	       ntohs(pip->ip_off),
-	       ntohs(pip->ip_len)-pip->ip_hl*4,
+	       ntohs(IP_OFF(pip)),
+	       ntohs(pip->ip_len)-IP_HL(pip)*4,
 	       offset,
 	       mf?"More Frags":"Last Frag");
     }
-    if ((ntohs(pip->ip_off) & IP_DF) != 0)
+    if ((ntohs(IP_OFF(pip)) & IP_DF) != 0)
 	printf("  Don't Fragment\n");	/* don't fragment */
 
     /* print IP options if there are any */
-    if (pip->ip_hl != 5) {
+    if (IP_HL(pip) != 5) {
 	char *popt = (char *)pip + 20;
 	void *plast_option;
 
 	/* find the last option in the file */
-	plast_option = (char *)pip+4*pip->ip_hl-1;
+	plast_option = (char *)pip+4*IP_HL(pip)-1;
 	if (plast_option > plast)
 	    plast_option = plast; /* truncated shorter than that */
 
-	printf("\t Options: %d bytes\n", 4*pip->ip_hl-20);
-	while ((void *)popt <= plast_option) {
+	printf("\t Options: %d bytes\n", 4*IP_HL(pip)-20);
+	while ((char *)popt <= (char *)plast_option) {
 	    u_int opt = *popt;
 	    u_int len = *(popt+1);
 	    u_int ptr = *(popt+2);
@@ -335,7 +335,7 @@ printtcp_packet(
 	return;			/* not TCP */
 
     /* make sure we have enough of the packet */
-    if ((unsigned)ptcp+sizeof(struct tcphdr)-1 > (unsigned)plast) {
+    if ((char *)ptcp+sizeof(struct tcphdr)-1 > (char *)plast) {
 	if (warn_printtrunc)
 	    printf("\t[packet truncated too short for TCP details]\n");
 	++ctrunc;
@@ -347,9 +347,9 @@ printtcp_packet(
 	pipv6 = (struct ipv6 *) pip;
 	tcp_length = ntohs(pipv6->ip6_lngth);
     } else {
-	tcp_length = ntohs(pip->ip_len) - (4 * pip->ip_hl);
+	tcp_length = ntohs(pip->ip_len) - (4 * IP_HL(pip));
     }
-    tcp_data_length = tcp_length - (4 * ptcp->th_off);
+    tcp_data_length = tcp_length - (4 * TH_OFF(ptcp));
 
     printf("\tTCP SPRT: %u %s\n",
 	   ntohs(ptcp->th_sport),
@@ -374,22 +374,22 @@ printtcp_packet(
 	hex?"\t     ACK: 0x%08x\n":"\t     ACK: %d\n",
 	ntohl(ptcp->th_ack));
     printf("\t     WIN: %u\n", ntohs(ptcp->th_win));
-    printf("\t    HLEN: %u", ptcp->th_off*4);
-    if ((u_long)ptcp + ptcp->th_off*4 - 1 > (u_long)plast) {
+    printf("\t    HLEN: %u", TH_OFF(ptcp)*4);
+    if ((char *)ptcp + TH_OFF(ptcp)*4 - 1 > (char *)plast) {
 	/* not all there */
-	printf(" (only %ld bytes in dump file)",
-	       (u_long)plast - (u_long)ptcp + 1);
+	printf(" (only %lu bytes in dump file)",
+	       (u_long)((char *)plast - (char *)ptcp + 1));
     }
     printf("\n");
     
-    if (ptcp->th_x2 != 0) {
+    if (TH_X2(ptcp) != 0) {
 	printf("\t    MBZ: 0x%01x (these are supposed to be zero!)\n",
-	       ptcp->th_x2);
+	       TH_X2(ptcp));
     }
     printf("\t   CKSUM: 0x%04x", ntohs(ptcp->th_sum));
-    pdata = (u_char *)ptcp + ptcp->th_off*4;
+    pdata = (u_char *)ptcp + TH_OFF(ptcp)*4;
     if (verify_checksums) {
-	if ((u_long)pdata + tcp_data_length > ((u_long)plast+1))
+	if ((char *)pdata + tcp_data_length > ((char *)plast+1))
 	    printf(" (too short to verify)");
 	else
 	    printf(" (%s)", tcp_cksum_valid(pip,ptcp,plast)?"CORRECT":"WRONG");
@@ -399,24 +399,24 @@ printtcp_packet(
 
     printf("\t    DLEN: %u", tcp_data_length);
     if ((tcp_data_length != 0) &&
-	((u_long)pdata + tcp_data_length > ((u_long)plast+1))) {
-	int available =  (u_long)plast - (u_long)pdata + 1;
+	((char *)pdata + tcp_data_length > ((char *)plast+1))) {
+	int available =  (char *)plast - (char *)pdata + 1;
 	if (available > 1)
-	    printf(" (only %ld bytes in dump file)",
-		   (u_long)plast - (u_long)pdata + 1);
+	    printf(" (only %lu bytes in dump file)",
+		   (u_long)((char *)plast - (char *)pdata + 1));
 	else
 	    printf(" (none of it in dump file)");
     }
     printf("\n");
-    if (ptcp->th_off != 5) {
+    if (TH_OFF(ptcp) != 5) {
 	struct tcp_options *ptcpo;
 
         printf("\t    OPTS: %u bytes",
-	       (ptcp->th_off*4) - sizeof(struct tcphdr));
-	if ((u_long)ptcp + ptcp->th_off*4 - 1 > (u_long)plast) {
+	       (TH_OFF(ptcp)*4) - sizeof(struct tcphdr));
+	if ((char *)ptcp + TH_OFF(ptcp)*4 - 1 > (char *)plast) {
 	    /* not all opts were stored */
-	    u_long available = 1 + (u_long)plast -
-		((u_long)ptcp + sizeof(struct tcphdr));
+	    u_long available = 1 + (char *)plast -
+		((char *)ptcp + sizeof(struct tcphdr));
 	    if (available > 1)
 		printf(" (%lu bytes in file)", available);
 	    else
@@ -469,7 +469,7 @@ printtcp_packet(
     }
     if (tcp_data_length > 0) {
 	if (dump_packet_data) {
-	    char *ptcp_data = (char *)ptcp + (4 * ptcp->th_off);
+	    char *ptcp_data = (char *)ptcp + (4 * TH_OFF(ptcp));
 	    PrintRawData("   data", ptcp_data, plast, TRUE);
 	} else {
 	    printf("\t    data: %u bytes\n", tcp_data_length);
@@ -492,7 +492,7 @@ printudp_packet(
 	return;			/* not UDP */
 
     /* make sure we have enough of the packet */
-    if ((unsigned)pudp+sizeof(struct udphdr)-1 > (unsigned)plast) {
+    if ((char *)pudp+sizeof(struct udphdr)-1 > (char *)plast) {
 	if (warn_printtrunc)
 	    printf("\t[packet truncated too short for UDP details]\n");
 	++ctrunc;
@@ -507,9 +507,9 @@ printudp_packet(
 	   ParenServiceName(ntohs(pudp->uh_dport)));
     pdata = (u_char *)pudp + sizeof(struct udphdr);
     printf("\t    DLEN: %u", ntohs(pudp->uh_ulen));
-    if ((u_long)pdata + ntohs(pudp->uh_ulen) > ((u_long)plast+1))
-	printf(" (only %ld bytes in dump file)\n",
-	       (u_long)plast - (u_long)pdata + 1);
+    if ((char *)pdata + ntohs(pudp->uh_ulen) > ((char *)plast+1))
+	printf(" (only %lu bytes in dump file)\n",
+	       (u_long)((char *)plast - (char *)pdata + 1));
     if (ntohs(pudp->uh_ulen) > 0) {
 	if (dump_packet_data)
 	    PrintRawData("   data", pdata, plast, TRUE);
@@ -600,7 +600,7 @@ PrintRawData(
     Bool octal)			/* hex or octal? */
 {
     int lcount = 0;
-    int count = (unsigned)plast - (unsigned)pfirst + 1;
+    int count = (char *)plast - (char *)pfirst + 1;
     u_char *pch = pfirst;
 
     if (count <= 0)

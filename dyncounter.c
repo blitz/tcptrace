@@ -4,7 +4,7 @@
 #include "dyncounter.h"
 
 
-static int debug = 0;
+static int ldebug = 0;
 
 /* external routines */
 void *MallocZ(int nbytes);
@@ -76,7 +76,7 @@ AddToCounter(
     u_long val,
     u_long granularity)
 {
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"AddToCounter(%p, %lu, %lu) called\n", *ppdc, ix, val);
 
     MakeCounter(ppdc,ix,val,granularity,0);
@@ -92,7 +92,7 @@ SetCounter(
     u_long val,
     u_long granularity)
 {
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"SetCounter(%p, %lu, %lu) called\n", *ppdc, ix, val);
 
     MakeCounter(ppdc,ix,val,granularity,1);
@@ -108,7 +108,7 @@ LookupCounter(
 {
     u_long *pdigit;
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"LookupCounter(p,%lu) called\n", ix);
 
     /* try to find the counter */
@@ -118,7 +118,7 @@ LookupCounter(
 
     if (pdigit == NULL) {
 	/* no leaf node == no such counter */
-	if (debug)
+	if (ldebug)
 	    fprintf(stderr,"LookupCounter(p,%lu): no such leaf\n", ix);
 	return(0);
     }
@@ -138,7 +138,7 @@ NextCounter(
     struct node *node;
     u_long nextix;
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"NextCounter(p,%p,%lu,%lu) called\n",
 		*((char **)pvoidcookie), *pix, *pcount);
 
@@ -154,7 +154,7 @@ NextCounter(
     /* make sure the linked list of leaves is up to date */
     if (pdc->firstleaf == NULL) {
 	FinishTree(pdc);
-	if (debug) {
+	if (ldebug) {
 	    PrintLeafList(pdc);
 	    PrintTree(pdc->tree);
 	}
@@ -307,7 +307,7 @@ FindLeaf(
     u_long valunits;
     u_long temp_value;
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"FindLeaf(%p(depth %lu), %lu, %s) called\n",
 		*ptree,
 		*ptree?((*ptree)->depth):0,
@@ -329,7 +329,7 @@ FindLeaf(
 	valunits *= CARDINALITY;
     }
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"FindLeaf: value:%lu  depth:%lu  units:%lu\n",
 		value, valdepth, valunits);
 
@@ -379,7 +379,7 @@ FindLeaf(
     hidigit = value / valunits;
     lowdigits = value % valunits;
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"for value %lu,  depth:%lu  units:%lu  hidigit:%lu  lowdigits:%lu\n",
 		value, valdepth, valunits, hidigit, lowdigits);
 
@@ -421,7 +421,7 @@ NewNode(
 {
     struct node *pn;
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"NewNode(%lu) called\n", depth);
 
     pn = MallocZ(sizeof(struct node));
@@ -439,7 +439,7 @@ FindTwig(
 {
     unsigned digit;
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"FindTwig(%p(depth %lu), %lu) called\n",
 		lastnode, lastnode->depth, ix);
 
@@ -463,7 +463,7 @@ FindCounter(
     struct node *pnode;
     u_long *pcounter;
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"FindCounter(p, %lu) called\n", ix);
 
     /* if the counter tree doesn't exist yet, create it */
@@ -478,7 +478,7 @@ FindCounter(
     if (ix < pdc->minix)
 	pdc->minix = ix;
 
-    if (debug>1)
+    if (ldebug>1)
 	PrintTree(pdc->tree);
 
     /* scale (TRUNCATE) the index by the granularity */
@@ -586,12 +586,12 @@ FinishTreeRecurse(
     if (pnode->depth == 1) {
 	if (pdc->firstleaf == NULL) {
 	    pdc->firstleaf = pdc->lastleaf = pnode;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,"FinishTree: Making %p the head\n", pnode);
 	} else {
 	    pdc->lastleaf->nextleaf = pnode;
 	    pdc->lastleaf = pnode;
-	    if (debug)
+	    if (ldebug)
 		fprintf(stderr,"FinishTree: Making %p the tail\n", pnode);
 	}
 	return;
@@ -628,7 +628,7 @@ NextCounterRecurse(
 {
     int i;
 
-    if (debug)
+    if (ldebug)
 	fprintf(stderr,"NextCounterRecurse(%p,%lu,%lu,%lu) called\n",
 		node, nextix, *pix, *pcount);
 

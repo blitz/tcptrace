@@ -576,9 +576,9 @@ PrintConst(
 	break;
       case V_LLONG:
 	if (debug)
-	    sprintf(buf,"LLONG(%lld)", pf->un.constant.longint);
+	    sprintf(buf,"LLONG(%" FS_LL ")", pf->un.constant.longint);
 	else
-	    sprintf(buf,"%lld", pf->un.constant.longint);
+	    sprintf(buf,"%" FS_LL, pf->un.constant.longint);
 	break;
       case V_STRING:
 	if (debug)
@@ -618,7 +618,7 @@ PrintVar(
 
 
     if (debug)
-	sprintf(buf,"VAR(%s,'%s%s',%d,%c)",
+	sprintf(buf,"VAR(%s,'%s%s',%lu,%c)",
 		Vartype2Str(pf->vartype),
 		pf->un.variable.fclient?"c_":"s_",
 		pf->un.variable.name,
@@ -678,7 +678,7 @@ Res2Str(
     /* for constants */
     switch (pres->vartype) {
       case V_ULLONG:	sprintf(buf,"ULLONG(%" FS_ULL ")",pres->val.u_longint); break;
-      case V_LLONG:	sprintf(buf,"LLONG(%lld)", pres->val.longint); break;
+      case V_LLONG:	sprintf(buf,"LLONG(%"  FS_LL  ")",pres->val.longint); break;
       case V_STRING:	sprintf(buf,"STRING(%s)",pres->val.string); break;
       case V_BOOL:	sprintf(buf,"BOOL(%s)",  BOOL2STR(pres->val.bool)); break;
       default: {
@@ -816,7 +816,7 @@ LookupVar(
 	    else
 		ptr = (void *)pfl->sv_addr;
 	    if ((pfl->vartype == V_FUNC) || (pfl->vartype == V_UFUNC))
-		pf->un.variable.offset = (u_int)ptr;
+		pf->un.variable.offset = (u_long)ptr; /* FIXME? could still be a pointer bug here! */
 	    else
 		pf->un.variable.offset = (char *)ptr - (char *)&ptp_dummy;
 	    pf->un.variable.fclient = fclient;
@@ -900,8 +900,8 @@ Var2String(
 	str = "<NULL>";
 
     if (debug)
-	printf("Var2String returns 0x%08x (%s)\n",
-	       (u_int) str, str);
+	printf("Var2String returns 0x%p (%s)\n",
+	       str, str);
 
     return(str);
 }
@@ -1133,11 +1133,7 @@ EvalMathopSigned(
     pres->val.longint = ret;
 
     if (debug)
-#ifdef HAVE_LONG_LONG
-	printf("EvalMathopSigned %lld %s %lld returns %s\n",
-#else /* HAVE_LONG_LONG */
-	printf("EvalMathopSigned %ld %s %ld returns %s\n",
-#endif /* HAVE_LONG_LONG */
+	printf("EvalMathopSigned %" FS_LL " %s %" FS_LL " returns %s\n",
 	       varl, Op2Str(pf->op), varr,
 	       Res2Str(pres));
 
@@ -1235,11 +1231,7 @@ EvalRelopSigned(
     pres->val.bool = ret;
 
     if (debug)
-#ifdef HAVE_LONG_LONG
-	printf("EvalSigned %lld %s %lld returns %s\n",
-#else /* HAVE_LONG_LONG */
-	printf("EvalSigned %ld %s %ld returns %s\n",
-#endif /* HAVE_LONG_LONG */
+	printf("EvalSigned %" FS_LL " %s %" FS_LL " returns %s\n",
 	       varl, Op2Str(pf->op), varr, 
 	       BOOL2STR(ret));
 

@@ -317,7 +317,7 @@ PcapSavePacket(
     /* (copying time structure in 2 steps to avoid RedHat brain damage) */
     phdr.ts.tv_sec = current_time.tv_sec;
     phdr.ts.tv_usec = current_time.tv_usec;
-    phdr.caplen = (unsigned)plast - (unsigned)pip + 1;
+    phdr.caplen = (char *)plast - (char *)pip + 1;
     phdr.caplen += EH_SIZE;	/* add in the ether header */
     phdr.len = EH_SIZE + ntohs(PIP_LEN(pip));	/* probably this */
 

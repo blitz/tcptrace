@@ -222,7 +222,7 @@ rttgraph_read(
     u_long rtt_ms;
 
     /* find the start of the TCP header */
-    ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
+    ptcp = (struct tcphdr *) ((char *)pip + 4*IP_HL(pip));
 
     /* make sure there we could have a RTT sample */
     if (!ACK_SET(ptcp))
