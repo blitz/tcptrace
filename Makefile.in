@@ -225,9 +225,9 @@ spotless: clean noplots initial
 #
 # for making distribution
 tarfile: versnum
-	make spotless
 	@ VERS=`./versnum`; DIR=tcptrace_$${VERS}; \
 	GZTAR=$$HOME/tcptrace.$${VERS}.tar.gz; \
+	make spotless
 	cd ..; \
 	test -h $${DIR} || ln -s src $${DIR}; \
 	/usr/sbin/tar -FFcvhf - $${DIR} | gzip > $${GZTAR}; \
