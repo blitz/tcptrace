@@ -144,7 +144,9 @@ http_init(
     int enable=0;
 
     /* look for "-xhttp[N]" */
-    for (i=0; i < argc; ++i) {
+    for (i=1; i < argc; ++i) {
+	if (!argv[i])
+	    continue;  /* argument already taken by another module... */
 	if (strncmp(argv[i],"-x",2) == 0) {
 	    if (strncasecmp(argv[i]+2,"http",4) == 0) {
 		/* I want to be called */
@@ -362,7 +364,8 @@ http_read(
 	    AddGetTS(ph,DataOffset(ph->tcb_client,ptcp->th_seq));
 	}
 	if (ACK_SET(ptcp)) {
-printf("Client acks %ld\n", DataOffset(ph->tcb_server,ptcp->th_ack));	    
+	    if (debug > 4)
+		printf("Client acks %ld\n", DataOffset(ph->tcb_server,ptcp->th_ack));	    
 	    AddAckTS(ph,DataOffset(ph->tcb_server,ptcp->th_ack));
 	}
     }
@@ -371,9 +374,11 @@ printf("Client acks %ld\n", DataOffset(ph->tcb_server,ptcp->th_ack));
     if (IS_SERVER(ptcp)) {
 	if (tcp_data_length > 0) {
 	    AddDataTS(ph,DataOffset(ph->tcb_server,ptcp->th_seq));
-printf("Server sends %ld thru %ld\n",
-       DataOffset(ph->tcb_server,ptcp->th_seq),
-       DataOffset(ph->tcb_server,ptcp->th_seq)+tcp_data_length-1);
+	    if (debug > 5) {
+		printf("Server sends %ld thru %ld\n",
+		       DataOffset(ph->tcb_server,ptcp->th_seq),
+		       DataOffset(ph->tcb_server,ptcp->th_seq)+tcp_data_length-1);
+	    }
 	}
     }
 
@@ -522,12 +527,12 @@ WhenAcked(
     struct time_stamp *pts;
     timeval epoch = {0,0};
 
-    printf("pos:%ld, Chain:\n", position);
-    PrintTSChain(phead,ptail);
+/*     printf("pos:%ld, Chain:\n", position); */
+/*     PrintTSChain(phead,ptail); */
 
     for (pts = phead->next; pts != NULL; pts = pts->next) {
-	fprintf(stderr,"Checking pos %ld against %ld\n",
-		position, pts->position);
+/* 	fprintf(stderr,"Checking pos %ld against %ld\n", */
+/* 		position, pts->position); */
 	if (pts->position >= position) {
 	    /* sent after this one */
 	    return(pts->thetime);
@@ -603,7 +608,8 @@ FindContent(
 					   position+pget->content_length-1);
 
 	    /* when was the last byte ACKed? */
-	    printf("Content length: %d\n", pget->content_length);
+	    if (debug > 4)
+		printf("Content length: %d\n", pget->content_length);
 	    pget->ack_time = WhenAcked(&ph->ack_head,&ph->ack_tail,
 				       position+pget->content_length-1);
 
@@ -768,8 +774,10 @@ HttpDoPlot()
 	    plotter_text(p, pget->lastbyte_time, y_axis, "r",
 			 (sprintf(buf,"%d",pget->content_length),buf));
 	    plotter_diamond(p, pget->ack_time, y_axis);
+#ifdef CLUTTERED
 	    plotter_temp_color(p,"white");
-	    plotter_text(p, pget->ack_time, y_axis, "r", "ACK");
+	    plotter_text(p, pget->ack_time, y_axis, "b", "ACK");
+#endif  /* CLUTTERED */
 
 	    y_axis += 2;
 
