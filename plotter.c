@@ -133,3 +133,20 @@ plotter_utick(pl,t,x)
 	plot(pl,"utick %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
+
+
+void
+plotter_text(pl,t,x,where,str)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+     char		*where;
+     char		*str;
+{
+	plot(pl,"%stext %u.%06u %u\n%s",
+	     where,
+	     t.tv_sec, t.tv_usec,x,
+	     str);
+}
+
+

@@ -5,8 +5,8 @@
 
 
 struct snoop_packet_header {
-	unsigned int	len;
 	unsigned int	tlen;
+	unsigned int	len;
 	unsigned int	junk2;
 	unsigned int	junk3;
 	unsigned int	secs;

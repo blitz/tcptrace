@@ -62,9 +62,9 @@ printip(pip)
 	printf("\t   Dest: %s\n", inet_ntoa(pip->ip_dst));
 
 	printf("\t   Type: 0x%x %s\n",
-	       pip->ip_p, 
-	       (pip->ip_p == IPPROTO_UDP)?"(UDP)":
-	       (pip->ip_p == IPPROTO_TCP)?"(TCP)":
+	       ntohs(pip->ip_p), 
+	       (ntohs(pip->ip_p) == IPPROTO_UDP)?"(UDP)":
+	       (ntohs(pip->ip_p) == IPPROTO_TCP)?"(TCP)":
 	       "");
 }
 
@@ -77,8 +77,8 @@ printtcp(pip)
 
 	ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
 
-	printf("\tTCP SPORT: %u\n", ptcp->th_sport);
-	printf("\t    DPORT: %u\n", ptcp->th_dport);
+	printf("\tTCP SPORT: %u\n", ntohs(ptcp->th_sport));
+	printf("\t    DPORT: %u\n", ntohs(ptcp->th_dport));
 	printf("\t    FLG:   %c%c%c%c%c%c\n",
 	       (ptcp->th_flags & TH_FIN)?'F':'-',
 	       (ptcp->th_flags & TH_SYN)?'S':'-',
@@ -86,9 +86,9 @@ printtcp(pip)
 	       (ptcp->th_flags & TH_PUSH)?'P':'-',
 	       (ptcp->th_flags & TH_ACK)?'A':'-',
 	       (ptcp->th_flags & TH_URG)?'U':'-');
-	printf("\t    SEQ:   0x%08x\n", ptcp->th_seq);
-	printf("\t    ACK:   0x%08x\n", ptcp->th_ack);
-	printf("\t    WIN:   %u\n", ptcp->th_win);
+	printf("\t    SEQ:   0x%08x\n", ntohl(ptcp->th_seq));
+	printf("\t    ACK:   0x%08x\n", ntohl(ptcp->th_ack));
+	printf("\t    WIN:   %u\n", ntohs(ptcp->th_win));
 	printf("\t    OFF:   %u\n", ptcp->th_off);
 }
 
@@ -111,7 +111,7 @@ printpacket(time,len,pep,pip)
 	    return;
 	printip(pip);
 
-	if (pip->ip_p != IPPROTO_TCP)
+	if (ntohs(pip->ip_p) != IPPROTO_TCP)
 	    return;
 	printtcp(pip);
 }

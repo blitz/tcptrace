@@ -36,6 +36,7 @@ struct last {
 	unsigned	win_max;
 	unsigned	win_tot;
 	unsigned	win_zero_ct;
+	unsigned	min_seq;
 	unsigned	packets;
 };
 
@@ -61,6 +62,8 @@ typedef struct {
 /* option flags */
 extern int printem;
 extern int debug;
+extern int show_zero_window;
+extern int show_rexmit;
 
 
 #define MAX_NAME 20
@@ -76,20 +79,21 @@ void bzero();
 
 /* global routine decls */
 char *ts();
-void printtcp();     
-void printpacket();     
-void printeth();     
-void plotter_done();
-void plotter_init();
-void trace_done();
+int is_netm();
+int is_snoop();
+int pread_netm();
+int pread_snoop();
 void dotrace();
 void plotter_darrow();
+void plotter_done();
 void plotter_dtick();
+void plotter_init();
 void plotter_line();
+void plotter_text();
 void plotter_uarrow();
 void plotter_utick();
-int is_netm();
-int pread_netm();
-int is_snoop();
-int pread_snoop();
+void printeth();     
+void printpacket();     
+void printtcp();     
+void trace_done();
 
