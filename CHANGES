@@ -167,3 +167,7 @@
 5.0.6 - Fri Aug 14, 1998
   added UDP connection support, a lot of people have been asking for it
   finished mod_collie
+5.0.7 - Mon Aug 24, 1998
+  fixed bug in StringToArgv() that messed up when the arg buffer started
+    with whitespace
+

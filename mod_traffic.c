@@ -762,7 +762,7 @@ ParseArgs(char *argstring)
     for (i=1; i < argc; ++i) {
 	float interval;
 	if (debug > 1)
-	    printf("Checking argv[%d]:%s\n", i, argv[i]);
+	    printf("Checking argv[%d]: '%s'\n", i, argv[i]);
 	if (strcmp(argv[i],"-d") == 0) {
 	    debug = 1;
 	} else if (sscanf(argv[i],"-i%f", &interval) == 1) {
