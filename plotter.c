@@ -38,17 +38,14 @@ char *HostLetter(ix)
 
 
 
-char *PlotName(pl)
+char *PlotName(plast,pl)
+     struct last *plast;
      PLOTTER pl;
 {
 	static char filename[10];
 
-	if ((pl % 2) == 0)
-	    sprintf(filename,"%s2%s",
-		    strdup(HostLetter(pl)), strdup(HostLetter(pl + 1)));
-	else
-	    sprintf(filename,"%s2%s",
-		    strdup(HostLetter(pl)), strdup(HostLetter(pl - 1)));
+	sprintf(filename,"%s2%s",
+		plast->host_letter, plast->ptwin->host_letter);
 
 	return(filename);
 }
@@ -64,6 +61,9 @@ static void DoPlot(pl, fmt, va_alist)
 	FILE *f = NULL;
 
 	va_start(ap);
+
+	if (pl == -1)
+	    return;
 
 	if (pl > plotter_ix) {
 		fprintf(stderr,"Illegal plotter: %d\n", pl);
@@ -99,7 +99,7 @@ plotter_init(plast,title)
 
 	pl = plotter_ix;
 
-	filename = PlotName(pl);
+	filename = PlotName(plast,pl);
 
 	if (debug)
 	    fprintf(stderr,"Plotter %d file is '%s'\n", pl, filename);
@@ -217,5 +217,3 @@ plotter_text(pl,t,x,where,str)
 	     t.tv_sec, t.tv_usec,x,
 	     str);
 }
-
-

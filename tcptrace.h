@@ -24,6 +24,7 @@ typedef int PLOTTER;
 struct last {
 	/* parent pointer */
 	struct stcp_pair *ptp;
+	struct last	 *ptwin;
 
 	/* TCP information */
 	u_long	ack;
