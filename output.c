@@ -213,6 +213,8 @@ PrintTrace(
 	StatLineI("resets sent","", pab->reset_count, pba->reset_count);
     StatLineI("ack pkts sent","", pab->ack_pkts, pba->ack_pkts);
     StatLineI("pure acks sent","", pab->pureack_pkts, pba->pureack_pkts);
+    StatLineI("sack pkts sent","", pab->num_sacks, pba->num_sacks);
+    StatLineI("max sack blks/ack","", pab->max_sack_blocks, pba->max_sack_blocks);
     StatLineI("unique bytes sent","",
 	      pab->unique_bytes, pba->unique_bytes);
     StatLineI("actual data pkts","", pab->data_pkts, pba->data_pkts);
@@ -264,12 +266,12 @@ PrintTrace(
     StatLineI("avg win adv","bytes",
 	      pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
 	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
-    if (print_cwin) {
-	StatLineI("max cwin","bytes", pab->cwin_max, pba->cwin_max);
-	StatLineI("min cwin","bytes", pab->cwin_min, pba->cwin_min);
-	StatLineI("avg cwin","bytes",
-		  pab->ack_pkts==0?0:pab->cwin_tot/pab->ack_pkts,
-		  pba->ack_pkts==0?0:pba->cwin_tot/pba->ack_pkts);
+    if (print_owin) {
+	StatLineI("max owin","bytes", pab->owin_max, pba->owin_max);
+	StatLineI("min owin","bytes", pab->owin_min, pba->owin_min);
+	StatLineI("avg owin","bytes",
+		  pab->ack_pkts==0?0:pab->owin_tot/pab->ack_pkts,
+		  pba->ack_pkts==0?0:pba->owin_tot/pba->ack_pkts);
     }
     StatLineI("initial window","bytes",
 	      pab->initialwin_bytes, pba->initialwin_bytes);
