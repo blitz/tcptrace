@@ -125,7 +125,7 @@ LDFLAGS += ${PCAP_LDFLAGS}
 # Source Files
 CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c	\
-	tcpdump.c tcptrace.c thruput.c trace.c version.c
+	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c version.c 
 MODULES=mod_http.c mod_traffic.c mod_rttgraph.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
 
@@ -201,6 +201,8 @@ trace.o: tcptrace.h  gcache.h
 compress.o: tcptrace.h  compress.h
 mod_http.o: tcptrace.h 
 mod_traffic.o: tcptrace.h  mod_traffic.h
+mod_rttgraph.o: tcptrace.h  mod_rttgraph.h
+ipv6.o: tcptrace.h ipv6.h
 
 #
 # make development version

@@ -29,53 +29,94 @@
 
 /* all of the variable types that we understand */
 enum vartype {
+    V_ULONG	= 1,
+    V_LONG	= 2,
+    V_UINT	= 3,
+    V_INT	= 4,
+    V_USHORT	= 5,
+    V_SHORT	= 6,
+    V_UCHAR	= 7,
+    V_CHAR	= 8,
+    V_BOOL	= 9,
+    V_STRING	= 10,
 #ifdef HAVE_LONG_LONG
-    V_ULLONG,V_LLONG,
+    V_ULLONG	= 11,
+    V_LLONG	= 12,
 #endif /* HAVE_LONG_LONG */
-    V_ULONG,V_LONG,
-    V_UINT,V_INT,
-    V_USHORT,V_SHORT,
-    V_UCHAR,V_CHAR,
-    V_FLOAT,V_BOOL,V_STRING};
+};
+#ifndef HAVE_LONG_LONG
+#define V_ULLONG V_ULONG
+#define V_LLONG	 V_LONG
+#endif /* HAVE_LONG_LONG */
 
 
 
+/* all of the operations that we understand */
+enum optype {
+    /* just a constant */
+    OP_CONSTANT	  = 101,
 
-struct var_node {
-    Bool isconstant;		/* variable or constant */
-    enum vartype vartype;
-    union {
-	/* for constants */
-	union {
-	    u_long	u_longint;
-	    long	longint;
-	    float	floating;
-	    Bool	bool;
-	    char	*string;
-	} unType;
-	/* for variables */
-	struct {
-	    char 	*name;
-	    u_int	offset;
-	} vardet;
-    } unIsConst;
+    /* a variable */
+    OP_VARIABLE	  = 102,
+
+    /* BINARY OPs */
+    OP_AND	  = 103,
+    OP_OR	  = 104,
+    OP_EQUAL	  = 105,
+    OP_NEQUAL	  = 106,
+    OP_GREATER	  = 107,
+    OP_GREATER_EQ = 108,
+    OP_LESS	  = 109,
+    OP_LESS_EQ	  = 110,
+
+    /* Unary OPs */
+    OP_NOT	  = 111,
 };
 
+
+/* Constant -- just a big union based on the type */
+union Constant {
+    u_llong	u_longint;
+    llong	longint;
+    Bool	bool;
+    char	*string;
+};
+
+/* Variable - keep the name and offset within a tcp_pair */
+struct Variable {
+    char 	*name;
+    u_int	offset;
+};
+
+/* Binary - binary operation */
+struct Binary {
+    struct filter_node *left;
+    struct filter_node *right;
+};
+
+/* Unary - unary operations */
+struct Unary {
+    struct filter_node *pf;
+};
+
+
 struct filter_node {
-    int op;
+    enum optype op;		/* node type */
+    enum vartype vartype;	/* type of the result */
     union {
-	struct filter_node_leaf {
-	    struct var_node *pvarl;
-	    struct var_node *pvarr;
-	} leaf;
-	struct filter_node_bool {
-	    struct filter_node *left;
-	    struct filter_node *right;
-	} bool;
+	struct Unary unary;
+	struct Binary binary;
+	struct Variable variable;
+	union Constant constant;
     } un;
 };
 
 
+/* the result of executing a filter node */
+struct filter_res {
+    enum vartype vartype;
+    union Constant val;
+};
 
 
 /* just a big table of things that we can filter on */
@@ -95,10 +136,15 @@ extern int yyfdebug;
 /* externals */
 int yyflex(void);
 int yyfparse(void);
-struct filter_node *MakeFilterNode(int op);
-struct var_node *MakeVarNode(enum vartype vartype, Bool fconstant);
-struct var_node *LookupVar(char *varname, Bool fclient);
 void InstallFilter(struct filter_node *root);
 int filter_getc(void *in_junk);
 void PrintFilter(struct filter_node *pn);
+
+struct filter_node *MakeUnaryNode(enum optype op, struct filter_node *pf);
+struct filter_node *MakeBinaryNode(enum optype op, struct filter_node *pf_left, struct filter_node *pf_right);
+struct filter_node *MakeVarNode(char *varname);
+struct filter_node *MakeStringConstNode(char *val);
+struct filter_node *MakeBoolConstNode(Bool val);
+struct filter_node *MakeSignedConstNode(llong val);
+struct filter_node *MakeUnsignedConstNode(u_llong val);
 

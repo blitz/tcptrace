@@ -550,7 +550,7 @@ ProcessFile(
 	if (pnum > endpnum)	break;
 
 
-	/* quick sanity check, better be an IPv4 packet */
+	/* quick sanity check, better be an IPv4/v6 packet */
 	if (!PIP_ISV4(pip) && !PIP_ISV6(pip)) {
 	    static Bool warned = FALSE;
 
