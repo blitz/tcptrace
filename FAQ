@@ -1,0 +1,19 @@
+Tcptrace FAQ
+
+============================================================
+Tue May 26, 1998
+
+>> I installed tcptrace version 4.1.3 on sunos4.1.4 together with
+>> tcpdump version 3.4a6 and libpcap version 0.4a6 and made a few
+>> tests, however I amm very puzzled by the lack of traffic in the
+>> reverse direction!
+>> 
+>> Can you throw some light on what the problem might be?
+
+Probably.  It appears that you're doing the "packet grabbing" on the
+same machine that's hosting the connection.  That's a problem under
+SunOS.  Their packet capturing pseudo-device can't grab both ends of a 
+connection whose home is the local machine.  I never can remember
+which end it omits, but given your output, it appears that it can't
+see packets SENT by the local host.  The easiest solution is to run
+tcpdump on a machine OTHER than the ones you're monitoring.

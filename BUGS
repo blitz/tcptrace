@@ -1,11 +1,28 @@
-Known Bugs
+Known Bugs/Problems/Things to fix
 
 ------------------------------------------------------------
 
-Wed May 13, 1998
+Mon Jun  1, 1998
 
-none that I know of...
+Given the number of people who try to pass ASCII files through
+tcptrace and then get confused, I should probably add a bit
+of code to check for "printable" input files and then print
+a helpful message...  
 
 ------------------------------------------------------------
 
-Probably others, though... :-)
+Mon Jun  1, 1998
+
+(from Igor Schein)
+
+>> 2) Filtering with -f or -o doesn't have any effect if -p
+>> option is used.
+
+That's a longstanding, known problem (at least the -o part).  To be
+addressed in a future release.
+
+------------------------------------------------------------
+
+
+
+Probably others, too... :-)
