@@ -299,3 +299,4 @@
   The -O options was writing IPv6 packets incorrectly (wrong length)
 5.1.5 - Wed Feb 17, 1999
   fixed bug in reading .tcptracerc files, caused core dump on some files
+  when printing packets, IP options are now printed too

@@ -48,6 +48,7 @@ static char *ParenHostName(struct ipaddr addr);
 static void printipv4(struct ip *pip, void *plast);
 static void printipv6(struct ipv6 *pipv6, void *plast);
 static char *ipv6addr2str(struct in6_addr addr);
+static void printipv4_opt_addrs(char *popt, int ptr, int len);
 
 
 
@@ -215,9 +216,105 @@ printipv4(
     }
     if ((ntohs(pip->ip_off) & IP_DF) != 0)
 	printf("  Don't Fragment\n");	/* don't fragment */
+
+    /* print IP options if there are any */
+    if (pip->ip_hl != 5) {
+	char *popt = (char *)pip + 20;
+	void *plast_option;
+
+	/* find the last option in the file */
+	plast_option = (char *)pip+4*pip->ip_hl-1;
+	if (plast_option > plast)
+	    plast_option = plast; /* truncated shorter than that */
+
+	printf("\t Options: %d bytes\n", 4*pip->ip_hl-20);
+	while ((void *)popt <= plast_option) {
+	    u_int opt = *popt;
+	    u_int len = *(popt+1);
+	    u_int ptr = *(popt+2);
+	    int optcopy = (opt&0x80);
+	    int optclass = (opt&0x60)>>5;
+	    int optnum = (opt&0x1f);
+
+	    /* check for truncated option */
+	    if ((void *)(popt+len-1) > plast) {
+		printf("\t    IP option (truncated)\n");
+		continue;
+	    }
+
+	    printf("\t    IP option %d (copy:%c  class:%s  number:%d)\n",
+		   opt,
+		   optcopy==0?'N':'Y',
+		   optclass==0?"ctrl":
+		   optclass==1?"reserved1":
+		   optclass==2?"debug":
+		   optclass==3?"reserved3":"unknown",
+		   optnum);
+
+
+	    switch(opt) {
+	      case 3:
+		printf("\t      Loose source route:  len: %d  ptr:%d\n",
+		       len, ptr);
+		printipv4_opt_addrs(popt, ptr, len);
+		break;
+	      case 7:
+		printf("\t      Record Route:  len: %d  ptr:%d\n",
+		       len, ptr);
+		printipv4_opt_addrs(popt, ptr, len);
+		break;
+	      case 9:
+		printf("\t      Strict source route:  len: %d  ptr:%d\n",
+		       len, ptr);
+		printipv4_opt_addrs(popt, ptr, len);
+		break;
+	      case 4:
+		printf("\t      Timestamps:  len: %d  ptr:%d\n",
+		       len, ptr);
+		break;
+	      case 0:
+		printf("\t      EOL\n");
+		len = 1;
+		break;
+	      case 1:
+		printf("\t      PADDING\n");
+		len = 1;
+		break;
+	      default:
+		printf("\t      Unknown Option %d, len: %d\n", opt, len);
+		break;
+	    }
+	    if (len <= 0)
+		break;
+	    popt += len;
+	}
+    }
+
     printf("\n");
 }
 
+
+/* print out the little table in the source route and record route options */
+static void
+printipv4_opt_addrs(
+    char *popt,
+    int ptr,
+    int len)
+{
+    struct in_addr ina;
+    int nptr;
+    int i;
+
+    for (nptr=4,i=1;nptr < len; nptr += 4,++i) {
+	memcpy(&ina.s_addr,popt+nptr-1,4);
+	if (nptr < ptr)
+	    printf("\t        %d: %-15s  %s\n",
+		   i, inet_ntoa(ina),
+		   HostName(*IPV4ADDR2ADDR(&ina)));
+	else
+	    printf("\t        %d: xxxxxxxxxxx\n", i);
+    }
+}
 
 
 static void
