@@ -71,6 +71,7 @@ Op2Str(
       case OP_MINUS:		return("-");
       case OP_TIMES:		return("*");
       case OP_DIVIDE:		return("/");
+      case OP_MOD:		return("%");
       default:			return("??");
     }
 }
@@ -250,6 +251,7 @@ MakeOneBinaryNode(
       case OP_MINUS:
       case OP_TIMES:
       case OP_DIVIDE:
+      case OP_MOD:
 	if ((pf_left->vartype != V_LLONG) && (pf_left->vartype != V_ULLONG)) {
 	    fprintf(stderr,"Arithmetic operator applied to non-number: ");
 	    PrintFilter(pf_left);
@@ -335,7 +337,7 @@ MakeBinaryNode(
 	    /* make one copy */
 	    pf_new = MakeOneBinaryNode(op,pf1,pf2);
 
-	    if (debug)
+	    if (debug>1)
 		printf("MakeBinaryNode: made %s\n", Filter2Str(pf_new));
 
 	    /* hook together as appropriate */
@@ -344,6 +346,7 @@ MakeBinaryNode(
 	      case OP_MINUS:
 	      case OP_TIMES:
 	      case OP_DIVIDE:
+	      case OP_MOD:
 		/* just keep a list */
 		if (pf == NULL) {
 		    pf = pf_new;
@@ -644,6 +647,7 @@ PrintFilterInternal(
       case OP_MINUS:
       case OP_TIMES:
       case OP_DIVIDE:
+      case OP_MOD:
 	sprintf(buf,"(%s%s%s)",
 		PrintFilterInternal(pf->un.binary.left),
 		Op2Str(pf->op),
@@ -922,6 +926,7 @@ EvalMathopUnsigned(
       case OP_MINUS:	  ret = (varl - varr); break;
       case OP_TIMES:	  ret = (varl * varr); break;
       case OP_DIVIDE:	  ret = (varl / varr); break;
+      case OP_MOD:	  ret = (varl % varr); break;
       default: {
 	  fprintf(stderr,"EvalMathodUnsigned: unsupported binary op: %d (%s)\n",
 		  pf->op, Vartype2Str(pf->op));
@@ -973,6 +978,7 @@ EvalMathopSigned(
       case OP_MINUS:	  ret = (varl - varr); break;
       case OP_TIMES:	  ret = (varl * varr); break;
       case OP_DIVIDE:	  ret = (varl / varr); break;
+      case OP_MOD:	  ret = (varl % varr); break;
       default: {
 	  fprintf(stderr,"EvalMathodSigned: unsupported binary op: %d (%s)\n",
 		  pf->op, Vartype2Str(pf->op));
@@ -1302,6 +1308,7 @@ EvalFilter(
       case OP_MINUS:
       case OP_TIMES:
       case OP_DIVIDE:
+      case OP_MOD:
 	if (pf->un.binary.left->vartype == V_ULLONG) {
 	    EvalMathopUnsigned(ptp,&res,pf);
 	    pres->vartype = V_ULLONG;
@@ -1417,29 +1424,38 @@ Filter Syntax:\n\
   numbers:\n\
      variables:\n\
 	anything from the above table with a prefix of either 'c_' meaning\n\
-        the one for the Client or 's_' meaning the value for the Server\n\
+        the one for the Client or 's_' meaning the value for the Server.  If\n\
+	the prefix is omitted, it means \"either one\" (effectively becoming\n\
+	\"c_VAR OR s_VAR)\").\n\
      constant:\n\
 	strings:	anything in double quotes\n\
 	booleans:	TRUE FALSE\n\
 	numbers:	signed or unsigned constants\n\
   arithmetic operations: \n\
-     any of the operators + - * / \n\
-     performed on strings of 'numbers'.  Normal operator precedence\n\
+     any of the operators + - * / %% \n\
+     performed on 'numbers'.  Normal operator precedence\n\
 	 is maintained (or use parens)\n\
   relational operators\n\
      any of < > = != >= <= applied to 'numbers'\n\
   boolean operators\n\
-     any AND OR applied to the above\n\
+     AND, OR, NOT applied to the relational operators above\n\
   misc\n\
-     can have parens\n\
-     can use NOT(expr)\n\
-     you'll probably need to put the expression in single quotes\n\
-     matched connection numbers are saved in file %s for later processing
-	with '-o%s' (for graphing, for example)
-Examples
-  tcptrace '-fc_packets>10' file
-  tcptrace '-fc_packets>10 OR s_packets>10 ' file
-  tcptrace '-f c_packets+1 > s_packets ' file
+     use parens if you're not sure of the precedence\n\
+     use parens anyway, you might be smarter than I am! :-)\n\
+     you'll probably need to put the '-fexpr' expression in single quotes\n\
+     matched connection numbers are saved in file %s for later processing\n\
+	with '-o%s' (for graphing, for example).  This is helpful, because\n\
+	all the work is done in one pass of the file, so if you graph while\n\
+	using a filter, you'll get ALL graphs, not just the ones you want.\n\
+        Just filter on a first pass, then use the \"-oPF\" flag with graphing\n\
+	on the second pass\n\
+     most common synonyms for NOT, AND, and OR also work (!,&&,||,-a,-o)\n\
+	(for those of us with very poor memories\n\
+Examples\n\
+  tcptrace '-fpackets>10' file\n\
+  tcptrace '-fc_packets>10 OR s_packets>20 ' file\n\
+  tcptrace '-f c_packets+10 > s_packets ' file\n\
+  tcptrace -f'thruput>10000 and segs > 100' file\n\
 ", PASS_FILTER_FILENAME, PASS_FILTER_FILENAME);
 }
 
@@ -1498,6 +1514,7 @@ VFuncTput(
 {
     tcp_pair *ptp = ptcb->ptp;
     u_llong tput;
+    double tput_f;
     double etime;
     etime = elapsed(ptp->first_time,ptp->last_time);
 
@@ -1506,10 +1523,14 @@ VFuncTput(
     if (etime == 0.0)
 	return(0);
 
-    tput = (u_llong)((double)(ptcb->data_bytes-ptcb->rexmit_bytes) / etime);
+    tput_f = (double)(ptcb->data_bytes-ptcb->rexmit_bytes) / etime;
+    tput = (u_llong)(tput_f+0.5);
 
     if (debug)
-	printf("VFuncTput(ptcb) = %llu\n", tput);
+	printf("VFuncTput(%s<->%s) = %llu\n",
+	       ptcb->ptp->a_endpoint,
+	       ptcb->ptp->b_endpoint,
+	       tput);
 
     return(tput);
 }
