@@ -124,6 +124,11 @@ extern char *ColorNames[NCOLORS];
 /* {"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink"}; */
 typedef struct pl_line *PLINE;
 
+/* max number of letters in endpoint name */
+/* (8 allows 26**8 different endpoints (209,000,000,000)
+    probably plenty for now!!!!!) */
+#define MAX_HOSTLETTER_LEN 8 
+
 
 
 /* several places in the code NEED numbers of a specific size. */

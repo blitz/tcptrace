@@ -2380,7 +2380,14 @@ ExtractContents(
     long offset;
     u_long fptr;
 	/* Maximum filename could be :
-    static char filename[15];
+		aaaaaaaa2bbbbbbbb_contents.dat which
+		takes 8+1+8+ size of the extension */
+    static char filename[MAX_HOSTLETTER_LEN
+					+1      /* for "2" */
+					+MAX_HOSTLETTER_LEN
+					+sizeof(CONTENTS_FILE_EXTENSION)
+					+1];    /* for terminating NULL. */
+
     if (debug > 2)
 	fprintf(stderr,
 		"ExtractContents(seq:%ld  bytes:%ld  saved_bytes:%ld) called\n",

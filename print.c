@@ -85,7 +85,7 @@ char *
 ts2ascii(
     struct timeval	*ptime)
 {
-	static char buf[30];
+	static char buf[32];
 	struct tm *ptm;
 	char *now;
 	int decimal;

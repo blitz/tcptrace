@@ -177,7 +177,10 @@ plotter_makemore(void)
 /* max number of letters in endpoint name */
 /* (8 allows 26**8 different endpoints (209,000,000,000)
     probably plenty for now!!!!!) */
-#define MAX_HOSTLETTER_LEN 8
+	
+/* #define MAX_HOSTLETTER_LEN 8 
+   Moving this definition to tcptrace.h so other modules can use it. */
+
 char *
 HostLetter(
      unsigned ix)
@@ -218,7 +221,8 @@ TSGPlotName(
     PLOTTER pl,
     char *suffix)
 {
-    static char filename[25];
+	static char filename[25]; 
+
 
     snprintf(filename,sizeof(filename),"%s2%s%s",
 	    plast->host_letter, plast->ptwin->host_letter, suffix);
