@@ -14,7 +14,11 @@ CC	= gcc
 INCS	= -I/usr/local/include
 LDFLAGS = -L/usr/local/lib
 #
-CFLAGS	= -g -O3 -Wall ${INCS}
+#
+# Warning, without -fno-builtin, a bug in gcc 2.7.2 forces an alignment
+# error on my Sparc when it re-writes memcpy()... 
+#
+CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS}
 
 
 #
