@@ -281,7 +281,8 @@ new_plotter(
        only needed for the time sequence graphs */
     Mfprintf(f,"%s %s\n",
 	     graph_time_zero?"dtime":"timeval",
-	     (strcmp(ylabel,"sequence number") == 0)?"unsigned":"signed");
+	     ((strcmp(ylabel,"sequence number") == 0)&&(!graph_seq_zero))?
+	     "unsigned":"signed");
 
     Mfprintf(f,"title\n%s\n", title);
     Mfprintf(f,"xlabel\n%s\n", xlabel);
