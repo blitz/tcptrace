@@ -1,4 +1,4 @@
-Tue Jul 15, 1997
+Fri Aug 15, 1997
 
 Shawn Ostermann
 ostermann@cs.ohiou.edu
@@ -31,16 +31,22 @@ Supported Platforms
 The program is developed here at OU on Sparc machines running Solaris 2.5
 It has also been tested at OU under
   i486 NetBSD 1.1
-  NetBSD 1.1
   sparc-sun-sunos4.1.3
-  FreeBSD 2.2.1 (no longer have access to this)
 
-Bill Fenner has been keeping the FreeBSD "port" up to date, see:
-	http://www.freebsd.org/ports/net.html
+I've also heard that it can be compiled and run under:
+  FreeBSD 2.2.1
+	Bill Fenner has been keeping the FreeBSD "port" up to date, see:
+		http://www.freebsd.org/ports/net.html
+  Linux
+	This stuff is ugly.  I dropped some standard header files into the
+        source directory to get around the linux habit of changing
+        stuff just for fun...
+  HPux
+	I'm also told that it can be compiled on HP systems, but I
+	don't have access to one for testing.
 
-I'm also told that it can be compiled on HP systems, but I don't have
-access to one for testing.
-
+You should just have to change the Makefile to get these compilations
+to work
 
 Running the program
 -------------------
@@ -98,3 +104,5 @@ or ported the program to other architectures:
 			"NetBSD 1.2 on a Pentium box."
 	 Rick Jones (raj@hpisrdq.cup.hp.com)
 		sent me diffs to get it to compile on HP systems
+	 Keith Scott (kscott@zorba.jpl.nasa.gov)
+		sent me Linux diffs

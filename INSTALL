@@ -1,0 +1,18 @@
+
+OK, to the best of my knowledge, you should be able to get tcptrace to
+compile and run under:
+
+Solaris
+NetBSD
+FreeBSD
+Linux
+HPux
+
+by making some simple changes to the Makefile (look for comments for
+your target) and then just typing "make".  The program doesn't need to
+be setuid or anything, so once you get the "tcptrace" binary, just
+stuff it wherever you keep such things and you're all set!
+
+Shawn
+
+Fri Aug 15, 1997
