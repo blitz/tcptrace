@@ -96,6 +96,7 @@ char *ColorNames[NCOLORS] =
 /* locally global variables */
 static u_long filesize = -1;
 char **filenames;
+char *cur_filename;
 
 
 
@@ -440,6 +441,8 @@ ProcessFile(
     struct stat str_stat;
     long int location = 0;
 
+    /* share the current file name */
+    cur_filename = filename;
 
     /* open the file header */
     if (CompOpenHeader(filename) == NULL) {

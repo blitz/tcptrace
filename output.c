@@ -289,6 +289,8 @@ PrintTrace(
     fprintf(stdout,"\ttotal packets: %lu\n", ptp->packets);
 #endif  /* HAVE_LONG_LONG */
 
+    fprintf(stdout,"\tfilename:      %s\n", ptp->filename);
+
     fprintf(stdout,"   %s->%s:			      %s->%s:\n",
 	    host1,host2,host2,host1);
 

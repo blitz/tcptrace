@@ -113,6 +113,10 @@ typedef u_char Bool;
 /* type for an internal file pointer */
 typedef struct mfile MFILE;
 
+/* file name information */
+extern char **filenames;	/* all the files on the cmd line */
+extern char *cur_filename;	/* the current file */
+
 
 #ifdef OLD
 /* test 2 IP addresses for equality */
@@ -309,6 +313,9 @@ struct stcp_pair {
 
     /* module-specific structures, if requested */
     void		**pmod_info;
+
+    /* which file this connection is from */
+    char		*filename;
 
     /* linked list of usage */
     struct stcp_pair *next;
