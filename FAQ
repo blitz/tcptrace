@@ -954,5 +954,24 @@ A54. 'tcptrace -xtraffic -R <filename>'
      particular direction.
 
 ===========================================================================
+Mon Jun 30, 2003
 
-
+Q55. Does anyone know if (and HOW) tcptrace deals with distinguishing
+     between those samples from ACKs that are Delayed ACKs (one ACK per two
+     data packets) vs. those ACKs that are an ACK per data packet?
+       
+     I must distinguish the subsequent ACK as being sent after an ACK
+     timeout, (which I believe is between 200ms and 500ms), if the receiver 
+     in this case is using a Delayed ACK implementation.
+     
+A55. tcptrace does not implement a mechanism to distinguish normal ACKs from
+     Delayed ACKs. However, observing the time-sequence graphs (generated with
+     -S option) could suggest if the receiver is using Delayed ACKs
+     by observing if an ACK is sent for every two data segments or for one).
+    
+     However, when calculating an RTT sample tcptrace uses the timestamp of
+     the most recent unacknowledged segment covered by an ACK. Hence, in the
+     case of Delayed ACKs, RTT times would not include the delays introduced
+     by Delayed ACKs.
+     
+===========================================================================
