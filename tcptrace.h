@@ -9,6 +9,8 @@
  * Copyright (c) 1994 Shawn Ostermann
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -27,6 +29,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 
 
@@ -250,8 +253,6 @@ extern timeval current_time;
 
 
 /* external routine decls */
-void *malloc(int);
-void *MallocZ(int);
 char *ether_ntoa();
 void bzero(void *, int);
 void bcopy(void *, void *,int);
@@ -260,8 +261,9 @@ int finite(double);
 
 
 /* global routine decls */
-void trace_init();
-void trace_done();
+void *MallocZ(int);
+void trace_init(void);
+void trace_done(void);
 void seglist_init(tcb *);
 void printpacket(int, int, void *, int, struct ip *);
 void plotter_vtick(PLOTTER, timeval, u_long);
@@ -279,15 +281,14 @@ void plotter_larrow(PLOTTER, timeval, u_long);
 void plotter_htick(PLOTTER, timeval, u_long);
 void plotter_dtick(PLOTTER, timeval, u_long);
 void plotter_dot(PLOTTER, timeval, u_long);
-void plotter_done();
+void plotter_done(void);
 void plotter_dline(PLOTTER, timeval, u_long, timeval, u_long);
 void plotter_diamond(PLOTTER, timeval, u_long);
 void plotter_darrow(PLOTTER, timeval, u_long);
 void plotter_box(PLOTTER, timeval, u_long);
 void plotter_arrow(PLOTTER, timeval, u_long, char);
-void plot_init();
+void plot_init(void);
 void dotrace(int, struct ip *);
-void dotrace();
 void PrintTrace(tcp_pair *);
 void PrintBrief(tcp_pair *);
 void OnlyConn(int);
@@ -309,7 +310,7 @@ int Mfprintf(MFILE *pmf, char *format, ...);
 int Mvfprintf(MFILE *pmf, char *format, va_list ap);
 int Mfclose(MFILE *pmf);
 int Mfflush(MFILE *pmf);
-void Minit();
+void Minit(void);
 struct tcp_options *ParseOptions(struct tcphdr *ptcp);
 
 
@@ -378,7 +379,7 @@ struct tcp_options {
  * File extensions to use
  *
  */
-#define RTT_DUMP_FILE_EXTENSION		"rttraw"
-#define RTT_GRAPH_FILE_EXTENSION	"rtt"
-#define PLOT_FILE_EXTENSION		"xpl"
-#define THROUGHPUT_FILE_EXTENSION	"tput"
+#define RTT_DUMP_FILE_EXTENSION		"_rttraw.dat"
+#define RTT_GRAPH_FILE_EXTENSION	"_rtt.xpl"
+#define PLOT_FILE_EXTENSION		"_tsg.xpl"
+#define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"

@@ -29,7 +29,6 @@ static void Mcheck(MFILE *pmf);
 static void Mfopen_internal(MFILE *pmf, char *mode);
 static void Mf_totail(MFILE *pmf, MFILE *ptail);
 static void Mf_unlink(MFILE *pmf);
-static void M_printlru();
 
 
 /* head and tail of LRU open file list */
@@ -41,7 +40,7 @@ MFILE mfc_tail;  /* closed files, MOST recently closed */
 
 
 void
-Minit()
+Minit(void)
 {
     mf_head.next = &mf_tail;
     mf_tail.prev = &mf_head;
@@ -201,8 +200,9 @@ Mcheck(
 
 }
 
+#ifdef OLD
 static void
-M_printlru()
+M_printlru(void)
 {
     MFILE *pmf;
     
@@ -214,6 +214,7 @@ M_printlru()
 	fprintf(stderr,"%s ==> ", pmf->fname);
     fprintf(stderr,"NULL \n");
 }
+#endif OLD
 
 
 static void

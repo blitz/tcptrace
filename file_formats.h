@@ -16,7 +16,7 @@
 /**************************************************************/
 
 struct supported_formats {
-    int	(*(*test_func)())();	/* pointer to the tester function	*/
+    int	(*(*test_func)())(void);/* pointer to the tester function	*/
     char	*format_name;	/* name of the file format		*/
     char	*format_descr;	/* description of the file format	*/
 };
@@ -39,17 +39,17 @@ struct supported_formats {
 
 /* give the prototypes for the is_GLORP() routines supported */
 #ifdef GROK_SNOOP
-	int (*is_snoop())();
+	int (*is_snoop(void))();
 #endif GROK_SNOOP
 #ifdef GROK_NETM
-	int (*is_netm())();
+	int (*is_netm(void))();
 #endif GROK_NETM
 #ifdef GROK_TCPDUMP
-	int (*is_tcpdump())();
+	int (*is_tcpdump(void))();
 #endif GROK_TCPDUMP
-#ifdef GROK_EP
-	int (*is_EP())();
-#endif GROK_EP
+#ifdef GROK_ETHERPEEK
+	int (*is_EP(void))();
+#endif GROK_ETHERPEEK
 
 
 /* install the is_GLORP() routines supported */
@@ -60,9 +60,9 @@ struct supported_formats file_formats[] = {
 #ifdef GROK_SNOOP
 	{is_snoop,	"snoop","Sun Snoop -- Distributed with Solaris"},
 #endif GROK_SNOOP
-#ifdef GROK_EP
+#ifdef GROK_ETHERPEEK
 	{is_EP,		"etherpeek", "etherpeek -- Mac sniffer program"},
-#endif GROK_EP
+#endif GROK_ETHERPEEK
 #ifdef GROK_NETM
 	{is_netm,	"netmetrix","Net Metrix -- Commercial program from HP"},
 #endif GROK_NETM

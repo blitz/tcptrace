@@ -7,12 +7,11 @@
 ****************************************/
   
 
-
-#ifdef GROK_EP
-
 #include <stdio.h>
 #include "tcptrace.h"
 
+
+#ifdef GROK_ETHERPEEK
 
 
 /* NOTE:  This is for version 5 of the file.  Other file formats may not work
@@ -159,7 +158,7 @@ pread_EP(
 
 
 /* is the input file a Ether Peek format file?? */
-int (*is_EP())()
+int (*is_EP(void))()
 {
     struct EPFileHeader nhdr;
     struct EPFileHeader2 nhdr2;
@@ -215,4 +214,4 @@ int (*is_EP())()
     return(pread_EP);
 }
 
-#endif GROK_EP
+#endif GROK_ETHERPEEK

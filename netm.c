@@ -9,10 +9,11 @@
  * Copyright (c) 1994 Shawn Ostermann
  */
 
-#ifdef GROK_NETM
 
 #include "tcptrace.h"
 
+
+#ifdef GROK_NETM
 
 
 #define NETM_DUMP_OFFSET 0x1000
@@ -139,7 +140,7 @@ pread_netm(
 
 
 /* is the input file a NetMetrix format file?? */
-int (*is_netm())()
+int (*is_netm(void))()
 {
     struct netm_header nhdr;
     int rlen;

@@ -109,7 +109,7 @@ static void	caunlink(struct cacheblk *, tceix);
  * ====================================================================
  */
 int
-cainit()
+cainit(void)
 {
     struct cacheblk *pcb;
     int cid;
@@ -440,7 +440,7 @@ capurge(
  * ====================================================================
  */
 void
-cadump()
+cadump(void)
 {
     int cid;
     int purge;

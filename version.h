@@ -10,4 +10,4 @@
  */
 
 
-#define VERSION "2.3 beta -- Wed Aug 23, 1995"
+#define VERSION "Ohio University tcptrace -- version 3.0 -- Fri Aug 16, 1996"

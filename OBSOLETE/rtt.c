@@ -13,7 +13,7 @@
 
 
 /* local routines */
-static seg_rec *newseg();
+static seg_rec *newseg(void);
 static void unlinkseg(seg_rec *);
 static void ack_in(tcb *, struct tcphdr *, struct ip *);
 static void seg_out(tcb *, struct tcphdr *, struct ip *);
@@ -31,7 +31,7 @@ seglist_init(
 
 
 static seg_rec *
-newseg()
+newseg(void)
 {
     seg_rec *pnew;
 

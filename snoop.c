@@ -9,10 +9,11 @@
  * Copyright (c) 1994 Shawn Ostermann
  */
 
-#ifdef GROK_SNOOP
 
 #include "tcptrace.h"
 
+
+#ifdef GROK_SNOOP
 
 /* information necessary to understand Solaris Snoop output */
 #define SNOOP_DUMP_OFFSET 16
@@ -103,7 +104,7 @@ pread_snoop(
 /*
  * is_snoop()   is the input file in snoop format??
  */
-int (*is_snoop())()
+int (*is_snoop(void))()
 {
     char buf[20];
     int rlen;

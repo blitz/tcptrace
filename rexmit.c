@@ -28,7 +28,7 @@ static void insert_seg_between(quadrant *, segment *, segment *, segment *);
 static void collapse_quad(quadrant *);
 static segment *create_seg(seqnum, seglen);
 static quadrant *whichquad(seqspace *, seqnum);
-static quadrant *create_quadrant();
+static quadrant *create_quadrant(void);
 static int addseg(tcb *, quadrant *, seglen, seqnum, Bool *);
 static void rtt_retrans(tcb *, segment *);
 static void rtt_ackin(tcb *, segment *);
@@ -195,7 +195,7 @@ create_seg(
 
 /**********************************************************************/
 quadrant *
-create_quadrant()
+create_quadrant(void)
 {
     quadrant *pquad;
 

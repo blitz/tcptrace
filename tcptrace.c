@@ -20,18 +20,18 @@ char *tcptrace_version = VERSION;
 
 /* local routines */
 static void Usage(char *prog);
-static void Version();
-static void Formats();
+static void Version(void);
+static void Formats(void);
 static void QuitSig();
 
 
-/* option flags */
+/* option flags and default values */
 Bool colorplot = TRUE;
 int debug = 0;
 Bool hex = TRUE;
 Bool ignore_non_comp = FALSE;
 Bool plotem = FALSE;
-Bool printbrief = FALSE;
+Bool printbrief = TRUE;
 Bool print_rtt = FALSE;
 Bool graph_rtt = FALSE;
 Bool dump_rtt = FALSE;
@@ -52,31 +52,37 @@ static void
 Usage(
     char *prog)
 {
-    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPSX] [+bclnprtCPS] [-(TBEmio)N]* file\n", prog);
+    fprintf(stderr,"usage: %s [args...]* dumpfile\n", prog);
     fprintf(stderr,"\
-  -b      brief synopsis\n\
-  -c      ignore non-complete connections\n\
-  -d      enable debug\n\
-  -iN     ignore connection N (can use multiple times)\n\
-  -l      label rexmits, zero windows, and out-of-order when plotting\n\
-  -mN     max TCP pairs to keep\n\
-  -n      don't resolve host or service names (much faster)\n\
-  -oN     only this connection (can use multiple times)\n\
-  -p      print individual packet contents\n\
-  -r      print rtt statistics\n\
-  -t      'tick' off the packet numbers\n\
-  -v      print version information and exit\n\
-  -BN     first segment number to analyze (default 1)\n\
-  -C      produce color plots (modified xplot needed)\n\
+Output format options\n\
+  -b      brief output format\n\
+  -l      long output format\n\
+  -r      print rtt statistics (slower for large files)\n\
   -D      print in decimal\n\
-  -EN     last segment number to analyze (default last in file)\n\
-  -G      create rtt sample graphs\n\
-  -P      create packet trace files\n\
-  -R      dump rtt samples to files\n\
-  -S      use short names (list \"host.b.c\" as just \"host\")\n\
-  -TN     output throughput plot files, average over N segments\n\
   -X      print in hexidecimal\n\
-  +[v]    reverse the setting of the -[v] flag\n");
+  -n      don't resolve host or service names (much faster)\n\
+  -S      use short names (list \"picard.cs.ohiou.edu\" as just \"picard\")\n\
+Connection filtering options\n\
+  -iN     ignore connection N (can use multiple times)\n\
+  -oN     only connection N (can use multiple times)\n\
+  -c      ignore non-complete connections (didn't see syn's and fin's)\n\
+Graphing options\n\
+  -C      produce color plot[s] (modified xplot needed)\n\
+  -TN     create throughput graph[s], average over N segments\n\
+  -G      create rtt sample graph[s]\n\
+  -P      create time sequence graph[s]\n\
+  -R      dump raw rtt sample times to file[s]\n\
+Misc options\n\
+  -p      print individual packet contents (can be very long)\n\
+  -t      'tick' off the packet numbers as a progress indication\n\
+  -mN     max TCP pairs to keep\n\
+  -v      print version information and exit\n\
+  -d      whistle while you work (enable debug, use -d -d for more output)\n\
+  +[v]    reverse the setting of the -[v] flag\n\
+Obscure options\n\
+  -EN     last segment number to analyze (default last in file)\n\
+  -BN     first segment number to analyze (default 1)\n\
+");
     Version();
     Formats();
     exit(-2);
@@ -85,14 +91,14 @@ Usage(
 
 
 static void
-Version()
+Version(void)
 {
     fprintf(stderr,"Version: %s\n", tcptrace_version);
 }
 
 
 static void
-Formats()
+Formats(void)
 {
     int i;
     
@@ -119,7 +125,6 @@ main(
     int phystype;
     struct ip *pip;
     int ret;
-    int atoi();
     Bool foundfile = FALSE;
     int (*ppread)();
 
@@ -132,14 +137,15 @@ main(
 
 	    while (*(++argv[i]))
 		switch (*argv[i]) {
+		  case 'b': printbrief = TRUE; break;
+		  case 'l': printbrief = FALSE; break;
+
 		  case 'C': colorplot = TRUE; break;
 		  case 'D': hex = FALSE; break;
 		  case 'P': plotem = TRUE; break;
 		  case 'X': hex = TRUE; break;
-		  case 'b': printbrief = TRUE; break;
 		  case 'c': ignore_non_comp = TRUE; break;
 		  case 'd': ++debug; break;
-		  case 'l': show_rexmit = show_out_order = show_zero_window = TRUE; break;
 		  case 'n': nonames = TRUE; break;
 		  case 'p': printem = TRUE; break;
 		  case 'r': print_rtt = TRUE; break;
@@ -195,7 +201,7 @@ main(
 		switch (*argv[i]) {
 		  case 'b': printbrief = FALSE; break;
 		  case 'c': ignore_non_comp = FALSE; break;
-		  case 'l': show_rexmit = show_out_order = show_zero_window = FALSE; break;
+		  case 'l': printbrief = TRUE; break;
 		  case 'n': nonames = FALSE; break;
 		  case 'p': printem = FALSE; break;
 		  case 'r': print_rtt = FALSE; break;
@@ -217,11 +223,6 @@ main(
 	    foundfile = TRUE;
 	}
     }
-    if (!foundfile)
-	Usage(argv[0]);
-
-    trace_init();
-    plot_init();
 
     if (debug>1) {
 	fprintf(stderr,"debug:            %d\n", debug);
@@ -243,6 +244,15 @@ main(
 	fprintf(stderr,"ending pnum:      %lu\n", endpnum);
 	fprintf(stderr,"throughput intvl: %d\n", thru_interval);
     }
+
+    if (!foundfile)
+	Usage(argv[0]);
+
+    /* knock, knock... */
+    printf("%s\n\n", VERSION);
+
+    trace_init();
+    plot_init();
 
     if (debug) {
 	struct stat stat;
@@ -273,6 +283,9 @@ main(
 	                file_formats[fix].format_name,
 	                file_formats[fix].format_descr);
 	    break;
+	} else if (debug) {
+	    fprintf(stderr,"File format is NOT '%s'\n",
+		    file_formats[fix].format_name);
 	}
 	++fix;
     }

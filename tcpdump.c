@@ -11,15 +11,16 @@
  * Copyright (c) 1994 Shawn Ostermann
  */
 
-#ifdef GROK_TCPDUMP
 
 #include <stdio.h>
 #include <pcap.h>
 #include "tcptrace.h"
 
 
-pcap_t *pcap;
+#ifdef GROK_TCPDUMP
 
+
+pcap_t *pcap;
 
 
 /* ugly (necessary) interaction between the pread_tcpdump() routine and */
@@ -28,6 +29,7 @@ static struct ether_header *callback_pep;
 static struct pcap_pkthdr *callback_phdr;
 static int ip_buf[MAX_IP_PACKLEN];
 
+extern int pcap_offline_read();
 
 
 static int callback(
@@ -77,7 +79,6 @@ pread_tcpdump(
     struct ip		**ppip)
 {
     int ret;
-    int pcap_offline_read();
 
     while (1) {
 	if ((ret = pcap_offline_read(pcap,1,callback,0)) != 1) {
@@ -114,7 +115,7 @@ pread_tcpdump(
 }
 
 
-int (*is_tcpdump())()
+int (*is_tcpdump(void))()
 {
     char errbuf[100];
 

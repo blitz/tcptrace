@@ -1,85 +1,76 @@
 #
-# Gnu Makefile for tcptrace
+# Makefile for tcptrace
 #
-
 
 
 #
 # User-configurable constants
 #
-OPTIM	= -pg -O2 -g -Wall
-OPTIM	= -O2 -g -Wall
-INCS	= -I/usr/local/include
 CC	= gcc
+#
+# If you're using the pcap library, you'll need to add it's include
+# and library location, otherwise the default should be fine
+# 
+INCS	= -I/usr/local/include
 LDFLAGS = -L/usr/local/lib
-SUPPORTED_FORMATS = -DGROK_SNOOP -DGROK_TCPDUMP -DGROK_NETM -DGROK_EP
-
-
 #
-# Standard rules
-#
-GCC_FLAGS = -finline-functions
-CFLAGS	= ${OPTIM} ${INCS} ${SUPPORTED_FORMATS} ${GCC_FLAGS}
+CFLAGS	= -O2 -Wall ${INCS}
 
 
 #
 # All the different libraries, differ from machine to machine
 #
-ifeq ($(wildcard /./vmunix),)
-# Solaris
-	LDLIBS = -lpcap -lnsl -lsocket -lucb -lelf -lm
-else
-# SunOS (I hope)
-	LDLIBS = -lpcap -lm
-endif
+# Math library required (on most machines, at least)
+#
+# For Solaris
+# LDLIBS = -lpcap -lnsl -lsocket -lucb -lelf -lm
+#
+# for general Unix boxes (I hope)
+# LDLIBS = -lpcap -lm
+#
+LDLIBS = -lpcap -lnsl -lsocket -lucb -lelf -lm
 
 
-OFILES= etherpeek.o gcache.o tcptrace.o mfiles.o names.o netm.o output.o \
-	plotter.o print.o snoop.o tcpdump.o thruput.o trace.o rexmit.o 
+
+CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
+	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c 
+OFILES= ${CFILES:.c=.o}
+
 
 tcptrace: ${OFILES}
 	${CC} ${LDFLAGS} ${CFLAGS} ${OFILES} -o tcptrace ${LDLIBS}
 
-install: tcptrace
-	install -s tcptrace /usr/local/bin/tcptrace
 
+#
+# obvious dependencies
+#
+${OFILES}: tcptrace.h config.h
+
+
+#
+# just for RCS
 ci:
 	ci -u -q -t-initial -mlatest Makefile *.h *.c
 
+#
+# for cleaning up
 clean:
-	rm -f *.o tcptrace core *.xpl *.rtt *.tput *.PS.?
-
-tidy:
-	rm -f core *2*.xpl *2*.rtt *2*.tput *.PS.?
-
+	rm -f *.o tcptrace core *.xpl
 noplots:
-	rm -f *2*.xpl *2*.rtt *2*.rttraw *2*.tput *.PS.?
+	rm -f *.xpl
 
+#
+# generate dependencies
 depend:
-#	mkdep *.c
 	makedepend ${INCS} -w 10 *.c
-# DO NOT DELETE
-
-gcache.o: gcache.h
-gcache.o: tcptrace.h
-tcptrace.o: file_formats.h
-tcptrace.o: tcptrace.h
-names.o: gcache.h
-names.o: tcptrace.h
-output.o: gcache.h
-output.o: tcptrace.h
-plotter.o: tcptrace.h
-print.o: tcptrace.h
-rexmit.o: tcptrace.h
-trace.o: gcache.h
-trace.o: tcptrace.h
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 gcache.o: /usr/include/sys/types.h
 gcache.o: /usr/include/sys/feature_tests.h
-gcache.o: /usr/include/sys/machtypes.h
 gcache.o: /usr/include/sys/isa_defs.h
+gcache.o: /usr/include/sys/machtypes.h
 gcache.o: tcptrace.h
+gcache.o: config.h
 gcache.o: /usr/include/stdio.h
 gcache.o: /usr/include/string.h
 gcache.o: /usr/include/unistd.h
@@ -124,12 +115,13 @@ gcache.o: /usr/include/stdarg.h
 gcache.o: /usr/include/varargs.h
 gcache.o: gcache.h
 mfiles.o: tcptrace.h
+mfiles.o: config.h
 mfiles.o: /usr/include/stdio.h
 mfiles.o: /usr/include/sys/feature_tests.h
 mfiles.o: /usr/include/string.h
 mfiles.o: /usr/include/sys/types.h
-mfiles.o: /usr/include/sys/machtypes.h
 mfiles.o: /usr/include/sys/isa_defs.h
+mfiles.o: /usr/include/sys/machtypes.h
 mfiles.o: /usr/include/unistd.h
 mfiles.o: /usr/include/sys/unistd.h
 mfiles.o: /usr/include/sys/time.h
@@ -173,12 +165,13 @@ mfiles.o: /usr/include/varargs.h
 mfiles.o: /usr/include/errno.h
 mfiles.o: /usr/include/sys/errno.h
 names.o: tcptrace.h
+names.o: config.h
 names.o: /usr/include/stdio.h
 names.o: /usr/include/sys/feature_tests.h
 names.o: /usr/include/string.h
 names.o: /usr/include/sys/types.h
-names.o: /usr/include/sys/machtypes.h
 names.o: /usr/include/sys/isa_defs.h
+names.o: /usr/include/sys/machtypes.h
 names.o: /usr/include/unistd.h
 names.o: /usr/include/sys/unistd.h
 names.o: /usr/include/sys/time.h
@@ -221,12 +214,13 @@ names.o: /usr/include/stdarg.h
 names.o: /usr/include/varargs.h
 names.o: gcache.h
 output.o: tcptrace.h
+output.o: config.h
 output.o: /usr/include/stdio.h
 output.o: /usr/include/sys/feature_tests.h
 output.o: /usr/include/string.h
 output.o: /usr/include/sys/types.h
-output.o: /usr/include/sys/machtypes.h
 output.o: /usr/include/sys/isa_defs.h
+output.o: /usr/include/sys/machtypes.h
 output.o: /usr/include/unistd.h
 output.o: /usr/include/sys/unistd.h
 output.o: /usr/include/sys/time.h
@@ -272,12 +266,13 @@ output.o: /usr/local/include/math.h
 output.o: /usr/local/include/_ansi.h
 output.o: /usr/local/include/sys/config.h
 plotter.o: tcptrace.h
+plotter.o: config.h
 plotter.o: /usr/include/stdio.h
 plotter.o: /usr/include/sys/feature_tests.h
 plotter.o: /usr/include/string.h
 plotter.o: /usr/include/sys/types.h
-plotter.o: /usr/include/sys/machtypes.h
 plotter.o: /usr/include/sys/isa_defs.h
+plotter.o: /usr/include/sys/machtypes.h
 plotter.o: /usr/include/unistd.h
 plotter.o: /usr/include/sys/unistd.h
 plotter.o: /usr/include/sys/time.h
@@ -319,12 +314,13 @@ plotter.o: /usr/include/sys/stat.h
 plotter.o: /usr/include/stdarg.h
 plotter.o: /usr/include/varargs.h
 print.o: tcptrace.h
+print.o: config.h
 print.o: /usr/include/stdio.h
 print.o: /usr/include/sys/feature_tests.h
 print.o: /usr/include/string.h
 print.o: /usr/include/sys/types.h
-print.o: /usr/include/sys/machtypes.h
 print.o: /usr/include/sys/isa_defs.h
+print.o: /usr/include/sys/machtypes.h
 print.o: /usr/include/unistd.h
 print.o: /usr/include/sys/unistd.h
 print.o: /usr/include/sys/time.h
@@ -366,12 +362,13 @@ print.o: /usr/include/sys/stat.h
 print.o: /usr/include/stdarg.h
 print.o: /usr/include/varargs.h
 rexmit.o: tcptrace.h
+rexmit.o: config.h
 rexmit.o: /usr/include/stdio.h
 rexmit.o: /usr/include/sys/feature_tests.h
 rexmit.o: /usr/include/string.h
 rexmit.o: /usr/include/sys/types.h
-rexmit.o: /usr/include/sys/machtypes.h
 rexmit.o: /usr/include/sys/isa_defs.h
+rexmit.o: /usr/include/sys/machtypes.h
 rexmit.o: /usr/include/unistd.h
 rexmit.o: /usr/include/sys/unistd.h
 rexmit.o: /usr/include/sys/time.h
@@ -413,12 +410,13 @@ rexmit.o: /usr/include/sys/stat.h
 rexmit.o: /usr/include/stdarg.h
 rexmit.o: /usr/include/varargs.h
 rtt.o: tcptrace.h
+rtt.o: config.h
 rtt.o: /usr/include/stdio.h
 rtt.o: /usr/include/sys/feature_tests.h
 rtt.o: /usr/include/string.h
 rtt.o: /usr/include/sys/types.h
-rtt.o: /usr/include/sys/machtypes.h
 rtt.o: /usr/include/sys/isa_defs.h
+rtt.o: /usr/include/sys/machtypes.h
 rtt.o: /usr/include/unistd.h
 rtt.o: /usr/include/sys/unistd.h
 rtt.o: /usr/include/sys/time.h
@@ -460,12 +458,13 @@ rtt.o: /usr/include/sys/stat.h
 rtt.o: /usr/include/stdarg.h
 rtt.o: /usr/include/varargs.h
 tcptrace.o: tcptrace.h
+tcptrace.o: config.h
 tcptrace.o: /usr/include/stdio.h
 tcptrace.o: /usr/include/sys/feature_tests.h
 tcptrace.o: /usr/include/string.h
 tcptrace.o: /usr/include/sys/types.h
-tcptrace.o: /usr/include/sys/machtypes.h
 tcptrace.o: /usr/include/sys/isa_defs.h
+tcptrace.o: /usr/include/sys/machtypes.h
 tcptrace.o: /usr/include/unistd.h
 tcptrace.o: /usr/include/sys/unistd.h
 tcptrace.o: /usr/include/sys/time.h
@@ -509,12 +508,13 @@ tcptrace.o: /usr/include/varargs.h
 tcptrace.o: file_formats.h
 tcptrace.o: version.h
 thruput.o: tcptrace.h
+thruput.o: config.h
 thruput.o: /usr/include/stdio.h
 thruput.o: /usr/include/sys/feature_tests.h
 thruput.o: /usr/include/string.h
 thruput.o: /usr/include/sys/types.h
-thruput.o: /usr/include/sys/machtypes.h
 thruput.o: /usr/include/sys/isa_defs.h
+thruput.o: /usr/include/sys/machtypes.h
 thruput.o: /usr/include/unistd.h
 thruput.o: /usr/include/sys/unistd.h
 thruput.o: /usr/include/sys/time.h
@@ -556,12 +556,13 @@ thruput.o: /usr/include/sys/stat.h
 thruput.o: /usr/include/stdarg.h
 thruput.o: /usr/include/varargs.h
 trace.o: tcptrace.h
+trace.o: config.h
 trace.o: /usr/include/stdio.h
 trace.o: /usr/include/sys/feature_tests.h
 trace.o: /usr/include/string.h
 trace.o: /usr/include/sys/types.h
-trace.o: /usr/include/sys/machtypes.h
 trace.o: /usr/include/sys/isa_defs.h
+trace.o: /usr/include/sys/machtypes.h
 trace.o: /usr/include/unistd.h
 trace.o: /usr/include/sys/unistd.h
 trace.o: /usr/include/sys/time.h

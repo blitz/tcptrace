@@ -54,7 +54,7 @@ xp_timestamp(
 
 
 void
-plot_init()
+plot_init(void)
 {
     max_plotters = 4*max_tcp_pairs;
 
@@ -194,7 +194,7 @@ new_plotter(
 
 
 void
-plotter_done()
+plotter_done(void)
 {
     PLOTTER pl;
     MFILE *f;

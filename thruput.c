@@ -83,7 +83,7 @@ DoThru(
 	etime = 1000;	/* ick, what if "no time" has passed?? */
     thruput = (double) nbytes / ((double) etime / 1000000.0);
     plotter_temp_color(ptcb->thru_plotter,"yellow");
-    plotter_diamond(ptcb->thru_plotter,
+    plotter_dot(ptcb->thru_plotter,
 		    current_time, (int) thruput);
 
     /* add in the latest packet */

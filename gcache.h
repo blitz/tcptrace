@@ -26,8 +26,8 @@ int cainsert(int, char *, tcelen, char *, tcelen);
 int calookup(int, char *, tcelen, char *, tcelen *);
 int capurge(int);
 int caremove(int, char *, tcelen);
-void cadump();
-int cainit();
+void cadump(void);
+int cainit(void);
 
 
 
