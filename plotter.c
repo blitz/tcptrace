@@ -124,7 +124,7 @@ DoPlot(
     va_list	ap;
     FILE *f = NULL;
 
-    va_start(ap,);
+    va_start(ap,fmt);
 
     if (!plotem)
 	return;
