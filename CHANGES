@@ -215,3 +215,12 @@
     warnings from real tcpdump program, I fixed it.
   Added cwin graph (-N) for Mark
   Added segsize graph (-F!) for Jeff Fedor
+  Added elapsed time to "tick" output to make it easier to stop early
+  Added "pure acks/second" to traffic module
+  Added "halfopen conns" to traffic module
+5.0.14 - Wed Nov 18, 1998
+  Changed the way that connections are stored and searched.  Has a major
+    impact in improving performance when the program's VM Size
+    grows above the machine's physical memory.  It can now continue to run
+    well under these conditions (up to available swap space), before it
+    just thrashed itself to a standstill.
