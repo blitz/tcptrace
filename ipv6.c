@@ -88,7 +88,7 @@ ipv6_nextheader(
 struct tcphdr *
 gettcp(
     struct ip *pip,
-    void *plast)
+    void **pplast)
 {
     struct ipv6 *pip6 = (struct ipv6 *)pip;
     char nextheader;
@@ -107,7 +107,7 @@ gettcp(
 	    if (debug>1) {
 		printf("gettcp: Skipping IPv4 non-initial fragment\n");
 		if (debug > 2) {
-		    printpacket(100,100,NULL,0,pip,plast);
+		    printpacket(100,100,NULL,0,pip,*pplast);
 		}
 	    }
 	    return(NULL);
@@ -116,11 +116,20 @@ gettcp(
 	/* OK, it starts here */
 	ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
 
+	/* adjust plast in accordance with ip_len (really short packets get garbage) */
+	if (((unsigned)pip + ntohs(pip->ip_len) - 1) < (unsigned)(*pplast)) {
+	    *pplast = (void *)((unsigned)pip + ntohs(pip->ip_len));
+	}
+
+#ifdef OLD
+	/* this is better verified when used, the error message is better */
+
 	/* make sure the whole header is there */
-	if ((u_long)ptcp + (sizeof struct tcphdr) - 1 > (u_long)plast) {
+	if ((u_long)ptcp + (sizeof struct tcphdr) - 1 > (u_long)*pplast) {
 	    /* part of the header is missing */
 	    return(NULL);
 	}
+#endif
 
 	return (ptcp);
     }
@@ -145,7 +154,7 @@ gettcp(
 	
 	/* make sure we're still within the packet */
 	/* might be truncated, or might be bad header math */
-	if ((void *)pheader > plast) {
+	if ((void *)pheader > *pplast) {
 	    if (debug>3)
 		printf("gettcp: packet truncated before TCP header\n");
 	    return(NULL);
