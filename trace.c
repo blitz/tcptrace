@@ -1576,7 +1576,7 @@ dotrace(
     /* do rtt stats */
     if (ACK_SET(ptcp)) {
 	ack_type = ack_in(otherdir,th_ack,tcp_data_length,eff_win);
-	ack_type = ack_in(otherdir,th_ack,tcp_data_length);
+
 	if ( (th_ack == (otherdir->syn+1)) &&
 		 (otherdir->syn_count == 1) )
 		 otherdir->rtt_3WHS=otherdir->rtt_last; 

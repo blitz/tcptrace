@@ -548,7 +548,8 @@ enum t_ack
 ack_in(
     tcb *ptcb,
     seqnum ack,
-    unsigned tcp_data_length)
+    unsigned tcp_data_length,
+    u_long eff_win)
 {
     quadrant *pquad;
     quadrant *pquad_prev;
@@ -557,6 +558,11 @@ ack_in(
     Bool intervening_xmits = FALSE;
     timeval last_xmit = {0,0};
     enum t_ack ret = 0;
+
+    enum dup_ack_handling {BSD_VERSION = 1,         /* Handling of duplicate ack's based on the specifications of BSD code */
+			   CURRENT_VERSION = 2};    /* Handling of duplicate ack's according to the current version of "tcptrace" */
+    enum dup_ack_handling dup_ack_type;       /* default type is the code based on BSD specifications */
+			   
 
     /* check each segment in the segment list for the PREVIOUS quadrant */
     pquad = whichquad(ptcb->ss,ack);
@@ -589,19 +595,62 @@ ack_in(
 
 	/* (ELSE) ACK covers this sequence */
 	if (pseg->acked) {
-	    /* already acked this one */
-	    ++pseg->acked;
-	    if (ack == (pseg->seq_lastbyte+1)) {
-		++ptcb->rtt_dupack; /* one more duplicate ack */
-		ret = CUMUL;
-		if (pseg->acked == 4) {
-		    /* some people say these CAN'T have data */
-		    if ((tcp_data_length == 0) ||
-			triple_dupack_allows_data) {
-			++ptcb->rtt_triple_dupack;
+	    /* default will be the BSD version, it can be changed by giving 
+	       '--turn_off_BSD_dupack' switch */
+	    dup_ack_type = (dup_ack_handling) ? BSD_VERSION : CURRENT_VERSION;
+
+	    /* default type is the specifications based on BSD code */
+	    switch (dup_ack_type) {
+	      case CURRENT_VERSION:
+		if (ack == (pseg->seq_lastbyte+1)) {
+		    ++pseg->acked;      /* already acked this one */
+		    ++ptcb->rtt_dupack; /* one more duplicate ack */
+		    ret = CUMUL;
+		    if (pseg->acked == 4) {
+		        /* some people say these CAN'T have data */
+		        if ((tcp_data_length == 0) ||
+			    triple_dupack_allows_data) {
+			    ++ptcb->rtt_triple_dupack;
+			    ret = TRIPLE;
+			}
+		    }
+		}
+		break;
+	      case BSD_VERSION:
+		/* For an acknowledgement to be considered as duplicate ACK in 
+		   BSD version, following rules must be followed:
+		   1) the received segment should contain the biggest ACK TCP 
+		      has seen,
+		   2) the length of the segment containing dup ack should be 0,
+		   3) advertised window in this segment should not change,
+		   4) and there must be some outstanding data */
+
+	        if ((ack == (pseg->seq_lastbyte+1)) &&
+
+		    /* 1) the received segment should contain the biggest ACK 
+		          TCP has seen*/
+		    (ack == ptcb->ptwin->ack) &&
+
+		    /* 2) the len of segment containing dup ack should be 0 */
+		    (tcp_data_length == 0) &&
+
+		    /* 3) advertised window in this segment should not change*/
+		    (eff_win == ptcb->ptwin->win_last) &&
+
+		    /* 4) there must be some outstanding data */
+		    (ptcb->owin_tot > 0)) {
+		    ++ptcb->rtt_dupack;
+		    ret = CUMUL;
+
+		    /* already acked this one */
+		    ++pseg->acked;
+		    if (pseg->acked == 4) {
+		        ++ptcb->rtt_triple_dupack;
 			ret = TRIPLE;
 		    }
 		}
+		else
+		    pseg->acked = 1;   /* received segment is not pure duplicate acknowledgement */
 	    }
 	    continue;
 	}

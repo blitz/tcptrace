@@ -139,6 +139,7 @@ Bool run_continuously = FALSE;
 Bool xplot_all_files = FALSE;
 Bool conn_num_threshold = FALSE;
 Bool ns_hdrs = TRUE;
+Bool dup_ack_handling = TRUE;
 Bool csv = FALSE;
 Bool tsv = FALSE;
 u_long remove_live_conn_interval = REMOVE_LIVE_CONN_INTERVAL;
@@ -257,6 +258,8 @@ static struct ext_bool_op {
      "display the long output as comma separated values"},
     {"tsv", &tsv, TRUE,
      "display the long output as tab separated values"},
+    {"turn_off_BSD_dupack", &dup_ack_handling, FALSE,
+     "turn of the BSD version of the duplicate ack handling"},
 
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
