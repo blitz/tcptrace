@@ -615,8 +615,16 @@ PassesFilter(
 void
 HelpFilter(void)
 {
-    fprintf(stderr,"\n\
-Filter Expressions.....\n");
+    int i;
+    fprintf(stderr,"Filter Variables:\n");
+
+    for (i=0; i < NUM_FILTERS; ++i) {
+	struct filter_line *pf = &filters[i];
+
+	fprintf(stderr,"    %20s  %s\n",
+		pf->varname, Vartype2Str(pf->vartype));
+		
+    }
 }
 
 
