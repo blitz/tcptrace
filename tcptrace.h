@@ -344,8 +344,10 @@ extern Bool print_cwin;
 extern Bool printbrief;
 extern Bool printsuppress;
 extern Bool printem;
+extern Bool printallofem;
 extern Bool printticks;
 extern Bool printtrunc;
+extern Bool printbadmbz;
 extern Bool show_out_order;
 extern Bool show_rexmit;
 extern Bool show_zero_window;
@@ -362,6 +364,7 @@ extern u_long pnum;
 
 extern u_long ctrunc;
 extern timeval current_time;
+extern char *output_filename;
 
 
 #define MAX_NAME 20
@@ -444,6 +447,7 @@ Bool FileIsStdin(char *filename);
 struct tcb *ptp2ptcb(tcp_pair *ptp, struct ip *pip, struct tcphdr *ptcp);
 void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr);
 int IP_SAMEADDR (ipaddr addr1, ipaddr addr2);
+void PcapSavePacket(char *filename, struct ip *pip, void *plast);
 
 /* filter routines */
 void HelpFilter(void);
@@ -457,6 +461,8 @@ Bool PassesFilter(tcp_pair *ptp);
 #define RESET_SET(ptcp)((ptcp)->th_flags & TH_RST)
 #define PUSH_SET(ptcp)((ptcp)->th_flags & TH_PUSH)
 #define URGENT_SET(ptcp)((ptcp)->th_flags & TH_URG)
+#define FLAG6_SET(ptcp)((ptcp)->th_flags & 0x40)
+#define FLAG7_SET(ptcp)((ptcp)->th_flags & 0x80)
 
 
 /* connection directions */
