@@ -25,6 +25,8 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
+static char const rcsid_rttgraph[] =
+    "@(#)$Header$";
 
 /* header file for rttgraph.c */
 int rttgraph_init(int argc, char *argv[]);

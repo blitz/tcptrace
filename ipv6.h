@@ -25,6 +25,8 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
+static char const rcsid_tcptrace[] =
+    "@(#)$Header$";
 
 
 /*

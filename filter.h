@@ -25,6 +25,8 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
+static char const rcsid_filter[] =
+    "@(#)$Header$";
 
 
 /* all of the variable types that we understand */

@@ -25,6 +25,8 @@
  * 		Athens, OH
  *		ehelvey@cs.ohiou.edu
  */
+static char const rcsid_tcplib[] =
+    "@(#)$Header$";
 
 
 struct tcplib_next_converse {

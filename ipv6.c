@@ -24,6 +24,10 @@
  * 		Ohio University
  * 		Athens, OH
  */
+static char const copyright[] =
+    "@(#)Copyright (c) 1998 -- Shawn Ostermann -- Ohio University.  All rights reserved.\n";
+static char const rcsid[] =
+    "@(#)$Header$";
 
 
 #include "tcptrace.h"

@@ -25,6 +25,8 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
+static char const rcsid_http[] =
+    "@(#)$Header$";
 
 /* header file for http.c */
 int http_init(int argc, char *argv[]);

@@ -25,6 +25,8 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
+static char const rcsid_collie[] =
+    "@(#)$Header$";
 
 /* header file for collie.c */
 int collie_init(int argc, char *argv[]);
