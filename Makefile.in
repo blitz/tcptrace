@@ -90,6 +90,16 @@ DEFINES += -DGROK_NETM
 DEFINES += -DGROK_ETHERPEEK
 
 
+################################################################## 
+# 
+# Just a quick installation rule, not much to do
+# 
+################################################################## 
+INSTALL = ./install-sh -c
+# Pathname of directory to install the binary
+BINDIR = /usr/local/bin
+install: tcptrace
+	$(INSTALL) -m 755 -o bin -g bin tcptrace ${BINDIR}/tcptrace
 
 
 ################################################################## 
