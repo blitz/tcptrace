@@ -316,15 +316,6 @@ PrintTrace(
 	      pab->initialwin_segs, pba->initialwin_segs);
 
 
-    /* do the throughput calcs */
-    etime /= 1000000.0;  /* convert to seconds */
-    if (etime == 0.0)
-	StatLineI("throughput","","%s",(int)"NA",(int)"NA");
-    else
-	StatLineF("throughput","Bps","%8.0f",
-		  (double) (pab->data_bytes-pab->rexmit_bytes) / etime,
-		  (double) (pba->data_bytes-pba->rexmit_bytes) / etime);
-
     /* compare to theoretical length of the stream (not just what
        we saw) using the SYN and FIN
        (N.B. not taking wrapped seq space into account) */
@@ -348,6 +339,15 @@ PrintTrace(
 	StatLineI("truncated packets","pkts","%8lu",
 		  pab->trunc_segs, pba->trunc_segs);
     }
+
+    /* do the throughput calcs */
+    etime /= 1000000.0;  /* convert to seconds */
+    if (etime == 0.0)
+	StatLineI("throughput","","%s",(int)"NA",(int)"NA");
+    else
+	StatLineF("throughput","Bps","%8.0f",
+		  (double) (pab->data_bytes-pab->rexmit_bytes) / etime,
+		  (double) (pba->data_bytes-pba->rexmit_bytes) / etime);
 
     if (print_rtt) {
 	fprintf(stdout,"\n");
