@@ -314,4 +314,9 @@
     with individual packet dumps (--dump is good enough prefix)
   bug fixed to the http module from Daikichi Osuga (byte sex problems)
   added support for DLT_ATM_RFC1483-format tcpdump files
+5.2.0 - Tue Sep  7, 1999
+  patch in gache.c for Linux/Redhat stupidity with the strncmp() macro
+  fixed ipv6.h to work with the way that Linux/Redhat built IPv6
+  fixed bug in recording window stats from SYN packets when using scaling
+
 
