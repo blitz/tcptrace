@@ -150,7 +150,7 @@ http_read(
     client = (ptcp->th_dport == httpd_port);
 
     /* find the data */
-    pdata = (u_char *)ptcp + ptcp->th_off*4;
+    pdata = (char *)ptcp + (unsigned)ptcp->th_off*4;
 
     /* look for GET */
     if (client) {
@@ -201,13 +201,11 @@ http_read(
     /* look for Content_Length: */
     if (!client && (ph->content_length == 0)) {
 	for (pch = pdata; pch <= (char *)plast; ++pch) {
-/* 	    printf("%c", isprint(*pch)?*pch:'-'); */
-	    if (strncasecmp(pch,"content-length:", 14) == 0) {
+	    if (strncasecmp(pch,"Content-Length:", 15) == 0) {
 		/* find the value */
 		ph->content_length = atoi(&pch[16]);
 	    }
 	}
-/* 	printf("\n"); */
     }
 
     /* at least count the bytes */

@@ -45,6 +45,9 @@ CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 #CFLAGS	+= -pg
 #LDFLAGS += /usr/lib/libdl.so.1
 
+# for testing "cleanness" before distribution
+#CFLAGS	+= -pedantic -Wall
+
 #
 # All the different libraries, differ from machine to machine
 #
@@ -53,8 +56,14 @@ CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 # For Solaris
 # LDLIBS = -lpcap -lnsl -lsocket -lm
 #
+# For SunOS
+# LDLIBS = -lpcap -lm
+#
 # For HP
 # LDLIBS = -lpcap -lstr -lm
+#
+# for NetBSD
+# LDLIBS = -lpcap -lm
 #
 # for general Unix boxes (I hope)
 # LDLIBS = -lpcap -lm
@@ -100,6 +109,10 @@ noplots:
 # for making distribution
 tarfile:
 	cd ..; /usr/sbin/tar -FFcfv $$HOME/tcptrace.tar tcptrace
+#
+# similar, but include RCS directory and etc
+bigtarfile:
+	cd ..; /usr/sbin/tar -cfv $$HOME/tcptrace.tar tcptrace
 
 
 #
