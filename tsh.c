@@ -133,8 +133,8 @@ pread_tsh(
       tcpb->th_win = inbuf[38]<<8 + inbuf[39];
     }
 
-    ptime->tv_sec  = inbuf[0]<<24 + inbuf[1]<<16 + inbuf[2]<<8 + inbuf[3];
-    ptime->tv_usec = inbuf[5]<<16 + inbuf[6]<<8 + inbuf[7];
+    ptime->tv_sec = *(int *)&(inbuf[0]);
+    ptime->tv_usec = ((*(int *)&(inbuf[4]))<<8)>>16;
 
     *ptlen = *plen;
 
