@@ -27,3 +27,19 @@ Fri Jul 24, 1998
 The "diamond" means that the segment was sent with a PUSH (so most
 segments will have these except for large data transfers).  This feature
 is now documented in the on-line docs.
+
+
+>> The second thing is that you should create a margin around the
+>> plot.  Unfortunately, XPLOT will only zoom out as far as the
+>> original plot. I often find myself trying to figure out what is
+>> happening at the handshake and closing of a connection and I cannot
+>> see clearly these locations because they run off the side of the
+>> plot.
+
+Yes, this is a problem.  The only way to do it is to add invisible
+points outside the normal range, xplot won't let me control the area
+otherwise.  In this particular case, however, there's an easy
+solution: use the middle mouse button to move the graph so that the
+lower corner all shows.  Using this, you can scroll anywhere on the
+screen, even outside the boundaries of the points being plotted.
+
