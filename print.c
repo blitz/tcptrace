@@ -94,6 +94,7 @@ printtcp_packet(
     unsigned tcp_length;
     unsigned tcp_data_length;
     struct tcphdr *ptcp;
+    u_char *pdata;
 
     ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
 
@@ -121,8 +122,24 @@ printtcp_packet(
 	hex?"\t     ACK: 0x%08x\n":"\t     ACK: %d\n",
 	ntohl(ptcp->th_ack));
     printf("\t     WIN: %u\n", ntohs(ptcp->th_win));
-    if (ptcp->th_off != 5)
-        printf("\t    HLEN: %u bytes\n", ptcp->th_off*4);
+    pdata = (u_char *)ptcp + ptcp->th_off*4;
+    if (ptcp->th_off != 5) {
+	struct tcp_options *ptcpo;
+
+        printf("\t    OPTS: %u bytes\t",
+	       (ptcp->th_off*4) - sizeof(struct tcphdr));
+
+	ptcpo = ParseOptions(ptcp);
+
+	if (ptcpo->mss != -1)
+	    printf(" MSS(%d)", ptcpo->mss);
+	if (ptcpo->ws != -1)
+	    printf(" WS(%d)", ptcpo->ws);
+	if (ptcpo->tsval != -1) {
+	    printf(" TS(%ld,%ld)", ptcpo->tsval, ptcpo->tsecr);
+	}
+        printf("\n");
+    }
     if (tcp_data_length > 0)
 	printf("\t    data: %u bytes\n", tcp_data_length);
 }

@@ -229,11 +229,21 @@ PrintTrace(
     StatlineI("actual data pkts","","%8lu", pab->data_pkts, pba->data_pkts);
     StatlineI("actual data bytes","","%8lu", pab->data_bytes, pba->data_bytes);
     StatlineI("rexmt data pkts","","%8lu", pab->rexmit_pkts, pba->rexmit_pkts);
-    StatlineI("rexmt data bytes","","%8lu", pab->rexmit_bytes, pba->rexmit_bytes);
-    StatlineI("outoforder pkts","","%8lu", pab->out_order_pkts, pba->out_order_pkts);
+    StatlineI("rexmt data bytes","","%8lu",
+	      pab->rexmit_bytes, pba->rexmit_bytes);
+    StatlineI("outoforder pkts","","%8lu",
+	      pab->out_order_pkts, pba->out_order_pkts);
     StatlineI("SYN/FIN pkts sent","","%s",
-	      (sprintf(bufl,"%d/%d", pab->syn_count, pab->fin_count),(int)bufl),
-	      (sprintf(bufr,"%d/%d", pba->syn_count, pba->fin_count),(int)bufr));
+	      (sprintf(bufl,"%d/%d",
+		       pab->syn_count, pab->fin_count),(int)bufl),
+	      (sprintf(bufr,"%d/%d",
+		       pba->syn_count, pba->fin_count),(int)bufr));
+    StatlineI("req 1323 ws/ts","","%s",
+	      sprintf(bufl,"%c/%c",
+		      pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),
+	      sprintf(bufl,"%c/%c",
+		      pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'));
+    StatlineI("mss requested","bytes","%8lu", pab->mss, pba->mss);
     StatlineI("max segm size","bytes","%8lu",
 	      pab->max_seg_size,
 	      pba->max_seg_size);
@@ -245,7 +255,8 @@ PrintTrace(
 	      (int)((double)pba->data_bytes / ((double)pba->data_pkts+.001)));
     StatlineI("max win adv","bytes","%8lu", pab->win_max, pba->win_max);
     StatlineI("min win adv","bytes","%8lu", pab->win_min, pba->win_min);
-    StatlineI("zero win adv","","%8lu", pab->win_zero_ct, pba->win_zero_ct);
+    StatlineI("zero win adv","times","%8lu",
+	      pab->win_zero_ct, pba->win_zero_ct);
     StatlineI("avg win adv","bytes","%8lu",
 	      pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
 	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
