@@ -67,6 +67,10 @@ DEFINES += -DLOAD_MODULE_TCPLIB
 # Experimental module for a friend
 # 
 DEFINES += -DLOAD_MODULE_COLLIE
+# 
+# Example module for real-time mode 
+# 
+DEFINES += -DLOAD_MODULE_REALTIME
 
 
 
@@ -157,8 +161,9 @@ CFILES=compress.c etherpeek.c gcache.c mfiles.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c nlanr.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \
-	ns.c netscout.c version.c
-MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c mod_slice.c
+	ns.c netscout.c version.c pool.c poolaccess.c
+MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c \
+	mod_slice.c mod_realtime.c
 MODSUPPORT=dyncounter.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o} ${MODSUPPORT:.c=.o}
 

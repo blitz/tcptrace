@@ -60,6 +60,9 @@ static char const rcsid_tcptrace[] =
 /* IPv6 support */
 #include "ipv6.h"
 
+/* memory allocation routines */
+#include "pool.h"
+
 /* we want LONG LONG in some places */
 #if SIZEOF_UNSIGNED_LONG_LONG_INT >= 8
 #define HAVE_LONG_LONG
@@ -443,6 +446,34 @@ typedef struct tcphdr tcphdr;
 extern int num_tcp_pairs;	/* how many pairs are in use */
 extern tcp_pair **ttp;		/* array of pointers to allocated pairs */
 
+/* Tue Nov 17, 1998 */
+/* prior to version 5.13, we kept a hash table of all of the connections. */
+/* The most recently-accessed connections move to the front of the bucket */
+/* linked list.  Unfortunately, when reading thousands of connections on */
+/* a machine with limited physical memory, this worked poorly.  Every time */
+/* a new connection opened, we had to search the entire bucket, which */
+/* pulled all of the paged-out connections back into memory.  The new */
+/* system keeps a quick snapshot of the connection (ptp_snap) in the */
+/* hash table.  We only retrieve the connection record if the snapshot */
+/* matches. The result is that it works MUCH better when memory is low. */
+typedef struct ptp_snap {
+    tcp_pair_addrblock	addr_pair; /* just a copy */
+    struct ptp_snap	*next;
+    void		*ptp;
+} ptp_snap;
+
+typedef struct ptp_ptr {
+  struct ptp_ptr	*next;
+  struct ptp_ptr	*prev;
+  struct ptp_snap	*from;
+  tcp_pair		*ptp;
+} ptp_ptr;
+
+#define REMOVE_LIVE_CONN_INTERVAL	8*3600	/* 8 hours */
+#define REMOVE_CLOSED_CONN_INTERVAL	8*60	/* 8 minutes */
+#define UPDATE_INTERVAL			30	/* 30 seconds */
+#define MAX_ACTIVE_CONN_NUM		50000	/* max number of connections */
+						/* for continuous mode */
 
 /* minimal support for UDP "connections" */
 typedef struct ucb {
@@ -541,6 +572,14 @@ extern Bool plot_tput_instant;
 extern Bool filter_output;
 extern Bool do_udp;
 extern Bool show_title;
+/* constants for real-time (continuous) mode */
+extern Bool run_continuously;
+extern Bool conn_num_threshold;
+extern u_long remove_live_conn_interval;
+extern u_long remove_closed_conn_interval;
+extern u_long update_interval;
+extern u_long max_active_conn_num;
+
 extern int debug;
 extern int thru_interval;
 extern u_long pnum;
@@ -666,6 +705,22 @@ Bool tcp_cksum_valid(struct ip *pip, struct tcphdr *ptcp, void *plast);
 Bool udp_cksum_valid(struct ip *pip, struct udphdr *pudp, void *plast);
 ipaddr *str2ipaddr(char *str);
 int IPcmp(ipaddr *pipA, ipaddr *pipB);
+void ModulesPerOldConn(tcp_pair *ptp);
+
+/* Memory allocation routines with page boundaries */ 
+tcp_pair *MakeTcpPair(void);
+void FreeTcpPair(tcp_pair *ptr);
+seqspace *MakeSeqspace(void);
+void FreeSeqspace(seqspace *ptr);
+ptp_snap *MakePtpSnap(void);
+void FreePtpSnap(ptp_snap *ptr);
+segment *MakeSegment(void);
+void FreeSegment(segment *ptr);
+quadrant *MakeQuadrant(void);
+void FreeQuadrant(quadrant *ptr);
+ptp_ptr *MakePtpPtr(void);
+void FreePtpPtr(ptp_ptr *ptr);
+void freequad(quadrant **);
 
 /* high-level line drawing */
 PLINE new_line(PLOTTER pl, char *label, char *color);

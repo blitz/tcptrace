@@ -37,9 +37,12 @@ static char const rcsid[] =
 /* locally global variables */
 static int tcp_packet_count = 0;
 static int search_count = 0;
+static int active_conn_count = 0;
+static int closed_conn_count = 0;
 static Bool *ignore_pairs = NULL;/* which ones will we ignore */
 static Bool bottom_letters = 0;	/* I don't use this anymore */
 static Bool more_conns_ignored = FALSE;
+static int num_removed_tcp_pairs = 0;
 
 
 
@@ -50,33 +53,26 @@ int max_tcp_pairs = 64; /* initial value, automatically increases */
 u_long tcp_trace_count = 0;
 
 
-/* Tue Nov 17, 1998 */
-/* prior to version 5.13, we kept a hash table of all of the connections. */
-/* The most recently-accessed connections move to the front of the bucket */
-/* linked list.  Unfortunately, when reading thousands of connections on */
-/* a machine with limited physical memory, this worked poorly.  Every time */
-/* a new connection opened, we had to search the entire bucket, which */
-/* pulled all of the paged-out connections back into memory.  The new */
-/* system keeps a quick snapshot of the connection (ptp_snap) in the */
-/* hash table.  We only retrieve the connection record if the snapshot */
-/* matches. The result is that it works MUCH better when memory is low. */
-typedef struct ptp_snap {
-    tcp_pair_addrblock	addr_pair; /* just a copy */
-    struct ptp_snap *next;
-    tcp_pair *ptp;
-} ptp_snap;
-
-
-
 /* local routine definitions */
 static tcp_pair *NewTTP(struct ip *, struct tcphdr *);
-static ptp_snap *NewPTPH(void);
-static tcp_pair *FindTTP(struct ip *, struct tcphdr *, int *);
+static tcp_pair *FindTTP(struct ip *, struct tcphdr *, int *, ptp_ptr **);
 static void MoreTcpPairs(int num_needed);
 static void ExtractContents(u_long seq, u_long tcp_data_bytes,
 			    u_long saved_data_bytes, void *pdata, tcb *ptcb);
 static Bool check_hw_dups(u_short id, seqnum seq, tcb *ptcb);
 static u_long SeqRep(tcb *ptcb, u_long seq);
+static void UpdateConnLists(ptp_ptr *tcp_ptr, struct tcphdr *ptcp);
+static void UpdateConnList(ptp_ptr *tcp_ptr, 
+			   const Bool valid, 
+			   ptp_ptr **conn_list_head, 
+			   ptp_ptr **conn_list_tail);
+static void RemoveOldConns(ptp_ptr **conn_list_head, 
+			   ptp_ptr **conn_list_tail,
+			   const unsigned expire_interval,
+			   const Bool num_conn_check,
+			   int *conn_count);
+static void RemoveConn(const ptp_ptr *tcp_ptr);
+static void RemoveTcpPair(const ptp_ptr *tcp_ptr);
 
 
 
@@ -328,15 +324,21 @@ NewTTP(
     char title[210];
     tcp_pair *ptp;
 
-    /* make a new one, if possible */
-    if ((num_tcp_pairs+1) >= max_tcp_pairs) {
-	MoreTcpPairs(num_tcp_pairs+1);
+    if (0) {
+      printf("trace.c:NewTTP() calling MakeTcpPair()\n");
     }
-
-    /* create a new TCP pair record and remember where you put it */
+    ptp = MakeTcpPair();
     ++num_tcp_pairs;
-    ptp = ttp[num_tcp_pairs] = MallocZ(sizeof(tcp_pair));
-    ptp->ignore_pair = ignore_pairs[num_tcp_pairs];
+
+    if (!run_continuously) {
+      /* make a new one, if possible */
+      if ((num_tcp_pairs+1) >= max_tcp_pairs) {
+	MoreTcpPairs(num_tcp_pairs+1);
+      }
+      /* create a new TCP pair record and remember where you put it */
+      ttp[num_tcp_pairs] = ptp;
+      ptp->ignore_pair = ignore_pairs[num_tcp_pairs];
+    }
 
 
     /* grab the address from this packet */
@@ -461,69 +463,12 @@ NewTTP(
     /* init RTT graphs */
     ptp->a2b.rtt_plotter = ptp->b2a.rtt_plotter = NO_PLOTTER;
 
-    ptp->a2b.ss = (seqspace *)MallocZ(sizeof(seqspace));
-    ptp->b2a.ss = (seqspace *)MallocZ(sizeof(seqspace));
+    ptp->a2b.ss = MakeSeqspace();
+    ptp->b2a.ss = MakeSeqspace();
 
     ptp->filename = cur_filename;
 
     return(ptp);
-}
-
-
-/* this routines gives us a new snapshot header.  We take great */
-/* pains to make sure that these don't end up on the same pages */
-/* as the actual connection, because we're trying to avoid sucking */
-/* those big strucuctures back into memory while searching. */
-/* So we allocate several of them on the same page and then use */
-/* that as a cache. */
-static ptp_snap *
-NewPTPH(void)
-{
-    ptp_snap *ptph;
-    static ptp_snap *ptph_freelist = NULL;
-    static int ptp_freelist_length = 0;
-
-    /* allocate several of them, all on the same page */
-    if (ptp_freelist_length <= 0) {
-	/* The machine's page size makes a nice cache size.  */
-	/* It's not the end of the world if this is wrong, so */
-	/* we won't worry about it TOO much */
-#if defined(PAGESIZE)
-	/* there's "supposed" to be a constant... */
-	int pagesize = PAGESIZE;
-#elif defined(_SC_PAGESIZE)
-	/* but maybe we can get it from the system... */
-	int pagesize = sysconf(_SC_PAGESIZE);
-#else
-	/* if all else fails, just guess 8k, close enough */
-	int pagesize = 8*1024;
-#endif
-	int cachesize = pagesize/sizeof(struct ptp_snap);
-	int numbytes = cachesize * sizeof(struct ptp_snap);
-	ptp_freelist_length = cachesize;
-
-#ifdef HAVE_VALLOC
-	/* try to grab the memory, aligned on a page boundard */
-	ptph_freelist = valloc(numbytes);
-#else /*  HAVE_VALLOC */
-#ifdef HAVE_MEMALIGN
-	/* memalign will do this too */
-	ptph_freelist = memalign(numbytes, pagesize);
-#else /* HAVE_MEMALIGN */
-	/* newer version of malloc are supposed to do this anyway */
-	ptph_freelist = malloc(numbytes);
-#endif /* HAVE_MEMALIGN */
-#endif /* HAVE_VALLOC */
-
-	/* zero them all out */
-	memset(ptph_freelist, 0, numbytes);
-    }
-
-    /* now, there are some in the cache, take the next one */
-    --ptp_freelist_length;
-    ptph = ptph_freelist++;
-
-    return(ptph);
 }
 
 
@@ -535,19 +480,33 @@ NewPTPH(void)
 #else /* SMALL_TABLE */
 #define HASH_TABLE_SIZE 4099  /* oughta be prime */
 #endif /* SMALL_TABLE */
+static ptp_snap *ptp_hashtable[HASH_TABLE_SIZE] = {NULL};
+
+/* double linked-lists of live and closed connections */
+static ptp_ptr	*live_conn_list_head = NULL;
+static ptp_ptr	*live_conn_list_tail = NULL;
+static ptp_ptr	*closed_conn_list_head = NULL;
+static ptp_ptr	*closed_conn_list_tail = NULL;
+static timeval	last_update_time = {0, 0};
+
 static tcp_pair *
 FindTTP(
     struct ip *pip,
     struct tcphdr *ptcp,
-    int *pdir)
+    int *pdir,
+    ptp_ptr **tcp_ptr)
 {
-    static ptp_snap *ptp_hashtable[HASH_TABLE_SIZE] = {NULL};
     ptp_snap **pptph_head = NULL;
     ptp_snap *ptph;
     ptp_snap *ptph_last;
     tcp_pair_addrblock	tp_in;
     int dir;
     hash hval;
+    *tcp_ptr = NULL;
+
+    if (debug > 10) {
+      printf("trace.c: FindTTP() called\n");
+    }
 
     /* grab the address from this packet */
     CopyAddr(&tp_in, pip, ntohs(ptcp->th_sport), ntohs(ptcp->th_dport));
@@ -563,9 +522,16 @@ FindTTP(
 
 	if (SameConn(&tp_in,&ptph->addr_pair,&dir)) {
 	    /* OK, this looks good, suck it into memory */
-	    tcp_pair *ptp = ptph->ptp;
 	    tcb *thisdir;
 	    tcb *otherdir;
+	    tcp_pair *ptp;
+	    if (run_continuously) {
+	      ptp_ptr *ptr = (ptp_ptr *)ptph->ptp;
+	      ptp = ptr->ptp;
+	    }
+	    else {
+	      ptp = (tcp_pair *)ptph->ptp;
+	    }
 
 	    /* figure out which direction this packet is going */
 	    if (dir == A2B) {
@@ -578,14 +544,21 @@ FindTTP(
 
 	    /* check for "inactive" */
 	    /* (this shouldn't happen anymore, they aren't on the list */
-	    if (ptp->inactive)
-		continue;
+	    if (ptp->inactive) {
+ 	       if (!run_continuously)
+		 continue;
+               else {
+		 *tcp_ptr = (ptp_ptr *)ptph->ptp;
+                 return ((*tcp_ptr)->ptp);
+	       }
+	    }
 
 	    /* Fri Oct 16, 1998 */
 	    /* note: original heuristic was not sufficient.  Bugs */
 	    /* were pointed out by Brian Utterback and later by */
 	    /* myself and Mark Allman */
 
+	   if (!run_continuously) { 
 	    /* check for NEW connection on these same endpoints */
 	    /* 1) At least 4 minutes idle time */
 	    /*  OR */
@@ -655,6 +628,7 @@ FindTTP(
 		}
 		continue;
 	    }
+	   }
 
 	    /* move to head of access list (unless already there) */
 	    if (ptph != *pptph_head) {
@@ -662,27 +636,410 @@ FindTTP(
 		ptph->next = *pptph_head;     /* move to head */
 		*pptph_head = ptph;
 	    }
-	    *pdir = dir;
-	    return(ptp);
+
+	    if (run_continuously) 
+	      (*tcp_ptr) = (ptp_ptr *)ptph->ptp;
+	    return (ptp);
 	}
 	ptph_last = ptph;
     }
 
     /* Didn't find it, make a new one, if possible */
-    ptph = NewPTPH();
-    ptph->ptp = NewTTP(pip,ptcp);
-    ptph->addr_pair = ptph->ptp->addr_pair;
+    if (0) {
+      printf("trace.c:FindTTP() calling MakePtpSnap()\n");
+    }
+    ptph = MakePtpSnap();
+    if (run_continuously) {
+      ptp_ptr *ptr = (ptp_ptr *)MakePtpPtr();
+      ptr->prev = NULL;
+
+      if (live_conn_list_head == NULL) {
+	ptr->next = NULL;
+	live_conn_list_head = ptr;
+	live_conn_list_tail = ptr;
+      }
+      else {
+	ptr->next = live_conn_list_head;
+	live_conn_list_head->prev = ptr;
+	live_conn_list_head = ptr;
+      }
+      ptr->from = ptph;
+      ptr->ptp = NewTTP(pip, ptcp);
+      ptph->addr_pair = ptr->ptp->addr_pair;
+      ptph->ptp = (void *)ptr;
+      if (conn_num_threshold) {
+	active_conn_count++;
+	if (active_conn_count > max_active_conn_num) {
+	  ptp_ptr *last_ptr = live_conn_list_tail;
+	  live_conn_list_tail = last_ptr->prev;
+	  live_conn_list_tail->next = NULL;
+          RemoveConn(last_ptr);
+	  num_removed_tcp_pairs++;
+	  active_conn_count--;
+	  FreePtpPtr(last_ptr);
+	}
+      }
+    }
+    else {
+      tcp_pair *tmp = NewTTP(pip,ptcp);
+      ptph->addr_pair = tmp->addr_pair;
+      ptph->ptp = tmp;
+    }
     
     /* put at the head of the access list */
     ptph->next = *pptph_head;
     *pptph_head = ptph;
 
     *pdir = A2B;
-    return(ptph->ptp);
+    if (run_continuously) {
+      *tcp_ptr = (ptp_ptr *)ptph->ptp;
+      return ((*tcp_ptr)->ptp);
+    }
+    else
+      return (tcp_pair *)(ptph->ptp);
 }
      
  
 static void 
+UpdateConnLists(
+		ptp_ptr *tcp_ptr,
+		struct tcphdr *ptcp)
+{
+  time_t real_time;
+  static int minutes = 0;
+
+  if (0) {
+    printf("trace.c: UpdateConnLists() called\n");
+  }
+
+  if ((FinCount(tcp_ptr->ptp) > 0) || (ConnReset(tcp_ptr->ptp))) { 
+    /* we have FIN or RST */
+    if (!tcp_ptr->ptp->inactive) {
+       /* this is the only FIN or new RST - remove from list of active conns */
+      if (debug > 6) {
+	printf("UpdateConnLists: removing conn from list of active conns\n");
+      }
+      UpdateConnList(tcp_ptr, FALSE, 
+		     &live_conn_list_head, 
+		     &live_conn_list_tail);
+      tcp_ptr->ptp->inactive = TRUE;
+
+      if (conn_num_threshold) {
+	active_conn_count--;
+	closed_conn_count++;
+	if (closed_conn_count > max_conn_num) {
+	if (closed_conn_count > max_active_conn_num) {
+	  closed_conn_list_tail = last_ptr->prev;
+	  closed_conn_list_tail->next = NULL;
+	  RemoveConn(last_ptr);
+	  num_removed_tcp_pairs++;
+	  closed_conn_count--;
+	  FreePtpPtr(last_ptr);
+	}
+      }
+
+      /* put entry into the list of inactive connections */
+      if (closed_conn_list_head) {
+	tcp_ptr->next = closed_conn_list_head;
+	tcp_ptr->prev = NULL;
+	closed_conn_list_head->prev = tcp_ptr;
+	closed_conn_list_head = tcp_ptr;
+      }
+      else {
+	tcp_ptr->next = NULL;
+	tcp_ptr->prev = NULL;
+	closed_conn_list_head = tcp_ptr;
+	closed_conn_list_tail = tcp_ptr;
+      }
+    }
+    else {
+    /* update the list of closed connecitons */
+    UpdateConnList(tcp_ptr, TRUE, &closed_conn_list_head, 
+		   &closed_conn_list_tail);
+    }
+  }
+  else {/* don't have FIN(s)/RST */
+    /* update only list of active connections */
+     if (tcp_ptr->ptp->inactive == TRUE) {
+	printf("WARNING!!! con is inactive, ptr=%p, con=%p, fin=%i, rst=%i\n", tcp_ptr,
+	       tcp_ptr->ptp, FinCount(tcp_ptr->ptp), ConnReset(tcp_ptr->ptp));
+	printf("a2b.reset_count=%i, b2a.reset_count=%i, RESET_SET(tcph)=%i\n",
+	       tcp_ptr->ptp->a2b.reset_count, tcp_ptr->ptp->b2a.reset_count,
+	       RESET_SET(ptcp));
+     }
+    UpdateConnList(tcp_ptr, TRUE, &live_conn_list_head, &live_conn_list_tail);
+  }
+  
+  /* if we haven't updated the structures for at least update_interval number 
+   * of seconds, update list of connections and hash table */
+  if ((elapsed(last_update_time, current_time) / 1000000) >= update_interval) {
+
+    real_time = time(&real_time);
+    if (debug > 10)
+      fprintf(stderr, "%3i program time: %i\tcurrent time: %i\tdifference: %i\n",
+              ++minutes, (int)current_time.tv_sec, (int)real_time, 
+              (int)(real_time - current_time.tv_sec));
+    if (conn_num_threshold) {
+      RemoveOldConns(&live_conn_list_head, 
+		     &live_conn_list_tail, 
+		     remove_live_conn_interval, 
+		     TRUE,
+		     &active_conn_count);
+      RemoveOldConns(&closed_conn_list_head,
+		     &closed_conn_list_tail, 
+		     remove_closed_conn_interval, 
+		     TRUE,
+		     &closed_conn_count);
+    }
+    else {
+      RemoveOldConns(&live_conn_list_head, 
+		     &live_conn_list_tail, 
+		     remove_live_conn_interval, 
+		     FALSE,
+		     0);
+      RemoveOldConns(&closed_conn_list_head,
+		     &closed_conn_list_tail, 
+		     remove_closed_conn_interval, 
+		     FALSE,
+		     0);
+    }
+    last_update_time = current_time;
+  }
+}
+
+
+
+static void
+UpdateConnList(
+	       ptp_ptr *tcp_ptr,
+	       const Bool valid,
+	       ptp_ptr **conn_list_head,
+	       ptp_ptr **conn_list_tail)
+{
+  ptp_ptr *ptr_prev;
+  ptp_ptr *ptr_next;
+
+  if (0) {
+    printf("UpdateConnList() called\n");
+  }
+  if (tcp_ptr == (*conn_list_head)) {
+    if (valid) {
+      return;
+    }
+    else {
+      *conn_list_head = tcp_ptr->next;
+      if ((*conn_list_tail) == tcp_ptr)
+	*conn_list_tail = NULL;
+      else
+	(*conn_list_head)->prev = NULL;
+      return;
+    }
+  }
+
+  ptr_prev = tcp_ptr->prev;
+  ptr_next = tcp_ptr->next;
+
+  ptr_prev->next = ptr_next;
+
+  if (ptr_next)
+    ptr_next->prev = ptr_prev;
+  if (tcp_ptr == (*conn_list_tail))
+    *conn_list_tail = ptr_prev;
+
+  if (valid) {
+    tcp_ptr->next = (*conn_list_head);
+    tcp_ptr->prev = NULL;
+    (*conn_list_head)->prev = tcp_ptr;
+    *conn_list_head = tcp_ptr;
+  }
+  return;
+}
+
+
+
+static void
+RemoveOldConns(
+	       ptp_ptr **conn_list_head,
+	       ptp_ptr **conn_list_tail,
+	       const unsigned expire_interval,
+	       const Bool num_conn_check,
+	       int *conn_count)
+{
+  ptp_ptr	*ptr;
+  ptp_ptr	*prev_ptr;
+
+  if (0) {
+    printf("trace.c: RemoveOldConns() called\n");
+  }
+
+  if ((*conn_list_tail) == NULL) {
+    return;
+  }
+
+  ptr = (*conn_list_tail);
+  prev_ptr = ptr->prev;
+  for (; prev_ptr != NULL; ptr = prev_ptr, prev_ptr = ptr->prev) {
+    if ((elapsed(ptr->ptp->last_time, current_time) / 1000000) >= 
+	expire_interval) {
+      /* if the connection is old enough, remove the snap from the linked-list
+	 and the hash_table */
+      ptr->prev->next = NULL;
+      *conn_list_tail = ptr->prev;
+      RemoveConn(ptr);
+      num_removed_tcp_pairs++;
+      if (0) {
+	printf("trace.c:RemoveOldConns() calling FreePtpSnap()\n");
+      }
+      FreePtpPtr(ptr);
+      if (num_conn_check)
+	--(*conn_count);
+    }
+    else {
+      break;
+    }
+  }
+
+  if (((*conn_list_head)->ptp->last_time.tv_sec != 0) &&
+      ((elapsed((*conn_list_head)->ptp->last_time, current_time) / 1000000) >= 
+       expire_interval)) {
+    *conn_list_head = NULL;
+    *conn_list_tail = NULL;
+    RemoveConn(ptr);
+    num_removed_tcp_pairs++;
+    FreePtpPtr(ptr);
+    if (num_conn_check)
+      --(*conn_count);
+  }
+}
+
+
+
+/* remove tcp pair from the hash table */
+static void
+RemoveConn(
+	   const ptp_ptr *tcp_ptr)
+{
+  ptp_snap	*ptph;
+  ptp_ptr	*ptr;
+  hash		hval;
+
+  if (0) {
+    printf("trace.c: RemoveConn(%p %s<->%s) called\n", 
+            tcp_ptr->ptp, tcp_ptr->ptp->a_endpoint, tcp_ptr->ptp->b_endpoint);
+  }
+
+  ModulesPerOldConn(tcp_ptr->ptp);
+
+  hval = tcp_ptr->ptp->addr_pair.hash % HASH_TABLE_SIZE;
+
+  if (ptp_hashtable[hval]) {
+    /* if the needed connection is at the beginning of the list, then remove it
+       and don't go trough the list */
+    ptr = (ptp_ptr *)ptp_hashtable[hval]->ptp;
+    if (ptr->ptp == tcp_ptr->ptp) {
+      ptph = ptp_hashtable[hval];
+      ptp_hashtable[hval] = ptp_hashtable[hval]->next;
+      RemoveTcpPair(tcp_ptr);
+      if (0) {
+	printf("trace.c:RemoveConn() calling FreePtpSnap()\n");
+      }
+      FreePtpSnap(ptph);
+
+      return;
+    }
+    /* the first ptp_snap on the list is not what we need  - go through 
+       the list */
+    for (ptph = ptp_hashtable[hval]; ptph->next; ptph = ptph->next) {
+      ptr = (ptp_ptr *)ptph->next->ptp;
+      if (ptr->ptp == tcp_ptr->ptp) {
+      /* delete ptph->next */
+	ptp_snap *temp_ptph = ptph->next;
+	ptph->next = temp_ptph->next;
+	RemoveTcpPair(tcp_ptr);
+	if (0) {
+	  printf("trace.c:RemoveConn() calling FreePtpSnap()\n");
+	}
+	FreePtpSnap(temp_ptph);
+	return;
+      }  
+    }
+  }
+}
+
+
+
+static void
+RemoveTcpPair(
+	      const ptp_ptr *tcp_ptr)
+{
+  int	i = 0;
+  tcp_pair *ptp = tcp_ptr->ptp;
+
+  if (0) {
+    printf("trace.c: RemoveTcpPair(%p) called\n", tcp_ptr->ptp);
+  }
+  
+  free(ptp->a2b.host_letter);
+  free(ptp->b2a.host_letter);
+
+  free(ptp->a_hostname);
+  free(ptp->a_portname);
+  free(ptp->a_endpoint);
+
+  free(ptp->b_hostname);
+  free(ptp->b_portname);
+  free(ptp->b_endpoint);
+
+  if (ptp->a2b.owin_line) {
+    free(ptp->a2b.owin_line);
+  }
+  if (ptp->a2b.owin_avg_line) {
+    free(ptp->a2b.owin_avg_line);
+  }
+  if (ptp->a2b.owin_wavg_line) {
+    free(ptp->b2a.owin_line);
+  }
+  if (ptp->b2a.owin_avg_line) {
+    free(ptp->b2a.owin_avg_line);
+  }
+
+  if (ptp->a2b.segsize_line) {
+    free(ptp->a2b.segsize_line);
+  }
+  if (ptp->a2b.segsize_avg_line) {
+    free(ptp->a2b.segsize_avg_line);
+  }
+  if (ptp->b2a.segsize_line) {
+    free(ptp->b2a.segsize_line);
+  }
+  if (ptp->b2a.segsize_avg_line) {
+    free(ptp->b2a.segsize_avg_line);
+  }
+
+  if (ptp->a2b.ss) {
+    for (i = 0; i < 4; i++) {
+      if (ptp->a2b.ss->pquad[i] != NULL) {
+	freequad(&ptp->a2b.ss->pquad[i]);
+      }
+    }
+    FreeSeqspace(ptp->a2b.ss);
+  }
+
+  if (ptp->b2a.ss) {
+    for (i = 0; i < 4; i++) {
+      if (ptp->b2a.ss->pquad[i] != NULL) {
+	freequad(&ptp->b2a.ss->pquad[i]);
+      }
+    }
+    FreeSeqspace(ptp->b2a.ss);
+  }
+
+  FreeTcpPair(ptp);
+}
+
+
+
+tcp_pair *
 dotrace(
     struct ip *pip,
     struct tcphdr *ptcp,
@@ -717,6 +1074,7 @@ dotrace(
     enum t_ack	ack_type=NORMAL; /* how should we draw the ACK */
     seqnum	old_this_windowend; /* for graphing */
     ptp_ptr	*tcp_ptr = NULL;
+
     /* make sure we have enough of the packet */
     if ((char *)ptcp + sizeof(struct tcphdr)-1 > (char *)plast) {
 	if (warn_printtrunc)
@@ -738,7 +1096,7 @@ dotrace(
 
     /* make sure this is one of the connections we want */
     ptp_save = FindTTP(pip,ptcp,&dir, &tcp_ptr);
-    ptp_save = FindTTP(pip,ptcp,&dir);
+
     ++tcp_packet_count;
 
     if (ptp_save == NULL) {
@@ -748,6 +1106,11 @@ dotrace(
     ++tcp_trace_count;
 
     if (run_continuously && (tcp_ptr == NULL)) {
+      fprintf(stderr, "Did not initialize tcp pair pointer\n");
+      exit(1);
+    }
+
+    /* do time stats */
     if (ZERO_TIME(&ptp_save->first_time)) {
 	ptp_save->first_time = current_time;
     }
@@ -1202,6 +1565,10 @@ dotrace(
 	if (ACK_SET(ptcp))
 	    ++thisdir->ack_pkts;
 
+        if (run_continuously) {
+            UpdateConnLists(tcp_ptr, ptcp); /*Ramani: Call this even in nocontinuous mode */
+            UpdateConnLists(tcp_ptr, ptcp);
+	return(ptp_save);
     }
    
 
@@ -1401,6 +1768,9 @@ dotrace(
 			thisdir->owin_tot / thisdir->ack_pkts);
     }
     if (run_continuously) {
+      UpdateConnLists(tcp_ptr, ptcp);
+    }
+
     return(ptp_save);
 }
 
@@ -1414,6 +1784,7 @@ trace_done(void)
     int ix;
 
   if (!run_continuously) {
+    if (!printsuppress) {
 	if (tcp_trace_count == 0) {
 	    fprintf(stdout,"%sno traced TCP packets\n", comment);
 	    fprintf(stdout,"no traced TCP packets\n");
@@ -1465,6 +1836,7 @@ trace_done(void)
 	}
     }
   }
+
     /* if we're filtering, see which connections pass */
     if (filter_output) {
 	static int count = 0;
@@ -1477,6 +1849,7 @@ trace_done(void)
 	}
 
       if (!run_continuously) {
+	/* mark the connections to ignore */
 	for (ix = 0; ix <= num_tcp_pairs; ++ix) {
 	    ptp = ttp[ix];
 	    if (PassesFilter(ptp)) {
@@ -1490,9 +1863,11 @@ trace_done(void)
 	    }
 	}
       }
+    }
 
 
   if (!run_continuously) {
+    /* print each connection */
     if (!printsuppress) {
         Bool first = TRUE; /* Used with <SP>-separated-values
 	    ptp = ttp[ix];
@@ -1511,7 +1886,8 @@ trace_done(void)
 	}
     }
   }
-
+  
+    /* if we're filtering, close the file */
     if (filter_output) {
 	fprintf(f_passfilter,"\n");
 	fclose(f_passfilter);
@@ -1562,16 +1938,34 @@ trace_init(void)
     static Bool initted = FALSE;
 
     if (0) {
+      printf("trace_init called\n");
+    }
+
+    if (run_continuously) {
+      if (ignore_pairs) {
+	free(ignore_pairs);
+	ignore_pairs = NULL;
+      }
+      if (ttp) {
+	free(ttp);
+	ttp = NULL;
+      }
+      more_conns_ignored = FALSE;
+    }
+
+    if (initted)
 	return;
 
     initted = TRUE;
 
     /* create an array to hold any pairs that we might create */
-    /* create an array to hold any pairs that we might create */
-    ttp = (tcp_pair **) MallocZ(max_tcp_pairs * sizeof(tcp_pair *));
+        /* create an array to hold any pairs that we might create */
+        ttp = (tcp_pair **) MallocZ(max_tcp_pairs * sizeof(tcp_pair *));
+      
+        /* create an array to keep track of which ones to ignore */
+        ignore_pairs = (Bool *) MallocZ(max_tcp_pairs * sizeof(Bool));
+    }
 
-    /* create an array to keep track of which ones to ignore */
-    ignore_pairs = (Bool *) MallocZ(max_tcp_pairs * sizeof(Bool));
     cainit();
     Minit();
 }
@@ -1584,6 +1978,11 @@ IgnoreConn(
     if (debug) fprintf(stderr,"ignoring conn %d\n", ix);
 
 //    trace_init();
+    if (run_continuously) {
+      fprintf(stderr, "Warning: cannot ignore connections in continuous mode\n");
+      return;
+    }
+
     trace_init();
     --ix;
 
@@ -1603,6 +2002,11 @@ OnlyConn(
 	
     if (debug) fprintf(stderr,"only printing conn %d\n", ix_only);
 
+//    trace_init();
+    if (run_continuously) {
+      fprintf(stderr, "Warning: cannot ignore connections in continuous mode\n");
+      return;
+    }
 
     trace_init();
     --ix_only;

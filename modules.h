@@ -102,6 +102,12 @@ struct module {
     void (*module_nontcpudp_read) (
 	struct ip *pip,		/* the packet */
 	void *plast);		/* pointer to last byte */
+
+    /* Called for old TCP connections when they are deleted by */
+    /* the real-time version of the program */ 
+    void (*module_deleteconn) (
+	 tcp_pair *ptp,		/* info I have about this connection */
+	 void *pmodstruct);	/* module-specific structure */
 };
 
 
@@ -135,6 +141,11 @@ struct module {
 #endif /* LOAD_MODULE_SLICE */
 
 
+#ifdef LOAD_MODULE_REALTIME
+#include "mod_realtime.h"       /* for the example real-time package */
+#endif /* LOAD_MODULE_REALTIME */
+
+
 /* declare (install) the various module routines */
 struct module modules[] = {
 #ifdef LOAD_MODULE_HTTP
@@ -148,7 +159,7 @@ struct module modules[] = {
      http_usage,		/* routine to call to print module usage */
      http_newfile,		/* routine to call on each new file */
      http_newconn,		/* routine to call on each new connection */
-     NULL,NULL,NULL},			/* not interested in non-tcp */
+     NULL, NULL, NULL, NULL},	/* not interested in non-tcp */
 #endif /* LOAD_MODULE_HTTP */
 
     /* list other modules here ... */
@@ -163,7 +174,7 @@ struct module modules[] = {
      tcplib_usage,		/* routine to call to print module usage */
      tcplib_newfile,		/* routine to call on each new file */
      tcplib_newconn,		/* routine to call on each new connection */
-     NULL,NULL,NULL},			/* not interested in non-tcp */
+     NULL, NULL, NULL, NULL},	/* not interested in non-tcp */
 #endif /* LOAD_MODULE_TCPLIB */
 
 
@@ -172,7 +183,7 @@ struct module modules[] = {
     {TRUE,			/* make FALSE if you don't want to call it at all */
      "traffic", "traffic analysis package",
      traffic_init, traffic_read, traffic_done,		
-     traffic_usage, NULL, traffic_newconn, NULL,NULL,NULL},
+     traffic_usage, NULL, traffic_newconn, NULL, NULL, NULL, NULL},
 #endif /* LOAD_MODULE_TRAFFIC */
 
 #ifdef LOAD_MODULE_SLICE
@@ -180,7 +191,7 @@ struct module modules[] = {
     {TRUE,			/* make FALSE if you don't want to call it at all */
      "slice", "traffic efficiency data by time slices",
      slice_init, slice_read, slice_done,		
-     slice_usage, NULL, slice_newconn, NULL,NULL,NULL},
+     slice_usage, NULL, slice_newconn, NULL, NULL, NULL, NULL},
 #endif /* LOAD_MODULE_SLICE */
 
 #ifdef LOAD_MODULE_RTTGRAPH
@@ -192,7 +203,7 @@ struct module modules[] = {
      rttgraph_usage,		/* routine to call to print module usage */
      NULL,			/* routine to call on each new file */
      rttgraph_newconn,		/* routine to call on each new connection */
-     NULL,NULL,NULL},			/* not interested in non-tcp */
+     NULL, NULL, NULL, NULL},	/* not interested in non-tcp */
 #endif /* LOAD_MODULE_TRAFFIC */
 
 #ifdef LOAD_MODULE_COLLIE
@@ -201,7 +212,24 @@ struct module modules[] = {
      "collie", "connection summary package",
      collie_init, NULL /* read */, collie_done,		
      collie_usage, collie_newfile, collie_newconn,
-     NULL, collie_newudpconn, NULL},
+     NULL, collie_newudpconn, NULL, NULL},
 #endif /* LOAD_MODULE_COLLIE */
+
+#ifdef LOAD_MODULE_REALTIME
+    {TRUE,		         /* make FALSE if you don't want to call it at all */
+     "realtime",                 /* name of the module */
+     "example real-time package",/* description of the module */
+     realtime_init,		 /* routine to call to init the module */
+     realtime_read,		 /* routine to pass each TCP segment */
+     realtime_done,		 /* routine to call at program end */
+     realtime_usage,		 /* routine to call to print module usage */
+     NULL,			 /* routine to call on each new file */
+     realtime_newconn,		 /* routine to call on each new connection */
+     realtime_udp_read,          /* routine to pass each UDP segment */
+     NULL,              	 /* routine to call on each new UDP conn */
+     realtime_nontcpudp_read, 	 /* routine to pass each non-tcp and non-udp 
+				    packets*/
+     realtime_deleteconn},
+#endif /* LOAD_MODULE_REALTIME */
 };
 #define NUM_MODULES (sizeof(modules) / sizeof(struct module))

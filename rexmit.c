@@ -66,7 +66,6 @@ static quadrant *create_quadrant(void);
 static int addseg(tcb *, quadrant *, seqnum, seglen, Bool *);
 static void rtt_retrans(tcb *, segment *);
 static enum t_ack rtt_ackin(tcb *, segment *, Bool rexmit);
-static void freequad(quadrant **);
 static void dump_rtt_sample(tcb *, segment *, double);
 static void graph_rtt_sample(tcb *, segment *, unsigned long);
 
@@ -564,7 +563,7 @@ ack_in(
 }
 
 
-static void
+void
 freequad(
     quadrant **ppquad)
 {

@@ -106,6 +106,12 @@ Bool resolve_ipaddresses = TRUE;
 Bool resolve_ports = TRUE;
 Bool verify_checksums = FALSE;
 Bool triple_dupack_allows_data = FALSE;
+Bool run_continuously = FALSE;
+Bool conn_num_threshold = FALSE;
+u_long remove_live_conn_interval = REMOVE_LIVE_CONN_INTERVAL;
+u_long remove_closed_conn_interval = REMOVE_CLOSED_CONN_INTERVAL;
+u_long update_interval = UPDATE_INTERVAL;
+u_long max_active_conn_num = MAX_ACTIVE_CONN_NUM;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = 0;
@@ -190,6 +196,8 @@ static struct ext_bool_op {
      "print warnings when SYNs or FINs rexmitted with different sequence numbers"},
     {"dump_packet_data", &dump_packet_data, TRUE,
      "print all packets AND dump the TCP/UDP data"},
+    {"continuous", &run_continuously, TRUE,
+     "run continuously and don't provide a summary"},
 
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
@@ -615,6 +623,10 @@ main(
     if (do_udp)
 	udptrace_init();
 
+    if (run_continuously) {
+      trace_init();
+    }
+
     /* get starting wallclock time */
     gettimeofday(&wallclock_start, NULL);
 
@@ -684,8 +696,11 @@ main(
 
     /* close files, cleanup, and etc... */
     trace_done();
-    if (do_udp)
+    if (!run_continuously) {
+      /* countinuos mode is not supported for udp */
+      if (do_udp)
 	udptrace_done();
+    }
     FinishModules();
     plotter_done();
 
@@ -1069,6 +1084,7 @@ QuitSig(
     printf("%c\n\n", 7);  /* BELL */
     printf("Terminating processing early on signal %d\n", signum);
     printf("Partial result after processing %lu packets:\n\n\n", pnum);
+    FinishModules();
     plotter_done();
     trace_done();
     exit(1);
@@ -1695,14 +1711,19 @@ ParseArgs(
 		  case 'h': Help(argv[i]+1); *(argv[i]+1) = '\00'; break;
 		  case 'i': {
 		      int conn = -1;
-		      if (isdigit((int)(*(argv[i]+1))))
-			  conn = atoi(argv[i]+1);
-		      else
-			  BadArg(argsource, "-i  number missing\n");
-		      if (conn < 0)
-			  BadArg(argsource, "-i  must be >= 0\n");
-		      ++saw_i_or_o;
-		      IgnoreConn(conn);
+		      if (run_continuously) {
+			fprintf(stderr, "Warning: cannot ignore connections in continuous mode\n");
+		      }
+		      else {
+			  if (isdigit((int)(*(argv[i]+1))))
+			      conn = atoi(argv[i]+1);
+			  else
+			      BadArg(argsource, "-i  number missing\n");
+		          if (conn < 0)
+			      BadArg(argsource, "-i  must be >= 0\n");
+ 		          ++saw_i_or_o;
+		          IgnoreConn(conn);
+		      }
 		      *(argv[i]+1) = '\00'; 
 		  } break;
 		  case 'l': printbrief = FALSE; break;
@@ -1715,8 +1736,13 @@ ParseArgs(
 		    resolve_ports = FALSE;
 		    break;
 		  case 'o':
-		    ++saw_i_or_o;
-		    GrabOnly(argsource,argv[i]+1);
+		    if (run_continuously) {
+		        fprintf(stderr, "Warning: cannot use 'grab only' flag in continuous mode\n");
+		    }
+		    else {
+		        ++saw_i_or_o;
+		        GrabOnly(argsource,argv[i]+1);
+		    }
 		    *(argv[i]+1) = '\00'; break;
 		  case 'p': printallofem = TRUE; break;
 		  case 'q': printsuppress = TRUE; break;
@@ -1960,6 +1986,29 @@ ModulesPerConn(
 	    /* remember this structure */
 	    ptp->pmod_info[i] = pmodstruct;
 	}
+    }
+}
+
+
+void
+ModulesPerOldConn(
+		  tcp_pair *ptp)
+{
+    int i;
+
+    for (i=0; i < NUM_MODULES; ++i) {
+	if (!modules[i].module_inuse)
+	    continue;  /* might be disabled */
+
+	if (modules[i].module_deleteconn == NULL)
+	    continue;  /* they might not care */
+
+	if (debug>3)
+	    fprintf(stderr,"Calling delete conn routine for module \"%s\"\n",
+		    modules[i].module_name);
+
+	(*modules[i].module_deleteconn)(ptp,
+					ptp->pmod_info?ptp->pmod_info[i]:NULL);
     }
 }
 
