@@ -53,8 +53,10 @@ struct uconn_info {
 };
 static struct uconn_info *uconnhead = NULL;
 
-/* what file we're in */
+
+/* locally-global info */
 static char *collie_filename = NULL;
+static Bool print_labels = TRUE;
 
 
 /* local routines */
@@ -64,6 +66,7 @@ static char *collie_name(ipaddr ipaddress);
 static char *collie_dots(ipaddr ipaddress);
 static char *collie_time(struct timeval *ptime);
 static char *collie_date(time_t timestamp);
+static void ParseArgs(char *argstring);
 
 
 
@@ -75,6 +78,7 @@ collie_init(
 {
     int i;
     int enable=0;
+    char *args = NULL;
 
     for (i=1; i < argc; ++i) {
 	if (!argv[i])
@@ -82,6 +86,7 @@ collie_init(
 	if (strncmp(argv[i],"-x",2) == 0) {
 	    if (strncasecmp(argv[i]+2,"collie",sizeof("collie")-1) == 0) {
 		/* I want to be called */
+		args = argv[i]+(sizeof("-xcollie")-1);
 		enable = 1;
 		argv[i] = NULL;
 	    }
@@ -90,6 +95,9 @@ collie_init(
 
     if (!enable)
 	return(0);	/* don't call me again */
+
+    /* parse any arguments for ME */
+    ParseArgs(args);
 
     /* we don't want the normal output */
     printsuppress = TRUE;
@@ -132,6 +140,48 @@ MakeUDPConnRec(void)
 }
 
 
+#define LABEL(str)(print_labels?str:"")
+
+#define DESCR(ptr)\
+	printf("\n"); \
+	printf("%s%s \n",\
+	       LABEL("Session Start: "),\
+	       collie_time(&(ptr)->first_time));\
+	printf("%s%s\n",\
+	       LABEL("Session End: "),\
+	       collie_time(&(ptr)->last_time));\
+	printf("%s%s\n",\
+	       LABEL("Source IP address: "),\
+	       collie_dots((ptr)->addr_pair.a_address));\
+	printf("%s%u\n",\
+	       LABEL("Source Port: "),\
+	       (unsigned)(ptr)->addr_pair.a_port);\
+	printf("%s%s\n",\
+	       LABEL("Source Fully Qualified domain name: "),\
+	       collie_name((ptr)->addr_pair.a_address));\
+	printf("%s%s\n",\
+	       LABEL("Destination IP address: "),\
+	       collie_dots((ptr)->addr_pair.b_address));\
+	printf("%s%u\n",\
+	       LABEL("Destination Port: "),\
+	       (unsigned)(ptr)->addr_pair.b_port);\
+	printf("%s%s\n",\
+	       LABEL("Destination Fully Qualified domain name: "),\
+	       collie_name((ptr)->addr_pair.b_address));\
+	printf("%s%llu\n",\
+	       LABEL("Bytes Transferred Source to Destination: "),\
+	       (ptr)->a2b.data_bytes);\
+	printf("%s%llu\n",\
+	       LABEL("Bytes Transferred Destination to Source: "),\
+	       (ptr)->b2a.data_bytes);\
+	printf("%s%llu\n",\
+	       LABEL("Packets Transferred Source to Destination: "),\
+	       (ptr)->a2b.packets);\
+	printf("%s%llu\n",\
+	       LABEL("Packets Transferred Destination to Source: "),\
+	       (ptr)->b2a.packets);
+
+
 void	
 collie_done(void)
 {
@@ -145,81 +195,34 @@ collie_done(void)
 	exit(-1);
     }
     
-
-    printf("\n\n");
-    printf("Source file: %s\n", collie_filename);
-    printf("File modification timestamp: %s\n", collie_date(statbuf.st_mtime));
-    printf("First packet: %s\n", collie_time(&first_packet));
-    printf("Last packet: %s\n", collie_time(&last_packet));
+    /* print meta information */
+    printf("\n");
+    printf("%s%s\n",
+	   LABEL("Source file: "),
+	   collie_filename);
+    printf("%s%s\n",
+	   LABEL("File modification timestamp: "),
+	   collie_date(statbuf.st_mtime));
+    printf("%s%s\n",
+	   LABEL("First packet: "),
+	   collie_time(&first_packet));
+    printf("%s%s\n",
+	   LABEL("Last packet: "),
+	   collie_time(&last_packet));
 
     /* print out the TCP connections */
+    if (print_labels)
+	printf("\nTCP Connections\n");
     for (pci=connhead; pci; pci=pci->next) {
-	tcp_pair *ptp = pci->ptp;
-
-	printf("\n\n");
-
-	printf("Date: %s\n", 
-	       collie_time(&ptp->first_time));
-	printf("Session Start: %s \n",
-	       collie_time(&ptp->first_time));
-	printf("Session End: %s\n",
-	       collie_time(&ptp->last_time));
-	printf("Source IP address: %s\n",
-	       collie_dots(ptp->addr_pair.a_address));
-	printf("Source Port: %u\n",
-	       (unsigned)ptp->addr_pair.a_port);
-	printf("Source Fully Qualified domain name: %s\n",
-	       collie_name(ptp->addr_pair.a_address));
-	printf("Destination IP address: %s\n",
-	       collie_dots(ptp->addr_pair.b_address));
-	printf("Destination Port: %u\n",
-	       (unsigned)ptp->addr_pair.b_port);
-	printf("Destination Fully Qualified domain name: %s\n",
-	       collie_name(ptp->addr_pair.b_address));
-	printf("Bytes Transferred Source to Destination: %llu\n",
-	       ptp->a2b.data_bytes);
-	printf("Bytes Transferred Destination to Source: %llu\n",
-	       ptp->b2a.data_bytes);
-	printf("Packets Transferred Source to Destination: %llu\n",
-	       ptp->a2b.packets);
-	printf("Packets Transferred Destination to Source: %llu\n",
-	       ptp->b2a.packets);
-    }
-
+	DESCR(pci->ptp)
+	    }
 
     /* print out the UDP connections */
+    if (print_labels)
+	printf("\nUDP Connections\n");
     for (upci=uconnhead; upci; upci=upci->next) {
-	udp_pair *ptp = upci->pup;
-
-	printf("\n\n");
-
-	printf("Date: %s\n", 
-	       collie_time(&ptp->first_time));
-	printf("Session Start: %s \n",
-	       collie_time(&ptp->first_time));
-	printf("Session End: %s\n",
-	       collie_time(&ptp->last_time));
-	printf("Source IP address: %s\n",
-	       collie_dots(ptp->addr_pair.a_address));
-	printf("Source Port: %u\n",
-	       (unsigned)ptp->addr_pair.a_port);
-	printf("Source Fully Qualified domain name: %s\n",
-	       collie_name(ptp->addr_pair.a_address));
-	printf("Destination IP address: %s\n",
-	       collie_dots(ptp->addr_pair.b_address));
-	printf("Destination Port: %u\n",
-	       (unsigned)ptp->addr_pair.b_port);
-	printf("Destination Fully Qualified domain name: %s\n",
-	       collie_name(ptp->addr_pair.b_address));
-	printf("Bytes Transferred Source to Destination: %llu\n",
-	       ptp->a2b.data_bytes);
-	printf("Bytes Transferred Destination to Source: %llu\n",
-	       ptp->b2a.data_bytes);
-	printf("Packets Transferred Source to Destination: %llu\n",
-	       ptp->a2b.packets);
-	printf("Packets Transferred Destination to Source: %llu\n",
-	       ptp->b2a.packets);
-    }
+	DESCR(upci->pup)
+	    }
 }
 
 
@@ -244,7 +247,9 @@ processed at a time\n");
 void
 collie_usage(void)
 {
-    printf("\t-xcollie\tprovide connection summary\n");
+    printf("\t-xcollie\"[-ln]\tprovide connection summary\n");
+    printf("\t   -l	attach labels\n");
+    printf("\t   -n	no labels please\n");
 }
 
 
@@ -342,5 +347,38 @@ collie_time(
 
 	return(now);
 }
+
+static void
+ParseArgs(char *argstring)
+{
+    int argc;
+    char **argv;
+    int i;
+    
+    /* make sure there ARE arguments */
+    if (!(argstring && *argstring))
+	return;
+
+    /* break the string into normal arguments */
+    StringToArgv(argstring,&argc,&argv);
+
+    /* check the module args */
+    for (i=1; i < argc; ++i) {
+	if (debug > 1)
+	    printf("Checking argv[%d]:%s\n", i, argv[i]);
+	if (strcmp(argv[i],"-d") == 0) {
+	    debug = 1;
+	} else if (strcmp(argv[i],"-l") == 0) {
+	    print_labels = TRUE;
+	} else if (strcmp(argv[i],"-n") == 0) {
+	    print_labels = FALSE;
+	} else {
+	    fprintf(stderr,"Collie module: bad argument '%s'\n",
+		    argv[i]);
+	    exit(-1);
+	}
+    }
+}
+
 
 #endif /* LOAD_MODULE_COLLIE */
