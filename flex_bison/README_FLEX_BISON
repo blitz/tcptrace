@@ -1,0 +1,4 @@
+These are the flex and bison output files that I generated.  If you don't
+have Gnu's Flex and Bison, you "might" be able to copy these files to the
+upper directory and get things to compile.  No promises, sorry, but it
+usually works for me
