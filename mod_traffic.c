@@ -54,6 +54,11 @@ struct traffic_info {
     u_long nactive;
     u_long ttlactive;
 
+    /* idle connections */
+    PLINE line_nidle;
+    u_long nidle;
+    u_long ttlidle;
+
     /* open connections */
     PLINE line_nopen;
     u_long nopen;
@@ -112,6 +117,7 @@ static struct conn_info *connhead = NULL;
 static PLOTTER plotter_bytes;
 static PLOTTER plotter_packets;
 static PLOTTER plotter_active;
+static PLOTTER plotter_idle;
 static PLOTTER plotter_open;
 static PLOTTER plotter_openclose;
 static PLOTTER plotter_i_open;
@@ -132,6 +138,7 @@ static PLOTTER plotter_pureacks;
 #define  PLOTTER_RTT_FILENAME		"traffic_rtt.xpl"
 #define  PLOTTER_HALFOPEN_FILENAME	"traffic_halfopen.xpl"
 #define  PLOTTER_PUREACKS_FILENAME	"traffic_pureacks.xpl"
+#define  PLOTTER_IDLE_FILENAME		"traffic_idle.xpl"
 
 /* argument flags */
 static float age_interval = 15.0;  /* 15 seconds by default */
@@ -146,6 +153,7 @@ static Bool doplot_long = FALSE;
 static Bool doplot_rtt = FALSE;
 static Bool doplot_halfopen = FALSE;
 static Bool doplot_pureacks = FALSE;
+static Bool doplot_idle = FALSE;
 static int longconn_duration = 60;
 
 
@@ -296,6 +304,13 @@ traffic_init(
 			PLOTTER_ACTIVE_FILENAME,
 			"active connections over time by port",
 			"time","active connections",
+			NULL);
+    if (doplot_idle)
+	plotter_idle =
+	    new_plotter(NULL,
+			PLOTTER_IDLE_FILENAME,
+			"idle connections over time by port",
+			"time","idle connections",
 			NULL);
     if (doplot_open)
 	plotter_open =
@@ -465,6 +480,8 @@ MakeTrafficLines(
 	pti->line_npackets = new_line(plotter_packets, portname, pti->color);
     if (doplot_active)
 	pti->line_nactive = new_line(plotter_active, portname, pti->color);
+    if (doplot_idle)
+	pti->line_nidle = new_line(plotter_idle, portname, pti->color);
     if (doplot_open)
 	pti->line_nopen = new_line(plotter_open, portname, pti->color);
     if (doplot_long)
@@ -721,6 +738,15 @@ AgeTraffic(void)
 		    ++pci->pti2->nlong;
 		++ports[0]->nlong;
 	    }
+
+	    if (!pci->wasactive) {
+		/* open and !active ==> IDLE */
+		if (pci->pti1)
+		    ++pci->pti1->nidle;
+		if (pci->pti2)
+		    ++pci->pti2->nidle;
+		++ports[0]->nidle;
+	    }
 	}
     }
     
@@ -820,6 +846,12 @@ AgeTraffic(void)
 	    extend_line(pti->line_nactive,current_time, pti->nactive);
 	}
 
+	/* plot idle connections */
+	if (doplot_idle) {
+	    /* plot it */
+	    extend_line(pti->line_nidle,current_time, pti->nidle);
+	}
+
 
 	/* plot open connections */
 	if (doplot_open) {
@@ -851,6 +883,7 @@ AgeTraffic(void)
 	pti->nlong = 0;
 	pti->npackets = 0;
 	pti->nactive = 0;
+	pti->nidle = 0;
 	pti->nopen = 0;
 	pti->npureacks = 0;
     }
@@ -939,6 +972,7 @@ traffic_usage(void)
 \t       -O           generate the 'open connections' graph\n\
 \t       -I           generate the 'instantaneous open connections' graph\n\
 \t       -P           generate the 'packets per second' graph\n\
+\t       -Q           generate the 'idle (Quiet) connections' graph\n\
 \t       -R[MIN[-MAX]]generate the 'round trip time' graph\n\
 \t                    with args, ignore samples outside MIN to MAX (in ms)\n\
 \t       -D[SECS]     generate the 'long duration connection' graph\n\
@@ -983,6 +1017,7 @@ ParseArgs(char *argstring)
 		       age_interval);
 	} else if (strcmp(argv[i],"-G") == 0) {
 	    doplot_active = TRUE;
+	    doplot_idle = TRUE;
 	    doplot_bytes = TRUE;
 	    doplot_loss = TRUE;
 	    doplot_long = TRUE;
@@ -1013,6 +1048,12 @@ ParseArgs(char *argstring)
 		fprintf(stderr,
 			"mod_traffic: generating 'halfopen' graph into '%s'\n",
 			PLOTTER_HALFOPEN_FILENAME);
+	} else if (strcmp(argv[i],"-Q") == 0) {
+	    doplot_idle = TRUE;
+	    if (debug)
+		fprintf(stderr,
+			"mod_traffic: generating 'idle' graph into '%s'\n",
+			PLOTTER_IDLE_FILENAME);
 	} else if (strcmp(argv[i],"-K") == 0) {
 	    doplot_pureacks = TRUE;
 	    if (debug)
