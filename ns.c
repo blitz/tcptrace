@@ -103,7 +103,7 @@ pread_ns(
 	    tcpb->th_ack = 0;
 	} else {
 	    tcpb->th_seq = 0;
-	    tcpb->th_ack = htonl(packlen * seq);
+	    tcpb->th_ack = htonl(packlen * (seq + 1));
 	}
 
 	/* make up a reasonable IPv4 packet header */
