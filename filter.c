@@ -770,7 +770,7 @@ LookupVar(
 	    if ((pfl->vartype == V_FUNC) || (pfl->vartype == V_UFUNC))
 		pf->un.variable.offset = (u_int)ptr;
 	    else
-		pf->un.variable.offset = ptr - (void *)&ptp_dummy;
+		pf->un.variable.offset = (char *)ptr - (char *)&ptp_dummy;
 	    pf->un.variable.fclient = fclient;
 
 	    return(pf);
@@ -987,7 +987,7 @@ EvalMathopUnsigned(
       case OP_BOR:	  ret = (varl | varr); break;
       default: {
 	  fprintf(stderr,"EvalMathodUnsigned: unsupported binary op: %d (%s)\n",
-		  pf->op, Vartype2Str(pf->op));
+		  pf->op, Op2Str(pf->op));
 	  exit(-1);
       }
     }
@@ -1041,7 +1041,7 @@ EvalMathopSigned(
       case OP_BOR:	  ret = (varl | varr); break;
       default: {
 	  fprintf(stderr,"EvalMathodSigned: unsupported binary op: %d (%s)\n",
-		  pf->op, Vartype2Str(pf->op));
+		  pf->op, Op2Str(pf->op));
 	  exit(-1);
       }
     }
@@ -1095,7 +1095,7 @@ EvalRelopUnsigned(
       case OP_NEQUAL:	  ret = (varl != varr); break;
       default: {
 	  fprintf(stderr,"EvalUnsigned: unsupported binary op: %d (%s)\n",
-		  pf->op, Vartype2Str(pf->op));
+		  pf->op, Op2Str(pf->op));
 	  exit(-1);
       }
     }
