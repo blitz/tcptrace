@@ -2041,7 +2041,27 @@ dotrace(
 	    if (ptcpo->sack_count > thisdir->max_sack_blocks) 
 		thisdir->max_sack_blocks = ptcpo->sack_count;
 
+	/* also see if any of them are DSACKS - weddy */
+	/* eventually may come back and fix this, what if we+++++
+	    if (ptcpo->sacks[0].sack_right <= th_ack) {
+	    if (ptcpo->sacks[0].sack_right < th_ack) ++thisdir->num_dsacks;
+	    } else if (ptcpo->sack_count > 1) {
+	    else if (ptcpo->sack_count > 1) {
+	            && ptcpo->sacks[0].sack_left >= ptcpo->sacks[1].sack_left)
+	        {
+	            ++thisdir->num_dsacks;
+	        } else if ((ptcpo->sacks[0].sack_left <=
+	        else if ((ptcpo->sacks[0].sack_left <=
+	                  ptcpo->sacks[0].sack_right >
+	                    ptcpo->sacks[1].sack_left) ||
+                         (ptcpo->sacks[0].sack_right >=
+	                    ptcpo->sacks[1].sack_right &&
+	                  ptcpo->sacks[0].sack_left <
+	                    ptcpo->sacks[1].sack_right)) {
+	                    ptcpo->sacks[1].sack_right)) ++thisdir->num_dsacks;
+	    /* if we saw any dsacks from the other guy, we'll assume he did
 
+	/* draw sacks, if appropriate */
 	if (to_tsgpl != NO_PLOTTER && show_sacks
 	    && (ptcpo->sack_count > 0)) {
 	    int scount;

@@ -482,6 +482,7 @@ typedef struct tcb {
     /* for looking for interesting SACK blocks */
     u_long	num_sacks;
     u_long	max_sack_blocks;
+    u_long	num_dsacks;
 
     /* host name letter(s) */
     char	*host_letter;
