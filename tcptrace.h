@@ -441,6 +441,7 @@ extern Bool warn_printhwdups;
 extern Bool show_out_order;
 extern Bool show_rexmit;
 extern Bool show_zero_window;
+extern Bool show_sacks;
 extern Bool use_short_names;
 extern Bool save_tcp_data;
 extern Bool graph_time_zero;
