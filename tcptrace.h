@@ -57,9 +57,13 @@ static char const rcsid_tcptrace[] =
 #include <stdarg.h>
 #include <stdlib.h>
 
-/* type for plotting into a file */
+/* plotter information */
 typedef int PLOTTER;
 #define NO_PLOTTER -1
+#define NCOLORS 8
+extern char *ColorNames[NCOLORS];
+/* {"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink"}; */
+
 
 
 /* type for a TCP sequence number, ACK, FIN, or SYN */
@@ -378,6 +382,7 @@ void CompFormats(void);
 int CompIsCompressed(void);
 
 
+
 /* TCP flags macros */
 #define SYN_SET(ptcp)((ptcp)->th_flags & TH_SYN)
 #define FIN_SET(ptcp)((ptcp)->th_flags & TH_FIN)
@@ -470,4 +475,3 @@ struct tcp_options {
 #ifndef ETHERTYPE_REVARP
 #define ETHERTYPE_REVARP        0x8035
 #endif /* ETHERTYPE_REVARP */
-
