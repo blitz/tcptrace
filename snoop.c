@@ -53,6 +53,7 @@ struct snoop_file_header {
 /*  -- added prefix SNOOP_ to avoid name clash */
 #define	SNOOP_DL_ETHER	0x4	/* Ethernet Bus */
 #define	SNOOP_DL_FDDI	0x08	/* Fiber Distributed data interface */
+#define	SNOOP_DL_ATM	0x12	/* from Sun's "atmsnoop" */
 
 struct snoop_packet_header {
     unsigned int	len;
@@ -215,6 +216,64 @@ pread_snoop(
 
 	    /* assume it's IP (else find_ip_fddi would have failed) */
 	    pep->ether_type = htons(ETHERTYPE_IP);
+	} else if (snoop_mac_type == SNOOP_DL_ATM) {
+		/* there's a 12 byte header that we don't care about */
+		/* the last 2 of those 12 bytes are the packet type */
+		/* we don't care about hardware header, so we just discard */
+		struct atm_header {
+			u_char junk[10];
+			u_short type;
+		} atm_header;
+
+		/* grab the 12-byte header */
+		rlen=fread(&atm_header,1,sizeof(struct atm_header),stdin);
+		if (rlen != sizeof(struct atm_header)) {
+			fprintf(stderr,"Couldn't read ATM header\n");
+			return(0);
+		}
+
+		/* fill in the ethernet type */
+		/* we'll just assume that they're both in the same network
+		   byte order */
+		pep->ether_type = atm_header.type;
+
+		/* read the rest of the packet */
+		len -= sizeof(struct atm_header);
+		if (len >= IP_MAXPACKET) {
+			/* sanity check */
+			fprintf(stderr,
+				"pread_snoop: invalid next packet, IP len is %d, return EOF\n", len);
+
+			return(0);
+		}
+
+		/* if it's not IP, then skip it */
+		if ((ntohs(pep->ether_type) != ETHERTYPE_IP) &&
+		    (ntohs(pep->ether_type) != ETHERTYPE_IPV6)) {
+			if (debug > 2)
+				fprintf(stderr,
+					"pread_snoop: not an IP packet (ethertype 0x%x)\n",
+					ntohs(pep->ether_type));
+			/* discard the remainder */
+			/* N.B. fseek won't work - it could be a pipe! */
+			if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+				perror("pread_snoop: seek past non-IP");
+			}
+
+			continue;
+		}
+
+		if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+			if (rlen != 0 && debug)
+				fprintf(stderr,
+					"Couldn't read %d more bytes, skipping last packet\n",
+					len);
+			return(0);
+		}
+
+		*ppip  = (struct ip *) pip_buf;
+		/* last byte in the IP packet */
+		*pplast = (char *)pip_buf+packlen-sizeof(struct ether_header)-1;
 	} else {
 	    printf("snoop hardware type %d not understood\n",
 		   snoop_mac_type);
@@ -285,6 +344,10 @@ Tcptrace is only known to work with version 2\n",
       case SNOOP_DL_FDDI:
 	if (debug)
 	    printf("Snoop hw type: %d (FDDI)\n", buf.mac_type);
+	break;
+      case SNOOP_DL_ATM:
+	if (debug)
+	    printf("Snoop hw type: %d (ATM)\n", buf.mac_type);
 	break;
       default:
 	if (debug)
