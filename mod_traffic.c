@@ -222,6 +222,9 @@ traffic_init(
 
     
 
+    /* init the data storage structure */
+    ports = MallocZ(NUM_PORTS*sizeof(struct traffic_info *));
+
     ports[0] = MakeTrafficRec(0);
 
     /* open the output files */
@@ -246,9 +249,6 @@ traffic_init(
 
     /* init the graphs and etc... */
     AgeTraffic();
-
-    /* init the data storage structure */
-    ports = MallocZ(NUM_PORTS*sizeof(struct traffic_info *));
 
     return(1);	/* TRUE means call traffic_read and traffic_done later */
 }
