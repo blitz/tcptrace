@@ -514,4 +514,27 @@ There's no automatic way to do this.  A simple script should do the
 trick.  You might start with something like:
 
 tcptrace -r -l -n input/all.snoop.gz | egrep '(actual data pkts)|(rexmt data pkts)|(data xmit time)|(RTT avg)'
+============================================================
+Tue Nov  9, 1999
 
+>> What's with all of the stupid quotes for module args
+
+As the modules evolved, it became clear that it wasn't possible to
+keep the names of the arguments that the module writers needed
+separate from the arguments that the main program wanted.  Rather then 
+make the argument names even MORE non-intuitive, I decided that all
+module arguments must be in the same shell argument as the -x switch
+that enables it.  That means that if you want to pass "-G -I" to the
+traffic module, you need to say:
+
+   tcptrace -xtraffic"-G -I"
+      or
+   tcptrace -xtraffic" -G -I"
+
+note that the Unix shell will package this the same as:
+
+   tcptrace "-xtraffic-G -I"
+
+but this seems less clear to me somehow.  The module writer then has
+to parse a long, ugly string, but there's a support routine to do it
+for them (see the existing modules as examples).
