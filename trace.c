@@ -954,7 +954,7 @@ dotrace(
 
     /* Kevin Lahey's ECN code */
     /* only works for IPv4 */
-    /* only works for IPv4, IPv6 has no mandatory ID field */
+    if (PIP_ISV4(pip)) {
 	ecn_ce = IP_ECT(pip) && IP_CE(pip);
     }
     cwr = CWR_SET(ptcp);
