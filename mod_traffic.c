@@ -1,3 +1,4 @@
+static int debug = 1;
 /*
  * Copyright (c) 1994, 1995, 1996, 1997
  *	Ohio University.  All rights reserved.
@@ -154,8 +155,11 @@ traffic_init(
     int enable=0;
     char *pch;
     char *portspec = NULL;
+    static int excluded = 0;
 
-    for (i=0; i < argc; ++i) {
+    for (i=1; i < argc; ++i) {
+	if (!argv[i])
+	    continue;  /* argument already taken by another module... */
 	if (strncmp(argv[i],"-x",2) == 0) {
 	    if (strncasecmp(argv[i]+2,"traffic",sizeof("traffic")-1) == 0) {
 		/* I want to be called */
@@ -172,8 +176,6 @@ traffic_init(
 
     /* check for ports specification */
     if (portspec && *portspec) {
-	/* first, turn them all off */
-	ExcludePorts(1,NUM_PORTS-1);
 
 	/* search the port specs */
 	pch = portspec;
@@ -189,18 +191,28 @@ traffic_init(
 
 	    if (sscanf(pch,"=%f", &interval) == 1) {
 		age_interval = interval;
-	    } else if (sscanf(pch,"-%u-%u", &port1, &port2) == 2) {
-		ExcludePorts(port1,port2);
-	    } else if (sscanf(pch,"%u-%u", &port1, &port2) == 2) {
-		IncludePorts(port1,port2);
-	    } else if (sscanf(pch,"-%u", &port1) == 1) {
-		ExcludePorts(port1,port1);
-	    } else if (sscanf(pch,"%u", &port1) == 1) {
-		IncludePorts(port1,port1);
+		if (debug)
+		    printf("mod_traffic: setting age interval to %.3f seconds\n",
+			   age_interval);
 	    } else {
-		fprintf(stderr,"mod_traffic: Invalid port specification string '%s'\n", pch);
-		traffic_usage();
-		exit(-1);
+		if (!excluded) {
+		    ExcludePorts(1,NUM_PORTS-1);
+		    excluded = 1;
+		}
+
+		if (sscanf(pch,"-%u-%u", &port1, &port2) == 2) {
+		    ExcludePorts(port1,port2);
+		} else if (sscanf(pch,"%u-%u", &port1, &port2) == 2) {
+		    IncludePorts(port1,port2);
+		} else if (sscanf(pch,"-%u", &port1) == 1) {
+		    ExcludePorts(port1,port1);
+		} else if (sscanf(pch,"%u", &port1) == 1) {
+		    IncludePorts(port1,port1);
+		} else {
+		    fprintf(stderr,"mod_traffic: Invalid port specification string '%s'\n", pch);
+		    traffic_usage();
+		    exit(-1);
+		}
 	    }
 
 	    pch = pch_next;
@@ -346,7 +358,7 @@ traffic_read(
     ports[0]->npackets += 1;
 
     /* determine elapsed time and age the samples (every 15 seconds now) */
-    if (elapsed(last_time,current_time)/1000000 > age_interval) {
+    if (elapsed(last_time,current_time)/1000000.0 > age_interval) {
 	AgeTraffic();
 	last_time = current_time;
     }
@@ -475,6 +487,7 @@ traffic_done(void)
 	    ++pci->pti1->ttlactive;
 	if (pci->pti2)
 	    ++pci->pti2->ttlactive;
+	++ports[0]->ttlactive;
     }
 
     AgeTraffic();
@@ -484,10 +497,16 @@ traffic_done(void)
     for (i=0; i < NUM_PORTS; ++i) {
 	pti = ports[i];
 	if ((pti != EXCLUDE_PORT) && (pti != INCLUDE_PORT)) {
-	    printf("Port %5u   bytes: %8lu  packets: %8lu  connections: %8lu\n",
-		   pti->port, pti->ttlbytes, pti->ttlpackets, pti->ttlactive);
+	    if (i == 0)
+		printf("Port TTL ");
+	    else
+		printf("Port %5u   ", pti->port);
+	    printf("bytes: %12lu  packets: %10lu  connections: %8lu\n",
+		   pti->ttlbytes, pti->ttlpackets, pti->ttlactive);
 	}
     }
+
+    printf("Plotting performed at %.3f second intervals\n", age_interval);
 }
 
 
