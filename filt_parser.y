@@ -57,10 +57,13 @@
 %token GREATER GREATER_EQ LESS LESS_EQ EQUAL NEQUAL
 %token NOT
 
-/* AND or OR group left to right, NOT is highest precednece, then OR */
+/* AND or OR group left to right, NOT is highest precedence, then OR */
 %left NOT
 %left AND
 %left OR
+
+/* BITWISE AND and OR */
+%left BAND BOR
 
 /* PLUS and MINUS group left to right, lower prec then TIMES and DIVIDE */
 %left PLUS MINUS
@@ -105,6 +108,10 @@ number	: number PLUS number
 		{ $$ = MakeBinaryNode(OP_DIVIDE,$1,$3);}
 	| number MOD number
 		{ $$ = MakeBinaryNode(OP_MOD,$1,$3);}
+	| number BAND number
+		{ $$ = MakeBinaryNode(OP_BAND,$1,$3);}
+	| number BOR number
+		{ $$ = MakeBinaryNode(OP_BOR,$1,$3);}
 	| LPAREN expr RPAREN
 		{ $$ = $2; }
 	| leaf

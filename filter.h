@@ -79,6 +79,10 @@ enum optype {
     OP_TIMES	  = 115,
     OP_DIVIDE	  = 116,
     OP_MOD	  = 117,
+
+    /* bitwise arithmetic */
+    OP_BAND	  = 118,
+    OP_BOR	  = 119,
 };
 
 

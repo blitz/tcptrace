@@ -77,6 +77,8 @@ Op2Str(
       case OP_TIMES:		return("*");
       case OP_DIVIDE:		return("/");
       case OP_MOD:		return("%");
+      case OP_BAND:		return("&");
+      case OP_BOR:		return("|");
       default:			return("??");
     }
 }
@@ -278,6 +280,8 @@ MakeOneBinaryNode(
       case OP_TIMES:
       case OP_DIVIDE:
       case OP_MOD:
+      case OP_BAND:
+      case OP_BOR:
 	if ((pf_left->vartype != V_LLONG) && (pf_left->vartype != V_ULLONG)) {
 	    fprintf(stderr,"Arithmetic operator applied to non-number: ");
 	    PrintFilter(pf_left);
@@ -377,6 +381,8 @@ MakeBinaryNode(
 	      case OP_TIMES:
 	      case OP_DIVIDE:
 	      case OP_MOD:
+	      case OP_BAND:
+	      case OP_BOR:
 		/* just keep a list */
 		if (pf_ret == NULL) {
 		    pf_ret = pf_new;
@@ -693,6 +699,8 @@ PrintFilterInternal(
       case OP_TIMES:
       case OP_DIVIDE:
       case OP_MOD:
+      case OP_BAND:
+      case OP_BOR:
 	sprintf(buf,"(%s%s%s)",
 		PrintFilterInternal(pf->un.binary.left),
 		Op2Str(pf->op),
@@ -975,6 +983,8 @@ EvalMathopUnsigned(
       case OP_TIMES:	  ret = (varl * varr); break;
       case OP_DIVIDE:	  ret = (varl / varr); break;
       case OP_MOD:	  ret = (varl % varr); break;
+      case OP_BAND:	  ret = (varl & varr); break;
+      case OP_BOR:	  ret = (varl | varr); break;
       default: {
 	  fprintf(stderr,"EvalMathodUnsigned: unsupported binary op: %d (%s)\n",
 		  pf->op, Vartype2Str(pf->op));
@@ -1027,6 +1037,8 @@ EvalMathopSigned(
       case OP_TIMES:	  ret = (varl * varr); break;
       case OP_DIVIDE:	  ret = (varl / varr); break;
       case OP_MOD:	  ret = (varl % varr); break;
+      case OP_BAND:	  ret = (varl & varr); break;
+      case OP_BOR:	  ret = (varl | varr); break;
       default: {
 	  fprintf(stderr,"EvalMathodSigned: unsupported binary op: %d (%s)\n",
 		  pf->op, Vartype2Str(pf->op));
@@ -1357,6 +1369,8 @@ EvalFilter(
       case OP_TIMES:
       case OP_DIVIDE:
       case OP_MOD:
+      case OP_BAND:
+      case OP_BOR:
 	if (pf->un.binary.left->vartype == V_ULLONG) {
 	    EvalMathopUnsigned(ptp,&res,pf);
 	    pres->vartype = V_ULLONG;

@@ -72,6 +72,8 @@
 [oO][rR]	{ return(OR); } 
 -[oO]		{ return(OR); }     /* same as "OR" */
 "||"		{ return(OR); }     /* same as "OR" */
+"|"		{ return(BOR); }     /* bitwise OR */
+"&"		{ return(BAND); }    /* bitwise AND */
 
 
 [0-9]+	{
