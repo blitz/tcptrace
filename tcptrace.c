@@ -137,6 +137,7 @@ Bool triple_dupack_allows_data = FALSE;
 Bool run_continuously = FALSE;
 Bool xplot_all_files = FALSE;
 Bool conn_num_threshold = FALSE;
+Bool ns_hdrs = TRUE;
 u_long remove_live_conn_interval = REMOVE_LIVE_CONN_INTERVAL;
 u_long remove_closed_conn_interval = REMOVE_CLOSED_CONN_INTERVAL;
 u_long update_interval = UPDATE_INTERVAL;
@@ -244,7 +245,9 @@ static struct ext_bool_op {
      "limit the maximum number of connections kept at a time in real-time mode"},
 	{"xplot_all_files", &xplot_all_files, TRUE,
 	 "display all generated xplot files at the end"},
-
+	{"ns_hdrs", &ns_hdrs, TRUE,
+	 "assume that ns has the useHeaders_ flag true (uses IP+TCP headers)"},
+    
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
 
@@ -2006,9 +2009,10 @@ DumpFlags(void)
     fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
     fprintf(stderr,"ending pnum:      %lu\n", endpnum);
     fprintf(stderr,"throughput intvl: %d\n", thru_interval);
-    fprintf(stderr,"number modules:   %u\n", (unsigned)NUM_MODULES);
+    fprintf(stderr,"NS simulator hdrs:%u\n", BOOL2STR(ns_hdrs));
+	fprintf(stderr,"number modules:   %u\n", (unsigned)NUM_MODULES);
     fprintf(stderr,"debug:            %s\n", BOOL2STR(debug));
-
+	
     /* print out the stuff controlled by the extended boolean args */
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];

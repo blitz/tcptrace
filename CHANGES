@@ -419,3 +419,6 @@ are interested in running tcptrace on OpenVMS.
 Changes made to code in order to be able to compile tcptrace under cygwin on
 Windows. Now works on windows too. Does not support reading compressed dump
 files directly though.
+
+The ns code was modified by Angelos Stavrou to read in the more detailed
+output from the extra headers in the ns FullTcp.

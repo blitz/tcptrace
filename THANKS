@@ -68,3 +68,5 @@ or ported the program to other architectures:
 	 Matt Muggeridge (Matt.Muggeridge@compaq.com) for porting tcptrace to
 	        OpenVMS and providing us with detailed documentation for the 
 		same.
+	 Angelos Stavrou (angelos@ee.columbia.edu) for adding support for the
+		reading of headers from ns FullTcp agents.

@@ -670,6 +670,7 @@ extern Bool docheck_hw_dups;
 extern Bool run_continuously;
 extern Bool conn_num_threshold;
 extern Bool xplot_all_files;
+extern Bool ns_hdrs;
 extern u_long remove_live_conn_interval;
 extern u_long remove_closed_conn_interval;
 extern u_long update_interval;

@@ -134,15 +134,19 @@ pread_ns(
 		      &ipb->ip_dst.s_addr,
 		      &tcpb->th_dport,
 		      &seq,
-		      &ipb->ip_id);
+		      &ipb->ip_id,
+			  &junk, /*don't care since it is not FullTCP */
+		      &junk,
+			  &junk,
+		      &junk);
 
-	/* if we can't match all 14 fields, we give up on the file */
-	if (rlen != 14) {
-	    fprintf(stderr,"Bad ns packet header in line %u\n", linenum);
+    /* if we reach the End Of File we stop */
+	if (rlen == EOF) {
 	    return(0);
 	}
-
-	if (rlen == EOF) {
+	/* if we can't match all 14 fields, we give up on the file */
+	if (rlen != 14 && rlen != 18) {
+	    fprintf(stderr,"Bad NS packet header in line %u only [%d] arguments can be matched expected 14 or 18 \n", linenum, rlen);
 	    return(0);
 	}
 
@@ -154,10 +158,19 @@ pread_ns(
 	/* if it's not a TCP data segment or ACK, discard and try again */
 	if (!is_tcp && !is_ack)
 	    continue;
-
+	
+	if ((!ns_hdrs && is_tcp) || (ns_hdrs && packlen ==0))
+		*plen = *plen + sizeof(struct ip) + sizeof(struct tcphdr);
+	
 	if (packlen == 0 && is_tcp)
-	    packlen = *plen - sizeof(struct ip) - sizeof(struct tcphdr);
+		packlen = *plen - sizeof(struct ip) - sizeof(struct tcphdr);
+	
+	if (ns_hdrs && is_tcp)
+		packlen = *plen- sizeof(struct ip) - sizeof(struct tcphdr);
 
+	if (is_ack) /* this is explicitly for SACK that creates packets > 40 Bytes*/
+	*plen = 40;
+	
 	ipb->ip_len = htons(*plen);
 
 	if (is_tcp) {
@@ -225,7 +238,7 @@ pread_ns(
 	e = d * 1000000.0;
 	ptime->tv_usec = e;
 
-	*ptlen         = *plen;
+	*ptlen = *plen;
 
 	*ppip  = (struct ip *) pip_buf;
 	*pplast = (char *)pip_buf + *plen;
@@ -241,6 +254,147 @@ pread_ns(
     }
 }
 
+pread_ns_fulltcp(
+    struct timeval	*ptime,
+    int		 	*plen,
+    int		 	*ptlen,
+    void		**pphys,
+    int			*pphystype,
+    struct ip		**ppip,
+    void		**pplast)
+{
+    double c, d, e;
+    while (1) {
+	/* read the packet info */
+
+	char tt;
+	double timestamp;
+	int junk;
+	char type[100];
+	char flags[100];
+	int iteration;
+	int seqno;
+	int ackno;
+	int hdrlen;
+	int is_ack;
+	int is_tcp;
+	int pflags;
+	int rlen;
+
+	++linenum;
+
+	/* correct NS output line would have 14 fields if show_tcphdr_ is 0: */
+	/* For Full TCP this changes to 18 fields when show_tcp is 1*/
+	rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %d %d 0x%x %u %hu\n",
+		      &tt,
+		      &timestamp,
+		      &junk,
+		      &junk,
+		      type,
+		      plen,
+		      flags,
+		      &iteration,
+		      &ipb->ip_src.s_addr,
+		      &tcpb->th_sport,
+		      &ipb->ip_dst.s_addr,
+		      &tcpb->th_dport,
+		      &seqno,
+			  &ipb->ip_id,
+			  &ackno,
+			  &pflags,
+			  &hdrlen,
+			  &junk);
+
+	/* if we reach the End of File we stop */
+	if (rlen == EOF) {
+	    return(0);
+	}
+	/* if we can't match all 18 fields, we give up on the file */
+	if (rlen != 18) {
+	    fprintf(stderr,"Bad NS packet header in line %u only [%d] arguments can be matched expected 14 or 18 \n", linenum, rlen);
+	    fprintf(stderr,"Is this a Full Tcp Header?\n");
+	    return(0);
+	}
+
+	tcpb->th_sport = tcpb->th_dport = iteration;
+	is_tcp = strcmp(type, "tcp") == 0;
+	is_ack = strcmp(type, "ack") == 0;
+	
+	/* if it's not a TCP data segment or ACK, discard and try again */
+	if (!is_tcp && !is_ack)
+	    continue;
+	
+	/* we have biger header than 40 Bytes (SACK?) */
+	if (hdrlen > sizeof(struct ip) + sizeof(struct tcphdr)){ 
+		*plen = *plen - (hdrlen - (sizeof(struct ip) - sizeof(struct tcphdr)));
+	}
+
+	ipb->ip_len = htons(*plen);
+
+	if (is_tcp && (*plen > hdrlen)) { /*for empty tcp packets acting as acks*/
+	    tcpb->th_seq = htonl(seqno);
+	    tcpb->th_ack = 0;
+	} else {
+	    tcpb->th_seq = 0;
+	    tcpb->th_ack = htonl(ackno);
+	}
+
+	/* make up a reasonable IPv4 packet header */
+	ipb->ip_hl = 5; /* no options, normal length of 20 */
+	ipb->ip_v = 4;  /* IPv4 */
+	ipb->ip_tos = 0;
+	ipb->ip_off = 0;
+	ipb->ip_ttl = 64;  /* nice round number */
+	ipb->ip_p = 6;     /* TCP */
+	ipb->ip_sum = 0;   /* IP checksum, hope it doesn't get checked! */
+	ipb->ip_id = ipb->ip_id;
+
+	/* is the transport "ECN-Capable"? */
+	if (strchr(flags, 'N') != NULL)
+	    ipb->ip_tos |= IPTOS_ECT;
+
+	/* was the "Experienced Congestion" bit set? */
+	if (strchr(flags, 'E') != NULL)
+	    ipb->ip_tos |= IPTOS_CE;
+
+	/* make up a reasonable TCP segment header */
+	tcpb->th_off = 5;  /* no options, normal length of 20 */
+	tcpb->th_flags = pflags; /* sdo: what about first SYN?? */
+	tcpb->th_x2 = 0;
+	tcpb->th_sum = 0;
+	tcpb->th_urp = 0;
+	tcpb->th_win = htons(65535);
+
+	/* x2 *was* reserved, now used for ECN bits */
+
+	if (strchr(flags, 'C') != NULL)
+	    tcpb->th_x2 |= TH_ECN_ECHO;
+	if (strchr(flags, 'A') != NULL)
+	    tcpb->th_x2 |= TH_CWR;
+
+	/* convert floating point timestamp to (tv_sec,tv_usec) */
+	c = floor(timestamp);
+	ptime->tv_sec  = c;
+	d = timestamp - (double) ptime->tv_sec;
+	e = d * 1000000.0;
+	ptime->tv_usec = e;
+
+	*ptlen = *plen;
+
+	*ppip  = (struct ip *) pip_buf;
+	*pplast = (char *)pip_buf + *plen;
+	*pphys  = pep;
+	*pphystype = PHYS_ETHER;
+
+
+/*  printf("timestamp %g, type %s, plen %d, seq %d, id %d, ack %d, 0x%x %d \n",
+  timestamp, type, *plen, seqno, ipb->ip_id,ackno,pflags,hdrlen);*/
+
+
+	return(1);
+    }
+return(0);
+}
 
 
 /*
@@ -249,6 +403,12 @@ pread_ns(
 pread_f *is_ns(char *filename)
 {
     int rlen;
+    char tt;
+    int junk;
+    double junkd;
+    char junks[20];
+    int hdrlen = 0;
+    int pflags = 0;
 
 #ifdef __WIN32
     if((fp = fopen(filename, "r")) == NULL) {
@@ -256,15 +416,14 @@ pread_f *is_ns(char *filename)
        exit(-1);
     }
 #endif /* __WIN32 */   
-   
-    if ((rlen = getc(SYS_STDIN)) == EOF) {
-	rewind(SYS_STDIN);
+
+    rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %d %d 0x%x %u %hu\n", &tt, &junkd, &junk, &junks, &junk, &junks, &junk, &junk, &junk, &junk, &junk, &junk, &junk, &junk, &junk, &pflags, &hdrlen, &junk);
+
+    if ((rlen = getc(stdin)) == EOF) {
 	return(NULL);
     }
 
-    rewind(SYS_STDIN);
-
-    switch (rlen) {
+    switch (tt) {
       case '+':
       case '-':
       case 'h':
@@ -287,7 +446,13 @@ pread_f *is_ns(char *filename)
 
     /* init line count (we might be called several times, must be done here) */
     linenum = 0;
-
-    return(pread_ns);
+	/* Lets check if it is FullTCP or not*/
+	if (hdrlen || pflags){ /*it is FullTCP */
+/*		printf("Full TCP \n"); */
+		return(pread_ns_fulltcp);
+	}
+	else{ /*Regular TCP (with or without tcpheaders activated */
+    	return(pread_ns); 
+	}
 }
 #endif /* GROK_NS */
