@@ -1139,12 +1139,12 @@ PrintSVHeader(
      sv_expected_count += SV_OWIN_HEADER_COLUMN_COUNT;
 
    if (debug>3) {
-     fprintf(stderr,"SV_HEADER_COUNT : -l alone = %lu\n", \
-            (SV_HEADER1_COLUMN_COUNT + SV_HEADER2_COLUMN_COUNT));
-     fprintf(stderr,"                : -W alone = %lu\n", \
-            SV_OWIN_HEADER_COLUMN_COUNT);
-     fprintf(stderr,"                : -r alone = %lu\n", \
-            SV_RTT_HEADER_COLUMN_COUNT);
+     fprintf(stderr,"SV_HEADER_COUNT : -l alone = %d\n", \
+            (int)(SV_HEADER1_COLUMN_COUNT + SV_HEADER2_COLUMN_COUNT));
+     fprintf(stderr,"                : -W alone = %d\n", \
+            (int)SV_OWIN_HEADER_COLUMN_COUNT);
+     fprintf(stderr,"                : -r alone = %d\n", \
+            (int)SV_RTT_HEADER_COLUMN_COUNT);
     
      fprintf(stderr,"sv_expected_count=%u\n",sv_expected_count);
    }
