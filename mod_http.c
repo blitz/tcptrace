@@ -1122,17 +1122,17 @@ HttpDoPlot()
 	}
 	if (!ZERO_TIME(&ph->s_syn_time)) {
 	    plotter_tick(p,ph->s_syn_time,y_axis,'u');
-	    plotter_text(p,ph->s_syn_time,y_axis,"a","Serv Syn");
+	    plotter_text(p,ph->s_syn_time,y_axis,"a","Serv SYN");
 	}
 
 	/* plot the FINs */
 	if (!ZERO_TIME(&ph->c_fin_time)) {
 	    plotter_tick(p,ph->c_fin_time,y_axis,'u');
-	    plotter_text(p,ph->c_fin_time,y_axis,"a","Clnt Fin");
+	    plotter_text(p,ph->c_fin_time,y_axis,"a","Clnt FIN");
 	}
 	if (!ZERO_TIME(&ph->s_fin_time)) {
 	    plotter_tick(p,ph->s_fin_time,y_axis,'u');
-	    plotter_text(p,ph->s_fin_time,y_axis,"a","Serv Fin");
+	    plotter_text(p,ph->s_fin_time,y_axis,"a","Serv FIN");
 	}
 
 	y_axis += 4;
