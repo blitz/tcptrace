@@ -101,13 +101,15 @@ DoThru(
     }
 
     /* immediate value in yellow ticks */
-    etime = elapsed(ptcb->thru_lasttime,current_time);
-    if (etime == 0.0)
-	etime = 1000;	/* ick, what if "no time" has passed?? */
-    thruput = (double) nbytes / ((double) etime / 1000000.0);
-    plotter_temp_color(ptcb->thru_plotter,"yellow");
-    plotter_dot(ptcb->thru_plotter,
+    if (plot_tput_instant) {
+	etime = elapsed(ptcb->thru_lasttime,current_time);
+	if (etime == 0.0)
+	    etime = 1000;	/* ick, what if "no time" has passed?? */
+	thruput = (double) nbytes / ((double) etime / 1000000.0);
+	plotter_temp_color(ptcb->thru_plotter,"yellow");
+	plotter_dot(ptcb->thru_plotter,
 		    current_time, (int) thruput);
+    }
 
     /* add in the latest packet */
     ptcb->thru_lasttime = current_time;
