@@ -113,6 +113,17 @@ You asked for:\n\t");
 			printf("\n");
 			exit(-1);
 		    }
+
+		    /* boolean sanity check, only equality and
+		       inequality are legal */
+		    if ($1->vartype == V_BOOL) {
+			if (($2 != EQUAL) && ($2 != NEQUAL)) {
+			    fprintf(stderr, "\
+Only equality and inequality testing allowed against boolean type '%s'\n",
+				    $1->unIsConst.vardet.name);
+			    exit(-1);
+			}
+		    }
 		}
 	;
 

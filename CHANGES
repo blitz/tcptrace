@@ -128,4 +128,4 @@
 5.0a
   adding Nasseef's IPv6 support
   added the -y flag to turn off the (yellow) instantaneous dots in the tput plot
-
+  first cut at the output filtering code (slick!)

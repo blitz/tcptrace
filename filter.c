@@ -264,6 +264,7 @@ Ptr2Unsigned(
       case V_UINT:	val = *((u_int *) ptr); break;
       case V_USHORT:	val = *((u_short *) ptr); break;
       case V_UCHAR:	val = *((u_char *) ptr); break;
+      case V_BOOL:	val = *((Bool *) ptr)==TRUE; break;
       default: {
 	  fprintf(stderr,
 		  "Ptr2Unsigned: can't convert type %s to unsigned\n",
@@ -339,6 +340,7 @@ Var2Unsigned(
       case V_UINT:   return(Ptr2Unsigned(V_UINT,ptr));
       case V_USHORT: return(Ptr2Unsigned(V_USHORT,ptr));
       case V_UCHAR:  return(Ptr2Unsigned(V_UCHAR,ptr));
+      case V_BOOL:   return(Ptr2Unsigned(V_BOOL,ptr));
       default: {
 	  fprintf(stderr,
 		  "Filter eval error, can't convert constant type %s to unsigned\n",
@@ -394,17 +396,21 @@ EvalUnsigned(
     Bool ret;
 
     /* grab left hand side */
-    if (pn->un.leaf.pvarl->isconstant)
+    if (pn->un.leaf.pvarl->isconstant) {
 	varl = Const2Unsigned(pn->un.leaf.pvarl);
-    else
+    } else {
 	varl = Var2Unsigned(ptp,pn->un.leaf.pvarl);
+    }
     
 
     /* grab right hand side */
-    if (pn->un.leaf.pvarr->isconstant)
+    if (pn->un.leaf.pvarr->isconstant) {
 	varr = Const2Unsigned(pn->un.leaf.pvarr);
-    else
+	if (pn->un.leaf.pvarl->vartype == V_BOOL)
+	    varr = (varr==TRUE); /* convert unsigned to boolean */
+    } else {
 	varr = Var2Unsigned(ptp,pn->un.leaf.pvarr);
+    }
 
     switch (pn->op) {
       case GREATER:	ret = (varl >  varr); break;
@@ -544,6 +550,7 @@ EvalLeaf(
       case V_UINT:
       case V_USHORT:
       case V_UCHAR:
+      case V_BOOL:
 	ret = EvalUnsigned(ptp,pn); break;
 
       case V_LLONG:

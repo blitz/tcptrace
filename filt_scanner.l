@@ -51,13 +51,14 @@ extern YYSTYPE yylval;
 ">" 	        { return(GREATER); } 
 ">=" 	        { return(GREATER_EQ); } 
 "=" 	        { return(EQUAL); } 
+"==" 	        { return(EQUAL); }   /* same as "=" */
 "!=" 	        { return(NEQUAL); } 
 "!" 	        { return(NOT); } 
-[nN][oO][tT]	{ return(NOT); } 
+[nN][oO][tT]	{ return(NOT); }   /* same as "!" */
 [aA][nN][dD]	{ return(AND); } 
--[aA]		{ return(AND); } 
+-[aA]		{ return(AND); }    /* same as "AND" */
 [oO][rR]	{ return(OR); } 
--[oO]		{ return(OR); } 
+-[oO]		{ return(OR); }     /* same as "OR" */
 
 
 [0-9]+	{
@@ -72,6 +73,9 @@ extern YYSTYPE yylval;
     return(SIGNED);
 }
 
+"FALSE"	        { yylval.unsigned_long = 0; return(UNSIGNED); }
+"TRUE"	        { yylval.unsigned_long = 1; return(UNSIGNED); }
+
 \"[^\"]*\"	{
     /* a string */
     yylval.string = strdup(yytext+1);  /* make a copy of the string */
@@ -79,7 +83,7 @@ extern YYSTYPE yylval;
     return(STRING);
 }
 
-[a-zA-Z_]+ {
+[a-zA-Z_][a-zA-Z_0-9]* {
     /* a variable (word) */
     yylval.string = strdup(yytext);  /* make a copy of the string */
     return(VARIABLE);
