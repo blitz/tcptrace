@@ -88,6 +88,9 @@ DEFINES += -DGROK_NETM
 # define GROK_ETHERPEEK if you want tcptrace to understand the output
 # format of the Macintosh program Etherpeek
 DEFINES += -DGROK_ETHERPEEK
+# define GROK_NS if you want tcptrace to understand the output
+# format of the LBL network simulator, ns
+DEFINES += -DGROK_NS
 # define GROK_NLANR if you want tcptrace to understand the output
 # format of the various NLANL tools
 # (this doesn't work well yet, not recommended - Sat Dec 19, 1998)
@@ -147,7 +150,7 @@ CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c nlanr.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \
-	version.c
+	ns.c version.c
 MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c
 MODSUPPORT=dyncounter.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o} ${MODSUPPORT:.c=.o}
@@ -264,6 +267,7 @@ mod_traffic.o: tcptrace.h  mod_traffic.h
 mod_tcplib.o: tcptrace.h  mod_tcplib.h
 mod_rttgraph.o: tcptrace.h  mod_rttgraph.h
 ipv6.o: tcptrace.h ipv6.h
+ns.o: tcptrace.h
 
 #
 # make development version
