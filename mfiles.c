@@ -86,6 +86,7 @@ static void Mfopen_internal(MFILE *pmf, char *mode);
 static void Mf_totail(MFILE *pmf, MFILE *ptail);
 static void Mf_unlink(MFILE *pmf);
 static void M_closeold(void);
+static void M_mkdirp(char *directory);
 
 
 /* head and tail of LRU open file list */
@@ -119,6 +120,8 @@ Mfopen(
     char *mode)
 {
     MFILE *pmf;
+    char *directory;
+    char *prefix;
 
     if ((strcmp(mode,"w") != 0) && (strcmp(mode,"a") != 0)){
 	fprintf(stderr,"Sorry, Mfopen works only for mode \"w\" or \"a\"\n");
@@ -127,21 +130,29 @@ Mfopen(
 
     pmf = (MFILE *) MallocZ(sizeof(MFILE));
 
-    /* the user can also specify the following:
-       output_file_dir:	    directory where all files should go
-       output_file_prefix:  prefix for all file names */
+    /* use the directory specified by the user, if requested */
     if (output_file_dir == NULL)
-	output_file_dir = "";
+	directory = "";
+    else {
+	directory = ExpandFormat(output_file_dir);
+	M_mkdirp(directory);
+    }
+
+    /* attach a filename prefix, if the user asked for one */
     if (output_file_prefix == NULL)
-	output_file_prefix = "";
+	prefix = "";
+    else
+	prefix = ExpandFormat(output_file_prefix);
+
+
     pmf->fname = MallocZ(strlen(fname)
-			 + strlen(output_file_dir)
-			 + strlen(output_file_prefix)
+			 + strlen(directory)
+			 + strlen(prefix)
 			 + 2);  /* 2: for the slash and null */
     sprintf(pmf->fname,"%s%s%s%s",
-	    output_file_dir,
-	    (*output_file_dir)?"/":"",
-	    output_file_prefix,
+	    directory,
+	    (*directory)?"/":"",
+	    prefix,
 	    fname);
 
     if (strcmp(mode,"w") == 0)
@@ -407,4 +418,65 @@ Mf_totail(
     pmf->prev = ptail->prev;
     ptail->prev->next = pmf;
     ptail->prev = pmf;
+}
+
+
+/* try to create all of the directories in the argument */
+/* like mkdirp() under Solaris, but that apparently isn't standard */
+static void
+M_mkdirp(char *directory)
+{
+    static dstring_t *pds = NULL;
+    char *pch;
+    char *temp;
+
+    if (access(directory,W_OK) == 0) {
+	/* it already exists */
+	return;
+    }
+
+    /* make a dynamic string to store the path components */
+    if (pds == NULL)
+	pds = DSNew();
+
+    if (debug)
+	fprintf(stderr,"Trying to create directory '%s'\n", directory);
+    
+
+    /* walk the directory and try to create the components */
+    pch = directory;
+    while (pch) {
+	pch = strchr(pch,'/');
+	/* N.B. pch will be null on the last go around */
+
+	/* copy that much of the directory */
+	DSErase(pds);
+	if (pch)
+	    DSAppendStringN(pds,directory,(1 + pch - directory));
+	else
+	    DSAppendString(pds,directory); /* last loop */
+	temp = DSVal(pds);
+
+	/* try to create it */
+	if (mkdir(temp,0755) == -1) {
+	    /* this will fail with EEXIST if the directory exists,
+	       which is fine */
+	    if (errno != EEXIST) {
+		/* couldn't make the directory */
+		perror(temp);
+		fprintf(stderr,
+			"Unable to create directory '%s' (as part of '%s')\n",
+			temp, directory);
+		exit(-1);
+	    }
+	} else {
+	    if (debug)
+		fprintf(stderr,"Created directory '%s'\n", temp);
+	}
+
+	/* if pch is NULL, then we're done and will fall out,
+	   else we need to increment pch past the current '/' */
+	if (pch)
+	    ++pch;
+    }
 }

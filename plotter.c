@@ -323,7 +323,9 @@ new_plotter(
 
     if (show_title) {
 	if (xplot_title_prefix)
-	    Mfprintf(f,"title\n[%s] %s\n", xplot_title_prefix, title);
+	    Mfprintf(f,"title\n%s %s\n",
+		     ExpandFormat(xplot_title_prefix),
+		     title);
 	else
 	    Mfprintf(f,"title\n%s\n", title);
     }
@@ -715,3 +717,5 @@ extend_line(
     pline->last_time = xval;
     pline->last_y = yval;
 }
+
+

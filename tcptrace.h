@@ -86,6 +86,9 @@ static char const rcsid_tcptrace[] =
 /* IPv6 support */
 #include "ipv6.h"
 
+/* dynamic string support */
+#include "dstring.h"
+
 /* memory allocation routines */
 #include "pool.h"
 
@@ -603,6 +606,7 @@ extern Bool plot_tput_instant;
 extern Bool filter_output;
 extern Bool do_udp;
 extern Bool show_title;
+extern Bool docheck_hw_dups;
 /* constants for real-time (continuous) mode */
 extern Bool run_continuously;
 extern Bool conn_num_threshold;
@@ -767,6 +771,10 @@ udp_pair *udpdotrace(struct ip *pip, struct udphdr *pudp, void *plast);
 void HelpFilter(void);
 void ParseFilter(char *expr);
 Bool PassesFilter(tcp_pair *ptp);
+
+/* simple string expansion for file names, directories, etc */
+char *ExpandFormat(const char *format);
+
 
 /* TCP flags macros */
 #define SYN_SET(ptcp)((ptcp)->th_flags & TH_SYN)
