@@ -594,9 +594,9 @@ PrintConst(
 	break;
       case V_IPADDR:
 	if (debug)
-	    sprintf(buf,"IPADDR(%s)", HostName(*pf->un.constant.pipaddr));
+	    sprintf(buf,"IPADDR(%s)", HostAddr(*pf->un.constant.pipaddr));
 	else
-	    sprintf(buf,"%s", HostName(*pf->un.constant.pipaddr));
+	    sprintf(buf,"%s", HostAddr(*pf->un.constant.pipaddr));
 	break;
       default: {
 	    fprintf(stderr,"PrintConst: unknown constant type %d (%s)\n",
@@ -1279,9 +1279,9 @@ EvalRelopIpaddr(
      /* always evaluates FALSE unless both same type */
      if (varl->addr_vers != varr->addr_vers) {
 	 if (debug) {
-	     printf("EvalIpaddr %s", HostName(*varl));
+	     printf("EvalIpaddr %s", HostAddr(*varl));
 	     printf("%s fails, different addr types\n",
-		    HostName(*varr));
+		    HostAddr(*varr));
 	 }
 	 ret = FALSE;
      } else {
@@ -1319,8 +1319,8 @@ EvalRelopIpaddr(
      pres->val.bool = ret;
 
      if (debug) {
-	 printf("EvalIpaddr %s %s", HostName(*varl), Op2Str(pf->op));
-	 printf("%s returns %s\n", HostName(*varr), BOOL2STR(ret));
+	 printf("EvalIpaddr %s %s", HostAddr(*varl), Op2Str(pf->op));
+	 printf("%s returns %s\n", HostAddr(*varr), BOOL2STR(ret));
      }
 
      return;
