@@ -7,7 +7,7 @@ Tue May 26, 1998
 
 >> I installed tcptrace version 4.1.3 on sunos4.1.4 together with
 >> tcpdump version 3.4a6 and libpcap version 0.4a6 and made a few
->> tests, however I amm very puzzled by the lack of traffic in the
+>> tests, however I am very puzzled by the lack of traffic in the
 >> reverse direction!
 >> 
 >> Can you throw some light on what the problem might be?
@@ -78,17 +78,20 @@ any reason to look at UDP packets.  Tcptrace was designed to explore
 TCP's protocol details and there's not much protocol detail to UDP to
 look into.
 
+(update, version 5 DOES support UDP a little, but you need to add the
+"-u" option, as it ignores UDP by default)
+
 
 ============================================================
 Wed Jul 29, 1998
 
 
->> I was trying to measure tcp throuphput in an experimental testbed
+>> I was trying to measure tcp throughput in an experimental testbed
 >> here in xxxxx initially using netperf so as to have a roughly idea
 >> how much it would be.
 >> 
->> I tried afterwards to have the same results in the tcprtace. The
->> problem is that the use of tcpdump program seems to degradate the
+>> I tried afterwards to have the same results in the tcptrace. The
+>> problem is that the use of tcpdump program seems to degrade the
 >> performance up to 75%.
 >> 
 >> Parameters used in the tcpdump are: -i interface -w file
@@ -128,3 +131,86 @@ period of time.  The blue line is a running average of that figure
 from the beginning of the connection.  If you want a numeric answer,
 just use "-l" with tcptrace and look at the figure that it prints
 out.
+
+============================================================
+Sat Sep 12, 1998
+
+>> How do I print the plots from xplot?
+
+This is from the xplot README:
+
+>>>> Clicking the left button while SHIFT is pressed causes xplot to
+>>>> drop a postscript file in the current directory.  The title is
+>>>> used as the first part of the filename if there has been a title
+>>>> plot command.  Otherwise, "xplot" is used.  The file ends in PS.#
+>>>> where # is a serial number.  Xplot is careful not to write over a
+>>>> previously dumped postscript file, and # is incremented until an
+>>>> unused filename is found.
+>>>> 
+>>>> Clicking the middle button while SHIFT is pressed similarly
+>>>> causes xplot to drop a postscript file, but this will be scaled
+>>>> suitably to allow the figure to be included in a document.  You
+>>>> might have to fiddle with the constants in emit_PS() and
+>>>> recompile to get the figure sized the way you want it.
+>>>> 
+>>>> If you didn't like the size of the figure produced by
+>>>> SHIFT-Middle, Clicking the right button while SHIFT is pressed
+>>>> will produce a postscript plot just like the middle button, but
+>>>> it will take less vertical space.  Again, you can fiddle with the
+>>>> constants in emit_PS() and recompile if you don't like these
+>>>> sizes.
+
+Just a note about these files.  The magic first line that gets created on
+them is nonstandard.  The first line of a postscript file is supposed to
+look like:
+
+#!PS (and possibly more stuff)
+
+but xplot generates
+
+#!POSTSCRIPT
+
+That's not correct, but some older printers don't mind.  My experience
+with newer printers is that they WON'T recognize it and will misbehave
+in annoying ways.  If you change the first like to #!PS it'll work
+fine.  If you have the xplot source, you might as well fix this and
+recompile (that's what I always do).
+
+============================================================
+Sat Sep 12, 1998
+
+>> I just installed tcptrace and xplot, but I'm having trouble 
+>> figuring out how to load the neat plots into xplot?
+>> Any chance of including a typical session in the docs?
+
+There's not much to it.  Tcptrace creates plot files with the suffix
+".xpl".  To see a single plot:
+
+    xplot a2b_tsg.xpl
+
+a VERY nice feature for lining up plots is the "-x" which locks all
+graphs to the same X axis.  For example, you can:
+
+    xplot -x a2b_tsg.xpl  b2a_tsg.xpl
+
+and it'll show you BOTH plots.  When you zoom in on one, the other
+zooms in too.  Very handy, particularly if you line them up across you 
+screen like:
+
+  +----------------------------------------+
+  |                                        | screen
+  | +-----------------------------------+  |
+  | |                                   |  |
+  | | xplot graph 1                     |  |
+  | |                                   |  |
+  | |                                   |  |
+  | +-----------------------------------+  |
+  | +-----------------------------------+  |
+  | |                                   |  |
+  | | xplot graph 2                     |  |
+  | |                                   |  |
+  | |                                   |  |
+  | +-----------------------------------+  |
+  |                                        |
+  +----------------------------------------+
+
