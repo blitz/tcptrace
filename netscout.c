@@ -46,6 +46,13 @@ static char const rcsid[] =
 
 #ifdef GROK_NETSCOUT
 
+#ifdef linux
+#ifdef strncpy
+ /* problem with macro won't let this file compile */
+#undef strncpy
+#endif /* strncpy */
+#endif /* linux */
+
 /* static buffers for reading */
 static int *pep_buf;
 static int *pip_buf;
