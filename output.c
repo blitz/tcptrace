@@ -316,6 +316,25 @@ PrintTrace(
     /* compare to theoretical length of the stream (not just what
        we saw) using the SYN and FIN
        (N.B. not taking wrapped seq space into account) */
+    /* also take into account that rst segs can have data and will not
+       be accounted for by fins. so use min and max seq. number seen
+       to calculate stream length in this case*/
+    if ((pab->reset_count > 0) || (pba->reset_count > 0)) {
+	if ((pab->max_seq>0) && (pab->min_seq>0) && (pba->max_seq>0) && (pba->min_seq>0)) {
+	/* use max_seq - min_seq since FIN will not account for data in RST seg*/
+	StatLineI("ttl stream length", "bytes",
+                  pab->max_seq-pab->min_seq-1, 
+                  pba->max_seq-pba->min_seq-1);
+	StatLineI("missed data","bytes",
+		  pab->max_seq-pab->min_seq-1-pab->unique_bytes,
+		  pba->max_seq-pba->min_seq-1-pba->unique_bytes);
+    }
+	else {
+	    StatLineP("ttl stream length","","%s","NA","NA");
+	    StatLineP("missed data","","%s","NA","NA");
+	}
+    }
+    else {
     if ((pab->syn_count > 0) && (pab->fin_count > 0) &&
 	(pba->syn_count > 0) && (pba->fin_count > 0)) {
 	StatLineI("ttl stream length","bytes",
@@ -328,7 +347,8 @@ PrintTrace(
 	StatLineP("ttl stream length","","%s","NA","NA");
 	StatLineP("missed data","","%s","NA","NA");
     }
-
+    }
+    
     /* tell how much data was NOT captured in the files */
     StatLineI("truncated data","bytes",
 	      pab->trunc_bytes, pba->trunc_bytes);
