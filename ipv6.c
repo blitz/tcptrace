@@ -101,8 +101,8 @@ gettcp(
 	    return(NULL);
 
 	/* check the fragment field, if it's not the first fragment,
-	   it's useless */
-	if ((ntohs(pip->ip_off)&0xfc) != 0) {
+	   it's useless (offset part of field must be 0 */
+	if ((pip->ip_off&0x1fff) != 0) {
 	    if (debug>1) {
 		printf("gettcp: Skipping IPv4 non-initial fragment\n");
 		if (debug > 2) {
