@@ -58,7 +58,11 @@ struct filter_line filters[] = {
     {"win_zero_ct",	V_ULONG,  PTCB_C_S(win_zero_ct),"number of ZERO windows advertised"},
     {"min_seq",		V_ULONG,  PTCB_C_S(min_seq),"smallest sequence number"},
     {"max_seq",		V_ULONG,  PTCB_C_S(max_seq),"largest sequence number"},
+
+    /* synonyms */
     {"segs",		V_ULLONG, PTCB_C_S(packets),"total segments"},
+    {"packets",		V_ULLONG, PTCB_C_S(packets),"total segments"},
+
     {"syn_count",	V_UCHAR,  PTCB_C_S(syn_count),"SYNs sent"},
     {"fin_count",	V_UCHAR,  PTCB_C_S(fin_count),"FINs sent"},
     {"reset_count",	V_UCHAR,  PTCB_C_S(reset_count),"RESETs sent"},
