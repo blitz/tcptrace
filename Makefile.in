@@ -30,7 +30,7 @@ DEFINES += -DGUNZIP="\"gunzip\""
 # 
 ################################################################## 
 PCAP_LDLIBS = -lpcap
-PCAP_INCS    = -I/usr/local/include -I. -I../pcap
+PCAP_INCS    = -I/usr/local/include -I. -I../pcap -I/usr/include/pcap
 PCAP_LDFLAGS = -L/usr/local/lib -Llib -Lpcap -L../pcap
 
 
