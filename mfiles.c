@@ -101,7 +101,23 @@ Mfopen(
 
     pmf = (MFILE *) MallocZ(sizeof(MFILE));
 
-    pmf->fname = strdup(fname);
+    /* the user can also specify the following:
+       output_file_dir:	    directory where all files should go
+       output_file_prefix:  prefix for all file names */
+    if (output_file_dir == NULL)
+	output_file_dir = "";
+    if (output_file_prefix == NULL)
+	output_file_prefix = "";
+    pmf->fname = MallocZ(strlen(fname)
+			 + strlen(output_file_dir)
+			 + strlen(output_file_prefix)
+			 + 2);  /* 2: for the slash and null */
+    sprintf(pmf->fname,"%s%s%s%s",
+	    output_file_dir,
+	    (*output_file_dir)?"/":"",
+	    output_file_prefix,
+	    fname);
+
     Mfopen_internal(pmf,"w+");
 
     /* put at the tail of the LRU list */
@@ -255,7 +271,7 @@ Mfopen_internal(
     if (stream == NULL) {
 
 	if (errno != EMFILE) {
-	    perror("fopen");
+	    perror(pmf->fname);
 	    exit(-1);
 	}
 
