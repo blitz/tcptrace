@@ -107,11 +107,11 @@ static int callback(
 	memcpy(ip_buf,buf+14,iplen);
 	break;
       case DLT_SLIP:
-	callback_pep->ether_type = ETHERTYPE_IP;
+	callback_pep->ether_type = htons(ETHERTYPE_IP);
 	memcpy(ip_buf,buf+16,iplen);
 	break;
       case DLT_FDDI:
-	callback_pep->ether_type = ETHERTYPE_IP;
+	callback_pep->ether_type = htons(ETHERTYPE_IP);
 	if (offset < 0)
 	      offset = find_ip_fddi(buf,iplen);
 	if (offset < 0)
@@ -164,7 +164,7 @@ pread_tcpdump(
 	*ptlen     = callback_phdr->caplen;
 
 	/* if it's not TCP/IP, then skip it */
-	if ((callback_pep->ether_type != ETHERTYPE_IP) ||
+	if ((ntohs(callback_pep->ether_type) != ETHERTYPE_IP) ||
 	    ((*ppip)->ip_p != IPPROTO_TCP)) {
 	    continue;
 	}
