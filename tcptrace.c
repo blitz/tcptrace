@@ -1037,6 +1037,9 @@ StringToArgv(
     char **argv;
     int nargs = 0;
 
+    /* discard the original string, use a copy */
+    buf = strdup(buf);
+
     /* (very pessimistically) make the argv array */
     argv = malloc(sizeof(char *) * ((strlen(buf)/2)+1));
 
@@ -1085,39 +1088,42 @@ CheckArguments(
 {
     char *home;
     char *envariable;
-    static int debug = 1;
+    char *rc_path = NULL;
+    char *rc_buf = NULL;
 
     /* remember the name of the program for errors... */
     progname = argv[0];
 
     /* first, we read from the config file, "~/.tcptracerc" */
     if ((home = getenv("HOME")) != NULL) {
-	char *path;
 	struct stat statbuf;
 
-	path = malloc(strlen(home)+strlen(TCPTRACE_RC_FILE)+2);
+	rc_path = malloc(strlen(home)+strlen(TCPTRACE_RC_FILE)+2);
 
-	sprintf(path, "%s/%s", home, TCPTRACE_RC_FILE);
+	sprintf(rc_path, "%s/%s", home, TCPTRACE_RC_FILE);
 	if (debug>1)
-	    printf("Looking for resource file '%s'\n", path);
+	    printf("Looking for resource file '%s'\n", rc_path);
 
-	if (stat(path,&statbuf) == 0) {
+	if (stat(rc_path,&statbuf) != 0) {
+	    rc_path = NULL;
+	} else {
 	    int argc;
 	    char **argv;
 	    FILE *f;
-	    char *buf = malloc(statbuf.st_size+1);
+
+	    rc_buf = malloc(statbuf.st_size+1);
 
 	    if (debug>1)
-		printf("resource file %s exists\n", path);
+		printf("resource file %s exists\n", rc_path);
 
-	    if ((f = fopen(path,"r")) != NULL) {
-		char *pbuf = buf;
-		*buf = '\00';
+	    if ((f = fopen(rc_path,"r")) != NULL) {
+		char *pbuf = rc_buf;
+		*rc_buf = '\00';
 		/* read each line in turn */
 		while (!feof(f)) {
-		    if (fgets(pbuf,statbuf.st_size+1-(pbuf-buf),f) == NULL) {
+		    if (fgets(pbuf,statbuf.st_size+1-(pbuf-rc_buf),f) == NULL) {
 			if (ferror(f)) {
-			    perror(path);
+			    perror(rc_path);
 			    exit(-1);
 			}
 			/* else, just EOF */
@@ -1136,16 +1142,11 @@ CheckArguments(
 		    *pbuf = '\00';
 		}
 
-		if (debug)
-		    printf("resource file %s contains:\n\t'%s'\n",
-			   path, buf);
-
-		StringToArgv(buf,&argc,&argv);
+		StringToArgv(rc_buf,&argc,&argv);
 		ParseArgs(TCPTRACE_RC_FILE, &argc, argv);
 
 		fclose(f);
 	    }
-	    free(buf);
 	}
     }
 
@@ -1170,6 +1171,17 @@ CheckArguments(
 	BadArg(NULL,"must specify at least one file name\n");
     }
 
+    /* if debugging is on, tell what was in the ENV and rc file */
+    if (debug) {
+	if (rc_path)
+	    printf("Flags from %s: '%s'\n", rc_path, rc_buf);
+	if (envariable)
+	    printf("envariable %s contains: '%s'\n",
+		   TCPTRACE_ENVARIABLE, envariable);
+    }
+
+    if (rc_buf)
+	free(rc_buf);
 }
 
 
