@@ -26,3 +26,8 @@
 	Pentium box"  (also untested by me, I don't have one)
   an HP compiler picked out some places where I missed a static
     decl for some functions.  Not fatal, but I fixed it.
+3.2.8 - Mon Mar  3, 1997
+  added changes for Mark
+     allow connection reuse on same pair of IP addresses and ports
+     4 minutes must have passed and either new segment has a SYN
+     or old connection had seen both FINs

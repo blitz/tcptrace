@@ -221,6 +221,9 @@ struct stcp_pair {
     /* are we ignoring this one?? */
     Bool		ignore_pair;
 
+    /* inactive (previous instance of current connection */
+    Bool		inactive;
+
     /* endpoint identification */
     tcp_pair_addrblock	addr_pair;
 
