@@ -52,9 +52,9 @@ static void printipv4_opt_addrs(char *popt, int ptr, int len);
 
 
 
-/* Unix format: "Fri Sep 13 00:00:00 1986\n" */
-/*			   1         2          */
-/*		 012345678901234567890123456789 */
+/* Resulting string format: "Fri Sep 13 00:00:00.123456 1986" */
+/*			               1         2         3   */
+/*		             0123456789012345678901234567890 */
 char *
 ts2ascii(
     struct timeval	*ptime)
@@ -81,7 +81,7 @@ ts2ascii(
 	return(buf);
 }
 
-/* same as ts2ascii, but leave the year on */
+/* same as ts2ascii, but no year */
 char *
 ts2ascii_date(
     struct timeval	*ptime)
