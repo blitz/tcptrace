@@ -86,13 +86,7 @@ xp_timestamp(
 	}
 
 	/* and subtract from the first timestamp */
-	time.tv_sec  -= ppi->zerotime.tv_sec;
-	time.tv_usec -= ppi->zerotime.tv_usec;
-	if (time.tv_usec < 0) {
-	    /* "borrow" */
-	    time.tv_sec -= 1;
-	    time.tv_usec += 1000000;
-	}
+	tv_sub(&time, ppi->zerotime);
 
 	/* (in)sanity check */
 	if (time.tv_sec < 0) {
@@ -101,6 +95,7 @@ ZERO-based X-axis plotting requested and elements are not plotted in\n\
 increasing time order.  Try without the '-z' flag\n",
 		    ppi->filename);
 /* 	    exit(-5); */
+	    time.tv_sec = time.tv_usec = 0;
 	}
     }
 
@@ -546,6 +541,19 @@ plotter_vtick(
     u_long		x)
 {
     plotter_tick(pl,t,x,'v');
+}
+
+
+
+/* don't plot ANYTHING, just make sure ZERO point is set! */
+void
+plotter_nothing(
+    PLOTTER pl,
+    struct timeval	t)
+{
+    char *ret;
+    ret = xp_timestamp(pl,t);
+    printf("plotter_nothing(%s) gets '%s'\n", ts2ascii(&t), ret);
 }
 
 
