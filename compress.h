@@ -51,16 +51,19 @@ struct comp_formats {
  *  4) only the first suffix match is used
  *  5) an arg of "%s" will be replaced with the file name,
  *     don't forget to include it!
+ *  6) don't forget the "dot" in the suffix (if there is one)
  */
 
 struct comp_formats supported_comp_formats[] = {
+/*   SUFFIX    DESCRIPTION	    BINARY NAME	   ARGS TO EXECV	*/
+/*   -----   --------------------   -----------   ----------------------*/
 #ifdef GUNZIP
-    {".gz", "Gnu gzip format",	    "gunzip",     {"gunzip","-c","%s",NULL}},
-    {".Z",  "Unix compress format", "gunzip",     {"gunzip","-c","%s",NULL}},
+    {".gz", "Gnu gzip format",	    GUNZIP,     {"gunzip","-c","%s",NULL}},
+    {".Z",  "Unix compress format", GUNZIP,     {"gunzip","-c","%s",NULL}},
 #endif /* GUNZIP */
 
 #ifdef UNCOMPRESS
-    {".Z",  "Unix compress format", "uncompress", {"uncompress","-c","%s",NULL}},
+    {".Z",  "Unix compress format", UNCOMPRESS, {"uncompress","-c","%s",NULL}},
 #endif /* UNCOMPRESS */
 
     {NULL,NULL,NULL,{NULL}},	/* You must NOT remove this entry */
