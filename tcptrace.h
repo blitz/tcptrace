@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996
+ * Copyright (c) 1994, 1995, 1996, 1997
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -260,6 +260,10 @@ struct stcp_pair {
     u_long		packets;
     tcb			a2b;
     tcb			b2a;
+
+    /* data transfer time stamps - mallman */
+    timeval             first_data_time;
+    timeval             last_data_time;
 
     /* module-specific structures, if requested */
     void		**pmod_info;
