@@ -155,7 +155,7 @@ CFILES=compress.c etherpeek.c gcache.c mfiles.c names.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \
 	ns.c version.c
-MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c
+MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c mod_slice.c
 MODSUPPORT=dyncounter.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o} ${MODSUPPORT:.c=.o}
 
