@@ -579,7 +579,11 @@ StatLineFieldL(
     u_llong arg,
     int	f_rightside)
 {
-    char valbuf[20];
+    /* bug fix: Theo Snelleman */
+    /* "The biggest number possible is 18446744073709551615 (20 digits) and
+        is too big for valbuf[20] ('\0' is the 21th character)." */
+    /* it was originally an array of [20] */
+    char valbuf[21];
     
     /* determine the value to print */
     sprintf(valbuf,format,arg);
