@@ -517,8 +517,8 @@ traffic_read(
     void *mod_data)		/* connection info for this one */
 {
     struct tcphdr *ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
-    struct traffic_info *pti1 = FindPort(ptcp->th_sport);
-    struct traffic_info *pti2 = FindPort(ptcp->th_dport);
+    struct traffic_info *pti1 = FindPort(ntohs(ptcp->th_sport));
+    struct traffic_info *pti2 = FindPort(ntohs(ptcp->th_dport));
     u_long bytes = ntohs(pip->ip_len);
     static timeval last_time = {0,0};
     struct conn_info *pci = mod_data;
@@ -542,8 +542,8 @@ traffic_read(
 
 	    /* instantaneous opens and closes */
 	    if (doplot_i_open) {
-		DoplotIOpen(ptcp->th_dport, TRUE);
-		DoplotIOpen(ptcp->th_sport, TRUE);
+		DoplotIOpen(ntohs(ptcp->th_dport), TRUE);
+		DoplotIOpen(ntohs(ptcp->th_sport), TRUE);
 		DoplotIOpen(0, TRUE);
 	    }
 	}
@@ -575,8 +575,8 @@ traffic_read(
 
 	    /* instantaneous opens and closes */
 	    if (doplot_i_open) {
-		DoplotIOpen(ptcp->th_dport, FALSE);
-		DoplotIOpen(ptcp->th_sport, FALSE);
+		DoplotIOpen(ntohs(ptcp->th_dport), FALSE);
+		DoplotIOpen(ntohs(ptcp->th_sport), FALSE);
 		DoplotIOpen(0, FALSE);
 	    }
 	}
@@ -615,7 +615,7 @@ traffic_read(
 	int rtt;
 
 	/* see which of the 2 TCB's this goes with */
-	if (ptp->addr_pair.a_port == ptcp->th_dport)
+	if (ptp->addr_pair.a_port == ntohs(ptcp->th_dport))
 	    ptcb = &ptp->a2b;
 	else
 	    ptcb = &ptp->b2a;
@@ -778,8 +778,9 @@ AgeTraffic(void)
     /* report of loss events */
     if (doplot_loss) {
 	/* convert to events/second */
-	dupacks = (int)((float)dupacks/age_interval);
-	rexmits = (int)((float)rexmits/age_interval);
+	/* sdo bugfix - Wed May 12, 1999 - round UP!! */
+	dupacks = (dupacks+age_interval-1)/age_interval;
+	rexmits = (rexmits+age_interval-1)/age_interval;
 
 	/* draw lines */
 	extend_line(line_dupacks,current_time, dupacks);
