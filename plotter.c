@@ -117,6 +117,7 @@ HostLetter(
 
     fprintf(stderr,"Fatal, too many hosts to name\n");
     exit(-1);
+    return(NULL);  /* NOTREACHED */
 }
 
 
@@ -224,6 +225,7 @@ plotter_done(void)
     for (pl = 0; pl < plotter_ix; ++pl) {
 	if ((f = fplot[pl]) == NULL)
 	    continue;
+	
 	if (!ignore_non_comp || ConnComplete(p2plast[pl]->ptp)) {
 	    Mfprintf(f,"go\n");
 	    Mfclose(f);
