@@ -4,7 +4,7 @@
 #
 # Avinash Lakhiani <avinash.lakhiani@ohiou.edu>, Ohio Universtiy.
 #
-# July 12, 2001
+# July 15, 2001
 
 # Argument checking
 if [ $# -eq 1 ]
@@ -83,6 +83,11 @@ BEGIN	   {
 		initial_y=-1.;
 		dataset_index=-1.;
 		entered = 0;
+		min_xpoint = 9999999999.0;
+		max_xpoint = 0.0;
+		min_ypoint = 9999999999.0;
+		max_ypoint = 0.0;
+		label_index = 0;
 		
 		#No. of sec. from Jan 01, 1970 to Jan 01, 2000
 		secs_2000=946684800.0;
@@ -123,6 +128,14 @@ BEGIN	   {
 			    current_dataset_color = $4;
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
@@ -134,8 +147,24 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			x1point=$4;
 			y1point=$5;
+			if(min_xpoint > x1point)
+			  min_xpoint = x1point;
+			if(max_xpoint < x1point)
+			  max_xpoint = x1point;
+			if(min_ypoint > y1point)
+			  min_ypoint = y1point;
+			if(max_ypoint < y1point)
+			  max_ypoint = y1point;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			printf("\n") >> current_dataset_file;
@@ -150,6 +179,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -161,6 +198,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -174,15 +219,42 @@ BEGIN	   {
 			prev_dataset_style = $1;	
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			getline;
 			if(NR == 4)
 			    current_dataset_color = $4;
 	
 			x1point=$2;
 			y1point=$3;
+			if(min_xpoint > x1point)
+			  min_xpoint = x1point;
+			if(max_xpoint < x1point)
+			  max_xpoint = x1point;
+			if(min_ypoint > y1point)
+			  min_ypoint = y1point;
+			if(max_ypoint < y1point)
+			  max_ypoint = y1point;
+
 			if(NR == 5)
+			{
 			    x2point=$4;
 			    y2point=$5;
+			    if(min_xpoint > x2point)
+			      min_xpoint = x2point;
+			    if(max_xpoint < x2point)
+			      max_xpoint = x2point;
+			    if(min_ypoint > y2point)
+			      min_ypoint = y2point;
+			    if(max_ypoint < y2point)
+			      max_ypoint = y2point;
+			}
 			current_dataset_style = $1;
 
 			if(((prev_dataset_style == "uarrow" && current_dataset_style == "darrow") || (prev_dataset_style == "darrow" && current_dataset_style == "uarrow")) && (xpoint == x1point && ypoint == y1point) && (current_dataset_color == prev_dataset_color))			
@@ -215,6 +287,14 @@ BEGIN	   {
 			    current_dataset_color = $4;
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
@@ -226,6 +306,14 @@ BEGIN	   {
 			    current_dataset_color = $4;
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
@@ -238,6 +326,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}		
@@ -249,6 +345,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
                         printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -260,6 +364,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -272,6 +384,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -281,8 +401,24 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			x1point=$4;
 			y1point=$5;
+			if(min_xpoint > x1point)
+			  min_xpoint = x1point;
+			if(max_xpoint < x1point)
+			  max_xpoint = x1point;
+			if(min_ypoint > y1point)
+			  min_ypoint = y1point;
+			if(max_ypoint < y1point)
+			  max_ypoint = y1point;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			printf("\n") >> current_dataset_file;
@@ -294,20 +430,37 @@ BEGIN	   {
 /^atext .*$/    {
 			xpoint=$2;
   			ypoint=$3;
-			getline;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f\n", $1, xpoint, secs_2000, ypoint) >> labels_file;
-			else printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
+			x_pt[label_index] = xpoint;
+			y_pt[label_index] = ypoint;
+                        getline;
+                        label[label_index++] = $0;
 			next;
 		}
 		
 /^ltext.*$/	{
 			xpoint=$2;
   			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
                         if(NR == 4)
 			  current_dataset_color = $4;
 			getline;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f\n", $1, xpoint, secs_2000, ypoint) >> labels_file;
-			else printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f right\n", $0, xpoint, secs_2000, ypoint) >> labels_file;
+			else printf("set label \"%s\" at %f, %f right\n", $0, xpoint, ypoint) >> labels_file;
 			next;
 		}
 
@@ -331,8 +484,8 @@ END	{
 		  printf("set xdata time\n") >> gpl_file;
 		}
 		printf("set nokey\n") >> gpl_file;
-
 		printf("load \"%s\";\n", labels_file) >> gpl_file;
+		
 		first = 1;
 
 		if(entered)
@@ -348,7 +501,7 @@ END	{
 		    first = 0;
 		    printf("\"%s\" ", dataset_final_file) >> gpl_file;
 
-		    if(file_style[dataset] == "dot")
+ 		    if(file_style[dataset] == "dot")
 		    {
 			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with dots", ++dataset_index) >> gpl_file;
 			else printf("index %d with dots", ++dataset_index) >> gpl_file;
@@ -494,6 +647,16 @@ END	{
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		}
+		for(l=0; l < label_index; l++)
+		{
+		  xpoint = x_pt[l];
+		  ypoint = y_pt[l];
+		  if(max_ypoint > 0) ypoint = ypoint + (50000000 * ((max_ypoint - min_ypoint)/max_ypoint));
+		  curr_label = label[l];
+		  if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f center\n", curr_label, xpoint, secs_2000, ypoint) >> labels_file;
+		  else printf("set label \"%s\" at %f, %f center\n", $1, xpoint, ypoint) >> labels_file;
+
+		}
 		}
 		printf(";\n") >> gpl_file;
 		printf("set term postscript\n") >> gpl_file;
@@ -501,6 +664,7 @@ END	{
 		printf("replot\n") >> gpl_file;
 		printf("pause -1;\n") >> gpl_file;
 		close( gpl_file );
+		close( labels_file );
 		printf("> %s", dataset_final_file) >> dataset_file;
 		close( dataset_file );
 
@@ -587,6 +751,11 @@ BEGIN	   {
 		initial_y=-1.;
 		dataset_index=-1.;
 		entered = 0;
+		min_xpoint = 9999999999.0;
+		max_xpoint = 0.0;
+		min_ypoint = 9999999999.0;
+		max_ypoint = 0.0;
+		label_index = 0;
 		
 		#No. of sec. from Jan 01, 1970 to Jan 01, 2000
 		secs_2000=946684800.0;
@@ -621,12 +790,22 @@ BEGIN	   {
 		 next;
 		}
 
+
+
 /^dot .*$/      {
 			current_dataset_style = $1;
 			if(NF == 4)
 			    current_dataset_color = $4;
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
@@ -638,8 +817,24 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			x1point=$4;
 			y1point=$5;
+			if(min_xpoint > x1point)
+			  min_xpoint = x1point;
+			if(max_xpoint < x1point)
+			  max_xpoint = x1point;
+			if(min_ypoint > y1point)
+			  min_ypoint = y1point;
+			if(max_ypoint < y1point)
+			  max_ypoint = y1point;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			printf("\n") >> current_dataset_file;
@@ -654,6 +849,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -665,6 +868,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -678,15 +889,42 @@ BEGIN	   {
 			prev_dataset_style = $1;	
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			getline;
 			if(NR == 4)
 			    current_dataset_color = $4;
 	
 			x1point=$2;
 			y1point=$3;
+			if(min_xpoint > x1point)
+			  min_xpoint = x1point;
+			if(max_xpoint < x1point)
+			  max_xpoint = x1point;
+			if(min_ypoint > y1point)
+			  min_ypoint = y1point;
+			if(max_ypoint < y1point)
+			  max_ypoint = y1point;
+
 			if(NR == 5)
+			{
 			    x2point=$4;
 			    y2point=$5;
+			    if(min_xpoint > x2point)
+			      min_xpoint = x2point;
+			    if(max_xpoint < x2point)
+			      max_xpoint = x2point;
+			    if(min_ypoint > y2point)
+			      min_ypoint = y2point;
+			    if(max_ypoint < y2point)
+			      max_ypoint = y2point;
+			}
 			current_dataset_style = $1;
 
 			if(((prev_dataset_style == "uarrow" && current_dataset_style == "darrow") || (prev_dataset_style == "darrow" && current_dataset_style == "uarrow")) && (xpoint == x1point && ypoint == y1point) && (current_dataset_color == prev_dataset_color))			
@@ -719,6 +957,14 @@ BEGIN	   {
 			    current_dataset_color = $4;
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
@@ -730,6 +976,14 @@ BEGIN	   {
 			    current_dataset_color = $4;
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
@@ -742,6 +996,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}		
@@ -753,6 +1015,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
                         printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -764,6 +1034,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -776,6 +1054,14 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
@@ -785,8 +1071,24 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
 			x1point=$4;
 			y1point=$5;
+			if(min_xpoint > x1point)
+			  min_xpoint = x1point;
+			if(max_xpoint < x1point)
+			  max_xpoint = x1point;
+			if(min_ypoint > y1point)
+			  min_ypoint = y1point;
+			if(max_ypoint < y1point)
+			  max_ypoint = y1point;
 			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			printf("\n") >> current_dataset_file;
@@ -794,25 +1096,44 @@ BEGIN	   {
 		}
 
 
+
 /^atext .*$/    {
 			xpoint=$2;
   			ypoint=$3;
-			getline;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f\n", $1, xpoint, secs_2000, ypoint) >> labels_file;
-			else printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
+			x_pt[label_index] = xpoint;
+			y_pt[label_index] = ypoint;
+                        getline;
+                        label[label_index++] = $0;
 			next;
 		}
 		
 /^ltext.*$/	{
 			xpoint=$2;
   			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
                         if(NR == 4)
 			  current_dataset_color = $4;
 			getline;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f\n", $1, xpoint, secs_2000, ypoint) >> labels_file;
-			else printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f right\n", $0, xpoint, secs_2000, ypoint) >> labels_file;
+			else printf("set label \"%s\" at %f, %f right\n", $0, xpoint, ypoint) >> labels_file;
 			next;
 		}
+
 
 /^go$/		{next}
 
@@ -826,15 +1147,19 @@ END	{
 		printf("set ylabel \"%s\"\n", YLABEL) >> gpl_file;
 		printf("set format x \"%s\"\n", xaxis_format) >> gpl_file;
 		printf("set format y \"%s\"\n", yaxis_format) >> gpl_file;
+		if(xaxis_type == "timeval" || xaxis_type == "dtime") {
+		  printf("set xdata time\n") >> gpl_file;
+		}
 		printf("set nokey\n") >> gpl_file;
-	
+		printf("load \"%s\";\n", labels_file) >> gpl_file;	
 		first = 1;
+		
 		if(entered)
 		{
  		for (dataset in dataset_type)
 		{
 		    
-		    FILE=file_name(dataset);          # if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with linespoints pt 4", ++dataset_index) >> gpl_file;
+		    FILE=file_name(dataset);
 		    if (first)
 			printf("plot ") >> gpl_file;
 		    else
@@ -968,6 +1293,16 @@ END	{
 			close( FILE );
 		    }
 			
+		}
+		for(l=0; l < label_index; l++)
+		{
+		  xpoint = x_pt[l];
+		  ypoint = y_pt[l];
+		  if(max_ypoint > 0) ypoint = ypoint + (50000000 * ((max_ypoint - min_ypoint)/max_ypoint));
+		  curr_label = label[l];
+		  if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f center\n", curr_label, xpoint, secs_2000, ypoint) >> labels_file;
+		  else printf("set label \"%s\" at %f, %f center\n", $1, xpoint, ypoint) >> labels_file;
+
 		}
 		}
 		printf(";\n") >> gpl_file;
