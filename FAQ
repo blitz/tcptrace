@@ -278,4 +278,11 @@ retransmitted)
 
 If there's a red diamond on an ACK, it ALSO means that there's no RTT
 sample for it, but in this case it's because the data being ACKed was
-retransmitted. 
+retransmitted.
+============================================================
+Mon Dec 14, 1998S
+
+>> Is there any way to always use some set of flags??
+
+You can store commonly-used tcptrace arguments in "~/.tcptracerc"
+(comments start with '#') or in envariable "TCPTRACEOPTS".
