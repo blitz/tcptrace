@@ -1,4 +1,3 @@
-static int debug = 1;
 /*
  * Copyright (c) 1994, 1995, 1996, 1997
  *	Ohio University.  All rights reserved.
@@ -33,22 +32,27 @@ static char const rcsid_traffic[] =
 #include "mod_traffic.h"
 
 
-/* info kept for each port */
+/* info kept for each (active) port */
 struct traffic_info {
     /* which port */
     u_short port;
     
     /* interval byte counters */
     u_long nbytes;
-    u_long npackets;
+    u_long last_nbytes;
     u_long ttlbytes;
 
     /* interval packet counters */
-    u_long last_nbytes;
+    u_long npackets;
     u_long last_npackets;
     u_long ttlpackets;
 
-    /* which color */
+    /* active connections */
+    u_long nactive;
+    u_long last_nactive;
+    u_long ttlactive;
+
+    /* which color is used for plotting */
     char *color;
 
     /* did we draw the label yet? */
@@ -63,16 +67,27 @@ static struct traffic_info *ports[NUM_PORTS] = {NULL,NULL /* ... */ };
 #define EXCLUDE_PORT ((void *)(-1))
 #define INCLUDE_PORT (NULL)
 
+/* additional info kept per connection */
+struct conn_info {
+    Bool wasactive;		/* was this connection active over the interval? */
+    struct traffic_info *pti1;	/* pointer to the port info for this one */
+    struct traffic_info *pti2;	/* pointer to the port info for this one */
+    struct conn_info *next;	/* next in the chain */
+};
+static struct conn_info *connhead = NULL;
+
+
 
 /* plotter files we keep open */
 static PLOTTER plotter_bytes;
 static PLOTTER plotter_packets;
-static PLOTTER plotter_conns;
+static PLOTTER plotter_active;
 
 
 
 /* local routines */
 static struct traffic_info *MakeTrafficRec(u_short port);
+static struct conn_info *MakeConnRec(void);
 static void AgeTraffic(void);
 static struct traffic_info *FindPort(u_short port);
 static void IncludePorts(unsigned firstport, unsigned lastport);
@@ -80,10 +95,8 @@ static void ExcludePorts(unsigned firstport, unsigned lastport);
 static void CheckPortNum(unsigned portnum);
 static char *PortName(int port);
 
-
-#define NCOLORS 8
-static char *ColorNames[NCOLORS] =
-{"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink" };
+/* other globals */
+float age_interval = 15.0;  /* 15 seconds by default */
 
 
 static void
@@ -166,6 +179,7 @@ traffic_init(
 	pch = portspec;
 	while (pch && *pch) {
 	    char *pch_next;
+	    float interval;
 	    unsigned port1, port2;
 
 	    if ((pch_next = strchr(pch,',')) != NULL) {
@@ -173,7 +187,9 @@ traffic_init(
 		++pch_next;
 	    }
 
-	    if (sscanf(pch,"-%u-%u", &port1, &port2) == 2) {
+	    if (sscanf(pch,"=%f", &interval) == 1) {
+		age_interval = interval;
+	    } else if (sscanf(pch,"-%u-%u", &port1, &port2) == 2) {
 		ExcludePorts(port1,port2);
 	    } else if (sscanf(pch,"%u-%u", &port1, &port2) == 2) {
 		IncludePorts(port1,port2);
@@ -208,7 +224,7 @@ traffic_init(
 		    "bytes per second over time by port",
 		    "time","bytes/second",
 		    NULL);
-    plotter_conns =
+    plotter_active =
 	new_plotter(NULL,
 		    "traffic_conns.xpl",
 		    "active connections over time by port",
@@ -277,37 +293,63 @@ MakeTrafficRec(
 }
 
 
+
+static struct conn_info *
+MakeConnRec(void)
+{
+    struct conn_info *pci;
+
+    pci = MallocZ(sizeof(struct conn_info));
+
+    /* chain it in (at head of list) */
+    pci->next = connhead;
+    connhead = pci;
+
+    return(pci);
+}
+
+
 void
 traffic_read(
     struct ip *pip,		/* the packet */
     tcp_pair *ptp,		/* info I have about this connection */
     void *plast,		/* past byte in the packet */
-    void *ignored)		/* NO module specific info for this connection */
+    void *mod_data)		/* connection info for this one */
 {
     struct tcphdr *ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
-    u_short port = ntohs(ptcp->th_sport);
-    struct traffic_info *pti = FindPort(port);
+    struct traffic_info *pti1 = FindPort(ptcp->th_sport);
+    struct traffic_info *pti2 = FindPort(ptcp->th_dport);
     u_long bytes = ntohs(pip->ip_len);
     static timeval last_time = {0,0};
+    struct conn_info *pci = mod_data;
 
-    /* if pti is NULL, then this port is excluded */
-    if (pti == NULL) {
+    /* if neither port is interesting, then ignore this one */
+    if (!pti1 && !pti2) {
 	return;
     }
 
-    /* determine elapsed time and age the samples (every 15 seconds now) */
-    if (elapsed(last_time,current_time)/1000000 > 15.0) {
-	AgeTraffic();
-	last_time = current_time;
-    }
+    /* OK, this connection is now active */
+    pci->wasactive = 1;
 
     /* add to port-specific counters */
-    pti->nbytes += bytes;
-    pti->npackets += 1;
+    if (pti1) {
+	pti1->nbytes += bytes;
+	pti1->npackets += 1;
+    }
+    if (pti2) {
+	pti2->nbytes += bytes;
+	pti2->npackets += 1;
+    }
 
     /* add to GLOBAL counters */
     ports[0]->nbytes += bytes;
     ports[0]->npackets += 1;
+
+    /* determine elapsed time and age the samples (every 15 seconds now) */
+    if (elapsed(last_time,current_time)/1000000 > age_interval) {
+	AgeTraffic();
+	last_time = current_time;
+    }
 }
 
 
@@ -329,6 +371,7 @@ static void
 AgeTraffic(void)
 {
     struct traffic_info *pti;
+    struct conn_info *pci;
     static timeval last_time = {0,0};
     float etime;
     int ups;			/* units per second */
@@ -346,38 +389,62 @@ AgeTraffic(void)
     if (etime == 0.0)
 	return;
 
+    /* roll the active connections into the port records */
+    for (pci=connhead; pci; pci=pci->next) {
+	if (pci->wasactive) {
+	    if (pci->pti1)
+		++pci->pti1->nactive;
+	    if (pci->pti2)
+		++pci->pti2->nactive;
+	    pci->wasactive = 0;
+	    ++ports[0]->nactive;
+	}
+    }
+    
+
     /* print them out */
     for (pti=traffichead; pti; pti=pti->next) {
-
 	if (debug>1)
 	    printf("  Aging Port %u   bytes: %lu  packets: %lu\n",
 		   pti->port, pti->nbytes, pti->npackets);
 
-	/* plot it */
+	/* plot bytes */
 	ups = (int)((float)pti->nbytes * 1000000.0 / etime);
 	plotter_perm_color(plotter_bytes, pti->color);
-	if (!pti->labelled) {
+	if (!pti->labelled || ((ups > 0) && (pti->last_nbytes == 0)))
 	    plotter_text(plotter_bytes, current_time, ups,
 			 "l", PortName(pti->port));
-	}
 	plotter_dot(plotter_bytes, current_time, ups);
-	if (last_time.tv_sec && pti->last_nbytes)
+	if (last_time.tv_sec)
 	    plotter_line(plotter_bytes,
 			 current_time, ups, last_time, pti->last_nbytes);
 	pti->last_nbytes = ups;
 
+	/* plot packets */
 	ups = (int)((float)pti->npackets * 1000000.0 / etime);
 	plotter_perm_color(plotter_packets, pti->color);
-	if (!pti->labelled) {
+	if (!pti->labelled || ((ups > 0) && (pti->last_npackets == 0)))
 	    plotter_text(plotter_packets, current_time, ups,
 			 "l", PortName(pti->port));
-	    pti->labelled = 1;
-	}
 	plotter_dot(plotter_packets, current_time, ups);
-	if (last_time.tv_sec && pti->last_npackets)
+	if (last_time.tv_sec)
 	    plotter_line(plotter_packets,
 			 current_time, ups, last_time, pti->last_npackets);
 	pti->last_npackets = ups;
+
+	/* plot active connections */
+	plotter_perm_color(plotter_active, pti->color);
+	if (!pti->labelled || ((pti->nactive > 0) && (pti->last_nactive == 0)))
+	    plotter_text(plotter_active, current_time, pti->nactive,
+			 "l", PortName(pti->port));
+	plotter_dot(plotter_active, current_time, pti->nactive);
+	if (last_time.tv_sec)
+	    plotter_line(plotter_active,
+			 current_time, pti->nactive, last_time, pti->last_nactive);
+	pti->last_nactive = pti->nactive;
+
+	/* OK, we must have done the left hand label by now */
+	pti->labelled = 1;
     }
 
 
@@ -388,24 +455,38 @@ AgeTraffic(void)
 
 	pti->nbytes = 0;
 	pti->npackets = 0;
+	pti->nactive = 0;
     }
 
     last_time = current_time;
 }
 
 
-void
+void	
 traffic_done(void)
 {
     struct traffic_info *pti;
+    struct conn_info *pci;
+    int i;
+
+    /* roll the active connections into the port records */
+    for (pci=connhead; pci; pci=pci->next) {
+	if (pci->pti1)
+	    ++pci->pti1->ttlactive;
+	if (pci->pti2)
+	    ++pci->pti2->ttlactive;
+    }
 
     AgeTraffic();
 
     /* print them out */
     printf("Overall totals by port\n");
-    for (pti=traffichead; pti; pti=pti->next) {
-	printf("Port %5u   bytes: %8lu  packets: %8lu\n",
-	       pti->port, pti->ttlbytes, pti->ttlpackets);
+    for (i=0; i < NUM_PORTS; ++i) {
+	pti = ports[i];
+	if ((pti != EXCLUDE_PORT) && (pti != INCLUDE_PORT)) {
+	    printf("Port %5u   bytes: %8lu  packets: %8lu  connections: %8lu\n",
+		   pti->port, pti->ttlbytes, pti->ttlpackets, pti->ttlactive);
+	}
     }
 }
 
@@ -416,6 +497,7 @@ traffic_usage(void)
     printf("\t\t-xtraffic[PORTSPEC]\tprint info about overall traffic\n");
     printf("\
 \t\t\t PORTSPEC format:\n\
+\t\t\t     =S    	set statistics interval to S (float) seconds, default 15.0\n\
 \t\t\t     PNUM    	include information on port PNUM\n\
 \t\t\t     PNUM1-PNUM2	include information on ports in the range [PNUM1-PNUM2]\n\
 \t\t\t     -PNUM    	exclude information on port PNUM\n\
@@ -428,4 +510,18 @@ traffic_usage(void)
 \t\t\t   With no ports specification, all ports are gathered.  With ANY spec, all ports\n\
 \t\t\t   are initially EXCLUDED\n\
 ");
+}
+
+
+void *
+traffic_newconn(
+    tcp_pair *ptp)
+{
+    struct conn_info *pci;
+
+    pci = MakeConnRec();
+    pci->pti1 = FindPort(ptp->addr_pair.a_port);
+    pci->pti2 = FindPort(ptp->addr_pair.b_port);
+    
+    return(pci);
 }
