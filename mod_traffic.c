@@ -182,6 +182,8 @@ static PLINE line_open_conns;
 static PLINE line_num_halfopens;
 static int num_closes = 0;
 static int num_opens = 0;
+static int ttl_num_opens = 0;
+static int ttl_num_closes = 0;
 static int open_conns = 0;
 static int num_halfopens = 0;
 
@@ -807,6 +809,8 @@ AgeTraffic(void)
 	extend_line(line_open_conns,current_time, open_conns);
 
 	/* reset interval counters */
+	ttl_num_opens = num_opens;
+	ttl_num_closes = num_closes;
 	num_opens = 0;
 	num_closes = 0;
     }
@@ -968,11 +972,15 @@ traffic_done(void)
 	pti = ports[i];
 	if ((pti != EXCLUDE_PORT) && (pti != INCLUDE_PORT)) {
 	    if (i == 0)
-		Mfprintf(pmf,"Port TTL ");
+		Mfprintf(pmf,"TOTAL        ");
 	    else
 		Mfprintf(pmf,"Port %5u   ", pti->port);
-	    Mfprintf(pmf,"bytes: %12lu  packets: %10lu  connections: %8lu\n",
-		     pti->ttlbytes, pti->ttlpackets, pti->ttlactive);
+	    Mfprintf(pmf,"\
+bytes: %12lu  pkts: %10lu  conns: %8lu  tput: %8lu B/s\n",
+		     pti->ttlbytes,
+		     pti->ttlpackets,
+		     pti->ttlactive,
+		     pti->ttlbytes / etime_secs);
 	}
     }
     Mfclose(pmf);
@@ -1009,8 +1017,8 @@ traffic_done(void)
 
     /* connections opened */
     Mfprintf(pmf, "%u connections opened, %.3f conns/second\n",
-	     num_opens,
-	     (float)num_opens / ((float)etime_secs));
+	     ttl_num_opens,
+	     (float)ttl_num_opens / ((float)etime_secs));
 
     /* dupacks */
     Mfprintf(pmf, "%u dupacks sent, %.3f dupacks/second\n",
