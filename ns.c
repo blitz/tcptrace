@@ -116,11 +116,17 @@ pread_ns(
 	int is_ack;
 	int is_tcp;
 	int rlen;
+	char myline[128];
+	char *isend;
 
 	++linenum;
 
+	isend = fgets(myline, 128, SYS_STDIN);
+	if (isend == NULL) {  // end of file
+		return(0);
+	}
 	/* correct NS output line would have 14 fields: */
-	rlen = fscanf(SYS_STDIN, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu\n",
+	rlen = sscanf(myline, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu",
 		      &tt,
 		      &timestamp,
 		      &junk,
@@ -136,10 +142,6 @@ pread_ns(
 		      &seq,
 		      &ipb->ip_id);
 
-    /* if we reach the End Of File we stop */
-	if (rlen == EOF) {
-	    return(0);
-	}
 	/* if we can't match all 14 fields, we give up on the file */
 	if (rlen != 14 && rlen != 18) {
 	    fprintf(stderr,"Bad NS packet header in line %u only [%d] arguments can be matched expected 14 or 18 \n", linenum, rlen);
@@ -276,12 +278,18 @@ int pread_ns_fulltcp(
 	int is_tcp;
 	int pflags;
 	int rlen;
+	char myline[128];
+	char *isend;
 
 	++linenum;
 
+	isend = fgets(myline, 80, SYS_STDIN);
+	if (isend == NULL) {  // end of file
+		return 0;
+	}
 	/* correct NS output line would have 14 fields if show_tcphdr_ is 0: */
 	/* For Full TCP this changes to 18 fields when show_tcp is 1*/
-	rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu %d 0x%x %u %hu\n",
+	rlen = sscanf(myline, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu %d 0x%x %u %hu",
 		      &tt,
 		      &timestamp,
 		      &junk,
@@ -301,10 +309,6 @@ int pread_ns_fulltcp(
 			  &hdrlen,
 			  (unsigned short *)&junk);
 
-	/* if we reach the End of File we stop */
-	if (rlen == EOF) {
-	    return(0);
-	}
 	/* if we can't match all 18 fields, we give up on the file */
 	if (rlen != 18) {
 	    fprintf(stderr,"Bad NS packet header in line %u only [%d] arguments can be matched expected 14 or 18 \n", linenum, rlen);
@@ -400,6 +404,7 @@ pread_f *is_ns(char *filename)
     char junks[20];
     int hdrlen = 0;
     int pflags = 0;
+    char myline[128];  // read into this line and then parse for values
 
 #ifdef __WIN32
     if((fp = fopen(filename, "r")) == NULL) {
@@ -408,10 +413,14 @@ pread_f *is_ns(char *filename)
     }
 #endif /* __WIN32 */   
 
-    rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu %d 0x%x %u %hu\n", &tt, &junkd, &junk, &junk, (char *)&junks, &junk, (char *)&junks, &junk, &junk, (short *)&junk, &junk, (short *)&junk, &junk, (short *)&junk, &junk, &pflags, &hdrlen, (short *)&junk);
+    fgets(myline, 128, SYS_STDIN);
+    rlen = sscanf(myline, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu %d 0x%x %u %hu", &tt, &junkd, &junk, &junk, (char *)&junks, &junk, (char *)&junks, &junk, &junk, (short *)&junk, &junk, (short *)&junk, &junk, (short *)&junk, &junk, &pflags, &hdrlen, (short *)&junk);
 
-    if ((rlen = getc(stdin)) == EOF) {
+    if ((rlen = getc(SYS_STDIN)) == EOF) {
 	return(NULL);
+    } else {
+	    if (ungetc(rlen, SYS_STDIN) == EOF)
+		    return NULL;
     }
 
     switch (tt) {
@@ -440,6 +449,7 @@ pread_f *is_ns(char *filename)
 	/* Lets check if it is FullTCP or not*/
 	if (hdrlen || pflags){ /*it is FullTCP */
 /*		printf("Full TCP \n"); */
+		rewind(SYS_STDIN);
 		return(pread_ns_fulltcp);
 	}
 	else{ /*Regular TCP (with or without tcpheaders activated */
