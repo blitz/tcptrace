@@ -44,7 +44,7 @@ char *tcptrace_version = VERSION;
 static void ProcessFile(void);
 static void DumpFlags(void);
 static void Formats(void);
-static void ParseArgs(int argc, char *argv[]);
+static void ParseArgs(int *pargc, char *argv[]);
 static void QuitSig();
 static void Usage(char *prog);
 static void Version(void);
@@ -65,14 +65,15 @@ Bool printticks = FALSE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
+int pnum = 0;
 
 /* globals */
 struct timeval current_time;
 
 
 /* locally global variables */
-static int pnum = 0;
 static u_long filesize = -1;
+char **filenames;
 
 
 
@@ -80,7 +81,7 @@ static void
 Usage(
     char *prog)
 {
-    fprintf(stderr,"usage: %s [args...]* dumpfile\n", prog);
+    fprintf(stderr,"usage: %s [args...]* dumpfile [more files]*\n", prog);
     fprintf(stderr,"\
 Output format options\n\
   -b      brief output format\n\
@@ -149,7 +150,14 @@ main(
     char *argv[])
 {
     struct stat stat;
-    ParseArgs(argc,argv);
+    int i;
+
+    /* parse the flags */
+    ParseArgs(&argc,argv);
+
+    printf("%d args remaining, starting with '%s'\n",
+	   argc, filenames[0]);
+
 
     if (debug>1)
 	DumpFlags();
@@ -160,19 +168,30 @@ main(
     trace_init();
     plot_init();
 
-    /* check file size */
-    if (fstat(fileno(stdin),&stat) != 0) {
-	perror("fstat");
-	exit(1);
-    }
-    filesize = stat.st_size;
-    if (debug) {
-	/* print file size */
-	printf("Trace file size: %lu bytes\n", filesize);
+    /* read each file in turn */
+    for (i=0; i < argc; ++i) {
+	printf("Running file '%s'\n", filenames[i]);
+
+	if (freopen(filenames[i],"r",stdin) == NULL) {
+	    perror(filenames[i]);
+	    exit(-1);
+	}
+
+	/* check file size */
+	if (fstat(fileno(stdin),&stat) != 0) {
+	    perror("fstat");
+	    exit(1);
+	}
+	filesize = stat.st_size;
+	if (debug) {
+	    /* print file size */
+	    printf("Trace file size: %lu bytes\n", filesize);
+	}
+
+	/* do the real work */
+	ProcessFile();
     }
 
-    /* do the real work */
-    ProcessFile();
 
     /* close files, cleanup, and etc... */
     plotter_done();
@@ -338,15 +357,14 @@ MallocZ(
 
 static void
 ParseArgs(
-    int argc,
+    int *pargc,
     char *argv[])
 {
     int i;
     int saw_i_or_o = 0;
-    Bool foundfile = FALSE;
-    
+
     /* parse the args */
-    for (i=1; i < argc; ++i) {
+    for (i=1; i < *pargc; ++i) {
 	if (*argv[i] == '-') {
 	    if (argv[i][1] == '\00') /* just a '-' */
 		Usage(argv[0]);
@@ -438,19 +456,17 @@ ParseArgs(
 		    Usage(argv[0]);
 		}
 	} else {
-	    if (foundfile)
-		Usage(argv[0]);
-	    if (freopen(argv[i],"r",stdin) == NULL) {
-		perror(argv[i]);
-		exit(-1);
-	    }
-
-	    foundfile = TRUE;
+	    filenames = &argv[i];
+	    *pargc -= i;
+	    return;
 	}
     }
 
-    if (!foundfile)
-	Usage(argv[0]);
+    /* if we got here, we didn't find a file name */
+    fprintf(stderr,"must specify at least one file name\n");
+    Usage(argv[0]);
+
+    /* NOTREACHED */
 }
 
 

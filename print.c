@@ -148,6 +148,7 @@ printtcp_packet(
 	hex?"\t     ACK: 0x%08x\n":"\t     ACK: %d\n",
 	ntohl(ptcp->th_ack));
     printf("\t     WIN: %u\n", ntohs(ptcp->th_win));
+    printf("\t    HLEN: %u\n", ptcp->th_off*4);
     pdata = (u_char *)ptcp + ptcp->th_off*4;
     if (ptcp->th_off != 5) {
 	struct tcp_options *ptcpo;
@@ -155,7 +156,7 @@ printtcp_packet(
         printf("\t    OPTS: %u bytes\t",
 	       (ptcp->th_off*4) - sizeof(struct tcphdr));
 
-	ptcpo = ParseOptions(ptcp);
+	ptcpo = ParseOptions(ptcp,1000);
 
 	if (ptcpo->mss != -1)
 	    printf(" MSS(%d)", ptcpo->mss);

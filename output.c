@@ -266,6 +266,10 @@ PrintTrace(
 		  sprintf(bufl,"%c/%c",
 			  pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'));
     }
+    if (pab->f1323_ws || pba->f1323_ws) {
+	StatlineI("adv wind scale","","%d",
+		  pab->window_scale, pba->window_scale);
+    }
     if (pab->fsack_req || pba->fsack_req) {
 	StatlineI("req sack","","%c",
 		  pab->fsack_req?'Y':'N',

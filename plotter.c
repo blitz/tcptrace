@@ -163,12 +163,11 @@ DoPlot(
     if ((f = fplot[pl]) == NULL)
 	return;
 
+    Mvfprintf(f,fmt,ap);
     if (temp_color) {
-	Mfprintf(f,"%s ",temp_color);
+	Mfprintf(f," %s",temp_color);
 	temp_color = NULL;
     }
-
-    Mvfprintf(f,fmt,ap);
     Mfprintf (f,"\n");
 
     va_end(ap);
@@ -181,6 +180,8 @@ PLOTTER
 new_plotter(
     tcb *plast,
     char *title,
+    char *xlabel,
+    char *ylabel,
     char *suffix)
 {
     PLOTTER pl;
@@ -207,6 +208,8 @@ new_plotter(
 
     Mfprintf(f,"timeval unsigned\n");
     Mfprintf(f,"title\n%s\n", title);
+    Mfprintf(f,"xlabel\n%s\n", xlabel);
+    Mfprintf(f,"ylabel\n%s\n", ylabel);
 
     fplot[pl] = f;
     p2plast[pl] = plast;

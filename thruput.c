@@ -55,6 +55,7 @@ DoThru(
 	sprintf(title,"%s_==>_%s (throughput)",
 		ptcb->ptp->a_endpoint, ptcb->ptp->b_endpoint);
 	ptcb->thru_plotter = new_plotter(ptcb,title,
+					 "time","thruput (bytes/sec)",
 					 THROUGHPUT_FILE_EXTENSION);
 
 	return;

@@ -270,6 +270,7 @@ extern Bool show_zero_window;
 extern Bool use_short_names;
 extern int debug;
 extern int thru_interval;
+extern int pnum;
 
 extern timeval current_time;
 
@@ -327,7 +328,8 @@ char *ServiceName(portnum);
 char *HostName(ipaddr);
 char *HostLetter(u_int);
 char *EndpointName(ipaddr,portnum);
-PLOTTER new_plotter(tcb *plast, char *title, char *suffix);
+PLOTTER new_plotter(tcb *plast, char *title,
+		    char *xlabel, char *ylabel, char *suffix);
 int rexmit(tcb *, seqnum, seglen, Bool *);
 void ack_in(tcb *, seqnum);
 void DoThru(tcb *ptcb, int nbytes);
@@ -337,7 +339,7 @@ int Mvfprintf(MFILE *pmf, char *format, va_list ap);
 int Mfclose(MFILE *pmf);
 int Mfflush(MFILE *pmf);
 void Minit(void);
-struct tcp_options *ParseOptions(struct tcphdr *ptcp);
+struct tcp_options *ParseOptions(struct tcphdr *ptcp,int plen);
 
 
 /* TCP flags macros */
