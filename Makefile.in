@@ -98,7 +98,7 @@ INCLS = -I. @V_INCLS@ ${PCAP_INCS}
 # Probably want full optimization
 # FreeBSD needs	-Ae
 # HP needs	-Ae
-CFLAGS = $(CCOPT) $(DEFINES) @V_DEFINES@ $(INCLS)
+CFLAGS = $(CCOPT) $(DEFINES) @DEFS@ @V_DEFINES@ $(INCLS)
 
 # Standard LIBS
 LDLIBS = @LIBS@ ${PCAP_LDLIBS}
@@ -118,10 +118,10 @@ LDFLAGS += ${PCAP_LDFLAGS}
 #LDFLAGS += /usr/lib/libdl.so.1
 
 
-# Standard files
-CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
-	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c \
-	missing.c compress.c version.c
+# Source Files
+CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
+	netm.c output.c plotter.c print.c rexmit.c snoop.c	\
+	tcpdump.c tcptrace.c thruput.c trace.c version.c
 MODULES=mod_http.c mod_traffic.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
 
