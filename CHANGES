@@ -603,3 +603,8 @@ hash-bucket implementation.
 Includes a fix to ns.c to correctly read port numbers; added
 functionality to track LEAST variables and reno LEAST algorithm to trace.c;
 added isRTO() in rexmit.c : all by Wes.
+
+6.6.2: 25 Feb 2004 Mani & Jitesh
+-----
+
+Fixed tcpdump.c to trace IP packets buried under VLAN headers.

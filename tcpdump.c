@@ -91,7 +91,12 @@ static int callback(
     int type;
     int iplen;
     static int offset = -1;
-
+  
+    struct vlanh{
+      tt_uint16 vlan_num;
+      tt_uint16 vlan_proto;
+    } *vlanhptr;
+  
     iplen = phdr->caplen;
     if (iplen > IP_MAXPACKET)
 	iplen = IP_MAXPACKET;
@@ -111,8 +116,6 @@ static int callback(
 	memcpy(&eth_header, buf, EH_SIZE); /* save ether header */
 	switch (offset)
 	{
-		case -1: /* Not an IP packet */
-			return (-1);
 		case EH_SIZE: /* straight Ethernet encapsulation */
 			memcpy((char *)ip_buf,buf+offset,iplen);
 			callback_plast = ip_buf+iplen-offset-1;
@@ -123,6 +126,27 @@ static int callback(
 			memcpy((char *)ip_buf,buf+offset,iplen);
 			callback_plast = ip_buf+iplen-offset-1;
 			break;
+	        case -1: /* Not an IP packet */
+	                 /* Let's check if it is a VLAN header that
+			  * caused us to receive -1, and if we had an IP
+			  * packet buried inside */
+	                if (eth_header.ether_type == htons(ETHERTYPE_VLAN)) {
+			  vlanhptr=(struct vlanh*) (buf+EH_SIZE);
+			  if ( (ntohs(vlanhptr->vlan_proto) == ETHERTYPE_IP) ||
+			       (ntohs(vlanhptr->vlan_proto) == ETHERTYPE_IPV6)
+			     ) {
+			    offset=EH_SIZE+sizeof(struct vlanh);
+			    memcpy((char *)ip_buf,buf+offset,iplen);
+			    callback_plast = ip_buf+iplen-offset-1;
+			    /* Set ethernet type as whatever followed the dumb
+			     * VLAN header to prevent the rest of the code
+			     * from ignoring us.
+			     */
+			    eth_header.ether_type=vlanhptr->vlan_proto;
+			    break;
+			    }
+			}	  
+			return (-1);
 		default: /* should not be used, but we never know ... */
 			return (-1);
 	}
