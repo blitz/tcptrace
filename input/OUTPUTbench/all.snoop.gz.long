@@ -2382,7 +2382,7 @@ TCP connection 40:
      max owin:                  0 bytes     max owin:                  0 bytes
      min non-zero owin:         0 bytes     min non-zero owin:         0 bytes
      avg owin:                  0 bytes     avg owin:                  0 bytes
-     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
+     wavg owin:                NA           wavg owin:                NA      
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -2442,7 +2442,7 @@ TCP connection 41:
      max owin:                  0 bytes     max owin:                  0 bytes
      min non-zero owin:         0 bytes     min non-zero owin:         0 bytes
      avg owin:                  0 bytes     avg owin:                  0 bytes
-     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
+     wavg owin:                NA           wavg owin:                NA      
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -3042,7 +3042,7 @@ TCP connection 51:
      max owin:                  0 bytes     max owin:                  0 bytes
      min non-zero owin:         0 bytes     min non-zero owin:         0 bytes
      avg owin:                  0 bytes     avg owin:                  0 bytes
-     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
+     wavg owin:                NA           wavg owin:                NA      
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -3162,7 +3162,7 @@ TCP connection 53:
      max owin:                  1 bytes     max owin:                  0 bytes
      min non-zero owin:         1 bytes     min non-zero owin:         0 bytes
      avg owin:                  1 bytes     avg owin:                  0 bytes
-     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
+     wavg owin:                NA           wavg owin:                NA      
      initial window:            1 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -3222,7 +3222,7 @@ TCP connection 54:
      max owin:                  0 bytes     max owin:                  0 bytes
      min non-zero owin:         0 bytes     min non-zero owin:         0 bytes
      avg owin:                  0 bytes     avg owin:                  0 bytes
-     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
+     wavg owin:                NA           wavg owin:                NA      
      initial window:            0 bytes     initial window:            0 bytes
      initial window:            0 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
@@ -3282,7 +3282,7 @@ TCP connection 55:
      max owin:                267 bytes     max owin:                  0 bytes
      min non-zero owin:       267 bytes     min non-zero owin:         0 bytes
      avg owin:                267 bytes     avg owin:                  0 bytes
-     wavg owin:         18446744073709551615 bytes     wavg owin:         18446744073709551615 bytes
+     wavg owin:                NA           wavg owin:                NA      
      initial window:          267 bytes     initial window:            0 bytes
      initial window:            1 pkts      initial window:            0 pkts 
      ttl stream length:        NA           ttl stream length:        NA      
