@@ -99,6 +99,7 @@ char *ColorNames[NCOLORS] =
 /* locally global variables */
 static u_long filesize = -1;
 char **filenames = NULL;
+u_int numfiles;
 char *cur_filename;
 static char *progname;
 
@@ -461,9 +462,14 @@ main(
     printf("%s\n\n", VERSION);
 
     /* read each file in turn */
+    numfiles = argc;
     for (i=0; i < argc; ++i) {
-	if (debug || (argc > 1))
-	    printf("Running file '%s'\n", filenames[i]);
+	if (debug || (numfiles > 1)) {
+	    if (argc > 1)
+		printf("Running file '%s' (%d of %d)\n", filenames[i], i+1, numfiles);
+	    else
+		printf("Running file '%s'\n", filenames[i]);
+	}
 
 	/* do the real work */
 	ProcessFile(filenames[i]);
@@ -495,6 +501,7 @@ ProcessFile(
     void *plast;
     struct stat str_stat;
     long int location = 0;
+    u_long fpnum = 0;
 
     /* share the current file name */
     cur_filename = filename;
@@ -591,10 +598,11 @@ rather than:
 	if (ret == 0) /* EOF */
 	    break;
 
-	++pnum;
+	++pnum;			/* global */
+	++fpnum;		/* local to this file */
 
 	/* install signal handler */
-	if (pnum == 1) {
+	if (fpnum == 1) {
 	    signal(SIGINT,QuitSig);
 	}
 
@@ -603,24 +611,26 @@ rather than:
 	if (!printem && printticks) {
 	    if (CompIsCompressed())
 		location += tlen;  /* just guess... */
-	    if (((pnum <    100) && (pnum %    10 == 0)) ||
-		((pnum <   1000) && (pnum %   100 == 0)) ||
-		((pnum <  10000) && (pnum %  1000 == 0)) ||
-		((pnum >= 10000) && (pnum % 10000 == 0))) {
+	    if (((fpnum <    100) && (fpnum %    10 == 0)) ||
+		((fpnum <   1000) && (fpnum %   100 == 0)) ||
+		((fpnum <  10000) && (fpnum %  1000 == 0)) ||
+		((fpnum >= 10000) && (fpnum % 10000 == 0))) {
 
 		unsigned frac;
 
+		if (debug)
+		    fprintf(stderr, "%s: ", cur_filename);
 		if (CompIsCompressed()) {
 		    frac = location/(filesize/100);
 		    if (frac <= 100)
-			fprintf(stderr ,"%lu ~%u%% (compressed)\r", pnum, frac);
+			fprintf(stderr ,"%lu ~%u%% (compressed)\r", fpnum, frac);
 		    else
-			fprintf(stderr ,"%lu ~100%% + %u%% (compressed)\r", pnum, frac-100);
+			fprintf(stderr ,"%lu ~100%% + %u%% (compressed)\r", fpnum, frac-100);
 		} else {
 		    location = ftell(stdin);
 		    frac = location/(filesize/100);
 
-		    fprintf(stderr ,"%lu %u%%\r", pnum, frac);
+		    fprintf(stderr ,"%lu %u%%\r", fpnum, frac);
 		}
 	    }
 	    fflush(stderr);
