@@ -184,7 +184,7 @@ addseg(
 	    insert_seg_between(pquad,pseg_new,pseg->prev,pseg);
 
 	    /* see if we overlap the next segment in the list */
-	    if (thisseg_lastbyte <= pseg->seq_firstbyte) {
+	    if (thisseg_lastbyte < pseg->seq_firstbyte) {
 		/* we don't overlap, so we're done */
 		return(rexlen);
 	    } else {
