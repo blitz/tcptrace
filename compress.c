@@ -254,7 +254,7 @@ CompSaveHeader(
 
 #ifdef HAVE_MKSTEMP
     {
-	/* From Mallman, support to be "safer" */
+	/* From Mallman, supposed to be "safer" */
 	int fd;
 	extern int mkstemp(char *template);
 
@@ -386,7 +386,7 @@ CompOpenPipe(
     }
 		      
 
-    if (pipe(fdpipe) == -1) {
+    if (Mfpipe(fdpipe) == -1) {
 	perror("pipe");
 	exit(-1);
     }
@@ -510,7 +510,7 @@ PipeHelper(void)
     /*   stdin: 	has the header file open */
     /*   f_stdin_file:	holds the rest of the stream */
 
-    if (pipe(fdpipe) == -1) {
+    if (Mfpipe(fdpipe) == -1) {
 	perror("pipe");
 	exit(-1);
     }
