@@ -1892,7 +1892,7 @@ dotrace(
 	    plotter_temp_color(to_tsgpl, text_color);
 	    plotter_text(to_tsgpl,
 			 current_time, SeqRep(otherdir,plot_at),
-			 current_time, SeqRep(thisdir,plot_at),
+			 "a", "RST_IN");
 	}
 	if (from_tsgpl != NO_PLOTTER) {
 	    plotter_temp_color(from_tsgpl, text_color);
