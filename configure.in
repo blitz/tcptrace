@@ -18,7 +18,6 @@ AC_CHECK_SIZEOF(unsigned long long int)
 
 
 dnl include additional checking if developing
-AC_MSG_CHECKING(for development environment)
 AC_LBL_DEVEL(V_CCOPT)
 
 
