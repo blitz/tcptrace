@@ -259,13 +259,15 @@ udptrace_done(void)
     int ix;
     double etime;
 
-    if (udp_trace_count == 0) {
-	fprintf(stdout,"no traced UDP packets\n");
-	return;
-    } else {
-	if ((tcp_trace_count > 0) && (!printbrief))
-	    printf("\n============================================================\n");
-	fprintf(stdout,"UDP connection info:\n");
+    if (!printsuppress) {
+	if (udp_trace_count == 0) {
+	    fprintf(stdout,"no traced UDP packets\n");
+	    return;
+	} else {
+	    if ((tcp_trace_count > 0) && (!printbrief))
+		printf("\n============================================================\n");
+	    fprintf(stdout,"UDP connection info:\n");
+	}
     }
 	       
     if (!printbrief)
