@@ -289,10 +289,11 @@ new_plotter(
     /*  Y is signed except when it's a sequence number */
     /* ugly hack -- unsigned makes the graphs hard to work with and is
        only needed for the time sequence graphs */
+    /* suggestion by Michele Clark at UNC - make them double instead */
     Mfprintf(f,"%s %s\n",
 	     graph_time_zero?"dtime":"timeval",
 	     ((strcmp(ylabel,"sequence number") == 0)&&(!graph_seq_zero))?
-	     "unsigned":"signed");
+	     "double":"signed");
 
     Mfprintf(f,"title\n%s\n", title);
     Mfprintf(f,"xlabel\n%s\n", xlabel);
