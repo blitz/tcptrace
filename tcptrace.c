@@ -25,7 +25,7 @@ static void QuitSig();
 
 
 /* option flags */
-Bool colorplot = FALSE;
+Bool colorplot = TRUE;
 int debug = 0;
 Bool hex = TRUE;
 Bool ignore_non_comp = FALSE;
@@ -50,7 +50,7 @@ static void
 Usage(
     char *prog)
 {
-    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPSX] [+bclnprtCPS] [-(BETmio)N]* file\n", prog);
+    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPSTX] [+bclnprtCPS] [-(BEmio)N]* file\n", prog);
     fprintf(stderr,"\
   -b      brief synopsis\n\
   -c      ignore non-complete connections\n\
@@ -68,10 +68,10 @@ Usage(
   -C      produce color plots (modified xplot needed)\n\
   -D      print in decimal\n\
   -EN     last segment number to analyze (default last in file)\n\
-  -P      create plot files\n\
+  -P      create packet trace files\n\
   -R      dump rtt samples to files\n\
   -S      use short names (list \"host.b.c\" as just \"host\")\n\
-  -Tn     output instantaneous throughput plot files (every N packets)\n\
+  -T      output instantaneous throughput plot files\n\
   -X      print in hexidecimal\n\
   +[v]    reverse the setting of the -[v] flag\n");
     Version();
@@ -129,7 +129,7 @@ main(
 
 	    while (*(++argv[i]))
 		switch (*argv[i]) {
-		  case 'C': plotem = TRUE; colorplot = TRUE; break;
+		  case 'C': colorplot = TRUE; break;
 		  case 'D': hex = FALSE; break;
 		  case 'P': plotem = TRUE; break;
 		  case 'X': hex = TRUE; break;
@@ -141,6 +141,7 @@ main(
 		  case 'p': printem = TRUE; break;
 		  case 'r': print_rtt = TRUE; break;
 		  case 'R': dump_rtt = TRUE; break;
+		  case 'T': thru_interval = 1; break;
 		  case 'S': use_short_names = TRUE; break;
 		  case 't': printticks = TRUE; break;
 		  case 'v': Version(); exit(0); break;
@@ -158,13 +159,6 @@ main(
 		  case 'E':
 		    endpnum = atoi(argv[i]+1);
 		    *(argv[i]+1) = '\00'; break;
-		  case 'T':
-		    thru_interval = atoi(argv[i]+1);
-		    if (thru_interval < 1) {
-			fprintf(stderr, "for -TN, N must be at least 1\n");
-			Usage(argv[0]);
-		    }
-		    *(argv[i]+1) = '\00'; break;
 		  case 'm':
 		    max_tcp_pairs = atoi(argv[i]+1);
 		    if (max_tcp_pairs <= 0) {
@@ -179,6 +173,7 @@ main(
 		    }
 		    *(argv[i]+1) = '\00'; break;
 		  default:
+		    fprintf(stderr, "option '%c' not understood\n", *argv[i]);
 		    Usage(argv[0]);
 		}
 	} else if (*argv[i] == '+') {

@@ -52,6 +52,9 @@ clean:
 tidy:
 	rm -f core *2*.xpl *2*.rtt *2*.tput *.PS.?
 
+noplots:
+	rm -f *2*.xpl *2*.rtt *2*.tput *.PS.?
+
 depend:
 #	mkdep *.c
 	makedepend ${INCS} -w 10 *.c

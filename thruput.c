@@ -19,42 +19,58 @@ DoThru(
 {
     u_long etime;
     double thruput;
+    double computed_thruput;
+
+    /* if no data, ignore this packet */
+    if (nbytes == 0)
+	return;
 
     /* init, if not already done */
     if (ptcb->thru_firsttime.tv_sec == 0) {
 	char title[210];
 
 	ptcb->thru_firsttime = current_time;
-	ptcb->thru_pkts = 1;
 	ptcb->thru_bytes = nbytes;
 
 	/* create the plotter file */
-	sprintf(title,"%s_==>_%s",
+	sprintf(title,"%s_==>_%s (throughput)",
 		ptcb->ptp->a_endpoint, ptcb->ptp->b_endpoint);
 	ptcb->thru_plotter = new_plotter(ptcb,title,"tput");
+	plotter_perm_color(ptcb->thru_plotter,"red");
 
 	return;
     }
 
-    /* see if we should output the stats yet */
-    if (ptcb->thru_pkts+1 >= thru_interval) {
-
-	/* compute stats for this interval */
-	etime = elapsed(ptcb->thru_firsttime,current_time);
-	thruput = (double) ptcb->thru_bytes / ((double) etime / 1000000.0);
-
-	plotter_line(ptcb->thru_plotter,
-		     ptcb->thru_firsttime, (int) ptcb->thru_lastthru,
-		     current_time, (int) thruput);
-
-	/* reset stats for this interval */
-	ptcb->thru_firsttime = current_time;
-	ptcb->thru_pkts = 0;
-	ptcb->thru_bytes = 0;
-	ptcb->thru_lastthru = (int) thruput;
+    /* running total, alpha/beta model */
+    etime = elapsed(ptcb->thru_firsttime,current_time);
+    /* sanity check, if timestamps were the same, then etime is 0 */
+    /* and throughput computation will yield infinite */
+    /* (probably from packet grabber with lousy timestamps) */
+    if (etime == 0) {
+	ptcb->thru_bytes += nbytes;
+	return;
     }
+    thruput = (double) ptcb->thru_bytes * 1000000.0 / (double) etime;
+    if (ptcb->thru_lastthru == 0.0)
+	ptcb->thru_lastthru = thruput;  /* prime the pump */
+    printf("%5ld bytes in %9ld us = %d bytes/second\n",
+	   ptcb->thru_bytes, etime, (int)thruput);
 
-    /* add in the latest packet */
-    ++ptcb->thru_pkts;
-    ptcb->thru_bytes += nbytes;
+#define ALPHA	1.00
+#define BETA	(1.0 - ALPHA)
+    computed_thruput = ALPHA*thruput + BETA*ptcb->thru_lastthru;
+#define MATH_IS_HARD
+#ifdef MATH_IS_HARD
+    printf("Thru: new:%f  old:%f  result:%f\n",
+	   thruput, ptcb->thru_lastthru, computed_thruput);
+#endif MATH_IS_HARD
+
+    plotter_line(ptcb->thru_plotter,
+		 ptcb->thru_firsttime, (int) ptcb->thru_lastthru,
+		 current_time, (int) computed_thruput);
+
+    /* reset counters for next interval */
+    ptcb->thru_firsttime = current_time;
+    ptcb->thru_bytes = nbytes;
+    ptcb->thru_lastthru = computed_thruput;
 }

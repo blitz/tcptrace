@@ -148,9 +148,8 @@ typedef struct tcb {
 
     /* Instantaneous throughput info */
     struct	timeval	thru_firsttime;	/* time of first packet this interval */
-    u_long	thru_pkts;	/* number of packets this interval */
     u_long	thru_bytes;	/* number of bytes this interval */
-    u_long	thru_lastthru;	/* last throughput value (for graph) */
+    double	thru_lastthru;	/* last throughput value (for graph) */
     PLOTTER	thru_plotter;	/* throughput data dump file */
     
     /* Time Sequence Graph info for this one */

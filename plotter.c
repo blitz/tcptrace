@@ -126,8 +126,8 @@ DoPlot(
 
     va_start(ap,fmt);
 
-    if (!plotem)
-	return;
+/*     if (!plotem) */
+/* 	return; */
 
     if (pl == NO_PLOTTER)
 	return;
