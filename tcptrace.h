@@ -305,7 +305,7 @@ void *ReallocZ(void *oldptr, int obytes, int nbytes);
 void trace_init(void);
 void trace_done(void);
 void seglist_init(tcb *);
-void printpacket(int, int, void *, int, struct ip *);
+void printpacket(int, int, void *, int, struct ip *, void *plast);
 void plotter_vtick(PLOTTER, timeval, u_long);
 void plotter_utick(PLOTTER, timeval, u_long);
 void plotter_uarrow(PLOTTER, timeval, u_long);
