@@ -41,25 +41,32 @@ static char const rcsid_tcpdump[] =
  * Data-link level type codes.
  */
 
+/* Note - Tue Feb 13, 2001
+   We're having trouble with the standard DLT_type because some OS versions,
+   insist on renumbering these to different values.  To avoid the problem,
+   we're hijacking the types a little and adding the PCAP_ prefix.  The
+   constants all correspond to the "true" pcap numbers, so this should
+   fix the problem */
+
 /* currently supported */
-#define DLT_NULL	0	/* no link-layer encapsulation */
-#define DLT_EN10MB	1	/* Ethernet (10Mb) */
-#define DLT_IEEE802	6	/* IEEE 802 Networks */
-#define DLT_SLIP	8	/* Serial Line IP */
-#define DLT_FDDI	10	/* FDDI */
-#define DLT_ATM_RFC1483	11	/* LLC/SNAP encapsulated atm */
-#define DLT_RAW		12	/* raw IP */
+#define PCAP_DLT_NULL		0	/* no link-layer encapsulation */
+#define PCAP_DLT_EN10MB		1	/* Ethernet (10Mb) */
+#define PCAP_DLT_IEEE802	6	/* IEEE 802 Networks */
+#define PCAP_DLT_SLIP		8	/* Serial Line IP */
+#define PCAP_DLT_FDDI		10	/* FDDI */
+#define PCAP_DLT_ATM_RFC1483	11	/* LLC/SNAP encapsulated atm */
+#define PCAP_DLT_RAW		12	/* raw IP */
 
 /* NOT currently supported */
 /* (mostly because I don't have an example file, send me one...) */
-#define DLT_EN3MB	2	/* Experimental Ethernet (3Mb) */
-#define DLT_AX25	3	/* Amateur Radio AX.25 */
-#define DLT_PRONET	4	/* Proteon ProNET Token Ring */
-#define DLT_CHAOS	5	/* Chaos */
-#define DLT_ARCNET	7	/* ARCNET */
-#define DLT_PPP		9	/* Point-to-point Protocol */
-#define DLT_SLIP_BSDOS	13	/* BSD/OS Serial Line IP */
-#define DLT_PPP_BSDOS	14	/* BSD/OS Point-to-point Protocol */
+#define PCAP_DLT_EN3MB		2	/* Experimental Ethernet (3Mb) */
+#define PCAP_DLT_AX25		3	/* Amateur Radio AX.25 */
+#define PCAP_DLT_PRONET		4	/* Proteon ProNET Token Ring */
+#define PCAP_DLT_CHAOS		5	/* Chaos */
+#define PCAP_DLT_ARCNET		7	/* ARCNET */
+#define PCAP_DLT_PPP		9	/* Point-to-point Protocol */
+#define PCAP_DLT_SLIP_BSDOS	13	/* BSD/OS Serial Line IP */
+#define PCAP_DLT_PPP_BSDOS	14	/* BSD/OS Point-to-point Protocol */
 
 
 
@@ -72,7 +79,7 @@ struct dump_file_header {
 	int	thiszone;	/* gmt to local correction */
 	u_int	sigfigs;	/* accuracy of timestamps */
 	u_int	snaplen;	/* max length saved portion of each pkt */
-	u_int	linktype;	/* data link type (DLT_*) */
+	u_int	linktype;	/* data link type (PCAP_DLT_*) */
 };
 
 

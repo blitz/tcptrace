@@ -79,23 +79,23 @@ static int callback(
       case 100:
 	/* for some reason, the windows version of tcpdump is using */
 	/* this.  It looks just like ethernet to me */
-      case DLT_EN10MB:
+      case PCAP_DLT_EN10MB:
 	memcpy(&eth_header,buf,EH_SIZE);  /* save ether header */
 	memcpy(ip_buf,buf+EH_SIZE,iplen);
 	callback_plast = (char *)ip_buf+iplen-EH_SIZE-1;
 	break;
-      case DLT_IEEE802:
+      case PCAP_DLT_IEEE802:
 	/* just pretend it's "normal" ethernet */
 	offset = 14;		/* 22 bytes of IEEE cruft */
 	memcpy(&eth_header,buf,EH_SIZE);  /* save ether header */
 	memcpy(ip_buf,buf+offset,iplen);
 	callback_plast = (char *)ip_buf+iplen-offset-1;
 	break;
-      case DLT_SLIP:
+      case PCAP_DLT_SLIP:
 	memcpy(ip_buf,buf+16,iplen);
 	callback_plast = (char *)ip_buf+iplen-16-1;
 	break;
-      case DLT_FDDI:
+      case PCAP_DLT_FDDI:
 	if (offset < 0)
 	      offset = find_ip_fddi(buf,iplen);
 	if (offset < 0)
@@ -103,18 +103,18 @@ static int callback(
 	memcpy((char *)ip_buf,buf+offset,iplen);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
-      case DLT_NULL:
+      case PCAP_DLT_NULL:
 	/* no phys header attached */
 	offset = 4;
 	memcpy((char *)ip_buf,buf+offset,iplen);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
-      case DLT_ATM_RFC1483:
+      case PCAP_DLT_ATM_RFC1483:
 	/* ATM RFC1483 - LLC/SNAP ecapsulated atm */
 	memcpy((char *)ip_buf,buf+8,iplen);
 	callback_plast = ip_buf+iplen-8-1;
 	break;
-      case DLT_RAW:
+      case PCAP_DLT_RAW:
 	/* raw IP */
 	offset = 0;
 	memcpy((char *)ip_buf,buf+offset,iplen);
@@ -227,31 +227,31 @@ pread_f *is_tcpdump(void)
     memset(&eth_header,0,EH_SIZE);
     switch (type = pcap_datalink(pcap)) {
 case 100:
-      case DLT_EN10MB:
+      case PCAP_DLT_EN10MB:
 	/* OK, we understand this one */
 	physname = "Ethernet";
 	break;
-      case DLT_IEEE802:
+      case PCAP_DLT_IEEE802:
 	/* just pretend it's normal ethernet */
 	physname = "Ethernet";
 	break;
-      case DLT_SLIP:
+      case PCAP_DLT_SLIP:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "Slip";
 	break;
-      case DLT_FDDI:
+      case PCAP_DLT_FDDI:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "FDDI";
 	break;
-      case DLT_NULL:
+      case PCAP_DLT_NULL:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "NULL";
 	break;
-      case DLT_ATM_RFC1483:
+      case PCAP_DLT_ATM_RFC1483:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "ATM, LLC/SNAP encapsulated";
 	break;
-      case DLT_RAW:
+      case PCAP_DLT_RAW:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "RAW_IP";
 	break;
@@ -303,7 +303,7 @@ PcapSavePacket(
 
 	fhdr.thiszone = 0;	/* don't have this info, just make it up */
 	fhdr.snaplen = 1000000;	/* don't have this info, just make it up */
-	fhdr.linktype = DLT_EN10MB; /* always Ethernet (10Mb) */
+	fhdr.linktype = PCAP_DLT_EN10MB; /* always Ethernet (10Mb) */
 	fhdr.sigfigs = 0;
 
 	/* write the header */
