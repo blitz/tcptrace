@@ -164,10 +164,12 @@ struct burstdata {
 
 /* for tracking number of connections */
 struct parallelism {
-    Bool	counted;	/* have we already accumulated this? */
-    Bool	persistant;
+    Bool	counted[NUM_DIRECTION_TYPES];
+    				/* have we already accumulated this? */
+				/* (in each of the 4 directions) */
+    Bool	persistant[2];	/* is this persistant (for each TCB) */
     u_short	maxparallel;	/* maximum degree of parallelism */
-    u_long	ttlitems;	/* across entire group */
+    u_long	ttlitems[2];	/* across entire group (each dir) */
 };
 
 
@@ -458,30 +460,38 @@ DefineInsideRange(
     char *pdash;
     struct insidenode *pnode;
     ipaddr *paddr;
+    char *paddr1;
+    char *paddr2;
 
     if (ldebug>2)
 	printf("DefineInsideRange('%s') called\n", ip_pair);
 
     pdash = strchr(ip_pair,'-');
     if (pdash == NULL) {
-	return(NULL);
+	/* just one address, treat it as a range */
+	paddr1 = ip_pair;
+	paddr2 = ip_pair;
+    } else {
+	/* a pair */
+	*pdash = '\00';
+	paddr1 = ip_pair;
+	paddr2 = pdash+1;
     }
 
-    *pdash = '\00';
 
     pnode = MallocZ(sizeof(struct insidenode));
 
-    paddr = str2ipaddr(ip_pair);
+    paddr = str2ipaddr(paddr1);
     if (paddr == NULL) {
-	fprintf(stderr,"invalid IP address: '%s'\n", ip_pair);
+	fprintf(stderr,"invalid IP address: '%s'\n", paddr1);
 	exit(-1);
     }
     pnode->min = *paddr;
 
 
-    paddr = str2ipaddr(pdash+1);
+    paddr = str2ipaddr(paddr2);
     if (paddr == NULL) {
-	fprintf(stderr,"invalid IP address: '%s'\n", pdash+1);
+	fprintf(stderr,"invalid IP address: '%s'\n", paddr2);
 	exit(-1);
     }
     pnode->max = *paddr;
@@ -727,131 +737,134 @@ Must be integer value greater than 0.\n");
 static void
 tcplib_save_bursts()
 {
-    int i;
+    int dtype;
     module_conninfo *pmc;
     int non_parallel = 0;
     char *filename;
 
     tcplib_cleanup_bursts();
     
-    for (i=0; i < NUM_DIRECTION_TYPES; ++i) {
+
+    /* accumulate parallelism stats */
+    for (dtype=0; dtype < NUM_DIRECTION_TYPES; ++dtype) {
+	non_parallel = 0;
+	for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
+	    struct parallelism *pp = pmc->pparallelism;
+	    int dir;
+
+	    /* make sure it's http */
+	    if (!is_http_conn(pmc))
+		continue;
+
+	    /* check each TCB */
+	    for (LOOP_OVER_BOTH_TCBS(dir)) {
+		module_conninfo_tcb *ptcbc = &pmc->tcb_cache[dir];
+
+		/* make sure it's
+		    -- the right direction
+		    -- and parallel
+		    -- not already counted */
+		if ((ptcbc->dtype != dtype) ||
+		    (pp == NULL) ||
+		    (pp->counted[dtype]))
+		    continue;
+		
+		/* count the max connections */
+		AddToCounter(&global_pstats[dtype]->http_P_maxconns,
+			     pp->maxparallel, 1);
+
+		/* count the ttl items in the parallel group */
+		AddToCounter(&global_pstats[dtype]->http_P_ttlitems,
+			     pp->ttlitems[dir] / BUCKETSIZE_NUMITEMS,
+			     1);
+
+		/* binary counter, one sample of either 0 or 1 */
+		AddToCounter(&global_pstats[dtype]->http_P_persistant,
+			     pp->persistant[dir]?1:0,
+			     1);
+
+		/* don't count it again! */
+		pmc->pparallelism->counted[dtype] = TRUE;
+	    }
+	}
+    }
+
+
+    /* write all the counters */
+    for (dtype=0; dtype < NUM_DIRECTION_TYPES; ++dtype) {
 	if (ldebug>1)
-	    printf("tcplib: running burstsizes (%s)\n", dtype_names[i]);
+	    printf("tcplib: running burstsizes (%s)\n", dtype_names[dtype]);
 
 	/* ---------------------*/
 	/*   Burstsize		*/
 	/* ---------------------*/
 	/* HTTP 1.0 */
-	filename = namedfile(dtype_names[i],TCPLIB_HTTP_P_BURSTSIZE_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_P_BURSTSIZE_FILE);
 	tcplib_do_GENERIC_burstsize(filename,
-				    global_pstats[i]->http_P_bursts.size);
+				    global_pstats[dtype]->http_P_bursts.size);
 
 	/* HTTP 1.1 */
-	filename = namedfile(dtype_names[i],TCPLIB_HTTP_S_BURSTSIZE_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_S_BURSTSIZE_FILE);
 	tcplib_do_GENERIC_burstsize(filename,
-				    global_pstats[i]->http_S_bursts.size);
+				    global_pstats[dtype]->http_S_bursts.size);
 
 	/* NNTP */
-	filename = namedfile(dtype_names[i],TCPLIB_NNTP_BURSTSIZE_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_NNTP_BURSTSIZE_FILE);
 	tcplib_do_GENERIC_burstsize(filename,
-				    global_pstats[i]->nntp_bursts.size);
+				    global_pstats[dtype]->nntp_bursts.size);
+
+	/* ---------------------*/
+	/*   Total parallel items */
+	/* ---------------------*/
+	/* HTTP 1.0 */
+	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_P_TTLITEMS_FILE);
+	tcplib_do_GENERIC_nitems(filename,
+				 global_pstats[dtype]->http_P_ttlitems);
 
 	/* ---------------------*/
 	/*   Num Items in Burst */
 	/* ---------------------*/
-	/* HTTP 1.0 */
-	filename = namedfile(dtype_names[i],TCPLIB_HTTP_P_TTLITEMS_FILE);
-	tcplib_do_GENERIC_nitems(filename,
-				 global_pstats[i]->http_P_bursts.nitems);
-
 	/* HTTP 1.1 */
-	filename = namedfile(dtype_names[i],TCPLIB_HTTP_S_NITEMS_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_S_NITEMS_FILE);
 	tcplib_do_GENERIC_nitems(filename,
-				 global_pstats[i]->http_S_bursts.nitems);
+				 global_pstats[dtype]->http_S_bursts.nitems);
 
 	/* NNTP */
-	filename = namedfile(dtype_names[i],TCPLIB_NNTP_NITEMS_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_NNTP_NITEMS_FILE);
 	tcplib_do_GENERIC_nitems(filename,
-				 global_pstats[i]->nntp_bursts.nitems);
+				 global_pstats[dtype]->nntp_bursts.nitems);
 
 	/* ---------------------*/
 	/*   Idletime		*/
 	/* ---------------------*/
 
 	/* HTTP 1.0 */
-	filename = namedfile(dtype_names[i],TCPLIB_HTTP_P_IDLETIME_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_P_IDLETIME_FILE);
 	tcplib_do_GENERIC_idletime(filename,
-				   global_pstats[i]->http_P_bursts.idletime);
+				   global_pstats[dtype]->http_P_bursts.idletime);
 
 	/* HTTP 1.1 */
-	filename = namedfile(dtype_names[i],TCPLIB_HTTP_S_IDLETIME_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_S_IDLETIME_FILE);
 	tcplib_do_GENERIC_idletime(filename,
-				   global_pstats[i]->http_S_bursts.idletime);
+				   global_pstats[dtype]->http_S_bursts.idletime);
 
 	/* NNTP */
-	filename = namedfile(dtype_names[i],TCPLIB_NNTP_IDLETIME_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_NNTP_IDLETIME_FILE);
 	tcplib_do_GENERIC_idletime(filename,
-				   global_pstats[i]->nntp_bursts.idletime);
-
-	/* ---------------------*/
-	/*   Parallelism	*/
-	/* ---------------------*/
-	non_parallel = 0;
-	for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
-	    struct parallelism *pp = pmc->pparallelism;
-
-	    /* make sure it's http */
-	    if (!is_http_conn(pmc))
-		continue;
-
-	    /* make sure it's the right direction */
-	    if ((pmc->tcb_cache[0].dtype != i) &&
-		(pmc->tcb_cache[1].dtype != i))
-		continue;
-
-	    /* see if it's parallel */
-	    if (pp == NULL) {
-		++non_parallel;
-		continue;
-	    }
-
-	    /* OK, it's parallel HTTP, have we counted it yet? */
-	    if (!pp->counted) {
-		AddToCounter(&global_pstats[i]->http_P_maxconns,
-			     pp->maxparallel, 1);
-
-		AddToCounter(&global_pstats[i]->http_P_ttlitems,
-			     pp->ttlitems, 1);
-
-		/* binary counter, one sample of either 0 or 1 */
-		AddToCounter(&global_pstats[i]->http_P_persistant,
-			     pp->persistant?1:0,
-			     1);
-
-		/* don't count it again! */
-		pmc->pparallelism->counted = TRUE;
-
-		/* grab the ttl items */
-		/* (in thy, it should be the same in both dirs, but */
-		/*  I'm not really sure...) */
-
-		pmc->pparallelism->ttlitems += !!FIXME!!;
-		
-	    }
-	}
+				   global_pstats[dtype]->nntp_bursts.idletime);
 
 	/* add the NON-parallel HTTP to the counter */
-	AddToCounter(&global_pstats[i]->http_P_maxconns, 1, non_parallel);
+	AddToCounter(&global_pstats[dtype]->http_P_maxconns, 1, non_parallel);
 
 	/* store the counters */
-	filename = namedfile(dtype_names[i],TCPLIB_HTTP_P_MAXCONNS_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_P_MAXCONNS_FILE);
 	tcplib_do_GENERIC_P_maxconns(filename,
-				     global_pstats[i]->http_P_maxconns);
+				     global_pstats[dtype]->http_P_maxconns);
 	
 	/* store the persistance */
-	filename = namedfile(dtype_names[i],TCPLIB_HTTP_P_PERSIST_FILE);
+	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_P_PERSIST_FILE);
 	tcplib_do_GENERIC_nitems(filename,
-				 global_pstats[i]->http_P_persistant);
+				 global_pstats[dtype]->http_P_persistant);
 	
 
 	if (LOCAL_ONLY)
@@ -1036,6 +1049,7 @@ void tcplib_read(
     struct tcplibstats *pstats;
     module_conninfo *pmc = pmodstruct;
     enum t_dtype dtype;
+    int dir;
 
     /* first, discard any connections that we aren't interested in. */
     /* That means that pmodstruct is NULL */
@@ -1056,11 +1070,12 @@ void tcplib_read(
     /* see which of the 2 TCB's this goes with */
     if (ptp->addr_pair.a_port == ntohs(tcp->th_sport)) {
 	ptcb = &ptp->a2b;
-	ptcbc = &pmc->tcb_cache[TCB_CACHE_A2B];
+	dir = TCB_CACHE_A2B;
     } else {
 	ptcb = &ptp->b2a;
-	ptcbc = &pmc->tcb_cache[TCB_CACHE_B2A];
+	dir = TCB_CACHE_B2A;
     }
+    ptcbc = &pmc->tcb_cache[dir];
 
 
     /* see where to keep the stats */
@@ -1152,15 +1167,20 @@ void tcplib_read(
 		struct parallelism *pp = pmc->pparallelism;
 
 		if (ptcbc->numitems > 1)
-		    pp->persistant = TRUE;
+		    pp->persistant[dir] = TRUE;
+
+		/* add to total bursts in parallel group */
+		++pp->ttlitems[dir];
 	    }
 
 	    /* accumulate burst size stats */
-	    if (ldebug)
+	    if (ldebug>1)
 		printf("Adding burst size %ld to %s\n",
 		       ptcbc->burst_bytes,
 		       FormatBrief(pmc->ptp,ptcb));
-	    AddToCounter(&ptcbc->pburst->size, ptcbc->burst_bytes, 1);
+	    AddToCounter(&ptcbc->pburst->size,
+			 ptcbc->burst_bytes/BUCKETSIZE_BURSTSIZE,
+			 1);
 
 	    /* reset counter for next burst */
 	    ptcbc->burst_bytes = 0;
@@ -1170,7 +1190,9 @@ void tcplib_read(
 				  current_time)/1000.0);
 
 	    /* accumulate idletime stats */
-	    AddToCounter(&ptcbc->pburst->idletime, etime, 1);
+	    AddToCounter(&ptcbc->pburst->idletime,
+			 etime / BUCKETSIZE_BURSTIDLETIME,
+			 1);
 	}
 
 	/* accumulate size of current burst */
@@ -2868,16 +2890,29 @@ tcplib_cleanup_bursts()
 		continue;
 
 	    /* count the LAST burst */
-	    if (ptcbc->burst_bytes != 0)
+	    if (ptcbc->burst_bytes != 0) {
 		++ptcbc->numitems;
+	    }
 
-	    if (ptcbc->burst_bytes != 0)
+	    /* add the last burst into the ttl for the parallel stream */
+	    if (ptcbc->burst_bytes != 0) {
+		struct parallelism *pp = pmc->pparallelism;
+		if (pp) {
+		    ++pp->ttlitems[dir];
+		}
+	    }
+
+
+	    if (ptcbc->burst_bytes != 0) {
+		printf("Adding burst size %ld\n", ptcbc->burst_bytes);
 		AddToCounter(&ptcbc->pburst->size,
 			     ptcbc->burst_bytes/BUCKETSIZE_BURSTSIZE, 1);
+	    }
 
-	    if (ptcbc->numitems != 0)
+	    if (ptcbc->numitems != 0) {
 		AddToCounter(&ptcbc->pburst->nitems,
 			     ptcbc->numitems/BUCKETSIZE_NUMITEMS, 1);
+	    }
 	}
     }
 }
