@@ -27,10 +27,20 @@ typedef int PLOTTER;
 #define NO_PLOTTER -1
 
 
-struct last {
+typedef struct seg_rec {
+    u_long	ackedby;	/* which ACK covers this segment */
+    u_long	seq;		/* sequence number */
+    u_long	retrans;	/* retransmit count */
+    struct	timeval	time;	/* time the segment was sent */
+    struct	seg_rec	*next;	/* next in list */
+    struct	seg_rec	*prev;	/* prev in list */
+} seg_rec;
+
+
+typedef struct tcb {
     /* parent pointer */
     struct stcp_pair *ptp;
-    struct last	 *ptwin;
+    struct tcb	*ptwin;
 
     /* TCP information */
     u_long	ack;
@@ -51,8 +61,36 @@ struct last {
     u_long	win_zero_ct;
     u_long	min_seq;
     u_long	packets;
-    u_short syn_count;
-    u_short fin_count;
+    u_char	syn_count;
+    u_char	fin_count;
+
+    /* information for RTO tracking */
+    seg_rec	seglist_head;
+    seg_rec	seglist_tail;
+    /* RTT stats for singly-transmitted segments */
+    u_long	rtt_min;
+    u_long	rtt_max;
+    double	rtt_sum;	/* for averages */
+    double	rtt_sum2;	/* sum of squares, for stdev */
+    u_long	rtt_count;	/* for averages */
+    /* RTT stats for multiply-transmitted segments */
+    u_long	rtt_min_last;
+    u_long	rtt_max_last;
+    double	rtt_sum_last;	/* from last transmission, for averages */
+    double	rtt_sum2_last;	/* sum of squares, for stdev */
+    u_long	rtt_count_last;	/* from last transmission, for averages */
+    /* ACK Counters */
+    u_long	rtt_amback;	/* ambiguous ACK */
+    u_long	rtt_cumack;	/* segments only cumulativly ACKed */
+    u_long	rtt_unkack;	/* unknown ACKs  ??? */
+    u_long	rtt_redack;	/* redundant ACKs */
+    /* retransmission information */
+    u_long	retr_max;	/* maximum retransmissions ct */
+    u_long	retr_min_tm;	/* minimum retransmissions time */
+    u_long	retr_max_tm;	/* maximum retransmissions time */
+    double	retr_tm_sum;	/* for averages */
+    double	retr_tm_sum2;	/* sum of squares, for stdev */
+    u_long	retr_tm_count;	/* for averages */
 
     /* plotter for this one */
     PLOTTER	plotter;
@@ -60,7 +98,7 @@ struct last {
 
     /* host name letter(s) */
     char	*host_letter;
-};
+} tcb;
 
 typedef u_short hash;
 
@@ -86,8 +124,8 @@ struct stcp_pair {
     struct timeval	first_time;
     struct timeval	last_time;
     u_long		packets;
-    struct last	a2b;
-    struct last	b2a;
+    tcb			a2b;
+    tcb			b2a;
 
     /* linked list of usage */
     struct stcp_pair *next;
@@ -95,18 +133,21 @@ struct stcp_pair {
 };
 typedef struct stcp_pair tcp_pair;
 
+typedef struct tcphdr tcphdr;
+
 
 /* option flags */
-extern int printem;
-extern int plotem;
 extern int debug;
-extern int show_zero_window;
-extern int show_rexmit;
-extern int ignore_non_comp;
-extern int printbrief;
-extern int printticks;
-extern int nonames;
+extern int dortt;
 extern int hex;
+extern int ignore_non_comp;
+extern int nonames;
+extern int plotem;
+extern int printbrief;
+extern int printem;
+extern int printticks;
+extern int show_rexmit;
+extern int show_zero_window;
 
 
 #define MAX_NAME 20
@@ -118,13 +159,15 @@ extern int hex;
 
 
 /* external routine decls */
-char *malloc();
+char *malloc(int);
 char *ether_ntoa();
-void bzero();
+void bzero(void *,int);
+void free(void *);
 
 
 /* global routine decls */
 char *ts();
+unsigned long elapsed();
 
 int is_tcpdump();
 int is_netm();
@@ -143,6 +186,8 @@ void plotter_line();
 void plotter_text();
 void plotter_uarrow();
 void plotter_utick();
+void plotter_diamond();
+void plotter_box();
 void printeth();     
 void printpacket();     
 void printtcp();     
@@ -151,9 +196,13 @@ void trace_init();
 void plot_init();
 void OnlyConn();
 void IgnoreConn();
+void calc_rtt();
+void seglist_init();
 int Complete();
 char *HostLetter();
 char *EndpointName();
+void PrintBrief(tcp_pair *);
+void PrintTrace(tcp_pair *ptp);
 
 
 /* common defines */
@@ -161,4 +210,30 @@ char *EndpointName();
 #define FALSE 0
 #define OK 0     
 #define SYSERR -1
+
+
+/* TCP flags macros */
+#define SYN_SET(ptcp)((ptcp)->th_flags & TH_SYN)
+#define FIN_SET(ptcp)((ptcp)->th_flags & TH_FIN)
+#define ACK_SET(ptcp)((ptcp)->th_flags & TH_ACK)
+#define RESET_SET(ptcp)((ptcp)->th_flags & TH_RST)
+
+
+/* connection directions */
+#define A2B 1
+#define B2A -1
+
+
+/*
+ * SEQCMP - sequence space comparator
+ *	This handles sequence space wrap-around. Overlow/Underflow makes
+ * the result below correct ( -, 0, + ) for any a, b in the sequence
+ * space. Results:	result	implies
+ *			  - 	 a < b
+ *			  0 	 a = b
+ *			  + 	 a > b
+ */
+#define	SEQCMP(a, b)		((long)(a) - (long)(b))
+#define	SEQ_LESSTHAN(a, b)	(SEQCMP(a,b) < 0)
+#define	SEQ_GREATERTHAN(a, b)	(SEQCMP(a,b) > 0)
 

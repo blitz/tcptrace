@@ -34,8 +34,8 @@ ts(ptime)
 	now = asctime(ptm);
 	now[19] = '\00';
 
-	decimal = (ptime->tv_usec + 500) / 1000;
-	sprintf(buf, "%s.%03d", now, decimal);
+	decimal = (ptime->tv_usec + 50) / 100;
+	sprintf(buf, "%s.%04d", now, decimal);
 
 	return(buf);
 }

@@ -12,6 +12,7 @@ OPTIM = -g -Wall
 OPTIM = -g -Wall
 OPTIM = -O2 -Wall
 OPTIM = -O2
+OPTIM = -O2 -g -Wall
 #
 INCS=-I/usr/local/include
 CFLAGS = ${OPTIM} ${INCS}
@@ -26,15 +27,15 @@ LDFLAGS = -L/usr/local/lib
 #
 ifeq ($(wildcard /./vmunix),)
 # Solaris
-	LDLIBS = -lpcap -lnsl -lsocket -lucb -lelf
+	LDLIBS = -lpcap -lnsl -lsocket -lucb -lelf -lm
 else
 # SunOS (I hope)
-	LDLIBS = -lpcap
+	LDLIBS = -lpcap -lm
 endif
 
 
-OFILES= gcache.o main.o names.o netm.o plotter.o print.o \
-	snoop.o tcpdump.o trace.o
+OFILES= gcache.o main.o names.o netm.o output.o plotter.o print.o \
+	rtt.o snoop.o tcpdump.o trace.o
 
 tcptrace: ${OFILES}
 	${CC} ${LDFLAGS} ${CFLAGS} ${OFILES} -o tcptrace ${LDLIBS}
@@ -69,3 +70,4 @@ tcpdump.o: /usr/local/include/net/bpf.h
 tcpdump.o: tcptrace.h
 trace.o: tcptrace.h
 trace.o: gcache.h
+rtt.o: tcptrace.h
