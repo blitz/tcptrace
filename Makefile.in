@@ -13,10 +13,12 @@ DEFINES += -DGUNZIP="\"gunzip\""
 #    then uncomment the following line to support on-the-fly
 #    decompression of ".Z" files...
 #DEFINES += -DUNCOMPRESS="\"uncompress\""
+# 3) Also, we assume most systems have the "bunzip2" utility installed,
+#    if yours doesn't, you'll want to comment out the next line.
+DEFINES += -DBUNZIP2="\"bunzip2\""
 # - we'll do path search on the string you specify.  If the program
 #    isn't in your path, you'll need to give the absolute path name.
 # - if you want other formats, see the "compress.h" file.
-
 
 
 

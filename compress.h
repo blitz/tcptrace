@@ -91,6 +91,10 @@ struct comp_formats supported_comp_formats[] = {
 #ifdef UNCOMPRESS
     {".Z",  "Unix compress format", UNCOMPRESS, {"uncompress","-c","%s",NULL}},
 #endif /* UNCOMPRESS */
+
+#ifdef BUNZIP2
+    {".bz2", "bzip2 format", BUNZIP2, {"bunzip2","-c","%s",NULL}},
+#endif /* BUNZIP2 */
 };
 #define NUM_COMP_FORMATS (sizeof(supported_comp_formats) / sizeof(struct comp_formats))
 
