@@ -38,8 +38,8 @@ AC_CHECK_FUNCS(mkstemp)
 dnl use valloc if available, then memalign, then malloc
 AC_CHECK_FUNCS(valloc memalign)
 
-dnl check for the IPv6 routine inet_ntop
-AC_CHECK_FUNCS(inet_ntop)
+dnl check for the IPv6 routines inet_ntop inet_pton
+AC_CHECK_FUNCS(inet_ntop inet_pton)
 
 
 
