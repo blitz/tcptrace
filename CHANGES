@@ -585,3 +585,9 @@ rwnd line, in case it gets annoying.
 
 Also fixing trivia (type conversions for certain uint to int, etc.) in 
 output.c to keep gcc3.3 from warning on MacOSX 10.3.
+
+6.6.0: 4 Nov 2003 Mani
+-----
+
+All the changes you see above in the 6.4.x series are part of the release
+6.6.0.
