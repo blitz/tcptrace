@@ -1085,6 +1085,7 @@ CheckArguments(
 {
     char *home;
     char *envariable;
+    static int debug = 1;
 
     /* remember the name of the program for errors... */
     progname = argv[0];
@@ -1110,13 +1111,30 @@ CheckArguments(
 		printf("resource file %s exists\n", path);
 
 	    if ((f = fopen(path,"r")) != NULL) {
-		if (fread(buf,statbuf.st_size,1,f) != 1) {
-		    perror(path);
-		    exit(-1);
-		}
+		char *pbuf = buf;
+		*buf = '\00';
+		/* read each line in turn */
+		while (!feof(f)) {
+		    if (fgets(pbuf,statbuf.st_size+1-(pbuf-buf),f) == NULL) {
+			if (ferror(f)) {
+			    perror(path);
+			    exit(-1);
+			}
+			/* else, just EOF */
+			continue;
+		    }
 
-		/* terminate the string */
-		buf[statbuf.st_size] = '\00';
+		    if (debug)
+			printf("read line from resource file: %s", pbuf);
+
+		    /* look for comments */
+		    while ((*pbuf) && (*pbuf != '#') && (*pbuf != '\n'))
+			++pbuf;
+		    
+		    /* terminate the string */
+		    *(pbuf++) = ' ';
+		    *pbuf = '\00';
+		}
 
 		if (debug)
 		    printf("resource file %s contains:\n\t'%s'\n",
