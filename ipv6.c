@@ -92,6 +92,7 @@ gettcp(
 {
     struct ipv6 *pip6 = (struct ipv6 *)pip;
     char nextheader;
+    struct tcphdr *ptcp;
     struct ipv6_ext *pheader;
 
     /* IPv4 is easy */
@@ -112,7 +113,16 @@ gettcp(
 	    return(NULL);
 	}
 
-	return (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
+	/* OK, it starts here */
+	ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
+
+	/* make sure the whole header is there */
+	if ((u_long)ptcp + (sizeof struct tcphdr) - 1 > (u_long)plast) {
+	    /* part of the header is missing */
+	    return(NULL);
+	}
+
+	return (ptcp);
     }
 
     /* otherwise, we only understand IPv6 */
