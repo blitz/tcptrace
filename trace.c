@@ -1472,7 +1472,7 @@ dotrace(
     if (SYN_SET(ptcp) || FIN_SET(ptcp) || tcp_data_length > 0) {
 	int len = tcp_data_length;
 	int retrans_cnt=0;
-	int retrans;
+	
 	if (SYN_SET(ptcp)) ++len;
 	if (FIN_SET(ptcp)) ++len;
 
@@ -1486,7 +1486,7 @@ dotrace(
 	}
 	else
 		retrans_cnt = retrans_num_bytes = rexmit(thisdir,start, len, &out_order);
-		retrans = retrans_num_bytes = rexmit(thisdir,start, len, &out_order);
+
 	if (out_order)
 	    ++thisdir->out_order_pkts;
 
@@ -1498,18 +1498,18 @@ dotrace(
 	    /* if the SYN was rexmitted, then don't count it */
 	    if (thisdir->syn_count > 1)
 		--retrans_cnt;
-		--retrans;
+	}
 	if (FIN_SET(ptcp)) {
 	    /* don't count the FIN as data */
 	    --len;
 	    /* if the FIN was rexmitted, then don't count it */
 	    if (thisdir->fin_count > 1)
 		--retrans_cnt;
-		--retrans;
+	}
 	if (!probe){
 		if(retrans_cnt < len)
-		if(retrans < len)
-	    	thisdir->unique_bytes += (len - retrans);
+	    	thisdir->unique_bytes += (len - retrans_cnt);
+	    }
     }
 
 
@@ -1517,6 +1517,12 @@ dotrace(
     if (ACK_SET(ptcp)) {
 	ack_type = ack_in(otherdir,th_ack,tcp_data_length,eff_win);
 	ack_type = ack_in(otherdir,th_ack,tcp_data_length);
+	if ( (th_ack == (otherdir->syn+1)) &&
+		 (otherdir->syn_count == 1) )
+		 otherdir->rtt_3WHS=otherdir->rtt_last; 
+		 /* otherdir->rtt_last was set in the call to ack_in() */
+		
+    }
 
 
     /* plot out-of-order segments, if asked */

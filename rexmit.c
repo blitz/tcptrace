@@ -417,6 +417,8 @@ rtt_ackin(
     double etime_rtt;
     enum t_ack ret;
 
+	u_long current_size=0;
+
     /* how long did it take */
     etime_rtt = elapsed(pseg->time,current_time);
 
@@ -431,6 +433,7 @@ rtt_ackin(
 	ret = NOSAMP;
     } else if (pseg->retrans == 0) {
 	ptcb->rtt_last = etime_rtt;
+
 	if ((ptcb->rtt_min == 0) || (ptcb->rtt_min > etime_rtt))
 	    ptcb->rtt_min = etime_rtt;
 
@@ -440,6 +443,42 @@ rtt_ackin(
 	ptcb->rtt_sum += etime_rtt;
 	ptcb->rtt_sum2 += etime_rtt * etime_rtt;
 	++ptcb->rtt_count;
+
+	/* Collecting stats for full size segments */
+	/* Calculate the current_size of the segment,
+	   taking care of possible sequence space wrap around */
+
+	if ( pseg->seq_lastbyte > pseg->seq_firstbyte )
+	  current_size = pseg->seq_lastbyte - pseg->seq_firstbyte + 1;
+	else
+	   /* MAX_32 is 0x1,0000,0000
+	   So we don't need the "+ 1" while calculating the size here */
+	  current_size = (MAX_32 - pseg->seq_firstbyte)+pseg->seq_lastbyte;
+
+	if ( !ptcb->rtt_full_size || (ptcb->rtt_full_size < current_size) )
+	{
+		/* Found a bigger segment.. Reset all stats. */
+		ptcb->rtt_full_size=current_size;
+
+		ptcb->rtt_full_min=etime_rtt;
+		ptcb->rtt_full_max=etime_rtt;
+		ptcb->rtt_full_sum=etime_rtt;
+		ptcb->rtt_full_sum2=(etime_rtt * etime_rtt);
+		ptcb->rtt_full_count=1;
+	}
+	else if (ptcb->rtt_full_size == current_size)
+	{
+		++ptcb->rtt_full_count;
+
+		if ((ptcb->rtt_full_min==0) || (ptcb->rtt_full_min>etime_rtt) )
+			ptcb->rtt_full_min = etime_rtt;
+
+		if (ptcb->rtt_full_max < etime_rtt)
+			ptcb->rtt_full_max = etime_rtt;
+
+		ptcb->rtt_full_sum += etime_rtt;
+		ptcb->rtt_full_sum2 += (etime_rtt * etime_rtt);
+	}
 	ret = NORMAL;
     } else {
 	/* retrans, can't use it */

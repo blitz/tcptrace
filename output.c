@@ -464,6 +464,26 @@ PrintTrace(
 	StatLineF("RTT stdev","ms","%8.1f",
 		  Stdev(pab->rtt_sum, pab->rtt_sum2, pab->rtt_count) / 1000.0,
 		  Stdev(pba->rtt_sum, pba->rtt_sum2, pba->rtt_count) / 1000.0);
+	fprintf(stdout,"\n");
+	StatLineF("RTT from 3WHS","ms","%8.1f",
+		  (double)pab->rtt_3WHS/1000.0,
+		  (double)pba->rtt_3WHS/1000.0);
+	fprintf(stdout,"\n");
+	StatLineI("RTT full_sz smpls","", 
+		  pab->rtt_full_count, pba->rtt_full_count);
+	StatLineF("RTT full_sz min","ms","%8.1f",
+		  (double)pab->rtt_full_min/1000.0,
+		  (double)pba->rtt_full_min/1000.0);
+	StatLineF("RTT full_sz max","ms","%8.1f",
+		  (double)pab->rtt_full_max/1000.0,
+		  (double)pba->rtt_full_max/1000.0);
+	StatLineF("RTT full_sz avg","ms","%8.1f",
+		  Average(pab->rtt_full_sum, pab->rtt_full_count) / 1000.0,
+		  Average(pba->rtt_full_sum, pba->rtt_full_count) / 1000.0);
+	StatLineF("RTT full_sz stdev","ms","%8.1f",
+		  Stdev(pab->rtt_full_sum, pab->rtt_full_sum2, pab->rtt_full_count) / 1000.0,
+		  Stdev(pba->rtt_full_sum, pba->rtt_full_sum2, pba->rtt_full_count) / 1000.0);
+	fprintf(stdout,"\n");
 
 	StatLineI("post-loss acks","",
 		  pab->rtt_nosample, pba->rtt_nosample);

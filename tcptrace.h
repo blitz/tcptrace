@@ -389,6 +389,23 @@ typedef struct tcb {
     double	rtt_sum_last;	/* from last transmission, for averages */
     double	rtt_sum2_last;	/* sum of squares, for stdev */
     u_long	rtt_count_last;	/* from last transmission, for averages */
+
+	/* To keep track of stats for FULL SIZE segments
+	   Simple heuristic :
+	   We shall treat the largest packet, so far seen as the
+	   "full size" packet and collect stats. accordingly.
+	   Upon seeing a bigger packet, we flush all stats. collected
+	   incorrectly and begin all over again */
+	u_long rtt_full_size; 
+
+	u_long rtt_full_min;
+	u_long rtt_full_max;
+	double rtt_full_sum;	/* for averages */
+	double rtt_full_sum2;	/* sum of squares for stdev */
+	u_long rtt_full_count;	/* for averages */ 
+
+	u_long rtt_3WHS;		/* rtt value used to seed RTO timers */
+
     /* ACK Counters */
     u_llong	rtt_amback;	/* ambiguous ACK */
     u_llong	rtt_cumack;	/* segments only cumulativly ACKed */
