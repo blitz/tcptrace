@@ -188,8 +188,9 @@ typedef struct tcb {
     /* hardware duplicate detection */
 #define SEGS_TO_REMEMBER 8
     struct str_hardware_dups {
-	seqnum	seq;	/* sequence number */
-	u_short	id;	/* IP ID */
+	seqnum	hwdup_seq;	/* sequence number */
+	u_short	hwdup_id;	/* IP ID */
+	u_long	hwdup_packnum; /* packet number */
     } hardware_dups[SEGS_TO_REMEMBER];
     u_long num_hardware_dups;
     u_char hardware_dups_ix;
@@ -338,9 +339,9 @@ extern Bool graph_time_zero;
 extern Bool plot_tput_instant;
 extern int debug;
 extern int thru_interval;
-extern int pnum;
+extern u_long pnum;
 
-extern int ctrunc;
+extern u_long ctrunc;
 extern timeval current_time;
 
 

@@ -82,8 +82,8 @@ Bool plot_tput_instant = TRUE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
-int pnum = 0;
-int ctrunc = 0;
+u_long pnum = 0;
+u_long ctrunc = 0;
 
 /* globals */
 struct timeval current_time;
@@ -523,14 +523,14 @@ ProcessFile(
 		if (CompIsCompressed()) {
 		    frac = location/(filesize/100);
 		    if (frac <= 100)
-			fprintf(stderr ,"%d ~%u%% (compressed)\r", pnum, frac);
+			fprintf(stderr ,"%lu ~%u%% (compressed)\r", pnum, frac);
 		    else
-			fprintf(stderr ,"%d ~100%% + %u%% (compressed)\r", pnum, frac-100);
+			fprintf(stderr ,"%lu ~100%% + %u%% (compressed)\r", pnum, frac-100);
 		} else {
 		    location = ftell(stdin);
 		    frac = location/(filesize/100);
 
-		    fprintf(stderr ,"%d %u%%\r", pnum, frac);
+		    fprintf(stderr ,"%lu %u%%\r", pnum, frac);
 		}
 	    }
 	    fflush(stderr);
@@ -553,7 +553,7 @@ ProcessFile(
 
 	    if (debug)
 		fprintf(stderr,
-			"Skipping packet %d, not an IPv4/v6 packet (version:%d)\n",
+			"Skipping packet %lu, not an IPv4/v6 packet (version:%d)\n",
 			pnum,pip->ip_v);
 	    continue;
 	}
@@ -571,7 +571,7 @@ If you'll send me a trace and offer to help, I can add support\n\
 for other packet types, I just don't have a place to test them\n\n");
 	    } else if (not_ether < 5) {
 		fprintf(stderr,
-			"Skipping packet %d, not an ethernet packet\n",
+			"Skipping packet %lu, not an ethernet packet\n",
 			pnum);
 	    } /* else, just shut up */
 	    continue;
@@ -579,7 +579,7 @@ for other packet types, I just don't have a place to test them\n\n");
 
 	/* print the packet, if requested */
 	if (printem) {
-	    printf("Packet %d\n", pnum);
+	    printf("Packet %lu\n", pnum);
 	    printpacket(len,tlen,phys,phystype,pip,plast);
 	}
 
@@ -634,7 +634,7 @@ QuitSig(
 {
     printf("%c\n\n", 7);  /* BELL */
     printf("Terminating processing early on signal %d\n", signum);
-    printf("Partial result after processing %d packets:\n\n\n", pnum);
+    printf("Partial result after processing %lu packets:\n\n\n", pnum);
     plotter_done();
     trace_done();
     exit(1);
