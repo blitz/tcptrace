@@ -422,3 +422,10 @@ files directly though.
 
 The ns code was modified by Angelos Stavrou to read in the more detailed
 output from the extra headers in the ns FullTcp.
+
+Fixed a bug with the host letters. The function HostLetter was skipping host
+names after y, z ... jumping to ba, bb, ... instead of aa, ab ...
+
+6.0.2 - Fri Jul 26, 2002
+
+This is the version we'll release
