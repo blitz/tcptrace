@@ -688,6 +688,75 @@ ReallocZ(
 	return(ptr);
 }
 
+static void
+GrabOnly(
+    char *progname,
+    char *opt)
+{
+    char *o_arg;
+		      
+    /* next part of arg is a filename or number list */
+    if (*opt == '\00') {
+	Usage(progname);
+    }
+
+    /* option is a list of connection numbers separated by commas */
+    /* option can be immediately "here" or given as a file name */
+    if (isdigit(*opt)) {
+	/* list is on the command line */
+	o_arg = opt;
+    } else {
+	/* it's in a file */
+	FILE *f;
+	char *filename=opt;
+	struct stat str_stat;
+	int filesize;
+
+	/* open the file */
+	if ((f = fopen(filename,"r")) == NULL) {
+	    fprintf(stderr,"Open of '%s' failed\n", filename);
+	    perror(filename);
+	    Usage(progname);
+	}
+
+	/* determine the file length */
+	if (fstat(fileno(f),&str_stat) != 0) {
+	    perror("fstat");
+	    exit(1);
+	}
+	filesize = str_stat.st_size;
+
+	/* make a big-enough buffer */
+	o_arg = MallocZ(filesize+1);
+
+	/* read the file into the buffer */
+	if (fread(o_arg,1,filesize,f) != filesize) {
+	    perror("fread");
+	    exit(1);
+	}
+
+	fclose(f);
+    }
+
+    /* wherever we got it, o_arg is a connection list */
+    while (o_arg && *o_arg) {
+	int num;
+	
+	if (sscanf(o_arg,"%d",&num) != 1) {
+	    fprintf(stderr,"Don't understand conn number starting at '%s'\n", o_arg);
+	    Usage(progname);
+	}
+	if (debug)
+	    printf("setting OnlyConn(%d)\n", num);
+	OnlyConn(num);
+
+	/* look for the next comma */
+	o_arg = strchr(o_arg,',');
+	if (o_arg)
+	    ++o_arg;
+    }
+}
+
 
 static void
 ParseArgs(
@@ -755,30 +824,8 @@ ParseArgs(
 		    *(argv[i]+1) = '\00'; break;
 		  case 'o':
 		    ++saw_i_or_o;
-		    if (*(argv[i]+1) == '\00') {
-			Usage(argv[0]);
-		    } else if (isdigit(*(argv[i]+1))) {
-			OnlyConn(atoi(argv[i]+1));
-			*(argv[i]+1) = '\00';
-		    } else {
-			FILE *f;
-			char *filename=argv[i]+1;
-			int num;
-			f = fopen(filename,"r");
-			if (!f) {
-			    fprintf(stderr,"Open of '%s' failed\n", filename);
-			    perror(filename);
-			    Usage(argv[0]);
-			}
-			while (fscanf(f,"%d",&num) == 1) {
-			    if (debug)
-				printf("setting OnlyConn(%d)\n", num);
-			    OnlyConn(num);
-			}
-			fclose(f);
-			*(argv[i]+1) = '\00';
-		    }
-		    break;
+		    GrabOnly(argv[0],argv[i]+1);
+		    *(argv[i]+1) = '\00'; break;
 		  case 'B':
 		    beginpnum = atoi(argv[i]+1);
 		    *(argv[i]+1) = '\00'; break;
