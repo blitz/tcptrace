@@ -158,7 +158,7 @@ PrintTrace(ptp)
 		pab->rexmit_bytes,
 		pba->rexmit_bytes);
 	fprintf(stdout,
-		"\tack packets:   %8u\t\tack packets:   %8u\n",
+		"\tack pkts sent: %8u\t\tack pkts sent: %8u\n",
 		pab->ack_pkts,
 		pba->ack_pkts);
 	fprintf(stdout,
@@ -236,6 +236,7 @@ PrintTrace(ptp)
 	    fprintf(stdout,
 		    "\tredundant acks: %7u\t\tredundant acks: %7u\n",
 		    pab->rtt_unkack, pba->rtt_unkack);
+	    if (debug)
 	    fprintf(stdout,
 		    "\tunknown acks:  %8u\t\tunknown acks:  %8u\n",
 		    pab->rtt_unkack, pba->rtt_unkack);

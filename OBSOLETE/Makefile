@@ -43,6 +43,9 @@ tcptrace: ${OFILES}
 install: tcptrace
 	install -s tcptrace /usr/local/bin/tcptrace
 
+ci:
+	ci -u -mlatest Makefile *.h *.c
+
 clean:
 	rm -f *.o tcptrace core [a-z]2[a-z] [a-z][a-z]2[a-z][a-z] *.PS.?
 
