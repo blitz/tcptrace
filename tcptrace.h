@@ -14,46 +14,61 @@
 #include <netdb.h>
 
 
+/* maximum number of TCP pairs to maintain */
+#define MAX_TCP_PAIRS 10
+
+
 typedef int PLOTTER;
-extern PLOTTER topl;
-extern PLOTTER frompl;
-extern PLOTTER abpl;
-extern PLOTTER bapl;
 
 
 struct last {
-	unsigned long	ack;
-	unsigned long	seq;
-	unsigned long	windowend;
-	struct timeval	time;
+	u_long	ack;
+	u_long	seq;
+	u_long	windowend;
+	struct	timeval	time;
 
 	/* statistics added */
-	unsigned	data_bytes;
-	unsigned	data_pkts;
-	unsigned	rexmit_bytes;
-	unsigned	rexmit_pkts;
-	unsigned	ack_pkts;
-	unsigned	win_max;
-	unsigned	win_tot;
-	unsigned	win_zero_ct;
-	unsigned	min_seq;
-	unsigned	packets;
+	u_long	data_bytes;
+	u_long	data_pkts;
+	u_long	rexmit_bytes;
+	u_long	rexmit_pkts;
+	u_long	ack_pkts;
+	u_long	win_max;
+	u_long	win_tot;
+	u_long	win_zero_ct;
+	u_long	min_seq;
+	u_long	packets;
+
+	/* plotter for this one */
+	PLOTTER	plotter;
+
+	/* host name letter */
+	char	host_letter;
 };
+
+typedef u_int hash;
+
+typedef struct {
+	u_long	a_address;
+	u_long	b_address;
+	u_short	a_port;
+	u_short	b_port;
+	hash	hash;
+} tcp_pair_addr;
 
 
 typedef struct {
 	/* endpoint identification */
-	unsigned long	a_address;
-	unsigned long	b_address;
-	unsigned short	a_port;
-	unsigned short	b_port;
+	tcp_pair_addr	addr_pair;
 
 	/* connection information */
 	char		*a_endpoint;
 	char		*b_endpoint;
 	struct timeval	first_time;
 	struct timeval	last_time;
-	int		packets;
+	u_long		packets;
+	u_short		syn_count;
+	u_short		fin_count;
 	struct last	a2b;
 	struct last	b2a;
 } tcp_pair;
@@ -61,9 +76,11 @@ typedef struct {
 
 /* option flags */
 extern int printem;
+extern int plotem;
 extern int debug;
 extern int show_zero_window;
 extern int show_rexmit;
+extern int ignore_non_comp;
 
 
 #define MAX_NAME 20
@@ -87,7 +104,7 @@ void dotrace();
 void plotter_darrow();
 void plotter_done();
 void plotter_dtick();
-void plotter_init();
+PLOTTER plotter_init();
 void plotter_line();
 void plotter_text();
 void plotter_uarrow();
@@ -96,4 +113,5 @@ void printeth();
 void printpacket();     
 void printtcp();     
 void trace_done();
+int Complete();
 

@@ -68,11 +68,11 @@ pread_netm(ptime,plen,ppep,ppip)
 {
 	int packlen;
 	int rlen;
-	int len;
 	struct packet_header hdr;
-	static char ebuf[32];
-	static char buf[2000];
+	int len;
 	int hlen;
+	static struct ether_header ep;
+	static int ip_buf[IP_MAXPACKET/sizeof(int)];  /* force alignment */
 
 
 	hlen = netm_oldversion?
@@ -91,7 +91,7 @@ pread_netm(ptime,plen,ppep,ppip)
 	len = (packlen + 3) & ~0x3;
 
 	/* read the ethernet header */
-	rlen=fread(ebuf,1,sizeof(struct ether_header),stdin);
+	rlen=fread(&ep,1,sizeof(struct ether_header),stdin);
 	if (rlen != sizeof(struct ether_header)) {
 		fprintf(stderr,"Couldn't read ether header\n");
 		return(0);
@@ -99,7 +99,7 @@ pread_netm(ptime,plen,ppep,ppip)
 
 	/* read the rest of the packet */
 	len -= sizeof(struct ether_header);
-	if ((rlen=fread(buf,1,len,stdin)) != len) {
+	if ((rlen=fread(ip_buf,1,len,stdin)) != len) {
 		if (rlen != 0)
 		    fprintf(stderr,"Couldn't read %d bytes\n", len);
 		return(0);
@@ -119,8 +119,8 @@ pread_netm(ptime,plen,ppep,ppip)
 	}
 
 
-	*ppip  = (struct ip *) buf;
-	*ppep  = (struct ether_header *) ebuf;
+	*ppip  = (struct ip *) ip_buf;
+	*ppep  = &ep;
 
 	return(1);
 }

@@ -1,14 +1,35 @@
 #include "tcptrace.h"
 #include <varargs.h>
 
+#define MAX_PLOTTERS (2*MAX_TCP_PAIRS)
 
-PLOTTER abpl = 1;
-PLOTTER bapl = 2;
 
-FILE *fab = NULL;
-FILE *fba = NULL;
 
-static void plot(pl, fmt, va_alist)
+static FILE *fplot[MAX_PLOTTERS] = {NULL};
+static tcp_pair *p2ptp[MAX_PLOTTERS] = {NULL};
+static PLOTTER plotter_ix = -1;
+
+
+#define PLOT if(plotem) DoPlot
+
+
+
+char *PlotName(pl)
+     PLOTTER pl;
+{
+	static char filename[10];
+
+	if ((pl % 2) == 0)
+	    sprintf(filename,"%c2%c", 'a' + pl, 'a' + pl + 1);
+	else
+	    sprintf(filename,"%c2%c", 'a' + pl, 'a' + pl - 1);
+
+	return(filename);
+}
+
+
+
+static void DoPlot(pl, fmt, va_alist)
      PLOTTER	pl;
      char	*fmt;
      va_dcl
@@ -18,14 +39,12 @@ static void plot(pl, fmt, va_alist)
 
 	va_start(ap);
 
-	if (pl == abpl) {
-		f = fab;
-	} else if (pl == bapl) {
-		f = fba;
-	} else {
-		fprintf(stderr,"Bad plotter: %d\n", pl);
+	if (pl > plotter_ix) {
+		fprintf(stderr,"Illegal plotter: %d\n", pl);
 		exit(-1);
 	}
+
+	f = fplot[pl];
 
 	vfprintf(f,fmt,ap);
 	fprintf (f,"\n");
@@ -36,42 +55,63 @@ static void plot(pl, fmt, va_alist)
 }
 
 
-void
-plotter_init(pl,title)
-     PLOTTER pl;
+int
+plotter_init(ptp,title)
+     tcp_pair *ptp;
      char *title;
 {
-	if (pl == abpl) {
-		if ((fab = fopen("a2b","w")) == NULL) {
-			perror("a2b");
-			exit(-2);
-		}
-		fprintf(fab,"timeval unsigned\n");
-		fprintf(fab,"title\n%s\n", title);
-	} else if (pl == bapl) {
-		if ((fba = fopen("b2a","w")) == NULL) {
-			perror("b2a");
-			exit(-2);
-		}
-		fprintf(fba,"timeval unsigned\n");
-		fprintf(fba,"title\n%s\n", title);
-	} else {
-		fprintf(stderr,"Bad plotter: %d\n", pl);
+	PLOTTER pl;
+	FILE *f;
+	char *filename;
+
+	++plotter_ix;
+	if (plotter_ix >= MAX_PLOTTERS) {
+		fprintf(stderr,"No more plotters\n");
 		exit(-1);
 	}
+
+	pl = plotter_ix;
+
+	filename = PlotName(pl);
+
+	if (debug)
+	    fprintf(stderr,"Plotter %d file is '%s'\n", pl, filename);
+
+	if ((f = fopen(filename,"w")) == NULL) {
+		perror(filename);
+		exit(-2);
+	}
+
+	fprintf(f,"timeval unsigned\n");
+	fprintf(f,"title\n%s\n", title);
+
+	fplot[pl] = f;
+	p2ptp[pl] = ptp;
+	return(pl);
 }
 
 
 void
 plotter_done()
 {
-	if (fab != NULL) {
-		fprintf(fab,"go\n");
-		fclose(fab);
-	}
-	if (fba != NULL) {
-		fprintf(fba,"go\n");
-		fclose(fba);
+	PLOTTER pl;
+	FILE *f;
+	char *fname;
+
+	for (pl = 0; pl < plotter_ix; ++pl) {
+		f = fplot[pl];
+		if (!ignore_non_comp || Complete(p2ptp[pl])) {
+			fprintf(f,"go\n");
+			fclose(f);
+		} else {
+			fname = PlotName(pl);
+			if (debug)
+			    fprintf(stderr,"Removing incomplete plot file '%s'\n",
+				    fname);
+			fclose(f);
+			if (unlink(fname) != 0)
+			    perror(fname);
+		}
 	}
 }
 
@@ -83,7 +123,7 @@ plotter_line(pl,t1,x1,t2,x2)
      struct timeval	t1,t2;
      unsigned long	x1,x2;
 {
-	plot(pl,"line %u.%06u %u %u.%06u %u",
+	PLOT(pl,"line %u.%06u %u %u.%06u %u",
 	     t1.tv_sec, t1.tv_usec,
 	     x1,
 	     t2.tv_sec, t2.tv_usec,
@@ -97,7 +137,7 @@ plotter_darrow(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	plot(pl,"darrow %u.%06u %u",
+	PLOT(pl,"darrow %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
 
@@ -108,7 +148,7 @@ plotter_uarrow(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	plot(pl,"uarrow %u.%06u %u",
+	PLOT(pl,"uarrow %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
 
@@ -119,7 +159,7 @@ plotter_dtick(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	plot(pl,"dtick %u.%06u %u",
+	PLOT(pl,"dtick %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
 
@@ -130,7 +170,7 @@ plotter_utick(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	plot(pl,"utick %u.%06u %u",
+	PLOT(pl,"utick %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
 
@@ -143,7 +183,7 @@ plotter_text(pl,t,x,where,str)
      char		*where;
      char		*str;
 {
-	plot(pl,"%stext %u.%06u %u\n%s",
+	PLOT(pl,"%stext %u.%06u %u\n%s",
 	     where,
 	     t.tv_sec, t.tv_usec,x,
 	     str);
