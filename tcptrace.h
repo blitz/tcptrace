@@ -199,6 +199,8 @@ typedef struct ipaddr {
 #define IP_V(pip)    ((pip)->ip_v)
 #define TH_X2(ptcp)  ((ptcp)->th_x2)
 #define TH_OFF(ptcp) ((ptcp)->th_off)
+#define TH_FLAGS(ptcp) ((ptcp)->th_flags)
+
 /* One alternative looks like this:
 #define IP_HL(pip)   ((pip)->ip_vhl&0xf)
 #define IP_V(pip)    ((pip)->ip_vhl>>4)
@@ -820,9 +822,16 @@ char *ExpandFormat(const char *format);
 #define URGENT_SET(ptcp)((ptcp)->th_flags & TH_URG)
 #define FLAG6_SET(ptcp)((ptcp)->th_flags & 0x40)
 #define FLAG7_SET(ptcp)((ptcp)->th_flags & 0x80)
-#define CWR_SET(ptcp)     (TH_X2((ptcp)) & TH_CWR)
-#define ECN_ECHO_SET(ptcp)(TH_X2((ptcp)) & TH_ECN_ECHO)
 
+/* Changed the following macros to reflect the correct position
+of bits as specified in RFC 2481 and draft-ietf-tsvwg-ecn-04.txt */
+/*
+	#define CWR_SET(ptcp)     (TH_X2((ptcp)) & TH_CWR)
+	#define ECN_ECHO_SET(ptcp)(TH_X2((ptcp)) & TH_ECN_ECHO)
+*/
+
+#define CWR_SET(ptcp)	(TH_FLAGS((ptcp)) & TH_CWR)
+#define ECN_ECHO_SET(ptcp)	(TH_FLAGS((ptcp)) & TH_ECN_ECHO)
 
 /* connection directions */
 #define A2B 1
@@ -892,9 +901,18 @@ typedef struct opt_unknown {
 #define IPTOS_ECT	0x02	/* ECN-Capable Transport */
 #define IPTOS_CE	0x01	/* Experienced Congestion */
 
-#define TH_ECN_ECHO	0x02	/* Used by receiver to echo CE bit */
-#define TH_CWR		0x01	/* Congestion Window Reduced */
+// Modified the following macros to reflect the
+// correct bit positions for CWR and ECE as specified in 
+// RFC 2481 and the latest draft: draft-ietf-tsvwg-ecn-04.txt.
+// The bits CWR and ECE are actually the most significant
+// bits in the TCP flags octet respectively.
 
+/*#define TH_ECN_ECHO	0x02 */	/* Used by receiver to echo CE bit */
+/*#define TH_CWR		0x01 */	/* Congestion Window Reduced */
+
+#define TH_CWR 0x80			/* Used by sender to indicate congestion
+							   window size reduction. */
+#define TH_ECN_ECHO 0x40	/* Used by receiver to echo CE bit. */
 
 
 /* some compilers seem to want to make "char" unsigned by default, */
