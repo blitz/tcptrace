@@ -61,8 +61,10 @@ gettcp(
 	if (nextheader == IPV6HDR_NONXTHDR)
 	    return NULL;
 	    
-	if (nextheader == IPPROTO_TCP)
-	    return ((struct tcphdr *) pheader); 
+	if (nextheader == IPPROTO_TCP) {
+	    return ((struct tcphdr *) pheader);
+	}
+
 	/* skip the next header */
 	if (nextheader == IPV6HDR_FRAGMENT)
 	{
@@ -70,12 +72,13 @@ gettcp(
 	    pheader += 8;
 	    
 	}
-	if ((nextheader == IPV6HDR_HOPBYHOP) || (nextheader == IPV6HDR_ROUTING)
-	    || (nextheader == IPV6HDR_DSTOPTS))
-	{
+	if ((nextheader == IPV6HDR_HOPBYHOP)
+	    || (nextheader == IPV6HDR_ROUTING)
+	    || (nextheader == IPV6HDR_DSTOPTS)) {
 	    nextheader = *pheader;
 	    pheader += *(pheader + 1);
 	}
+
 	if (pheader > (char *)plast)
 	    break;
     }
@@ -152,7 +155,7 @@ int getpayloadlength (struct ip *pip, void *plast)
 void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr)
 {
     if (ADDR_ISV6(&fromaddr)) {
-	memcpy(&fromaddr.un.ip6.s6_addr,&toaddr->un.ip6, AF_INET6);
+	memcpy(toaddr->un.ip6.s6_addr, fromaddr.un.ip6.s6_addr, 16);
 	toaddr->addr_vers = 6;
     } else {
 	toaddr->un.ip4.s_addr = fromaddr.un.ip4.s_addr;
@@ -167,15 +170,21 @@ void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr)
  */
 int IP_SAMEADDR (ipaddr addr1, ipaddr addr2)
 {
+    int ret = 0;
     if (ADDR_ISV6(&addr1)) {
 	if (ADDR_ISV6(&addr2))
-	    return (memcmp(addr1.un.ip6.s6_addr,
-			   addr2.un.ip6.s6_addr,AF_INET6) == 0);
+	    ret = (memcmp(addr1.un.ip6.s6_addr,
+			  addr2.un.ip6.s6_addr,16) == 0);
     } else {
 	if (ADDR_ISV4(&addr2))
-	    return (addr1.un.ip4.s_addr == addr2.un.ip4.s_addr);
+	    ret = (addr1.un.ip4.s_addr == addr2.un.ip4.s_addr);
     }
-    return 0;	/* different types */
+    if (debug > 3)
+	printf("SameAddr(%s(%d),%s(%d)) returns %d\n",
+	       HostName(addr1), ADDR_VERSION(&addr1),
+	       HostName(addr2), ADDR_VERSION(&addr2),
+	       ret);
+    return ret;
 }
 
 
@@ -191,7 +200,7 @@ const char *inet_ntop(int af, const char *src, char *dst, size_t size)
     char *temp;
 
     temp = dst;
-    for (i = 0; i < AF_INET6; i++)
+    for (i = 0; i < 16; i++)
     {
 	s = (u_short)  src[i];
 	sprintf(dst, "%02x",(s & 0x00ff));  /* make the hi order byte 0 */
@@ -230,7 +239,7 @@ IPV6ADDR2ADDR(
     static struct ipaddr addr;
 
     addr.addr_vers = 6;
-    memcpy(&addr.un.ip6.s6_addr,&addr6->s6_addr, AF_INET6);
+    memcpy(&addr.un.ip6.s6_addr,&addr6->s6_addr, 16);
 
     return(&addr);
 }
