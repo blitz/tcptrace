@@ -718,7 +718,6 @@ Packet 27
 	   CKSUM: 0x5753
 	    DLEN: 0
 27 packets seen, 27 TCP packets traced
-elapsed wallclock time: 0:00:00.103730, 260 pkts/sec analyzed
 trace file elapsed time: 0:00:28.928446
 TCP connection info:
   1: 30.229.118.67:37143 - 67.82.9.253:80 (a2b)   15>   12<  (complete)  (reset)
