@@ -792,7 +792,9 @@ dotrace(
 	/* is reset (above) to contain zero.  Note that if we */
 	/* DIDN'T see the SYNs, the windows will be off. */
  	/* Jamshid: Remember that the window is never scaled in SYN */
-	if (thisdir->f1323_ws && otherdir->f1323_ws)
+ 	/* packets, as per RFC 1323. */
+ 	if (thisdir->f1323_ws && otherdir->f1323_ws && !SYN_SET(ptcp))
+	    eff_win <<= thisdir->window_scale;
     } else {
 	eff_win = 0;
     }

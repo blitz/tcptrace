@@ -324,3 +324,6 @@
   fixed bug (probably introduced in 5.2.0) that kept -B from working
   fixed bug in snoop-format code that caused it to fail if it saw a
     non-IP packet
+5.2.2 - Mon Sep 27, 1999
+  bug fix from Jamshid Majdavi (and Kevin Lahey), SYN-ACKs containing window
+    scaling were getting scaled (and shouldn't be).
