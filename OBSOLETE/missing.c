@@ -33,4 +33,4 @@ ether_ntoa (struct ether_addr *e)
 	    pe[0], pe[1], pe[2], pe[3], pe[4], pe[5]);
     return(buf);
 }
-#endif NEED_ETHER_NTOA
+#endif /* NEED_ETHER_NTOA */
