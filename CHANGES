@@ -296,4 +296,4 @@
   fixed bug in congestion window graph, REALLY long connections would
     cause a counter to wrap around, messing up the average
   fixed major bug in tcplib module, ftp data and control ports were backwards
-
+  The -O options was writing IPv6 packets incorrectly (wrong length)

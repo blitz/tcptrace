@@ -278,7 +278,7 @@ PcapSavePacket(
     phdr.ts = current_time;
     phdr.caplen = (unsigned)plast - (unsigned)pip + 1;
     phdr.caplen += EH_SIZE;	/* add in the ether header */
-    phdr.len = EH_SIZE + pip->ip_len;	/* probably this */
+    phdr.len = EH_SIZE + ntohs(PIP_LEN(pip));	/* probably this */
 
     /* write the packet header */
     fwrite(&phdr, sizeof(phdr), 1, f_savefile);
