@@ -437,3 +437,10 @@ little more fiddling.  For example:
 
 for grab the next 100 packets and then stop, while extracting the
 contents and then doing a "long" output listing.
+============================================================
+Mon Apr 19, 1999
+
+Somebody pointed out that there's now a windows port of tcpdump.  I
+don't know anything about it except the URL:
+
+http://netgroup-serv.polito.it/tools/analyzer/Install/windump/
