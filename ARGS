@@ -33,6 +33,7 @@ In Use Options
 -r      print rtt statistics (slower for large files)
 -s      use short names (list \"picard.cs.ohiou.edu\" as just \"picard\")
 -t      'tick' off the packet numbers as a progress indication
+-u      minimal UDP stats too
 -v      print version information and exit
 -w      print warning message when packets are too short to process
 -xMODULE_SPECIFIC

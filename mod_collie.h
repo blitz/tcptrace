@@ -31,3 +31,5 @@ int collie_init(int argc, char *argv[]);
 void collie_done(void);
 void collie_usage(void);
 void *collie_newconn(tcp_pair *ptp);
+void *collie_newudpconn(udp_pair *pup);
+void collie_newfile(char *newfile, u_long filesize, Bool fcompressed);
