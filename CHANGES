@@ -309,4 +309,7 @@
   made counters "long long" in traffic module
   patches from Kevin Lahey to print ECN information
   patches from Kevin Lahey to read LBL Network Simulator (ns) output
+  allow unambiguous prefixes of extended args (--foo)
+  added --dump_packet_data to add TCP/UDP packet DATA printout along
+    with individual packet dumps (--dump is good enough prefix)
 

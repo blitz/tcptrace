@@ -79,6 +79,7 @@ Bool graph_segsize = FALSE;
 Bool graph_cwin = FALSE;
 Bool hex = TRUE;
 Bool ignore_non_comp = FALSE;
+Bool dump_packet_data = FALSE;
 Bool print_rtt = FALSE;
 Bool print_cwin = FALSE;
 Bool printbrief = TRUE;
@@ -129,6 +130,11 @@ char *cur_filename;
 static char *progname;
 char *output_filename = NULL;
 
+/* for elapsed processing time */
+struct timeval wallclock_start;
+struct timeval wallclock_finished;
+
+
 /* first and last packet timestamp */
 timeval first_packet = {0,0};
 timeval last_packet = {0,0};
@@ -177,6 +183,8 @@ static struct ext_bool_op {
      "print warnings when packets with bad checksums"},
     {"warn_printbad_syn_fin_seq", &warn_printbad_syn_fin_seq, TRUE,
      "print warnings when SYNs or FINs rexmitted with different sequence numbers"},
+    {"dump_packet_data", &dump_packet_data, TRUE,
+     "print all packets AND dump the TCP/UDP data"},
 
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
@@ -469,6 +477,7 @@ Dump File Names\n\
 ");
 
     fprintf(stderr,"\nExtended boolean options, mostly for graphing options\n");
+    fprintf(stderr," (unambiguous prefixes also work)\n");
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
 	fprintf(stderr,"  --%-20s %s %s\n",
@@ -567,6 +576,9 @@ main(
     if (do_udp)
 	udptrace_init();
 
+    /* get starting wallclock time */
+    gettimeofday(&wallclock_start, NULL);
+
     num_files = argc;
     printf("%d arg%s remaining, starting with '%s'\n",
 	   num_files,
@@ -599,12 +611,23 @@ main(
     if (printticks)
 	printf("\n");
 
+    /* get ending wallclock time */
+    gettimeofday(&wallclock_finished, NULL);
+
     /* general output */
-    fprintf(stdout,"%lu packets seen, %lu TCP packets traced",
+    fprintf(stdout, "%lu packets seen, %lu TCP packets traced",
 	    pnum, tcp_trace_count);
     if (do_udp)
 	fprintf(stdout,", %lu UDP packets traced", udp_trace_count);
     fprintf(stdout,"\n");
+
+    /* processing time */
+    etime = elapsed(wallclock_start,wallclock_finished);
+    fprintf(stdout, "elapsed wallclock time: %s, %d pkts/sec analyzed\n",
+	    elapsed2str(etime),
+	    (int)((double)pnum/(etime/1000000)));
+
+    /* actual tracefile times */
     etime = elapsed(first_packet,last_packet);
     fprintf(stdout,"trace %s elapsed time: %s\n",
 	    (num_files==1)?"file":"files",
@@ -755,8 +778,15 @@ rather than:\n\
 	if (ret == 0) /* EOF */
 	    break;
 
+	/* in case only a subset analysis was requested */
+	if (pnum+1 < beginpnum)	continue;
+	if ((endpnum != 0) && (pnum+1 > endpnum))	break;
+
+
+	/* update global and per-file packet counters */
 	++pnum;			/* global */
 	++fpnum;		/* local to this file */
+
 
 	/* check for re-ordered packets */
 	if (!ZERO_TIME(&last_packet)) {
@@ -832,10 +862,6 @@ That will likely confuse the program, so be careful!\n", filename);
 	    fflush(stderr);
 	}
 
-	/* in case only a subset analysis was requested */
-	if (pnum < beginpnum)	continue;
-	if ((endpnum != 0) && (pnum > endpnum))	break;
-
 
 	/* quick sanity check, better be an IPv4/v6 packet */
 	if (!PIP_ISV4(pip) && !PIP_ISV6(pip)) {
@@ -874,7 +900,7 @@ for other packet types, I just don't have a place to test them\n\n");
 	}
 
 	/* print the packet, if requested */
-	if (printallofem) {
+	if (printallofem || dump_packet_data) {
 	    printf("Packet %lu\n", pnum);
 	    printpacket(len,tlen,phys,phystype,pip,plast);
 	}
@@ -1320,30 +1346,78 @@ ParseExtendedArg(
     char *arg)
 {
     int i;
+    struct ext_bool_op *pbop_found = NULL;
+    struct ext_bool_op *pbop_prefix = NULL;
+    Bool prefix_ambig = FALSE;
+    char *argtext;
+    int arglen;
 
     /* there must be at least SOME text there */
     if (strcmp(arg,"--") == 0)
 	BadArg(argsource, "Void extended argument\n");
 
+    /* find just the arg text */
+    if (strncmp(arg,"--no",4) == 0)
+	argtext = arg+4;
+    else
+	argtext = arg+2;
+    arglen = strlen(argtext);
+
+    /* search for a match on each extended arg */
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
 
 	/* check for the default value flag */
-	if (strcmp(arg+2,pbop->bool_optname) == 0) {
-	    *pbop->bool_popt = pbop->bool_default;
-	    return;
+	if (strcmp(argtext,pbop->bool_optname) == 0) {
+	    pbop_found = pbop;
+	    break;
 	}
 
-	/* check for the INVERSE value flag */
-	if ((strncmp(arg,"--no",4) == 0) &&
-	    (strcmp(arg+4,pbop->bool_optname) == 0)) {
-	    *pbop->bool_popt = !pbop->bool_default;
-	    return;
+	/* check for a prefix match */
+	if (strncmp(argtext,pbop->bool_optname,arglen) == 0) {
+	    if (pbop_prefix == NULL)
+		pbop_prefix = pbop;
+	    else
+		prefix_ambig = TRUE;
 	}
     }
 
-    /* never found a match, so it's an error */
-    BadArg(argsource, "Bad extended argument '%s' (see -hargs)\n", arg);
+
+    /* if we never found a match, it's an error */
+    if ((pbop_found == NULL) && (pbop_prefix == NULL)) {
+	BadArg(argsource, "Bad extended argument '%s' (see -hargs)\n", arg);
+	return;
+    }
+
+    /* if exact match, do it */
+    if (pbop_found != NULL) {
+	if (strncmp(arg,"--no",4) == 0)
+	    *pbop_found->bool_popt = !pbop_found->bool_default;
+	else
+	    *pbop_found->bool_popt = pbop_found->bool_default;
+	return;
+    }
+
+    /* if unambig prefix match, do THAT */
+    if ((pbop_prefix != NULL) && (!prefix_ambig)) {
+	if (strncmp(arg,"--no",4) == 0)
+	    *pbop_prefix->bool_popt = !pbop_prefix->bool_default;
+	else
+	    *pbop_prefix->bool_popt = pbop_prefix->bool_default;
+	return;
+    }
+
+    /* ... else ambiguous prefix */
+    fprintf(stderr,"Extended arg '%s' is ambiguous, it matches:\n", arg);
+    for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
+	struct ext_bool_op *pbop = &extended_bools[i];
+	if (strncmp(argtext,pbop->bool_optname,arglen) == 0)
+	    fprintf(stderr,"  %s - %s\n",
+		pbop->bool_optname, pbop->bool_descr);
+    }
+    BadArg(argsource, "Ambiguous extended argument '%s'\n", arg);
+    
+    return;
 }
 
 
