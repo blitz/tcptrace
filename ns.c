@@ -327,13 +327,8 @@ int pread_ns_fulltcp(
 
 	ipb->ip_len = htons(*plen);
 
-	if (is_tcp && (*plen > hdrlen)) { /*for empty tcp packets acting as acks*/
-	    tcpb->th_seq = htonl(seqno);
-	    tcpb->th_ack = 0;
-	} else {
-	    tcpb->th_seq = 0;
-	    tcpb->th_ack = htonl(ackno);
-	}
+	tcpb->th_seq = htonl(seqno);
+	tcpb->th_ack = htonl(ackno);
 
 	/* make up a reasonable IPv4 packet header */
 	ipb->ip_hl = 5; /* no options, normal length of 20 */
