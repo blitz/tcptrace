@@ -103,6 +103,6 @@ struct filter_line filters[] = {
     /* computed functions */
 
     /* throughput in bytes/second - 0 for infinite or none */
-    {"thruput",		V_UFUNC, &VFuncClntTput, &VFuncServTput, "thruput (bytes/sec)"},
+    {"thruput",		V_UFUNC, (void *)&VFuncClntTput, (void *)&VFuncServTput, "thruput (bytes/sec)"},
 };
 #define NUM_FILTERS (sizeof(filters)/sizeof(struct filter_line))
