@@ -300,3 +300,7 @@
 5.1.5 - Wed Feb 17, 1999
   fixed bug in reading .tcptracerc files, caused core dump on some files
   when printing packets, IP options are now printed too
+5.1.6 - Tue Mar 16, 1999
+  added extended arg for triple dupack stats (--dupack3_data)
+    by default: if a segment has data, it can't be a triple dupack
+    optional:   if a segment has data, it CAN be a triple dupack
