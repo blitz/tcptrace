@@ -93,9 +93,6 @@ struct supported_formats {
 
 /* install the is_GLORP() routines supported */
 struct supported_formats file_formats[] = {
-#ifdef GROK_TCPDUMP
-	{is_tcpdump,	"tcpdump","tcpdump -- Public domain program from LBL"},
-#endif /* GROK_TCPDUMP */
 #ifdef GROK_SNOOP
 	{is_snoop,	"snoop","Sun Snoop -- Distributed with Solaris"},
 #endif /* GROK_SNOOP */
@@ -117,6 +114,9 @@ struct supported_formats file_formats[] = {
 #ifdef GROK_ERF
 	{is_erf,	"erf","Endace Extensible Record Format"},
 #endif /* GROK_ERF */
+#ifdef GROK_TCPDUMP
+	{is_tcpdump,	"tcpdump","tcpdump -- Public domain program from LBL"},
+#endif /* GROK_TCPDUMP */
 };
 
 #define NUM_FILE_FORMATS (sizeof(file_formats) / sizeof(struct supported_formats))
