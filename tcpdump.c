@@ -179,7 +179,8 @@ pread_tcpdump(
 	*pphystype = PHYS_ETHER; /* everything assumed to be ethernet */
 	*ppip      = (struct ip *) ip_buf;
 	*pplast    = callback_plast; /* last byte in IP packet */
-	*ptime     = callback_phdr->ts;
+	ptime->tv_usec = callback_phdr->ts.tv_usec;
+	ptime->tv_sec = callback_phdr->ts.tv_sec;
 	*plen      = callback_phdr->len;
 	*ptlen     = callback_phdr->caplen;
 
@@ -312,7 +313,8 @@ PcapSavePacket(
     }
 
     /* create the packet header */
-    phdr.ts = current_time;
+    phdr.ts.tv_sec = current_time.tv_sec;
+    phdr.ts.tv_usec = current_time.tv_usec;
     phdr.caplen = (unsigned)plast - (unsigned)pip + 1;
     phdr.caplen += EH_SIZE;	/* add in the ether header */
     phdr.len = EH_SIZE + ntohs(PIP_LEN(pip));	/* probably this */
