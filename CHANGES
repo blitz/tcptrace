@@ -54,4 +54,7 @@
     top arrow is red instead of white
   Compute slow-start window size (should be one except for "new" tcp's)
   Compute estimated congestion window
+3.2.11a - Mon Mar 31, 1997
+  Fixed bug is TS options are not 4-byte aligned
+  Fixed tick printing (bad % value) for HUGE files (millions of packets)
      
