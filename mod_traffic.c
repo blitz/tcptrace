@@ -1009,7 +1009,7 @@ ParseArgs(char *argstring)
 	if (debug > 1)
 	    printf("Checking argv[%d]: '%s'\n", i, argv[i]);
 	if (strcmp(argv[i],"-d") == 0) {
-	    debug = 1;
+	    ++debug;
 	} else if (sscanf(argv[i],"-i%f", &interval) == 1) {
 	    age_interval = interval;
 	    if (debug)
