@@ -303,7 +303,7 @@ typedef struct tcb {
 
     /* for tracking unidirectional idle time */
     timeval	last_time;	/* last packet SENT from this side */
-    double	idle_max;	/* maximum idle time observed (usecs) */
+    u_llong	idle_max;	/* maximum idle time observed (usecs) */
 
     /* host name letter(s) */
     char	*host_letter;

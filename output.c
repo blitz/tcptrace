@@ -314,9 +314,9 @@ PrintTrace(
 	      etime_data2 / 1000000.0);
     StatLineP("idletime max","ms","%s",
 	      ZERO_TIME(&pab->last_time)?"NA":
-	      (sprintf(bufl,"%8.1f",pab->idle_max/1000.0),bufl),
+	      (sprintf(bufl,"%8.1f",(float)pab->idle_max/1000.0),bufl),
 	      ZERO_TIME(&pba->last_time)?"NA":
-	      (sprintf(bufr,"%8.1f",pba->idle_max/1000.0),bufr));
+	      (sprintf(bufr,"%8.1f",(float)pba->idle_max/1000.0),bufr));
 
     if ((pab->num_hardware_dups != 0) || (pba->num_hardware_dups != 0)) {
 	StatLineI("hardware dups","segs",

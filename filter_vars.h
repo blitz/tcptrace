@@ -65,7 +65,7 @@ struct filter_line filters[] = {
     {"out_order_segs",	V_ULLONG, PTCB_C_S(out_order_pkts),"out of order segments"},
     {"sacks_sent",	V_ULLONG, PTCB_C_S(sacks_sent),"SACKs sent"},
     {"ipv6_segs",	V_ULONG,  PTCB_C_S(ipv6_segments),"number of IPv6 segments sent"},
-    {"max_idle",	V_ULONG,  PTCB_C_S(idle_max),"maximum idle time (usecs)"},
+    {"max_idle",	V_ULLONG, PTCB_C_S(idle_max),"maximum idle time (usecs)"},
 
     {"num_hw_dups",     V_ULONG,  PTCB_C_S(num_hardware_dups),"number of hardware-level duplicates"},
 
