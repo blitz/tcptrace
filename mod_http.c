@@ -499,8 +499,8 @@ HttpGather(
     struct http_info *ph)
 {
     while (ph) {
-	if (ph->tcb_client->extracted_contents_file &&
-	    ph->tcb_server->extracted_contents_file)
+	if (ph->tcb_client->extr_contents_file &&
+	    ph->tcb_server->extr_contents_file)
 	{
 	    FindGets(ph);
 	    FindContent(ph);
@@ -593,7 +593,7 @@ FindContent(
     struct http_info *ph)
 {
     tcb *tcb = ph->tcb_server;
-    MFILE *mf = tcb->extracted_contents_file;
+    MFILE *mf = tcb->extr_contents_file;
     char *pdata;
     char *plast;
     char *pch;
@@ -646,7 +646,7 @@ FindGets(
     struct http_info *ph)
 {
     tcb *tcb = ph->tcb_client;
-    MFILE *mf = tcb->extracted_contents_file;
+    MFILE *mf = tcb->extr_contents_file;
     char *pdata;
     char *plast;
     char *pch;
@@ -855,7 +855,7 @@ connection (FINs) were not found in trace file.\n");
 #endif /* SAFE */
 
     /* see if we got all the bytes */
-    missing = pab->trunc_bytes + pba->trunc_bytes;
+    missing = pab->extr_trunc_bytes + pba->extr_trunc_bytes;
     missing += pab->fin-pab->syn-1-(pab->data_bytes-pab->rexmit_bytes);
     missing += pba->fin-pba->syn-1-(pba->data_bytes-pba->rexmit_bytes);
 
