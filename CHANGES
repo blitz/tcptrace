@@ -537,3 +537,9 @@ by Jesper Peterson.
 
 Included the code to recognize the PPP (Point-to-Point) input file format,
 sent by Yann Samama.
+
+6.4.11: 14 Aug 2003 Mani
+------
+
+Fixing the bug with filtering connections based on hostname/portname with
+the -f option.

@@ -356,6 +356,14 @@ MakeOneBinaryNode(
 	    break;
 	}
 
+	/* Allow STRING variables like hostname, portname to be used as in
+	 * -f'hostname=="masaka.cs.ohiou.edu"'
+	 */
+	if ((pf_left->vartype == V_STRING) && (pf_right->vartype == V_STRING)){
+	     pf->vartype = V_BOOL;
+	     break;
+	}
+
 	/* ... else, normal numeric stuff */
 	if ((pf_left->vartype != V_LLONG) && (pf_left->vartype != V_ULLONG)) {
 	    fprintf(stderr,"Relational operator applied to non-number: ");
@@ -508,7 +516,8 @@ MakeStringConstNode(
     struct filter_node *pf;
 
     pf = MallocZ(sizeof(struct filter_node));
-
+     
+    pf->op = OP_CONSTANT;
     pf->vartype = V_STRING;
     pf->un.constant.string = val;
 
@@ -831,6 +840,9 @@ LookupVar(
 		break;
 	      case V_IPADDR:	
 		pf->vartype = V_IPADDR;
+		break;
+	      case V_STRING:
+		pf->vartype = V_STRING;
 		break;
 	      default:
 		pf->vartype = pf->vartype; 
@@ -1457,7 +1469,7 @@ EvalConstant(
 
       case V_STRING:	
 	pres->vartype = V_STRING;
-	pres->val.string = Var2String(ptp,pf);
+	pres->val.string = pf->un.constant.string;
 	break;
 
       case V_BOOL:
