@@ -161,8 +161,7 @@ CFILES=compress.c etherpeek.c gcache.c mfiles.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c nlanr.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \
-	ns.c netscout.c version.c pool.c poolaccess.c \
-	dstring.c
+	ns.c netscout.c version.c pool.c poolaccess.c
 MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c \
 	mod_slice.c mod_realtime.c
 MODSUPPORT=dyncounter.c
@@ -191,14 +190,32 @@ version.o: ${CFILES} Makefile
 # cause naming conflicts.  The Gnu versions let you get around that
 # easily.
 #
+YACC_VAL=@YACC@
+LEX_VAL=@LEX@
+
 filt_parser.c: filt_parser.y filter.h
 #	bison -vd -p filtyy filt_parser.y -o filt_parser.c
-	@YACC@ -vd -p filtyy -o filt_parser.c filt_parser.y
-	cp filt_parser.c flex_bison
-	cp filt_parser.h flex_bison
+	if test ${YACC_VAL} = "bison -y" ; then \
+		@YACC@ -vd -p filtyy -o filt_parser.c filt_parser.y ;\
+		cp filt_parser.c flex_bison ;\
+		cp filt_parser.h flex_bison ;\
+	else \
+		echo "Could not find BISON on this system";\
+		echo "Copying the BISON output files generated at our place" ;\
+		cp flex_bison/filt_parser.c . ;\
+		cp flex_bison/filt_parser.h . ;\
+	fi
+
 filt_scanner.c: filt_scanner.l filter.h filt_parser.h
-	flex -t -Pfiltyy filt_scanner.l > filt_scanner.c
-	cp filt_scanner.c flex_bison
+	if test ${LEX_VAL} = "flex" ; then \
+		@LEX@ -t -Pfiltyy filt_scanner.l > filt_scanner.c ;\
+		cp filt_scanner.c flex_bison ;\
+	else \
+		echo "Could not find FLEX on this system" ;\
+		echo "Copying the FLEX output files generated at our place" ;\
+		cp flex_bison/filt_scanner.c . ;\
+	fi
+
 # filt_parser.h created as a side effect of running yacc...
 filt_parser.h: filt_parser.c
 
