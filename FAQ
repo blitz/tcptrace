@@ -565,3 +565,29 @@ will likely see:
 because segment "2" didn't arrive.  In that case, tcptrace will mark
 segment 2 as being "out of order" because it can't tell the
 difference.
+============================================================
+Wed Jun  6, 2001
+
+>> What if I want the output file names to be different or to go in a
+>> different place?
+
+You can use the arguments:
+
+  --output_dir="STR"     directory where all output files are placed (default: '<NULL>')
+  --output_prefix="STR"  prefix all output files with this string (default: '<NULL>')
+
+with the formatting substitutions:
+
+   %f	basename of the current input file
+   %d	execution date, standard unix output, spaces ==> underscores
+   %t	execution time & date, standard unix output, spaces ==> underscores
+   %D	execution date, format "1-14-1963"
+
+For example, you might put in your ~/.tcptracerc
+
+   --output_dir=output_%f
+
+or run
+
+   tcptrace -G --output_dir=output/%d/%f   file1 file2 file3
+
