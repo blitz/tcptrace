@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996
+ * Copyright (c) 1994, 1995, 1996, 1997
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
+/* Added FDDI support 9/96 Jeffrey Semke, Pittsburgh Supercomputing Center */
 static char const copyright[] =
     "@(#)Copyright (c) 1996 -- Ohio University.  All rights reserved.\n";
 static char const rcsid[] =
@@ -57,6 +58,29 @@ static int ip_buf[MAX_IP_PACKLEN];
 
 extern int pcap_offline_read();
 
+/* (Courtesy Jeffrey Semke, Pittsburgh Supercomputing Center) */
+/* locate ip within FDDI according to RFC 1188 */
+int find_ip_fddi(char* buf, int iplen) {
+      char* ptr, *ptr2;
+      int i;
+      char pattern[] = {0xAA, 0x03, 0x00, 0x00, 0x00, 0x08, 0x00};
+#define FDDIPATTERNLEN 7
+
+      ptr = ptr2 = buf;
+
+      for (i=0; i < FDDIPATTERNLEN; i++) {
+	    ptr2 = memchr(ptr,pattern[i],(iplen - (int)(ptr - buf)));
+	    if (!ptr2) 
+		  return (-1);
+	    if (i && (ptr2 != ptr)) {
+		  ptr2 = ptr2 - i - 1;
+		  i = -1;
+	    }
+	    ptr = ptr2 + 1;
+      }
+      return (ptr2 - buf + 1);
+      
+}
 
 static int callback(
     char *user,
@@ -65,6 +89,7 @@ static int callback(
 {
     int type;
     int iplen;
+    static int offset = -1;
 
     iplen = phdr->caplen;
     if (iplen > MAX_IP_PACKLEN)
@@ -85,6 +110,14 @@ static int callback(
 	callback_pep->ether_type = ETHERTYPE_IP;
 	memcpy(ip_buf,buf+16,iplen);
 	break;
+      case DLT_FDDI:
+	callback_pep->ether_type = ETHERTYPE_IP;
+	if (offset < 0)
+	      offset = find_ip_fddi(buf,iplen);
+	if (offset < 0)
+	      return(-1);
+	memcpy(ip_buf,buf+offset,iplen);
+	break;
       default:
 	fprintf(stderr,"Don't understand packet format (%d)\n", type);
 	exit(1);
@@ -94,7 +127,7 @@ static int callback(
 };
 
 
-/* currently only works for ETHERNET */
+/* currently only works for ETHERNET and FDDI */
 static int
 pread_tcpdump(
     struct timeval	*ptime,
