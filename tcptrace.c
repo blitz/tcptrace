@@ -357,7 +357,7 @@ Graphing options\n\
   -R      create rtt sample graph[s]\n\
   -S      create time sequence graph[s]\n\
   -N      create cwin graph[s] (data on _N_etwork)\n\
-  -N      create segsize graph[s] (data on _N_etwork)\n\
+  -F      create segsize graph[s]\n\
   -G	  create ALL graphs\n\
 Output format detail options\n\
   -D      print in decimal\n\
