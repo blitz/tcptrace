@@ -146,16 +146,20 @@ DoPlot(
 /*     if (!graph_tsg) */
 /* 	return; */
 
-    if (pl == NO_PLOTTER)
+    if (pl == NO_PLOTTER) {
+	va_end(ap);
 	return;
+    }
 
     if (pl > plotter_ix) {
 	fprintf(stderr,"Illegal plotter: %d\n", pl);
 	exit(-1);
     }
 
-    if ((f = fplot[pl]) == NULL)
+    if ((f = fplot[pl]) == NULL) {
+	va_end(ap);
 	return;
+    }
 
     Mvfprintf(f,fmt,ap);
     if (temp_color) {
@@ -460,5 +464,12 @@ plotter_text(
     char		*where,
     char		*str)
 {
-    DoPlot(pl,"%stext %s %u\n%s", where, xp_timestamp(t), x, str);
+    DoPlot(pl,"%stext %s %u", where, xp_timestamp(t), x);
+    /* fix by Bill Fenner - Wed Feb  5, 1997, thanks */
+    /* This is a little ugly.  Text commands take 2 lines. */
+    /* A temporary color could have been */
+    /* inserted after that line, but would NOT be inserted after */
+    /* the next line, so we'll be OK.  I can't think of a better */
+    /* way right now, and this works fine (famous last words) */
+    DoPlot(pl,"%s", str);
 }
