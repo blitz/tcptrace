@@ -317,3 +317,47 @@ Probably one of:
 2) If it's a compressed file, tcptrace doesn't know how long it'll be.  For
    gzipped files of headers only, it usually runs up to around 100%+275% (or
    almost 4 to one compression). 
+============================================================
+Thu Dec 17, 1998
+
+>> What are "post-loss acks"?
+
+Tcptrace tries to gather _ALL_ RTT samples, not just some of them as
+several TCP implementations do.  I called the case causing trouble
+"Post Loss":
+
+  Post-loss: an ACK arrives for a segment that was only xmitted once.
+   However, at least one of the segments that preceeded it was
+   retransmitted, so this ACK was delayed until a CUMACK could be
+   sent.  This is not a valid RTT sample therefore.
+
+tcptrace counts them and (optionally) marks them on the TSG output,
+but otherwise ignores them
+
+============================================================
+Thu Dec 17, 1998
+
+>> What does this mean in the long output with RTT stats: 
+>> 
+>>           For the following 5 RTT statistics, only ACKs for
+>>           multiply-transmitted segments (ambiguous ACKs) were
+>>           considered.  Times are taken from the last instance
+>>           of a segment.
+>> 
+
+This is some pretty old stuff that probably isn't useful anymore.
+When I first started looking at this, I was studying some TCP's
+without the Karn/Partridge stuff in them and this was a big deal.
+
+The point was to gather some stats about RTTs that might be confused
+by older TCPs, those that were taking samples from "ambiguous ACKs"
+(those for segments that were retransmitted).  For those ACKs, I kept
+track separately of the max,min,avg,stdev.  For the other RTT stats,
+those ACKs are ignored, as expected.
+
+I agree that the text is confusing, but I think that it's accurate
+given that explanation.
+
+
+
+
