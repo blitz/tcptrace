@@ -392,37 +392,37 @@ NewTTP(
 	}
     }
 
-    /* init cwin graphs */
-    ptp->a2b.cwin_plotter = ptp->b2a.cwin_plotter = NO_PLOTTER;
-    if (graph_cwin && !ptp->ignore_pair) {
+    /* init owin graphs */
+    ptp->a2b.owin_plotter = ptp->b2a.owin_plotter = NO_PLOTTER;
+    if (graph_owin && !ptp->ignore_pair) {
 	if (!ignore_non_comp || (SYN_SET(ptcp))) {
 	    sprintf(title,"%s_==>_%s (outstanding data)",
 		    ptp->a_endpoint, ptp->b_endpoint);
-	    ptp->a2b.cwin_plotter =
+	    ptp->a2b.owin_plotter =
 		new_plotter(&ptp->a2b,NULL,title,
 			    graph_time_zero?"relative time":"time",
 			    "Outstanding Data (bytes)",
-			    CWIN_FILE_EXTENSION);
+			    OWIN_FILE_EXTENSION);
 	    sprintf(title,"%s_==>_%s (outstanding data)",
 		    ptp->b_endpoint, ptp->a_endpoint);
-	    ptp->b2a.cwin_plotter =
+	    ptp->b2a.owin_plotter =
 		new_plotter(&ptp->b2a,NULL,title,
 			    graph_time_zero?"relative time":"time",
 			    "Outstanding Data (bytes)",
-			    CWIN_FILE_EXTENSION);
+			    OWIN_FILE_EXTENSION);
 	    if (graph_time_zero) {
 		/* set graph zero points */
-		plotter_nothing(ptp->a2b.cwin_plotter, current_time);
-		plotter_nothing(ptp->b2a.cwin_plotter, current_time);
+		plotter_nothing(ptp->a2b.owin_plotter, current_time);
+		plotter_nothing(ptp->b2a.owin_plotter, current_time);
 	    }
-	    ptp->a2b.cwin_line =
-		new_line(ptp->a2b.cwin_plotter, "cwin", "red");
-	    ptp->b2a.cwin_line =
-		new_line(ptp->b2a.cwin_plotter, "cwin", "red");
-	    ptp->a2b.cwin_avg_line =
-		new_line(ptp->a2b.cwin_plotter, "avg cwin", "blue");
-	    ptp->b2a.cwin_avg_line =
-		new_line(ptp->b2a.cwin_plotter, "avg cwin", "blue");
+	    ptp->a2b.owin_line =
+		new_line(ptp->a2b.owin_plotter, "owin", "red");
+	    ptp->b2a.owin_line =
+		new_line(ptp->b2a.owin_plotter, "owin", "red");
+	    ptp->a2b.owin_avg_line =
+		new_line(ptp->a2b.owin_plotter, "avg owin", "blue");
+	    ptp->b2a.owin_avg_line =
+		new_line(ptp->b2a.owin_plotter, "avg owin", "blue");
 	}
     }
 
@@ -1382,21 +1382,21 @@ dotrace(
     /* un-acked bytes */
     if (!SYN_SET(ptcp) && !out_order && !retrans) {
 	u_long owin;
-	u_long cwin = end - otherdir->ack;
+	u_long owin = end - otherdir->ack;
 
-	if (cwin > thisdir->cwin_max)
-	    thisdir->cwin_max = cwin;
-	if ((cwin > 0) &&
-	    ((thisdir->cwin_min == 0) ||
-	     (cwin < thisdir->cwin_min)))
-	    thisdir->cwin_min = cwin;
-	thisdir->cwin_tot += cwin;
-
-	/* graph cwin */
-	if (thisdir->cwin_plotter != NO_PLOTTER) {
-	    extend_line(thisdir->cwin_line, current_time, cwin);
-	    extend_line(thisdir->cwin_avg_line, current_time,
-			thisdir->cwin_tot / thisdir->ack_pkts);
+	    thisdir->owin_max = owin;
+	if ((owin > 0) &&
+	    ((thisdir->owin_min == 0) ||
+	     (owin < thisdir->owin_min)))
+	    thisdir->owin_min = owin;
+	
+	thisdir->owin_tot += owin;
+	/* graph owin */
+	if (thisdir->owin_plotter != NO_PLOTTER) {
+	    extend_line(thisdir->owin_line, current_time, owin);
+	    extend_line(thisdir->owin_avg_line, current_time,
+			(thisdir->owin_count?(thisdir->owin_tot/thisdir->owin_count):0)); 
+			thisdir->owin_tot / thisdir->ack_pkts);
     }
     if (run_continuously) {
     return(ptp_save);
