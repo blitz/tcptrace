@@ -91,7 +91,7 @@ static Bool is_nntp_conn(tcp_pair *ptp);
 static Bool is_smtp_conn(tcp_pair *ptp);
 static Bool is_telnet_port(int port);
 static Bool is_telnet_conn(tcp_pair *ptp);
-static char * namedfile(char * file);
+static char * namedfile(char *localsuffix, char * file);
 static void setup_breakdown();
 static void tcplib_add_telnet_interarrival(tcp_pair *ptp,
 					   struct timeval *ptp_saved);
@@ -103,7 +103,7 @@ static void tcplib_do_ftp_num_items();
 static void tcplib_do_http_itemsize();
 static void tcplib_do_nntp_itemsize();
 static void tcplib_do_nntp_numitems();
-static void tcplib_do_smtp();
+static void tcplib_do_smtp_itemsize();
 static void tcplib_do_telnet();
 static void tcplib_do_telnet_duration();
 static void tcplib_do_telnet_interarrival();
@@ -117,9 +117,15 @@ static void update_breakdown(tcp_pair *ptp);
 typedef Bool (*f_testinside) (tcb *);
 static void DefineInside(char *iplist);
 static Bool IsInside(ipaddr *pipaddr);
-static Bool TestInside(tcb *ptcb);
-static Bool TestOutside(tcb *ptcb);
+static Bool TestOutgoing(tcb *ptcb);
+static Bool TestIncoming(tcb *ptcb);
+static Bool TestLocal(tcb *ptcb);
 static int InsideBytes(tcp_pair *, f_testinside);
+
+/* various helper routines used by many others -- sdo */
+static void tcplib_do_GENERIC_itemsize(
+    char *filename, Bool (*f_whichport)(tcp_pair *),
+    f_testinside p_tester, int bucketsize);
 
 
 
@@ -184,6 +190,9 @@ int tcplib_init(
 
     /* init internal data */
     tcplib_init_setup();
+
+    /* don't care for detailed output! */
+    printsuppress = TRUE; 
 
     return TRUE;
 }
@@ -300,19 +309,39 @@ IsInside(
 }
 
 static Bool
-TestInside(tcb *ptcb)
+TestOutgoing(tcb *ptcb)
 {
     struct stcp_pair *ptp = ptcb->ptp;
+
     if (ptcb == &ptp->a2b)
-	return(IsInside(&ptp->addr_pair.a_address));
+	return(IsInside(&ptp->addr_pair.a_address) &&
+	       !IsInside(&ptp->addr_pair.b_address));
     else
-	return(IsInside(&ptp->addr_pair.b_address));
+	return(IsInside(&ptp->addr_pair.b_address) &&
+	       !IsInside(&ptp->addr_pair.a_address));
 }
 
 static Bool
-TestOutside(tcb *ptcb)
+TestIncoming(tcb *ptcb)
 {
-    return(!TestInside(ptcb));
+    struct stcp_pair *ptp = ptcb->ptp;
+
+    if (ptcb == &ptp->a2b)
+	return(!IsInside(&ptp->addr_pair.a_address) &&
+	       IsInside(&ptp->addr_pair.b_address));
+    else
+	return(!IsInside(&ptp->addr_pair.b_address) &&
+	       IsInside(&ptp->addr_pair.a_address));
+}
+
+
+static Bool
+TestLocal(tcb *ptcb)
+{
+    struct stcp_pair *ptp = ptcb->ptp;
+
+    return(IsInside(&ptp->addr_pair.a_address) &&
+	   IsInside(&ptp->addr_pair.b_address));
 }
 
 
@@ -409,14 +438,6 @@ Must be integer value greater than 0.\n");
 	    output_dir = strdup(pdir);
 
 	    printf("TCPLib output directory - %sdata\n", output_dir);
-
-	    /* make sure that the directory exists */
-	    if (access(output_dir,F_OK) != 0) {
-		if (mkdir(output_dir,0755) != 0) {
-		    perror(output_dir);
-		    exit(-1);
-		}
-	    }
 	}
 
 	/*  ... else invalid */
@@ -446,38 +467,45 @@ Must be integer value greater than 0.\n");
  * 
  * 
  ****************************************************************************/
-void tcplib_done()
+static void
+RunAllThree(
+    void (*f_runme) (char *,f_testinside),
+    char *thefile)
 {
     char *filename;
 
+    filename = namedfile("incoming",thefile);
+    (*f_runme)(filename,TestIncoming);
+
+    filename = namedfile("outgoing",thefile);
+    (*f_runme)(filename,TestOutgoing);
+
+    filename = namedfile("local",thefile);
+    (*f_runme)(filename,TestLocal);
+}
+void tcplib_done()
+{
     /* do TELNET */
     tcplib_do_telnet();
 
     /* do FTP */
-    filename = namedfile(TCPLIB_FTP_CTRLSIZE_FILE);
-    tcplib_do_ftp_control_size(filename,TestInside);
-
+    RunAllThree(tcplib_do_ftp_control_size,TCPLIB_FTP_CTRLSIZE_FILE);
     tcplib_do_ftp_num_items();     /* Not Done */
+    RunAllThree(tcplib_do_ftp_itemsize,TCPLIB_FTP_ITEMSIZE_FILE);
 
-
-    filename = namedfile(TCPLIB_FTP_ITEMSIZE_FILE);
-    tcplib_do_ftp_itemsize(filename,TestInside);
 
     /* do SMTP */
-    filename = namedfile(TCPLIB_SMTP_ITEMSIZE_FILE);
-    tcplib_do_smtp(filename,TestInside);
+    RunAllThree(tcplib_do_smtp_itemsize,TCPLIB_SMTP_ITEMSIZE_FILE);
 
     /* do NNTP */
-    filename = namedfile(TCPLIB_NNTP_ITEMSIZE_FILE);
-    tcplib_do_nntp_itemsize(filename,TestInside);
-    
-    tcplib_do_nntp_numitems(NULL,NULL);
+    RunAllThree(tcplib_do_nntp_itemsize,TCPLIB_NNTP_ITEMSIZE_FILE);
+    tcplib_do_nntp_numitems(NULL,NULL);	/* Not Done */
 
 
     /* do HTTP */
-    filename = namedfile(TCPLIB_HTTP_ITEMSIZE_FILE);
-    tcplib_do_http_itemsize(filename,TestInside);
+    RunAllThree(tcplib_do_http_itemsize,TCPLIB_HTTP_ITEMSIZE_FILE);
 
+    /* do the breakdown stuff */
     do_final_breakdown(current_file);
     do_tcplib_final_converse();
 
@@ -762,8 +790,10 @@ static void tcplib_init_setup()
  ****************************************************************************/
 static void setup_breakdown()
 {
-    if (!(hist_file = fopen(namedfile(TCPLIB_BREAKDOWN_GRAPH_FILE), "w"))) {
-	perror(namedfile(TCPLIB_BREAKDOWN_GRAPH_FILE));
+    char *filename = namedfile("",TCPLIB_BREAKDOWN_GRAPH_FILE);
+
+    if (!(hist_file = fopen(filename, "w"))) {
+	perror(filename);
 	exit(1);
     }
 
@@ -858,18 +888,35 @@ static void update_breakdown(
  *            tcplib_do_telnet_pktsize() in mod_tcplib.c
  *            tcplib_do_ftp_itemsize() in mod_tcplib.c
  *            tcplib_do_ftp_control_size() in mod_tcplib.c
- *            tcplib_do_smtp() in mod_tcplib.c
+ *            tcplib_do_smtp_itemsize() in mod_tcplib.c
  *            tcplib_do_nntp_itemsize() in mod_tcplib.c
  *            tcplib_do_http_itemsize() in mod_tcplib.c
  * 
  ****************************************************************************/
 static char *
 namedfile(
+    char * localsuffix,
     char * real)  /* Default file name for the output file */
 {
+    char directory[256];
     static char buffer[256];    /* Buffer to store the full file name */
 
-    sprintf(buffer, "%s/%s", output_dir, real);
+    if (inside_head != NULL)
+	sprintf(directory, "%s_%s", output_dir, localsuffix);
+    else
+	sprintf(directory, "%s", output_dir);
+
+    /* try to CREATE the directory if it doesn't exist */
+    if (access(directory,F_OK) != 0) {
+	if (mkdir(directory,0755) != 0) {
+	    perror(directory);
+	    exit(-1);
+	}
+	if (debug)
+	    printf("Created directory '%s'\n", directory);
+    }
+
+    sprintf(buffer, "%s/%s", directory, real);
 
     return buffer;
 }
@@ -908,7 +955,7 @@ static void do_final_breakdown(
      * modified to accomodate the additions that were made to TCPLib */
     char *header = "stub\tsmtp\tnntp\ttelnet\tftp\thttp\tphone\tconv\n";
 
-    if (!(fil = fopen(namedfile(TCPLIB_BREAKDOWN_FILE), "a"))) {
+    if (!(fil = fopen(namedfile("",TCPLIB_BREAKDOWN_FILE), "a"))) {
 	perror("Opening Breakdown File");
 	exit(1);
     }
@@ -1285,7 +1332,7 @@ static void do_tcplib_final_converse()
     /* First section is checking for a previous version of the breakdown file.
      * If one exists, we need to open it up, and pull all the data out of
      * it, so we can patch our data into what's already present. */
-    if ((old = fopen(namedfile(TCPLIB_NEXT_CONVERSE_FILE), "r"))) {
+    if ((old = fopen(namedfile("",TCPLIB_NEXT_CONVERSE_FILE), "r"))) {
 
 	old_stuff = file_extract(old, &filelines, &count);
 
@@ -1298,7 +1345,7 @@ static void do_tcplib_final_converse()
 	count += next_converse_breakdown[i].count;
     }
 
-    if (!(fil = fopen(namedfile(TCPLIB_NEXT_CONVERSE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile("",TCPLIB_NEXT_CONVERSE_FILE), "w"))) {
 	perror("Error opening TCPLib Conversation Interarrival file");
 	exit(1);
     }
@@ -1475,10 +1522,9 @@ void tcplib_do_telnet_duration()
 				file */
     const int bucketsize = 100;	/* 100 millisecond buckets */
     
-
     /* This section reads in the data from the existing telnet duration
      * file in preparation for merging with the current data. */
-    if ((old = fopen(namedfile(TCPLIB_TELNET_DURATION_FILE), "r"))) {
+    if ((old = fopen(namedfile("",TCPLIB_TELNET_DURATION_FILE), "r"))) {
 
 	old_stuff = file_extract(old, &filelines, &count);
 
@@ -1552,7 +1598,7 @@ void tcplib_do_telnet_duration()
     }
 
     /* Open the file */
-    if (!(fil = fopen(namedfile(TCPLIB_TELNET_DURATION_FILE), "w"))) {
+    if (!(fil = fopen(namedfile("",TCPLIB_TELNET_DURATION_FILE), "w"))) {
 	perror("Unable to open Telnet Duration Data file for TCPLib");
 	exit(1);
     }
@@ -1703,7 +1749,7 @@ void tcplib_do_telnet_interarrival()
 
     /* Reads in the existing data from the telnet inter-arrival file
      * in preparation for merging with the data from this run */
-    if ((old = fopen(namedfile(TCPLIB_TELNET_INTERARRIVAL_FILE), "r"))) {
+    if ((old = fopen(namedfile("",TCPLIB_TELNET_INTERARRIVAL_FILE), "r"))) {
 
 	old_stuff = file_extract(old, &filelines, &count);
 
@@ -1737,7 +1783,7 @@ void tcplib_do_telnet_interarrival()
     }
 
     /* Dumping the data out to the data file */
-    if (!(fil = fopen(namedfile(TCPLIB_TELNET_INTERARRIVAL_FILE), "w"))) {
+    if (!(fil = fopen(namedfile("",TCPLIB_TELNET_INTERARRIVAL_FILE), "w"))) {
 	perror("Error opening Telnet Interarrival file");
 	exit(1);
     }
@@ -1801,7 +1847,7 @@ void tcplib_do_telnet_packetsize()
      * applying the data contained there to the data set that we've 
      * acquired during this run, and then dumping the merged data set
      * back out to the data file */
-    if ((old = fopen(namedfile(TCPLIB_TELNET_PACKETSIZE_FILE), "r"))) {
+    if ((old = fopen(namedfile("",TCPLIB_TELNET_PACKETSIZE_FILE), "r"))) {
 
 	/* Get the first line out of the way - first line is just text,
 	   no data */
@@ -1837,7 +1883,7 @@ void tcplib_do_telnet_packetsize()
     }
 
     /* Opening the file, preparing it form rewriting */
-    if (!(fil = fopen(namedfile(TCPLIB_TELNET_PACKETSIZE_FILE), "w"))) {
+    if (!(fil = fopen(namedfile("",TCPLIB_TELNET_PACKETSIZE_FILE), "w"))) {
 	perror("Error opening Telnet Packet Size file");
 	exit(1);
     }
@@ -1997,134 +2043,10 @@ void tcplib_do_ftp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    int i;                    /* Looping variable */
-    tcp_pair *ptp;           /* The tcp pair associated with a particular
-				 packet */
-    int max_size = 0;         /* The largest transfer size seen */
-    int count = 0;            /* Looping variable */
-    int curr_count = 0;       /* Looping variable */
-    int *size_list = NULL;    /* Combined data sets */
-    FILE* fil;                /* File pointer for updated data file */
-    int temp = 0;             /* Temporary variable */
-    FILE* old;                /* File pointer for old data file */
-    char buffer[256];         /* Buffer to store a single line from the old
-				 data file */
-    int filelines = 0;        /* Number of entries in the old data file */
-    struct tcplib_next_converse *old_stuff = NULL; /* Table of old values */
-    float temp1, temp2;       /* Temp variables to be read in from old data
-				 file */
-    int j;                    /* Looping variable */
     const int bucketsize = 5;	/* scale bucket by 5 bytes */
 
-    /* If the an old data file exists, open it, read in its contents
-       and store them * until they are integrated with the current
-       data */
-    if ((old = fopen(filename, "r"))) {
-
-	/* Counting number of lines */
-	while(fgets(buffer, sizeof(buffer)-1, old))
-	    filelines++;
-
-	filelines--;
-	fseek(old, 0, SEEK_SET);
-
-	/* Get the first line out of the way */
-	fgets(buffer, sizeof(buffer)-1, old);
-
-	old_stuff = (struct tcplib_next_converse *)
-	    MallocZ(sizeof(struct tcplib_next_converse) * filelines);
-
-	/* Read in each line in the file and pick out the pieces of
-	 * the file.  Store each important piece in old_stuff */
-	for(i = 0; i < filelines; i++) {
-	    fscanf(old, "%f\t%f\t%d\t%d\n",
-		   &temp1, &temp2,
-		   &j, &(old_stuff[i].count));
-
-	    old_stuff[i].time = (int)temp1;
-	    count += old_stuff[i].count;
-	}
-
-	/* The largest transfer item in the file will be found in its
-	 * last entry.  So we just store this as the current max_size */
-	max_size = old_stuff[(filelines-1)].time;
-
-	fclose(old);
-    }   
-
-
-    /* First job, find the largest transfer size */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's FTP data */
-	if (is_ftp_data_conn(ptp)) {
-	    /* Now we know we're only dealing with FTP data... so
-	     * we need to find the conversation with the largest
-	     * size.
-	     */
-	    temp = InsideBytes(ptp,p_tester);
-
-	    if (temp > max_size)
-		max_size = temp;
-
-	    count++;
-	}
-    }
-
-    size_list = MallocZ(sizeof(int) * ((max_size/bucketsize)+1));
-
-    /* fill out the array */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's FTP data */
-	if (is_ftp_data_conn(ptp)) {
-	    temp = InsideBytes(ptp,p_tester);
-	    size_list[temp/bucketsize]++;
-	}
-    }
-
-    /* Integrate the old data */
-    /* sdo bugfix - scale by bucketsize! */
-    if (old_stuff)
-	for(i = 0; i < filelines; i++) {
-	    temp = (old_stuff[i].time)/bucketsize;
-	    size_list[temp] += old_stuff[i].count;
-	}
-
-
-    if (!(fil = fopen(filename, "w"))) {
-	perror("Unable to open FTP Itemsize Data file for TCPLib");
-	exit(1);
-    }
-
-    fprintf(fil, "Article Size (bytes)\t%% Articles\tRunning Sum\tCounts\n");
-
-    for(i = 0; i < ((max_size/bucketsize)+ 1); i++) {
-	temp = i;
-
-	temp *= bucketsize;  /* sdo bugfix */
-
-	curr_count += size_list[i];
-
-	if (size_list[i]) {
-	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)temp,
-		    (((float)curr_count)/count),
-		    curr_count,
-		    size_list[i]);
-	}
-    }
-
-    fclose(fil);
-
-    free(size_list);
-
-    if (old_stuff)
-	free(old_stuff);
-
-    return;
+    tcplib_do_GENERIC_itemsize(filename, is_ftp_data_conn,
+			       p_tester, bucketsize);
 }
 
 
@@ -2140,118 +2062,15 @@ void tcplib_do_ftp_control_size(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    int i;
-    tcp_pair *ptp;
-    int max_size = 0;
-    int count = 0;
-    int curr_count = 0;
-    int *size_list = NULL;
-    FILE* fil;
-    int temp = 0;
-    FILE* old;
-    char buffer[256];
-    int filelines = 0;
-    struct tcplib_next_converse *old_stuff = NULL;
-    float temp1, temp2;
-    int j;
+    const int bucketsize = 1;
 
-    /* grab and remember the old data, if it's there */
-    if ((old = fopen(filename, "r"))) {
-
-	/* Counting number of lines */
-	while(fgets(buffer, sizeof(buffer)-1, old))
-	    filelines++;
-
-	filelines--;
-	fseek(old, 0, SEEK_SET);
-
-	/* Get the first line out of the way */
-	fgets(buffer, sizeof(buffer)-1, old);
-
-	old_stuff = MallocZ(sizeof(struct tcplib_next_converse) * filelines);
-
-	for(i = 0; i < filelines; i++) {
-	    fscanf(old, "%f\t%f\t%d\t%d\n",
-		   &temp1, &temp2,
-		   &j, &(old_stuff[i].count));
-
-	    old_stuff[i].time = (int)temp1;
-	    count += old_stuff[i].count;
-	}
-
-	max_size = old_stuff[(filelines-1)].time;
-
-	fclose(old);
-    }   
-
-
-    /* First job, find the largest transfer size */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's FTP data */
-	if (is_ftp_control_conn(ptp)) {
-	    /* Now we know we're only dealing with FTP data... so
-	     * we need to find the conversation with the largest
-	     * size.
-	     */
-	    temp = InsideBytes(ptp,p_tester);
-
-	    if (temp > max_size)
-		max_size = temp;
-
-	    count++;
-	}
-    }
-
-    size_list = MallocZ(sizeof(int) * (max_size+1));
-
-    /* fill out the array */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's FTP data */
-	if (is_ftp_control_conn(ptp)) {
-	    temp = InsideBytes(ptp,p_tester);
-	    size_list[temp]++;
-	}
-    }
-
-    /* Integrate the old data */
-    if (old_stuff)
-	for(i = 0; i < filelines; i++)
-	    size_list[(old_stuff[i].time)] += old_stuff[i].count;
-
-    if (!(fil = fopen(namedfile(TCPLIB_FTP_CTRLSIZE_FILE), "w"))) {
-	perror("Unable to open FTP Control size Data file for TCPLib");
-	exit(1);
-    }
-
-    fprintf(fil, "Packet Size (bytes)\t%% Packets\tRunning Sum\tCounts\n");
-
-    for(i = 0; i < (max_size+1); i++) {
-	curr_count += size_list[i];
-
-	if (size_list[i]) {
-	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)i,
-		    (((float)curr_count)/count),
-		    curr_count,
-		    size_list[i]);
-	}
-    }
-
-    fclose(fil);
-
-    free(size_list);
-
-    if (old_stuff)
-	free(old_stuff);
-
-    return;
+    tcplib_do_GENERIC_itemsize(filename, is_ftp_control_conn,
+			       p_tester, bucketsize);
 }
-
 /* End of FTP Stuff */
+
+
+
 
 /* Begin SMTP Stuff */
 Bool is_smtp_conn(
@@ -2262,123 +2081,18 @@ Bool is_smtp_conn(
 	    (pab->b_port-ipport_offset == IPPORT_SMTP));
 }
 
-void tcplib_do_smtp(
+void tcplib_do_smtp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    int i;
-    tcp_pair *ptp;
-    int max_size = 0;
-    int count = 0;
-    int curr_count = 0;
-    int *size_list = NULL;
-    FILE* fil;
-    int temp = 0;
-    FILE* old;
-    char buffer[256];
-    int filelines = 0;
-    struct tcplib_next_converse *old_stuff = NULL;
-    float temp1, temp2;
-    int j;
     const int bucketsize = 5;	/* scale bucket by 5 bytes */
 
-    if ((old = fopen(filename, "r"))) {
-	/* Counting number of lines */
-	while(fgets(buffer, sizeof(buffer)-1, old))
-	    filelines++;
-
-	filelines--;
-	fseek(old, 0, SEEK_SET);
-
-	/* Get the first line out of the way */
-	fgets(buffer, sizeof(buffer)-1, old);
-
-	old_stuff = MallocZ(sizeof(struct tcplib_next_converse) * filelines);
-
-	for(i = 0; i < filelines; i++) {
-	    fscanf(old, "%f\t%f\t%d\t%d\n",
-		   &temp1, &temp2,
-		   &j, &(old_stuff[i].count));
-
-	    old_stuff[i].time = ((int)temp1 - 5);
-	    count += old_stuff[i].count;
-	}
-
-	max_size = old_stuff[(filelines-1)].time;
-
-	fclose(old);
-    }   
-
-
-    /* First job, find the largest mail size */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's FTP data */
-	if (is_smtp_conn(ptp)) {
-	    /* Now we know we're only dealing with SMTP data... so
-	     * we need to find the conversation with the largest
-	     * size.
-	     */
-	    temp = InsideBytes(ptp,p_tester);
-
-	    if (temp > max_size)
-		max_size = temp;
-
-	    count++;
-	}
-    }
-
-    size_list = MallocZ(sizeof(int) * ((max_size / bucketsize)+1));
-
-    /* fill out the array */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's SMTP data */
-	if (is_smtp_conn(ptp)) {
-	    temp = InsideBytes(ptp,p_tester);
-	    size_list[(temp/bucketsize)]++;
-	}
-    }
-
-    /* Integrate the old data */
-    if (old_stuff)
-	for(i = 0; i < filelines; i++)
-	    size_list[(old_stuff[i].time/bucketsize)] += old_stuff[i].count;
-
-    if (!(fil = fopen(filename, "w"))) {
-	perror("Unable to open SMTP Itemsize Data file for TCPLib");
-	exit(1);
-    }
-
-    fprintf(fil, "Total Bytes\t%% Conversations\tRunning Sum\tCounts\n");
-
-    for(i = 0; i < ((max_size / bucketsize)+1); i++) {
-	temp = (i+1) * bucketsize;
-
-	curr_count += size_list[i];
-
-	if (size_list[i]) {
-	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)temp,
-		    (((float)curr_count)/count),
-		    curr_count,
-		    size_list[i]);
-	}
-    }
-
-    fclose(fil);
-
-    free(size_list);
-
-    if (old_stuff)
-	free(old_stuff);
-
-    return;
+    tcplib_do_GENERIC_itemsize(filename, is_smtp_conn,
+			       p_tester, bucketsize);
 }
-
 /* Done SMTP Stuff */
+
+
 
 
 /* Begin NNTP Stuff */
@@ -2395,115 +2109,10 @@ void tcplib_do_nntp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    int i;
-    tcp_pair *ptp;
-    int max_size = 0;
-    int count = 0;
-    int curr_count = 0;
-    int *size_list = NULL;
-    FILE* fil;
-    int temp = 0;
-    FILE* old;
-    char buffer[256];
-    int filelines = 0;
-    struct tcplib_next_converse *old_stuff = NULL;
-    float temp1, temp2;
-    int j;
     const int bucketsize = 1024;	/* scale everything by 1024 */
 
-    if ((old = fopen(filename, "r")) != NULL) {
-
-	/* Counting number of lines */
-	while(fgets(buffer, sizeof(buffer)-1, old))
-	    filelines++;
-
-	filelines--;
-	fseek(old, 0, SEEK_SET);
-
-	/* Get the first line out of the way */
-	fgets(buffer, sizeof(buffer)-1, old);
-
-	old_stuff = MallocZ(sizeof(struct tcplib_next_converse) * filelines);
-
-	for(i = 0; i < filelines; i++) {
-	    fscanf(old, "%f\t%f\t%d\t%d\n",
-		   &temp1, &temp2,
-		   &j, &(old_stuff[i].count));
-
-	    old_stuff[i].time = (int)temp1;
-	    count += old_stuff[i].count;
-	}
-
-	max_size = old_stuff[(filelines-1)].time;
-
-	fclose(old);
-    }   
-
-
-    /* First job, find the largest article size */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's NNTP data */
-	if (is_nntp_conn(ptp)) {
-	    /* Now we know we're only dealing with NNTP data... so
-	     * we need to find the conversation with the largest
-	     * size.
-	     */
-	    temp = InsideBytes(ptp,p_tester);
-
-	    if (temp > max_size)
-		max_size = temp;
-
-	    count++;
-	}
-    }
-
-    size_list = MallocZ(sizeof(int) * (max_size / bucketsize)+1);
-
-    /* fill out the array */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's NNTP data */
-	if (is_nntp_conn(ptp)) {
-	    temp = InsideBytes(ptp,p_tester);
-	    size_list[temp/bucketsize]++;
-	}
-    }
-
-    /* Integrate the old data */
-    if (old_stuff)
-	for(i = 0; i < filelines; i++)
-	    size_list[(old_stuff[i].time)/bucketsize] += old_stuff[i].count;
-
-    if (!(fil = fopen(filename, "w"))) {
-	perror("Unable to open NNTP Itemsize Data file for TCPLib");
-	exit(1);
-    }
-
-    fprintf(fil, "Article Size (bytes)\t%% Articles\tRunning Sum\tCounts\n");
-
-    for(i = 0; i < (max_size/bucketsize)+1; i++) {
-	curr_count += size_list[i];
-
-	if (size_list[i]) {
-	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)(i*bucketsize), /* sdo bugfix */
-		    (((float)curr_count)/count),
-		    curr_count,
-		    size_list[i]);
-	}
-    }
-
-    fclose(fil);
-
-    free(size_list);
-
-    if (old_stuff)
-	free(old_stuff);
-
-    return;
+    tcplib_do_GENERIC_itemsize(filename, is_nntp_conn,
+			       p_tester, bucketsize);
 }
 
 
@@ -2514,9 +2123,9 @@ void tcplib_do_nntp_numitems(void *junk1, void *junk2)
      * how the whole NNTP thing works anyways.
      */
 }
-
-
 /* Done NNTP Stuff */
+
+
 
 /* Begin HTTP Stuff */
 Bool is_http_conn(
@@ -2532,115 +2141,202 @@ void tcplib_do_http_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
+    const int bucketsize = 1;
+
+    tcplib_do_GENERIC_itemsize(filename, is_http_conn,
+			       p_tester, bucketsize);
+}
+
+
+/***************************************************************************
+ **
+ ** Support Routines
+ **
+ ***************************************************************************/
+
+/* generic size list */
+struct sizes {
+    int maxix;
+    int arraysize;
+    int total_count;
+    int *size_list;
+};
+
+/* populate the size array, one entry at a time */
+static struct sizes *
+AddToSizeArray(
+    struct sizes *psizes,
+    int ix,
+    int val)
+{
+    /* if the array doesn't exist yet, make it some big size */
+    if (psizes == NULL) {
+	int default_size = 1024;
+
+	while (ix >= default_size)
+	    default_size *= 2;
+
+	psizes = MallocZ(sizeof(struct sizes));
+	psizes->arraysize = default_size;
+	psizes->size_list = MallocZ(psizes->arraysize*sizeof(int));
+    }
+
+    /* if the array is too small, quadruple it */
+    if (ix > psizes->arraysize) {
+	int oldarraysize = psizes->arraysize;
+	while (ix > psizes->arraysize)
+	    psizes->arraysize *= 4;
+
+	/* reallocate the array (REALLY expensive!) */
+	psizes->size_list = ReallocZ(psizes->size_list,
+				     sizeof(int) * oldarraysize, 
+				     sizeof(int) * psizes->arraysize);
+    }
+
+    /* OK, finally, all is safe */
+    psizes->size_list[ix] = val;
+    psizes->total_count += val;
+    if (ix > psizes->maxix)
+	psizes->maxix = ix;
+
+    /* return the (possibly modified) structure */
+    return(psizes);
+}
+
+
+static void
+StoreSizes(
+    char *filename,
+    int bucketsize,
+    struct sizes *psizes)
+{
+    FILE *fil;
     int i;
-    tcp_pair *ptp;
-    int max_size = 0;
-    int count = 0;
-    int curr_count = 0;
-    int *size_list = NULL;
-    FILE* fil;
-    int temp = 0;
-    FILE* old;
-    char buffer[256];
-    int filelines = 0;
-    struct tcplib_next_converse *old_stuff = NULL;
-    float temp1, temp2;
-    int j;
+    int running_total = 0;
 
-    if ((old = fopen(filename, "r"))) {
-
-	/* Counting number of lines */
-	while(fgets(buffer, sizeof(buffer)-1, old))
-	    filelines++;
-
-	filelines--;
-	fseek(old, 0, SEEK_SET);
-
-	/* Get the first line out of the way */
-	fgets(buffer, sizeof(buffer)-1, old);
-
-	old_stuff = MallocZ(sizeof(struct tcplib_next_converse) * filelines);
-
-	for(i = 0; i < filelines; i++) {
-	    fscanf(old, "%f\t%f\t%d\t%d\n",
-		   &temp1, &temp2,
-		   &j, &(old_stuff[i].count));
-
-	    old_stuff[i].time = ((int)temp1);
-	    count += old_stuff[i].count;
-	}
-
-	max_size = old_stuff[(filelines-1)].time;
-
-	fclose(old);
-    }   
-
-
-    /* First job, find the largest transfer size */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's HTTP data */
-	if (is_http_conn(ptp)) {
-	    
-	    /* Now we know we're only dealing with HTTP data... so
-	     * we need to find the conversation with the largest
-	     * size.
-	     */
-	    temp = InsideBytes(ptp,p_tester);
-	    if (temp > max_size)
-		max_size = temp;
-
-	    count++;
-	}
-    }
-
-    size_list = MallocZ(sizeof(int) * (max_size+1));
-
-    /* fill out the array */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	ptp = ttp[i];
-
-	/* We only need the stats if it's HTTP data */
-	if (is_http_conn(ptp)) {
-	    temp = InsideBytes(ptp,p_tester);
-	    size_list[temp]++;
-	}
-    }
-
-    /* Integrate the old data */
-    if (old_stuff)
-	for(i = 0; i < filelines; i++)
-	    size_list[(old_stuff[i].time)] += old_stuff[i].count;
+    if (debug)
+	printf("Saving data for file '%s'\n", filename);
 
     if (!(fil = fopen(filename, "w"))) {
-	perror("Unable to open HTTP Itemsize Data file for TCPLib");
+	perror(filename);
 	exit(1);
     }
 
     fprintf(fil, "Article Size (bytes)\t%% Articles\tRunning Sum\tCounts\n");
 
-    for(i = 0; i < (max_size+1); i++) {
-	temp = (i+1);
+    if (psizes == NULL) {
+	if (debug)
+	    printf("No data for file '%s'\n", filename);
+    } else {
+	for(i = 0; i <= psizes->maxix; i++) {
+	    int value = i * bucketsize;
+	    running_total += psizes->size_list[i];
 
-	curr_count += size_list[i];
-
-	if (size_list[i]) {
-	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)temp,
-		    (((float)curr_count)/count),
-		    curr_count,
-		    size_list[i]);
+	    if (psizes->size_list[i]) {
+		fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
+			(float)value, /* sdo bugfix */
+			(((float)running_total)/((float)psizes->total_count)),
+			running_total,
+			psizes->size_list[i]);
+	    }
 	}
     }
 
     fclose(fil);
-
-    free(size_list);
-
-    if (old_stuff)
-	free(old_stuff);
 }
+
+
+static struct sizes *
+ReadOldFile(
+    char *filename,
+    int bucketsize,
+    struct sizes *psizes)
+{
+    FILE* old;                /* File pointer for old data file */
+    float bytes;
+    int  count;
+
+    /* If the an old data file exists, open it, read in its contents
+     * and store them until they are integrated with the current
+     * data */
+    if ((old = fopen(filename, "r"))) {
+	char buffer[256];
+
+	/* read and discard the first line */
+	fgets(buffer, sizeof(buffer)-1, old);
+
+
+	/* Read in each line in the file and pick out the pieces of */
+	/* the file.  Store each important piece is psizes */
+	/* format is: 
+		Total Bytes	% Conversations	Running Sum	Counts
+		5.000		0.0278		1		1
+		170.000		0.1111		4		3
+	*/
+	/* (we only need the 1st and 4th fields) */
+	while (fscanf(old, "%f\t%*f\t%*d\t%d\n", &bytes, &count) == 4) {
+	    psizes = AddToSizeArray(psizes,
+				    (((int)bytes)/bucketsize),
+				    count);
+	}
+
+	if (debug) {
+	    if (psizes)
+		printf("Read data from old file '%s' (%d values)\n",
+		       filename, psizes->total_count);
+	    else
+		printf("Old data file '%s' had no data\n", filename);
+	}
+
+	fclose(old);
+    }
+
+    return(psizes);
+}
+
+
+/* all of the itemsize routines look like this */
+static void
+tcplib_do_GENERIC_itemsize(
+    char *filename,		/* where to store the output */
+    Bool (*f_whichport)(tcp_pair *),
+    f_testinside p_tester,	/* functions to test "insideness" */
+    int bucketsize)		/* how much data to group together */
+{
+    int i;                    /* Looping variables */
+    struct sizes *psizes = NULL;
+
+
+    /* If an old data file exists, open it, read in its contents
+     * and store them until they are integrated with the current
+     * data */
+    psizes = ReadOldFile(filename, bucketsize, psizes);
+
+
+    /* fill out the array with data from the current connections */
+    for(i = 0; i < num_tcp_pairs; i++) {
+	tcp_pair *ptp = ttp[i];
+
+	/* We only need the stats if it's the right port */
+	if ((*f_whichport)(ptp)) {
+	    int temp = InsideBytes(ptp,p_tester);
+	    psizes = AddToSizeArray(psizes,temp/bucketsize, 1);
+	}
+    }
+
+
+    /* store all the data (old and new) into the file */
+    StoreSizes(filename,bucketsize,psizes);
+
+
+    /* free the dynamic memory */
+    if (psizes) {
+	free(psizes->size_list);
+	free(psizes);
+    }
+}
+
+
 
     
 
