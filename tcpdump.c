@@ -217,6 +217,7 @@ pread_f *is_tcpdump(void)
 	    printf("\tversion_minor: %d\n", pcap_minor_version(pcap));
 	    printf("\tsnaplen: %d\n", pcap_snapshot(pcap));
 	    printf("\tlinktype: %d\n", pcap_datalink(pcap));
+	    printf("\tswapped: %d\n", pcap_is_swapped(pcap));
 	}
     }
 
