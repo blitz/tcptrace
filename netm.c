@@ -51,12 +51,14 @@ struct netm_packet_header {
 int netm_oldversion;
 
 
+/* currently only works for ETHERNET */
 static int
 pread_netm(
     struct timeval	*ptime,
     int		 	*plen,
     int		 	*ptlen,
-    struct ether_header **ppep,
+    void		**pphys,
+    int			*pphystype,
     struct ip		**ppip)
 {
     int packlen;
@@ -67,57 +69,65 @@ pread_netm(
     static struct ether_header ep;
     static int ip_buf[IP_MAXPACKET/sizeof(int)];  /* force alignment */
 
+    while (1) {
+	hlen = netm_oldversion?
+	    (sizeof(struct netm_packet_header_old)):
+	    (sizeof(struct netm_packet_header));
 
-    hlen = netm_oldversion?
-	(sizeof(struct netm_packet_header_old)):
-	(sizeof(struct netm_packet_header));
+	/* read the netm packet header */
+	if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
+	    if (rlen != 0)
+		fprintf(stderr,"Bad netm header\n");
+	    return(0);
+	}
 
-    /* read the netm packet header */
-    if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
-	if (rlen != 0)
-	    fprintf(stderr,"Bad netm header\n");
-	return(0);
+	packlen = hdr.tlen;
+	/* round up to multiple of 4 bytes */
+	len = (packlen + 3) & ~0x3;
+
+	/* read the ethernet header */
+	rlen=fread(&ep,1,sizeof(struct ether_header),stdin);
+	if (rlen != sizeof(struct ether_header)) {
+	    fprintf(stderr,"Couldn't read ether header\n");
+	    return(0);
+	}
+
+	/* read the rest of the packet */
+	len -= sizeof(struct ether_header);
+	if ((rlen=fread(ip_buf,1,len,stdin)) != len) {
+	    if (rlen != 0)
+		fprintf(stderr,"Couldn't read %d bytes\n", len);
+	    return(0);
+	}
+
+	if (netm_oldversion) {
+	    struct netm_packet_header_old *pho;
+	    pho = (struct netm_packet_header_old *) &hdr;
+
+	    ptime->tv_sec  = pho->tstamp_secs;
+	    ptime->tv_usec = pho->tstamp_usecs;
+	    *plen          = pho->len;
+	    *ptlen         = pho->tlen;
+	} else {
+	    ptime->tv_sec  = hdr.tstamp_secs;
+	    ptime->tv_usec = hdr.tstamp_usecs;
+	    *plen          = hdr.len;
+	    *ptlen         = hdr.tlen;
+	}
+
+
+	*ppip  = (struct ip *) ip_buf;
+	*pphys  = &ep;
+	*pphystype = PHYS_ETHER;
+
+
+	/* if it's not TCP/IP, then skip it */
+	if ((ep.ether_type != ETHERTYPE_IP) || ((*ppip)->ip_p != IPPROTO_TCP))
+	    continue;
+
+
+	return(1);
     }
-
-    packlen = hdr.tlen;
-    /* round up to multiple of 4 bytes */
-    len = (packlen + 3) & ~0x3;
-
-    /* read the ethernet header */
-    rlen=fread(&ep,1,sizeof(struct ether_header),stdin);
-    if (rlen != sizeof(struct ether_header)) {
-	fprintf(stderr,"Couldn't read ether header\n");
-	return(0);
-    }
-
-    /* read the rest of the packet */
-    len -= sizeof(struct ether_header);
-    if ((rlen=fread(ip_buf,1,len,stdin)) != len) {
-	if (rlen != 0)
-	    fprintf(stderr,"Couldn't read %d bytes\n", len);
-	return(0);
-    }
-
-    if (netm_oldversion) {
-	struct netm_packet_header_old *pho;
-	pho = (struct netm_packet_header_old *) &hdr;
-
-	ptime->tv_sec  = pho->tstamp_secs;
-	ptime->tv_usec = pho->tstamp_usecs;
-	*plen          = pho->len;
-	*ptlen         = pho->tlen;
-    } else {
-	ptime->tv_sec  = hdr.tstamp_secs;
-	ptime->tv_usec = hdr.tstamp_usecs;
-	*plen 	       = hdr.len;
-	*ptlen         = hdr.tlen;
-    }
-
-
-    *ppip  = (struct ip *) ip_buf;
-    *ppep  = &ep;
-
-    return(1);
 }
 
 

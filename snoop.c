@@ -27,12 +27,14 @@ struct snoop_packet_header {
 
 
 /* return the next packet header */
+/* currently only works for ETHERNET */
 static int
 pread_snoop(
     struct timeval	*ptime,
     int		 	*plen,
     int		 	*ptlen,
-    struct ether_header **ppep,
+    void		**pphys,
+    int			*pphystype,
     struct ip		**ppip)
 {
     int packlen;
@@ -43,45 +45,51 @@ pread_snoop(
     static int ip_buf[IP_MAXPACKET/sizeof(int)];  /* force alignment */
     int hlen;
 
+    while (1) {
+	hlen = sizeof(struct snoop_packet_header);
 
-    hlen = sizeof(struct snoop_packet_header);
+	/* read the packet header */
+	if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
+	    if (rlen != 0)
+		fprintf(stderr,"Bad snoop packet header\n");
+	    return(0);
+	}
 
-    /* read the packet header */
-    if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
-	if (rlen != 0)
-	    fprintf(stderr,"Bad snoop packet header\n");
-	return(0);
+	packlen = hdr.tlen;
+	/* round up to multiple of 4 bytes */
+	len = (packlen + 3) & ~0x3;
+
+	/* read the ethernet header */
+	rlen=fread(&ep,1,sizeof(struct ether_header),stdin);
+	if (rlen != sizeof(struct ether_header)) {
+	    fprintf(stderr,"Couldn't read ether header\n");
+	    return(0);
+	}
+
+	/* read the rest of the packet */
+	len -= sizeof(struct ether_header);
+	if ((rlen=fread(ip_buf,1,len,stdin)) != len) {
+	    if (rlen != 0)
+		fprintf(stderr,"Couldn't read %d bytes\n", len);
+	    return(0);
+	}
+
+	ptime->tv_sec  = hdr.secs;
+	ptime->tv_usec = hdr.usecs;
+	*plen          = hdr.len;
+	*ptlen         = hdr.tlen;
+
+
+	*ppip  = (struct ip *) ip_buf;
+	*pphys  = &ep;
+	*pphystype = PHYS_ETHER;
+
+	/* if it's not TCP/IP, then skip it */
+	if ((ep.ether_type != ETHERTYPE_IP) || ((*ppip)->ip_p != IPPROTO_TCP))
+	    continue;
+
+	return(1);
     }
-
-    packlen = hdr.tlen;
-    /* round up to multiple of 4 bytes */
-    len = (packlen + 3) & ~0x3;
-
-    /* read the ethernet header */
-    rlen=fread(&ep,1,sizeof(struct ether_header),stdin);
-    if (rlen != sizeof(struct ether_header)) {
-	fprintf(stderr,"Couldn't read ether header\n");
-	return(0);
-    }
-
-    /* read the rest of the packet */
-    len -= sizeof(struct ether_header);
-    if ((rlen=fread(ip_buf,1,len,stdin)) != len) {
-	if (rlen != 0)
-	    fprintf(stderr,"Couldn't read %d bytes\n", len);
-	return(0);
-    }
-
-    ptime->tv_sec  = hdr.secs;
-    ptime->tv_usec = hdr.usecs;
-    *plen          = hdr.len;
-    *ptlen         = hdr.tlen;
-
-
-    *ppip  = (struct ip *) ip_buf;
-    *ppep  = &ep;
-
-    return(1);
 }
 
 

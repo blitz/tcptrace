@@ -66,31 +66,41 @@ static int callback(
 };
 
 
+/* currently only works for ETHERNET */
 static int
 pread_tcpdump(
     struct timeval	*ptime,
     int		 	*plen,
     int		 	*ptlen,
-    struct ether_header **ppep,
+    void		**pphys,
+    int			*pphystype,
     struct ip		**ppip)
 {
     int ret;
     int pcap_offline_read();
-    
 
-    if ((ret = pcap_offline_read(pcap,1,callback,0)) != 1) {
-	/* prob EOF */
-	return(0);
+    while (1) {
+	if ((ret = pcap_offline_read(pcap,1,callback,0)) != 1) {
+	    /* prob EOF */
+	    return(0);
+	}
+
+	/* fill in all of the return values */
+	*pphys     = callback_pep;
+	*pphystype = PHYS_ETHER;
+	*ppip      = (struct ip *) ip_buf;
+	*ptime     = callback_phdr->ts;
+	*plen      = callback_phdr->len;
+	*ptlen     = callback_phdr->caplen;
+
+	/* if it's not TCP/IP, then skip it */
+	if ((callback_pep->ether_type != ETHERTYPE_IP) ||
+	    ((*ppip)->ip_p != IPPROTO_TCP)) {
+	    continue;
+	}
+
+	return(1);
     }
-
-    /* fill in all of the return values */
-    *ppep  = callback_pep;
-    *ppip  = (struct ip *) ip_buf;
-    *ptime = callback_phdr->ts;
-    *plen  = callback_phdr->len;
-    *ptlen = callback_phdr->caplen;
-
-    return(1);
 }
 
 

@@ -13,11 +13,11 @@
 
 
 /* local routines */
-static void printeth(struct ether_header *);
-static void printip(struct ip *);
-static void printtcp(struct ip *);
-static char *ParenServiceName(long);
-static char *ParenHostName(long);
+static void printeth_packet(struct ether_header *);
+static void printip_packet(struct ip *);
+static void printtcp_packet(struct ip *);
+static char *ParenServiceName(portnum);
+static char *ParenHostName(ipaddr);
 
 
 
@@ -42,7 +42,7 @@ ts2ascii(
 
 
 static void
-printeth(
+printeth_packet(
     struct ether_header *pep)
 {
     printf("\tETH Srce: %s\n", ether_ntoa(pep->ether_shost));
@@ -59,15 +59,15 @@ printeth(
 
 
 static void
-printip(
+printip_packet(
     struct ip *pip)
 {
     printf("\tIP  Srce: %s %s\n",
 	   inet_ntoa(pip->ip_src),
-	   ParenHostName(pip->ip_src.s_addr));
+	   ParenHostName(pip->ip_src));
     printf("\t    Dest: %s %s\n",
 	   inet_ntoa(pip->ip_dst),
-	   ParenHostName(pip->ip_dst.s_addr));
+	   ParenHostName(pip->ip_dst));
 
     printf(
 	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
@@ -87,7 +87,7 @@ printip(
 
 
 static void
-printtcp(
+printtcp_packet(
     struct ip *pip)
 {
     unsigned tcp_length;
@@ -133,7 +133,8 @@ printpacket(
      struct timeval	time,
      int		len,
      int		tlen,
-     struct ether_header *pep,
+     void		*phys,
+     int		phystype,
      struct ip		*pip)
 {
     if (len == tlen)
@@ -143,21 +144,29 @@ printpacket(
 
     printf("\tCollected: %s\n", ts2ascii(&time));
 
-    printeth(pep);
 
-    if (pep->ether_type != ETHERTYPE_IP)
-	return;
-    printip(pip);
+    switch(phystype) {
+      case PHYS_ETHER:
+	printeth_packet(phys);
+	break;
+      default:
+	printf("\tPhysical layer: %d (not understood)\n", phystype);
+	break;
+    }
 
-    if (ntohs(pip->ip_p) != IPPROTO_TCP)
-	return;
-    printtcp(pip);
+
+    /* it's always supposed to be an IP packet */
+    printip_packet(pip);
+
+
+    if (ntohs(pip->ip_p) == IPPROTO_TCP)
+	printtcp_packet(pip);
 }
 
 
 static char *
 ParenServiceName(
-     long port)
+     portnum port)
 {
     char *pname;
     static char buf[80];
@@ -173,7 +182,7 @@ ParenServiceName(
 
 static char *
 ParenHostName(
-     long addr)
+     ipaddr addr)
 {
     char *pname;
     static char buf[80];

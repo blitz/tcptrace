@@ -33,7 +33,7 @@ endif
 
 
 OFILES= gcache.o main.o names.o netm.o output.o plotter.o print.o \
-	rtt.o snoop.o tcpdump.o trace.o
+	rtt.o snoop.o tcpdump.o trace.o rexmit.o
 
 tcptrace: ${OFILES}
 	${CC} ${LDFLAGS} ${CFLAGS} ${OFILES} -o tcptrace ${LDLIBS}

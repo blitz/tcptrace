@@ -28,10 +28,15 @@ struct supported_formats {
 /*	    struct timeval	*ptime,					*/
 /*	    int		 	*plen,					*/
 /*	    int		 	*ptlen,					*/
-/*	    struct ether_header **ppep,					*/
+/*	    void		**pphys,				*/
+/*	    int			*pphystype,				*/
 /*	    struct ip		**ppip)					*/
 /*   the reader function should return 0 at EOF and 1 otherwise		*/
+/* This routine must return ONLY IP packets, but they need not all be	*/
+/* TCP packets (if not, they're ignored).				*/
 
+
+/* give the prototypes for the is_GLORP() routines supported */
 #ifdef GROK_SNOOP
 	int (*is_snoop())();
 #endif GROK_SNOOP
@@ -42,6 +47,8 @@ struct supported_formats {
 	int (*is_tcpdump())();
 #endif GROK_TCPDUMP
 
+
+/* install the is_GLORP() routines supported */
 struct supported_formats file_formats[] = {
 #ifdef GROK_SNOOP
 	{is_snoop, "Sun Snoop"},

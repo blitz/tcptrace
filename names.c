@@ -16,10 +16,9 @@
 /* local routines */
 
 
-
 char *
 ServiceName(
-     u_short port)
+     portnum port)
 {
     static int cache = -1;
     tcelen len;
@@ -28,13 +27,13 @@ ServiceName(
     char *sb_port;
 
     if (nonames) {
-	sprintf(port_buf,"%hd",port);
+	sprintf(port_buf,"%hu",port);
 	return(port_buf);
     }
 
     /* only small numbers have names */
     if (port > 1023) {
-	sprintf(port_buf,"%hd",port);
+	sprintf(port_buf,"%hu",port);
 	return(port_buf);
     }
 
@@ -78,19 +77,16 @@ ServiceName(
 
 char *
 HostName(
-    long addr)
+    ipaddr ipaddress)
 {
     tcelen len;
     static int cache = -1;
-    struct in_addr ina;
     struct hostent *phe;
     char *sb_host;
     static char name_buf[100];
 
-    ina.s_addr = addr;
-
     if (nonames) {
-	return(inet_ntoa(ina));
+	return(inet_ntoa(ipaddress));
     }
 	
     /* check the cache */
@@ -99,29 +95,29 @@ HostName(
     }
     len = sizeof(name_buf);
     if (debug > 2)
-	fprintf(stderr,"Searching cache for host %lx='%s'\n",
-		addr, name_buf);
+	fprintf(stderr,"Searching cache for host '%s'\n",
+		inet_ntoa(ipaddress));
     if (calookup(cache,
-		 (char *) &addr,    (tcelen)  sizeof(addr),
+		 (char *) &ipaddress,    (tcelen)  sizeof(ipaddress),
 		 (char *) name_buf, &len) == OK) {
 	if (debug > 2)
-	    fprintf(stderr,"Found host %lx='%s' in cache\n",
-		    addr, name_buf);
+	    fprintf(stderr,"Found host %s='%s' in cache\n",
+		    inet_ntoa(ipaddress), name_buf);
 	return(name_buf);
     }
 	
 
-    phe = gethostbyaddr((char *)&ina, sizeof(ina), AF_INET);
+    phe = gethostbyaddr((char *)&ipaddress, sizeof(ipaddress), AF_INET);
     if (phe != NULL) {
 	sb_host = phe->h_name;
     } else {
-	sb_host = inet_ntoa(ina);
+	sb_host = inet_ntoa(ipaddress);
     }
     if (debug > 2)
-	fprintf(stderr,"Putting host %lx='%s' in cache\n",
-		addr, sb_host);
+	fprintf(stderr,"Putting host %s='%s' in cache\n",
+		inet_ntoa(ipaddress), sb_host);
     cainsert(cache,
-	     (char *) &addr,   (tcelen)sizeof(addr),
+	     (char *) &ipaddress,   (tcelen)sizeof(ipaddress),
 	     (char *) sb_host, (tcelen)(strlen(sb_host)+1));
 
     return(sb_host);
@@ -131,15 +127,15 @@ HostName(
 
 char *
 EndpointName(
-    long addr,
-    long port)
+    ipaddr ipaddress,
+    portnum port)
 {
     static char name_buf[100];
     char *sb_host;
     char *sb_port;
 
+    sb_host = HostName(ipaddress);
     sb_port = ServiceName(port);
-    sb_host = HostName(addr);
 
     sprintf(name_buf,"%s:%s", sb_host, sb_port);
 

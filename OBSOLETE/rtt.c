@@ -14,7 +14,6 @@
 
 /* local routines */
 static seg_rec *newseg();
-static void freeseg(seg_rec *);
 static void unlinkseg(seg_rec *);
 static void ack_in(tcb *, struct timeval, struct tcphdr *, struct ip *);
 static void seg_out(tcb *, struct timeval, struct tcphdr *, struct ip *);
@@ -42,13 +41,6 @@ newseg()
 }
 
 
-static void
-freeseg(
-    seg_rec *pseg)
-{
-    free(pseg);
-}
-
 
 static void
 unlinkseg(
@@ -56,7 +48,7 @@ unlinkseg(
 {
     pseg->next->prev = pseg->prev;
     pseg->prev->next = pseg->next;
-    freeseg(pseg);
+    free(pseg);
 }
 
 
@@ -215,23 +207,3 @@ calc_rtt(
     seg_out(ptcb,time,ptcp,pip);
     ack_in(ptcb->ptwin,time,ptcp,pip);
 }
-
-
-
-#ifdef OLD
-static void
-print_seglist(
-    tcb *ptcb)
-{
-    seg_rec *pseg;
-
-    pseg = ptcb->seglist_head.next;
-    while (pseg != &ptcb->seglist_tail) {
-	printf("  %u %u %s\n",
-	       pseg->seq,
-	       pseg->ackedby,
-	       ts2ascii(&pseg->time));
-	pseg = pseg->next;
-    }
-}
-#endif OLD
