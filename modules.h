@@ -29,6 +29,13 @@ static char const rcsid_modules[] =
     "$Id$";
 
 
+/* define LOAD_MODULE_HTTP to include the experimental HTTP module */
+#define LOAD_MODULE_HTTP
+
+/* define LOAD_MODULE_TRAFFIC to include the experimental TRAFFIC module */
+#define LOAD_MODULE_TRAFFIC
+
+
 /* 
  * modules.h -- Definitions for plug-in modules
  */
@@ -84,11 +91,19 @@ struct module {
 
 
 /* module-specific header file (needs to give prototypes for the routines below) */
-#include "mod_http.h"	/* for the HTTP package */
+#ifdef LOAD_MODULE_HTTP
+#include "mod_http.h"		/* for the HTTP package */
+#endif /* LOAD_MODULE_HTTP */
+
+
+#ifdef LOAD_MODULE_TRAFFIC
+#include "mod_traffic.h"	/* for the traffic package */
+#endif /* LOAD_MODULE_TRAFFIC */
 
 
 /* declare (install) the various module routines */
 struct module modules[] = {
+#ifdef LOAD_MODULE_HTTP
     /* this example is for the HTTP module */
     {TRUE,			/* make FALSE if you don't want to call it at all */
      "http",			/* name of the module */
@@ -99,8 +114,16 @@ struct module modules[] = {
      http_usage,		/* routine to call to print module usage */
      http_newfile,		/* routine to call on each new file */
      http_newconn},		/* routine to call on each new connection */
+#endif /* LOAD_MODULE_HTTP */
 
     /* list other modules here ... */
 
+#ifdef LOAD_MODULE_TRAFFIC
+    /* ttl traffic analysis */
+    {TRUE,			/* make FALSE if you don't want to call it at all */
+     "traffic", "traffic analysis package",
+     traffic_init, traffic_read, traffic_done,		
+     traffic_usage, NULL, traffic_newconn},
+#endif /* LOAD_MODULE_TRAFFIC */
 };
 #define NUM_MODULES (sizeof(modules) / sizeof(struct module))
