@@ -625,7 +625,7 @@ caisold(
     struct cacheblk *pcb,
     struct cacheentry *pce)
 {
-    unsigned now;
+    time_t now;
 
     if (pcb->cb_maxlife == 0)
 	return(FALSE);
