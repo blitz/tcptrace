@@ -49,4 +49,9 @@
   fixed minor printing bug, 1323 flags printed wrong
   fixed snoop and netm so that they worked on PC's
 	(more byte sex problems)
+3.2.10 - Thu Mar 27, 1997
+  Mark "pushed" segments on TSG plots
+    top arrow is red instead of white
+  Compute slow-start window size (should be one except for "new" tcp's)
+  Compute estimated congestion window
      
