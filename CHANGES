@@ -229,4 +229,5 @@
   added some minor argument parsing checks
   added a few extended arguments "--foo" to control lesser-used functions
   fixed PAGESIZE reference for Craig Metz - not under some Linux
-
+  fixed error in stats when SYNs and FINs rexmitted, unique bytes was wrong
+    (which threw off missed data and throughput)
