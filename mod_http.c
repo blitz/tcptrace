@@ -152,6 +152,9 @@ http_read(
     /* find the data */
     pdata = (char *)ptcp + (unsigned)ptcp->th_off*4;
 
+    /* print out the raw TCP data */
+    PrintRawData("TCP Data",pdata,plast);
+
     /* look for GET */
     if (client) {
 	for (pch = pdata; pch <= (char *)plast; ++pch) {
