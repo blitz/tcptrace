@@ -348,12 +348,12 @@ PrintTrace(
 			  pba->last_data_time); /* in usecs */
     StatLineI("data xmit time","secs","%s",
 	      (sprintf(bufl,"%lu.%03lu",
-		       (int)etime_data1 / 1000000,
-		       ((int)etime_data1%1000000)/1000),
+		       (u_long)etime_data1 / 1000000,
+		       ((u_long)etime_data1%1000000)/1000),
 	       (int)bufl),
 	      (sprintf(bufr,"%lu.%03lu",
-		       (int)etime_data2 / 1000000,
-		       ((int)etime_data2%1000000)/1000),
+		       (u_long)etime_data2 / 1000000,
+		       ((u_long)etime_data2%1000000)/1000),
 	       (int)bufr));
 
     /* do the throughput calcs */
