@@ -585,11 +585,37 @@ void tcplib_read(
 			  * in a conversation */
     int a2b_len;         /* The type of traffic associated with a's port # */
     int b2a_len;         /* The type of traffic associated with b's port # */
-    struct tcplibstats *pstats = global_pstats[LOCAL];
+    tcb *ptcb;
+    struct tcplibstats *pstats;
     
 
     /* Setting a pointer to the beginning of the TCP header */
     tcp = (struct tcphdr *) ((char *)pip + (sizeof(int) * pip->ip_hl));
+
+    /* see which of the 2 TCB's this goes with */
+    if (ptp->addr_pair.a_port == ntohs(tcp->th_dport))
+	ptcb = &ptp->a2b;
+    else
+	ptcb = &ptp->b2a;
+
+    if (TestLocal(ptcb))
+	pstats = global_pstats[LOCAL];
+    else if (TestIncoming(ptcb))
+	pstats = global_pstats[INCOMING];
+    else if (TestOutgoing(ptcb))
+	pstats = global_pstats[OUTGOING];
+    else {
+	/* external? */
+	static int warned = FALSE;
+	if (!warned) {
+	    warned = TRUE;
+	    fprintf(stderr,"
+\n\nWarning: I'm seeing 'external' traffic according to the definition\n\
+of 'local' that you provided, that might be bad...\n\n");
+	}
+	return;
+    }
+
 
     /* Let's do the telnet packet sizes.  Telnet packets are the only
      * ones where we actually care about the sizes of individual packets.
@@ -602,7 +628,7 @@ void tcplib_read(
 	    (4 * pip->ip_hl) -	/* less the IP header */
 	    (4 * tcp->th_off);	/* less the TCP header */
 
-	tcplib_add_telnet_packetsize(global_pstats[LOCAL],data_len);
+	tcplib_add_telnet_packetsize(pstats,data_len);
     }
 
     /* Here's where we'd need to do telnet interarrival times.  The
@@ -614,7 +640,7 @@ void tcplib_read(
     if (is_telnet_conn(ptp)) {
 	tcplib_add_telnet_interarrival(
 	    ptp, (struct timeval *)pmodstruct,
-	    global_pstats[LOCAL]->telnet_interarrival_count);
+	    pstats->telnet_interarrival_count);
     }
 
 
@@ -789,14 +815,15 @@ static void tcplib_init_setup(void)
 
     /* We need to save the contents in order to piece together the answers
      * later on
+     *
+     * sdo - so why does Eric turn it OFF?
      */
     save_tcp_data = FALSE;
 
 
     for (ix = LOCAL; ix <= OUTGOING; ++ix) {
 	/* create the big data structure */
-	pstats = MallocZ(sizeof(struct tcplibstats));
-	global_pstats[ix] = pstats;
+	global_pstats[ix] = pstats = MallocZ(sizeof(struct tcplibstats));
 
 	pstats->telnet_pktsize_count = MakeSizes(0);
 	pstats->telnet_interarrival_count = MakeSizes(0);
@@ -2027,7 +2054,7 @@ AddToSizeArray(
     }
 
     /* OK, finally, all is safe */
-    psizes->size_list[ix] = val;
+    psizes->size_list[ix] += val;
     psizes->total_count += val;
     if (ix > psizes->maxix)
 	psizes->maxix = ix;
