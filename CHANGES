@@ -277,3 +277,8 @@
   Added initial support for the NLANR tsh packet format
   bug fix, packets/connection were being passed to modules even though they
     were supposed to be ignored (caused mod_rtt to break, probably others too)
+  name resolution: split in half to
+		resolve_ipaddresses
+		resolve_ports
+	+-n still toggles both, but extended args let you control either
+	
