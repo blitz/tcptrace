@@ -390,7 +390,7 @@ AgeTraffic(void)
     int ups;			/* units per second */
 
     /* first time doesn't count */
-    if (last_time.tv_sec == 0) {
+    if (ZERO_TIME(&last_time)) {
 	last_time = current_time;
 	return;
     }

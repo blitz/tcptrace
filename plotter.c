@@ -79,7 +79,7 @@ xp_timestamp(
     if (graph_time_zero) {
 	struct plotter_info *ppi = &pplotters[pl];
 
-	if (ppi->zerotime.tv_sec == 0) {
+	if (ZERO_TIME(&ppi->zerotime)) {
 	    /* set "zero point" */
 	    ppi->zerotime = time;
 	}

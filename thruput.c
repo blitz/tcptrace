@@ -43,7 +43,7 @@ DoThru(
     double thruput;
 
     /* init, if not already done */
-    if (ptcb->thru_firsttime.tv_sec == 0) {
+    if (ZERO_TIME(&ptcb->thru_firsttime)) {
 	char title[210];
 
 	ptcb->thru_firsttime = current_time;

@@ -772,9 +772,9 @@ HttpDoPlot()
 
 	for (pget = ph->gets_head; pget; pget = pget->next) {
 
-	    if ((pget->send_time.tv_sec == 0) ||
-		(pget->get_time.tv_sec == 0) ||
-		(pget->ack_time.tv_sec == 0))
+	    if (ZERO_TIME(&pget->send_time) ||
+		ZERO_TIME(&pget->get_time) ||
+		ZERO_TIME(&pget->ack_time))
 		continue;
 	    
 	    plotter_temp_color(p,"white");
