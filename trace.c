@@ -1635,17 +1635,18 @@ ParseOptions: packet %lu too short to parse remaining options\n", pnum);
 
 #define CHECK_O_LEN(opt) \
 	if (*plen == 0) { \
-	if ((*plen == 0) && (warn_printtrunc)) { fprintf(stderr, "\
+	    if (warn_printtrunc) fprintf(stderr, "\
+ParseOptions: packet %lu %s option has length 0, skipping other options\n", \
                                            pnum,opt); \
-              pnum,opt); \
-	      popt = pdata; break;} \
+	    popt = pdata; break;} \
+	if ((char *)popt + *plen - 1 > (char *)(plast)) { \
 	if ((unsigned)popt + *plen - 1 > (unsigned)(plast)) { \
 		fprintf(stderr, "\
 ParseOptions: packet %lu %s option truncated, skipping other options\n", \
               pnum,opt); \
 	    ++ctrunc; \
-	      ++ctrunc; \
-	      popt = pdata; break;} \
+	    popt = pdata; break;} \
+
 
 	switch (*popt) {
 	  case TCPOPT_EOL: ++popt; break;
