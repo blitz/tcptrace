@@ -89,6 +89,7 @@ Bool warn_ooo = FALSE;
 Bool warn_printtrunc = FALSE;
 Bool warn_printbadmbz = FALSE;
 Bool warn_printhwdups = FALSE;
+Bool warn_printbadcsum = FALSE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
 Bool graph_seq_zero = FALSE;
@@ -104,6 +105,9 @@ u_long beginpnum = 0;
 u_long endpnum = ~0;
 u_long pnum = 0;
 u_long ctrunc = 0;
+u_long bad_ip_checksums = 0;
+u_long bad_tcp_checksums = 0;
+u_long bad_udp_checksums = 0;
 
 /* globals */
 struct timeval current_time;
@@ -153,6 +157,18 @@ static struct ext_bool_op {
      "resolve port numbers into names"},
     {"checksum", &verify_checksums,  TRUE,
      "verify IP and TCP checksums"},
+
+    {"warn_ooo", &warn_ooo,  TRUE,
+     "print warnings when packets timestamps are out of order"},
+    {"warn_printtrunc", &warn_printtrunc,  TRUE,
+     "print warnings when packets are too short to analyze"},
+    {"warn_printbadmbz", &warn_printbadmbz, TRUE,
+     "print warnings when MustBeZero TCP fields are NOT 0"},
+    {"warn_printhwdups", &warn_printhwdups, TRUE,
+     "print warnings for hardware duplicates"},
+    {"warn_printbadcsum", &warn_printbadcsum, TRUE,
+     "print warnings when packets with bad checksums"},
+
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
 
@@ -582,6 +598,12 @@ main(
 	fprintf(stdout,"\tfirst packet:  %s\n", ts2ascii(&first_packet));
 	fprintf(stdout,"\tlast packet:   %s\n", ts2ascii(&last_packet));
     }
+    if (verify_checksums) {
+	fprintf(stdout,"bad IP checksums:  %ld\n", bad_ip_checksums);
+	fprintf(stdout,"bad TCP checksums: %ld\n", bad_tcp_checksums);
+	if (do_udp)
+	    fprintf(stdout,"bad UDP checksums: %ld\n", bad_udp_checksums);
+    }
 
     /* close files, cleanup, and etc... */
     trace_done();
@@ -847,6 +869,16 @@ for other packet types, I just don't have a place to test them\n\n");
 	    first_packet = current_time;
 	last_packet = current_time;
 
+	/* verify IP checksums, if requested */
+	if (verify_checksums) {
+	    if (!ip_cksum_valid(pip,plast)) {
+		++bad_ip_checksums;
+		if (warn_printbadcsum)
+		    fprintf(stderr, "packet %lu: bad IP checksum\n", pnum);
+		continue;
+	    }
+	}
+		       
 	/* find the start of the TCP header */
 	ptcp = gettcp (pip, &plast);
 
@@ -860,6 +892,18 @@ for other packet types, I just don't have a place to test them\n\n");
 
 	    if (do_udp && (pudp != NULL)) {
 		pup = udpdotrace(pip,pudp,plast);
+
+		/* verify UDP checksums, if requested */
+		if (verify_checksums) {
+		    if (!udp_cksum_valid(pip,pudp,plast)) {
+			++bad_udp_checksums;
+			if (warn_printbadcsum)
+			    fprintf(stderr, "packet %lu: bad UDP checksum\n",
+				    pnum);
+			continue;
+		    }
+		}
+		       
 		/* if it's a new connection, tell the modules */
 		if (pup && pup->packets == 1)
 		    ModulesPerUDPConn(pup);
@@ -871,8 +915,18 @@ for other packet types, I just don't have a place to test them\n\n");
 	    }
 	    continue;
 	}
+
+	/* verify TCP checksums, if requested */
+	if (verify_checksums) {
+	    if (!tcp_cksum_valid(pip,ptcp,plast)) {
+		++bad_tcp_checksums;
+		if (warn_printbadcsum) 
+		    fprintf(stderr, "packet %lu: bad TCP checksum\n", pnum);
+		continue;
+	    }
+	}
 		       
-        /* perform packet analysis */
+        /* perform TCP packet analysis */
 	ptp = dotrace(pip,ptcp,plast);
 
 	/* if it wasn't "interesting", we return NULL here */
@@ -1399,6 +1453,7 @@ ParseArgs(
 		    warn_printtrunc = TRUE;
 		    warn_printbadmbz = TRUE;
 		    warn_printhwdups = TRUE;
+		    warn_printbadcsum = TRUE;
 		    warn_ooo = TRUE;
 		    break;
 		  case 'x':
@@ -1465,6 +1520,7 @@ ParseArgs(
 		    warn_printtrunc = !TRUE;
 		    warn_printbadmbz = !TRUE;
 		    warn_printhwdups = !TRUE;
+		    warn_printbadcsum = !TRUE;
 		    warn_ooo = !TRUE;
 		    break;
 		  case 'y': plot_tput_instant = !plot_tput_instant; break;
@@ -1507,9 +1563,6 @@ DumpFlags(void)
 
     fprintf(stderr,"printbrief:       %s\n", BOOL2STR(printbrief));
     fprintf(stderr,"printsuppress:    %s\n", BOOL2STR(printsuppress));
-    fprintf(stderr,"warn_printtrunc:  %s\n", BOOL2STR(warn_printtrunc));
-    fprintf(stderr,"warn_printbadmbz: %s\n", BOOL2STR(warn_printbadmbz));
-    fprintf(stderr,"warn_printhwdups: %s\n", BOOL2STR(warn_printhwdups));
     fprintf(stderr,"print_rtt:        %s\n", BOOL2STR(print_rtt));
     fprintf(stderr,"graph tsg:        %s\n", BOOL2STR(graph_tsg));
     fprintf(stderr,"graph rtt:        %s\n", BOOL2STR(graph_rtt));

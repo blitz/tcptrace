@@ -284,3 +284,6 @@
   changed "-o" option to allow "-oM-N"
   bug fix from Jamshid Mahdavi, sack blocks not converted to local byte order
 	(made intel platforms plot/print sacks wrong)
+  added support for TCP/UDP/IP checksum verification
+	only implemented for IPv4
+	--checksum turns it on, it's expensive

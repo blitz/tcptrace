@@ -33,7 +33,7 @@ static char const rcsid_version[] =
 #define VERSION_MAJOR	5
 #define VERSION_MINOR	1
 #define VERSION_BUGFIX	2
-#define VERSION_DATE	"Sat Dec 19, 1998"
+#define VERSION_DATE	"Wed Dec 23, 1998"
 
 
 

@@ -283,12 +283,16 @@ printtcp_packet(
 	       ptcp->th_x2);
     }
     printf("\t   CKSUM: 0x%04x", ntohs(ptcp->th_sum));
-    if (verify_checksums)
-	printf(" (%s)", tcp_cksum_valid(pip,ptcp,plast)?"CORRECT":"WRONG");
+    pdata = (u_char *)ptcp + ptcp->th_off*4;
+    if (verify_checksums) {
+	if ((u_long)pdata + tcp_data_length > ((u_long)plast+1))
+	    printf(" (too short to verify)");
+	else
+	    printf(" (%s)", tcp_cksum_valid(pip,ptcp,plast)?"CORRECT":"WRONG");
+    }
     printf("\n");
 
 
-    pdata = (u_char *)ptcp + ptcp->th_off*4;
     printf("\t    DLEN: %u",
 	   tcp_data_length);
     if ((u_long)pdata + tcp_data_length > ((u_long)plast+1))
