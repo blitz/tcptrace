@@ -130,6 +130,11 @@ struct module {
 #endif /* LOAD_MODULE_COLLIE */
 
 
+#ifdef LOAD_MODULE_SLICE
+#include "mod_slice.h"	/* for the slice package */
+#endif /* LOAD_MODULE_SLICE */
+
+
 /* declare (install) the various module routines */
 struct module modules[] = {
 #ifdef LOAD_MODULE_HTTP
@@ -169,6 +174,14 @@ struct module modules[] = {
      traffic_init, traffic_read, traffic_done,		
      traffic_usage, NULL, traffic_newconn, NULL,NULL,NULL},
 #endif /* LOAD_MODULE_TRAFFIC */
+
+#ifdef LOAD_MODULE_SLICE
+    /* ttl slice analysis */
+    {TRUE,			/* make FALSE if you don't want to call it at all */
+     "slice", "traffic efficiency data by time slices",
+     slice_init, slice_read, slice_done,		
+     slice_usage, NULL, slice_newconn, NULL,NULL,NULL},
+#endif /* LOAD_MODULE_SLICE */
 
 #ifdef LOAD_MODULE_RTTGRAPH
     {TRUE,			/* make FALSE if you don't want to call it at all */
