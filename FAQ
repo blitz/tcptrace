@@ -921,3 +921,11 @@ A52. Many thanks to Daikichi Osuga (osuga@mml.yrp.nttdocomo.co.jp) for
      side".  --Daikichi Osuga 
 
 ===========================================================================
+Wed May 08, 2002
+
+Q53. How is the throughput in the throughput graph measured ?                  
+     Does it include payload + tcp/ip header or just the pure payload ?
+     
+A53. It includes just the pure payload.
+
+===========================================================================
