@@ -299,6 +299,7 @@ extern Bool show_rexmit;
 extern Bool show_zero_window;
 extern Bool use_short_names;
 extern Bool save_tcp_data;
+extern Bool graph_time_zero;
 extern int debug;
 extern int thru_interval;
 extern int pnum;

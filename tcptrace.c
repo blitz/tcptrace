@@ -77,6 +77,7 @@ Bool printem = FALSE;
 Bool printticks = FALSE;
 Bool printtrunc = FALSE;
 Bool save_tcp_data = FALSE;
+Bool graph_time_zero = FALSE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
@@ -309,6 +310,7 @@ Graphing detail options  \n\
   -C      produce color plot[s]  \n\
   -M      produce monochrome (b/w) plot[s]  \n\
   -AN     Average N segments for throughput graphs, default is 10  \n\
+  -z      plot time axis from 0 rather than wall clock time  \n\
 Misc options  \n\
   -Z      dump raw rtt sample times to file[s]  \n\
   -p      print individual packet contents (can be very long)  \n\
@@ -720,6 +722,7 @@ ParseArgs(
 		  case 'v': Version(); exit(0); break;
 		  case 'w': printtrunc = TRUE; break;
 		  case 'q': printsuppress = TRUE; break;
+		  case 'z': graph_time_zero = TRUE; break;
 		  case 'i':
 		    ++saw_i_or_o;
 		    IgnoreConn(atoi(argv[i]+1));
@@ -781,6 +784,7 @@ ParseArgs(
 		  case 't': printticks = !TRUE; break;
 		  case 'w': printtrunc = !TRUE; break;
 		  case 'q': printsuppress = !TRUE; break;
+		  case 'z': graph_time_zero = !TRUE; break;
 		  default:
 		    Usage(argv[0]);
 		}
@@ -821,6 +825,7 @@ DumpFlags(void)
 	fprintf(stderr,"show_zero_window: %d\n", show_zero_window);
 	fprintf(stderr,"show_out_order:	  %d\n", show_out_order);
 	fprintf(stderr,"save_tcp_data:    %d\n", save_tcp_data);
+	fprintf(stderr,"graph_time_zero:  %d\n", graph_time_zero);
 	fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
 	fprintf(stderr,"ending pnum:      %lu\n", endpnum);
 	fprintf(stderr,"throughput intvl: %d\n", thru_interval);
