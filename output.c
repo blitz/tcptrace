@@ -387,13 +387,11 @@ PrintTrace(
 	StatLineP("missed data","","%s","NA","NA");
     }
 
-    /* if we saved the contents, tell how much is missing */
-    if (save_tcp_data) {
-	StatLineI("truncated data","bytes",
-		  pab->extr_trunc_bytes, pba->extr_trunc_bytes);
-	StatLineI("truncated packets","pkts",
-		  pab->extr_trunc_segs, pba->extr_trunc_segs);
-    }
+    /* tell how much data was NOT captured in the files */
+    StatLineI("truncated data","bytes",
+	      pab->trunc_bytes, pba->trunc_bytes);
+    StatLineI("truncated packets","pkts",
+	      pab->trunc_segs, pba->trunc_segs);
 
     /* stats on just the data */
     etime_data1 = elapsed(pab->first_data_time,

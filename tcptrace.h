@@ -260,8 +260,8 @@ typedef struct tcb {
 
     /* Extracted stream contents */
     MFILE	*extr_contents_file;
-    u_llong	extr_trunc_bytes; /* data bytes not see due to trace file truncation */
-    u_llong	extr_trunc_segs; /* segments with trunc'd bytes */
+    u_llong	trunc_bytes;	/* data bytes not see due to trace file truncation */
+    u_llong	trunc_segs;	/* segments with trunc'd bytes */
     seqnum	extr_lastseq;	/* last sequence number we stored */
     seqnum	extr_initseq;	/* initial sequence number (same as SYN unless we missed it) */
 

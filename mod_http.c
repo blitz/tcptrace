@@ -855,7 +855,7 @@ connection (FINs) were not found in trace file.\n");
 #endif /* SAFE */
 
     /* see if we got all the bytes */
-    missing = pab->extr_trunc_bytes + pba->extr_trunc_bytes;
+    missing = pab->trunc_bytes + pba->trunc_bytes;
     missing += pab->fin-pab->syn-1-(pab->data_bytes-pab->rexmit_bytes);
     missing += pba->fin-pba->syn-1-(pba->data_bytes-pba->rexmit_bytes);
 

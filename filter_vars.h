@@ -86,8 +86,8 @@ struct filter_line filters[] = {
     {"retr_min_tm",     V_ULONG, PTCB_C_S(retr_min_tm), "MIN time until rexmit (usecs)"},
     {"retr_max_tm",     V_ULONG, PTCB_C_S(retr_max_tm), "MAX time until rexmit (usecs)"},
 
-    {"extr_trunc_bytes",V_ULLONG, PTCB_C_S(extr_trunc_bytes), "number of bytes not in the file"},
-    {"extr_trunc_segs", V_ULLONG, PTCB_C_S(extr_trunc_segs), "number of segments not in the file"},
+    {"trunc_bytes",	V_ULLONG, PTCB_C_S(trunc_bytes), "number of bytes not in the file"},
+    {"trunc_segs", 	V_ULLONG, PTCB_C_S(trunc_segs), "number of segments not in the file"},
 
     /* computed functions */
 
