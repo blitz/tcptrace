@@ -98,6 +98,10 @@ struct module {
 #include "mod_rttgraph.h"	/* for the rttgraph package */
 #endif /* LOAD_MODULE_RTTGRAPH */
 
+#ifdef LOAD_MODULE_COLLIE
+#include "mod_collie.h"	/* for the collie package */
+#endif /* LOAD_MODULE_COLLIE */
+
 
 /* declare (install) the various module routines */
 struct module modules[] = {
@@ -134,5 +138,13 @@ struct module modules[] = {
      NULL,			/* routine to call on each new file */
      rttgraph_newconn},		/* routine to call on each new connection */
 #endif /* LOAD_MODULE_TRAFFIC */
+
+#ifdef LOAD_MODULE_COLLIE
+    /* ttl collie analysis */
+    {TRUE,			/* make FALSE if you don't want to call it at all */
+     "collie", "connection summary package",
+     collie_init, collie_read, collie_done,		
+     collie_usage, NULL, collie_newconn},
+#endif /* LOAD_MODULE_COLLIE */
 };
 #define NUM_MODULES (sizeof(modules) / sizeof(struct module))
