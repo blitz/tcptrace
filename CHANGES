@@ -36,5 +36,7 @@
      keyboard
   fix by Bill Fenner - Endian boo boo caused PC's not to read
      any packets.
+  removed the "-m" option and made all of the array structures
+     resizable (now supports an "infinite" number of connections)
   changed elapsed() routine to return double to prevent overflow
      of microsecond stored in a long int
