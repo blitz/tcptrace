@@ -412,10 +412,13 @@ PlotHist(
     printf("  %lu samples\n", phist->num_samples);
     for (ms=0; ms < phist->num_buckets; ++ms) {
 	u_long count = phist->buckets[ms];
-	float percent = (float)count / phist->num_samples;
-	if (count == 0)
+	float percent;
+       
+	if (count == 0 || phist->num_samples == 0)
 	    continue;
 
+        percent = (float)count / phist->num_samples;
+       
 	printf("  %4d  %5lu  %5.2f\n", ms, count, 100 * percent);
 	if (z == -1)
 	    Mfprintf(f,"%4d  %.2f\n", ms, 100 * percent);
