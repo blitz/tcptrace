@@ -126,6 +126,7 @@ static PLOTTER plotter_long;
 static PLOTTER plotter_rtt;
 static PLOTTER plotter_halfopen;
 static PLOTTER plotter_pureacks;
+static PLOTTER plotter_data;
 
 #define  PLOTTER_BYTES_FILENAME		"traffic_bytes.xpl"
 #define  PLOTTER_PACKETS_FILENAME	"traffic_packets.xpl"
@@ -139,6 +140,7 @@ static PLOTTER plotter_pureacks;
 #define  PLOTTER_HALFOPEN_FILENAME	"traffic_halfopen.xpl"
 #define  PLOTTER_PUREACKS_FILENAME	"traffic_pureacks.xpl"
 #define  PLOTTER_IDLE_FILENAME		"traffic_idle.xpl"
+#define  PLOTTER_DATA_FILENAME		"traffic_data.xpl"
 
 /* argument flags */
 static float age_interval = 15.0;  /* 15 seconds by default */
@@ -154,6 +156,7 @@ static Bool doplot_rtt = FALSE;
 static Bool doplot_halfopen = FALSE;
 static Bool doplot_pureacks = FALSE;
 static Bool doplot_idle = FALSE;
+static Bool doplot_data = FALSE;
 static int longconn_duration = 60;
 
 
@@ -181,20 +184,30 @@ static int num_opens = 0;
 static int open_conns = 0;
 static int num_halfopens = 0;
 
+/* info for total byte counters */
+static PLINE line_data_nonrexmit;
+static PLINE line_data_all;
+static u_llong data_nbytes_nonrexmit;
+static u_llong data_nbytes_all;
+
 /* info for the loss events graph */
 static PLINE line_dupacks;
 static PLINE line_rexmits;
-static int dupacks;
-static int rexmits;
+static u_long dupacks;
+static u_long ttl_dupacks;
+static u_long rexmits;
+static u_long ttl_rexmits;
 
 /* info for the RTT graph */
 static PLINE line_rtt_avg;
 static PLINE line_rtt_min;
 static PLINE line_rtt_max;
 static float rtt_ttl;		/* in msecs */
+static float ttl_rtt_ttl;	/* in msecs */
 static int rtt_min = -1;	/* in msecs */
 static int rtt_max = -1;	/* in msecs */
 static int rtt_samples;
+static int ttl_rtt_samples;
 static u_int rtt_minvalid = 0;	/* minimum RTT to consider (ms) */
 static u_int rtt_maxvalid = 0xffffffff; /* maximum RTT to consider (ms) */
 
@@ -379,6 +392,17 @@ traffic_init(
 	line_rtt_avg = new_line(plotter_rtt, "Average RTT", "blue");
     }
 
+    if (doplot_data) {
+	plotter_data =
+	    new_plotter(NULL,
+			PLOTTER_DATA_FILENAME,
+			"Total Data Sent Over Time",
+			"time","total bytes",
+			NULL);
+	line_data_all = new_line(plotter_data, "All Data", "blue");
+	line_data_nonrexmit = new_line(plotter_data, "Non-Rexmitted Data", "red");
+    }
+
     if (doplot_long) {
 	char title[100];
 	sprintf(title,"connections still open after %d seconds\n",
@@ -522,6 +546,7 @@ traffic_read(
     u_long bytes = ntohs(pip->ip_len);
     static timeval last_time = {0,0};
     struct conn_info *pci = mod_data;
+    int was_rexmit = 0;
 
     /* if neither port is interesting, then ignore this one */
     if (!pti1 && !pti2) {
@@ -603,14 +628,24 @@ traffic_read(
 	pci->last_dupacks = ptp->a2b.rtt_triple_dupack+
 	    ptp->b2a.rtt_triple_dupack;
 	++dupacks;
+	++ttl_dupacks;
     }
     if (pci->last_rexmits != ptp->a2b.rexmit_pkts+ptp->b2a.rexmit_pkts) {
 	pci->last_rexmits = ptp->a2b.rexmit_pkts+ptp->b2a.rexmit_pkts;
+	was_rexmit = 1;
 	++rexmits;
+	++ttl_rexmits;
     }
 
+
+    /* add to total data counters */
+    data_nbytes_all += bytes;
+    if (!was_rexmit)
+	data_nbytes_nonrexmit += bytes;
+    
+
     /* RTT stats */
-    if (doplot_rtt && (ACK_SET(ptcp))) {
+    if (ACK_SET(ptcp)) {
 	tcb *ptcb;
 	int rtt;
 
@@ -632,7 +667,9 @@ traffic_read(
 
 	    /* keep stats */
 	    rtt_ttl += rtt;
+	    ttl_rtt_ttl += rtt;
 	    ++rtt_samples;
+	    ++ttl_rtt_samples;
 
 	    /* also, remember min and max */
 	    if ((rtt_max == -1) || (rtt_max < rtt))
@@ -816,6 +853,13 @@ AgeTraffic(void)
 
 
     /* ============================================================ */
+    /* report of total data */
+    if (doplot_data) {
+	extend_line(line_data_all, current_time, data_nbytes_all);
+	extend_line(line_data_nonrexmit, current_time, data_nbytes_nonrexmit);
+    }
+
+    /* ============================================================ */
     /* print them out */
     for (pti=traffichead; pti; pti=pti->next) {
 	if (debug>1)
@@ -839,6 +883,7 @@ AgeTraffic(void)
 	    /* plot it */
 	    extend_line(pti->line_npackets,current_time, ups);
 	}
+
 
 
 	/* plot active connections */
@@ -929,9 +974,60 @@ traffic_done(void)
 	}
     }
 
+    /* dump specific stats */
+    {
+	int etime_secs = elapsed(first_packet,last_packet) / 1000000;
+	pti = ports[0];
+
+	Mfprintf(pmf, "\n\nOverall Statistics over %d seconds:\n",
+		 etime_secs);
+
+	/* ttl bytes */
+	Mfprintf(pmf, "%u ttl bytes sent, %.3f bytes/second\n",
+		 data_nbytes_all,
+		 (float)data_nbytes_all / ((float)etime_secs));
+
+	/* ttl bytes (nonrexmit)*/
+	Mfprintf(pmf, "%u ttl non-rexmit bytes sent, %.3f bytes/second\n",
+		 data_nbytes_nonrexmit,
+		 (float)data_nbytes_nonrexmit / ((float)etime_secs));
+
+	/* ttl bytes (nonrexmit)*/
+	Mfprintf(pmf, "%u ttl rexmit bytes sent, %.3f bytes/second\n",
+		 data_nbytes_all - data_nbytes_nonrexmit,
+		 (float)(data_nbytes_all - data_nbytes_nonrexmit) /
+		 ((float)etime_secs));
+
+	/* ttl packets */
+	Mfprintf(pmf, "%u packets sent, %.3f packets/second\n",
+		 pti->ttlpackets,
+		 (float)pti->ttlpackets / ((float)etime_secs));
+
+	/* connections opened */
+	Mfprintf(pmf, "%u connections opened, %.3f conns/second\n",
+		 num_opens,
+		 (float)num_opens / ((float)etime_secs));
+
+	/* dupacks */
+	Mfprintf(pmf, "%u dupacks sent, %.3f dupacks/second\n",
+		 ttl_dupacks,
+		 (float)ttl_dupacks / ((float)etime_secs));
+
+	/* rexmits */
+	Mfprintf(pmf, "%u rexmits sent, %.3f rexmits/second\n",
+		 ttl_rexmits,
+		 (float)ttl_rexmits / ((float)etime_secs));
+
+	/* RTT */
+	Mfprintf(pmf, "average RTT: %.3f msecs\n",
+		 ttl_rtt_ttl / (float)ttl_rtt_samples);
+    }
+
+
     Mfclose(pmf);
 
     printf("Plotting performed at %.3f second intervals\n", age_interval);
+
 }
 
 
@@ -976,6 +1072,7 @@ traffic_usage(void)
 \t       -Q           generate the 'idle (Quiet) connections' graph\n\
 \t       -R[MIN[-MAX]]generate the 'round trip time' graph\n\
 \t                    with args, ignore samples outside MIN to MAX (in ms)\n\
+\t       -T           generate the 'total data' graph\n\
 \t       -D[SECS]     generate the 'long duration connection' graph\n\
 \t		      default definition of 'long' is 60 seconds\n\
 \t       -d           enable local debugging in this module\n\
@@ -1019,6 +1116,7 @@ ParseArgs(char *argstring)
 	} else if (strcmp(argv[i],"-G") == 0) {
 	    doplot_active = TRUE;
 	    doplot_idle = TRUE;
+	    doplot_data = TRUE;
 	    doplot_bytes = TRUE;
 	    doplot_loss = TRUE;
 	    doplot_long = TRUE;
@@ -1067,6 +1165,12 @@ ParseArgs(char *argstring)
 		fprintf(stderr,
 			"mod_traffic: generating 'loss' graph into '%s'\n",
 			PLOTTER_LOSS_FILENAME);
+	} else if (strcmp(argv[i],"-T") == 0) {
+	    doplot_data = TRUE;
+	    if (debug)
+		fprintf(stderr,
+			"mod_traffic: generating 'total data' graph into '%s'\n",
+			PLOTTER_DATA_FILENAME);
 	} else if (strncmp(argv[i],"-D",2) == 0) {
 	    doplot_long = TRUE;
 	    if (strlen(argv[i]) > 2) {
