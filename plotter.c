@@ -101,9 +101,9 @@ HostLetter(
     pname = &name[sizeof(name)-1];
     *pname-- = '\00';
     while (pname >= name) {
-	unsigned digit = (ix-1) % 26;
+	unsigned digit = ix % 26;
 	*pname-- = 'a'+digit;
-	ix = (ix-1) / 26;
+	ix = ix / 26;
 	if (ix == 0)
 	    return(pname+1);
     }
