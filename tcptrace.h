@@ -212,6 +212,12 @@ typedef struct tcb {
     /* Dumped RTT samples */
     MFILE	*rtt_dump_file;
 
+    /* Extracted stream contents */
+    MFILE	*extracted_contents_file;
+    u_long	trunc_bytes;	/* data bytes not see due to trace file truncation */
+    u_long	trunc_segs;	/* segments with trunc'd bytes */
+    u_long	extr_lastseq;	/* last sequence number we stored */
+
     /* RTT Graph info for this one */
     PLOTTER	rtt_plotter;
     u_long	rtt_lastrtt;
@@ -283,6 +289,7 @@ extern Bool show_out_order;
 extern Bool show_rexmit;
 extern Bool show_zero_window;
 extern Bool use_short_names;
+extern Bool save_tcp_data;
 extern int debug;
 extern int thru_interval;
 extern int pnum;
@@ -349,12 +356,21 @@ int rexmit(tcb *, seqnum, seglen, Bool *);
 void ack_in(tcb *, seqnum);
 void DoThru(tcb *ptcb, int nbytes);
 struct mfile *Mfopen(char *fname, char *mode);
-int Mfprintf(MFILE *pmf, char *format, ...);
-int Mvfprintf(MFILE *pmf, char *format, va_list ap);
-int Mfclose(MFILE *pmf);
-int Mfflush(MFILE *pmf);
 void Minit(void);
+int Mfileno(MFILE *pmf);
+int Mvfprintf(MFILE *pmf, char *format, va_list ap);
+int Mfwrite(char *buf, u_long size, u_long nitems, MFILE *pmf);
+long Mftell(MFILE *pmf);
+int Mfseek(MFILE *pmf, long offset, int ptrname);
+int Mfprintf(MFILE *pmf, char *format, ...);
+int Mfflush(MFILE *pmf);
+int Mfclose(MFILE *pmf);
 struct tcp_options *ParseOptions(struct tcphdr *ptcp, void *plast);
+FILE *CompOpenHeader(char *filename);
+FILE *CompOpenFile(char *filename);
+void CompCloseFile(char *filename);
+void CompFormats(void);
+int CompIsCompressed(void);
 
 
 /* TCP flags macros */
@@ -436,6 +452,7 @@ struct tcp_options {
 #define RTT_GRAPH_FILE_EXTENSION	"_rtt.xpl"
 #define PLOT_FILE_EXTENSION		"_tsg.xpl"
 #define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"
+#define CONTENTS_FILE_EXTENSION		"_contents.dat"
 
 
 /*
