@@ -31,9 +31,6 @@
 #define DEFAULT_MAX_TCP_PAIRS 256
 extern int max_tcp_pairs;
 
-/* number of plotters to use */
-#define DEFAULT_MAX_PLOTTERS (2*MAX_TCP_PAIRS)
-
 typedef int PLOTTER;
 #define NO_PLOTTER -1
 
@@ -119,6 +116,7 @@ typedef struct tcb {
     u_char	reset_count;  /* resets SENT */
     u_long	min_seg_size;
     u_long	max_seg_size;
+    u_long	ooo_pkts;	/* out of order packets */
 
     /* information for RTO tracking */
     seg_rec	seglist_head;
@@ -263,7 +261,7 @@ char *HostName(ipaddr);
 char *HostLetter(u_int);
 char *EndpointName(ipaddr,portnum);
 PLOTTER new_plotter(tcb *plast, char *title);
-int rexmit(seqspace *, u_long, u_long);
+int rexmit(seqspace *, u_long, u_long, u_int *);
 
 
 /* TCP flags macros */

@@ -179,6 +179,7 @@ PrintTrace(
     StatlineI("actual data bytes","","%8lu", pab->data_bytes, pba->data_bytes);
     StatlineI("rexmt data pkts","","%8lu", pab->rexmit_pkts, pba->rexmit_pkts);
     StatlineI("rexmt data bytes","","%8lu", pab->rexmit_bytes, pba->rexmit_bytes);
+    StatlineI("outoforder pkts","","%8lu", pab->ooo_pkts, pba->ooo_pkts);
     StatlineI("max segm size","bytes","%8lu",
 	      pab->max_seg_size,
 	      pba->max_seg_size);
