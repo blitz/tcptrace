@@ -1,6 +1,6 @@
 dnl @(#) $Header$ (LBL)
 dnl
-dnl Copyright (c) 1995, 1996, 1997
+dnl Copyright (c) 1995, 1996, 1997, 1998
 dnl	The Regents of the University of California.  All rights reserved.
 dnl
 dnl Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ dnl
 dnl	$1 (copt set)
 dnl	$2 (incls set)
 dnl	CC
+dnl	LDFLAGS
 dnl	ac_cv_lbl_gcc_vers
 dnl	LBL_CFLAGS
 dnl
@@ -49,6 +50,9 @@ AC_DEFUN(AC_LBL_C_INIT,
     AC_ARG_WITH(gcc, [  --without-gcc           don't use gcc])
     $1="-O"
     $2=""
+    if test "${srcdir}" != "." ; then
+	    $2="-I\$\(srcdir\)"
+    fi
     if test "${CFLAGS+set}" = set; then
 	    LBL_CFLAGS="$CFLAGS"
     fi
@@ -77,7 +81,10 @@ AC_DEFUN(AC_LBL_C_INIT,
 		    AC_MSG_CHECKING(gcc version)
 		    AC_CACHE_VAL(ac_cv_lbl_gcc_vers,
 			ac_cv_lbl_gcc_vers=`$CC -v 2>&1 | \
-			    sed -n -e '$s/.* //' -e '$s/\..*//p'`)
+			    sed -e '/^gcc version /!d' \
+				-e 's/^gcc version //' \
+				-e 's/ .*//' -e 's/^[[[^0-9]]]*//' \
+				-e 's/\..*//'`)
 		    AC_MSG_RESULT($ac_cv_lbl_gcc_vers)
 		    if test $ac_cv_lbl_gcc_vers -gt 1 ; then
 			    $1="-O2"
@@ -119,7 +126,8 @@ AC_DEFUN(AC_LBL_C_INIT,
 			    ;;
 		    esac
 	    fi
-	    $2="-I/usr/local/include"
+	    $2="$$2 -I/usr/local/include"
+	    LDFLAGS="$LDFLAGS -L/usr/local/lib"
 
 	    case "$target_os" in
 
@@ -128,7 +136,7 @@ AC_DEFUN(AC_LBL_C_INIT,
 		    ;;
 
 	    osf*)
-		    V_CCOPT="$V_CCOPT -g3"
+		    V_CCOPT="$V_CCOPT -std1 -g3"
 		    ;;
 
 	    ultrix*)
@@ -148,6 +156,318 @@ AC_DEFUN(AC_LBL_C_INIT,
 	    esac
     fi
 ])
+
+dnl
+dnl Use pfopen.c if available and pfopen() not in standard libraries
+dnl Require libpcap
+dnl Look for libpcap in ..
+dnl Use the installed libpcap if there is no local version
+dnl
+dnl usage:
+dnl
+dnl	AC_LBL_LIBPCAP(pcapdep, incls)
+dnl
+dnl results:
+dnl
+dnl	$1 (pcapdep set)
+dnl	$2 (incls appended)
+dnl	LIBS
+dnl	LBL_LIBS
+dnl
+AC_DEFUN(AC_LBL_LIBPCAP,
+    [AC_REQUIRE([AC_LBL_LIBRARY_NET])
+    dnl
+    dnl save a copy before locating libpcap.a
+    dnl
+    LBL_LIBS="$LIBS"
+    pfopen=/usr/examples/packetfilter/pfopen.c
+    if test -f $pfopen ; then
+	    AC_CHECK_FUNCS(pfopen)
+	    if test $ac_cv_func_pfopen = "no" ; then
+		    AC_MSG_RESULT(Using $pfopen)
+		    LIBS="$LIBS $pfopen"
+	    fi
+    fi
+    AC_MSG_CHECKING(for local pcap library)
+    libpcap=FAIL
+    lastdir=FAIL
+    places=`ls .. | sed -e 's,/$,,' -e 's,^,../,' | \
+	egrep '/libpcap-[[0-9]]*\.[[0-9]]*(\.[[0-9]]*)?([[ab]][[0-9]]*)?$'`
+    for dir in $places ../libpcap libpcap ; do
+	    basedir=`echo $dir | sed -e 's/[[ab]][[0-9]]*$//'`
+	    if test $lastdir = $basedir ; then
+		    dnl skip alphas when an actual release is present
+		    continue;
+	    fi
+	    lastdir=$dir
+	    if test -r $dir/pcap.c ; then
+		    libpcap=$dir/libpcap.a
+		    d=$dir
+		    dnl continue and select the last one that exists
+	    fi
+    done
+    if test $libpcap = FAIL ; then
+	    AC_MSG_RESULT(not found)
+	    AC_CHECK_LIB(pcap, main, libpcap="-lpcap")
+	    if test $libpcap = FAIL ; then
+		    AC_MSG_ERROR(see the INSTALL doc for more info)
+	    fi
+    else
+	    $1=$libpcap
+	    $2="-I$d $$2"
+	    AC_MSG_RESULT($libpcap)
+    fi
+    LIBS="$libpcap $LIBS"
+    case "$target_os" in
+
+    aix*)
+	    pseexe="/lib/pse.exp"
+	    AC_MSG_CHECKING(for $pseexe)
+	    if test -f $pseexe ; then
+		    AC_MSG_RESULT(yes)
+		    LIBS="$LIBS -I:$pseexe"
+	    fi
+	    ;;
+    esac])
+
+dnl
+dnl Define RETSIGTYPE and RETSIGVAL
+dnl
+dnl usage:
+dnl
+dnl	AC_LBL_TYPE_SIGNAL
+dnl
+dnl results:
+dnl
+dnl	RETSIGTYPE (defined)
+dnl	RETSIGVAL (defined)
+dnl
+AC_DEFUN(AC_LBL_TYPE_SIGNAL,
+    [AC_BEFORE([$0], [AC_LBL_LIBPCAP])
+    AC_TYPE_SIGNAL
+    if test "$ac_cv_type_signal" = void ; then
+	    AC_DEFINE(RETSIGVAL,)
+    else
+	    AC_DEFINE(RETSIGVAL,(0))
+    fi
+    case "$target_os" in
+
+    irix*)
+	    AC_DEFINE(_BSD_SIGNALS)
+	    ;;
+
+    *)
+	    dnl prefer sigset() to sigaction()
+	    AC_CHECK_FUNCS(sigset)
+	    if test $ac_cv_func_sigset = no ; then
+		    AC_CHECK_FUNCS(sigaction)
+	    fi
+	    ;;
+    esac])
+
+dnl
+dnl If using gcc, make sure we have ANSI ioctl definitions
+dnl
+dnl usage:
+dnl
+dnl	AC_LBL_FIXINCLUDES
+dnl
+AC_DEFUN(AC_LBL_FIXINCLUDES,
+    [if test "$GCC" = yes ; then
+	    AC_MSG_CHECKING(for ANSI ioctl definitions)
+	    AC_CACHE_VAL(ac_cv_lbl_gcc_fixincludes,
+		AC_TRY_COMPILE(
+		    [/*
+		     * This generates a "duplicate case value" when fixincludes
+		     * has not be run.
+		     */
+#		include <sys/types.h>
+#		include <sys/time.h>
+#		include <sys/ioctl.h>
+#		ifdef HAVE_SYS_IOCCOM_H
+#		include <sys/ioccom.h>
+#		endif],
+		    [switch (0) {
+		    case _IO('A', 1):;
+		    case _IO('B', 1):;
+		    }],
+		    ac_cv_lbl_gcc_fixincludes=yes,
+		    ac_cv_lbl_gcc_fixincludes=no))
+	    AC_MSG_RESULT($ac_cv_lbl_gcc_fixincludes)
+	    if test $ac_cv_lbl_gcc_fixincludes = no ; then
+		    # Don't cache failure
+		    unset ac_cv_lbl_gcc_fixincludes
+		    AC_MSG_ERROR(see the INSTALL for more info)
+	    fi
+    fi])
+
+dnl
+dnl Check for flex, default to lex
+dnl Require flex 2.4 or higher
+dnl Check for bison, default to yacc
+dnl Default to lex/yacc if both flex and bison are not available
+dnl Define the yy prefix string if using flex and bison
+dnl
+dnl usage:
+dnl
+dnl	AC_LBL_LEX_AND_YACC(lex, yacc, yyprefix)
+dnl
+dnl results:
+dnl
+dnl	$1 (lex set)
+dnl	$2 (yacc appended)
+dnl	$3 (optional flex and bison -P prefix)
+dnl
+AC_DEFUN(AC_LBL_LEX_AND_YACC,
+    [AC_ARG_WITH(flex, [  --without-flex          don't use flex])
+    AC_ARG_WITH(bison, [  --without-bison         don't use bison])
+    if test "$with_flex" = no ; then
+	    $1=lex
+    else
+	    AC_CHECK_PROGS($1, flex, lex)
+    fi
+    if test "$$1" = flex ; then
+	    # The -V flag was added in 2.4
+	    AC_MSG_CHECKING(for flex 2.4 or higher)
+	    AC_CACHE_VAL(ac_cv_lbl_flex_v24,
+		if flex -V >/dev/null 2>&1; then
+			ac_cv_lbl_flex_v24=yes
+		else
+			ac_cv_lbl_flex_v24=no
+		fi)
+	    AC_MSG_RESULT($ac_cv_lbl_flex_v24)
+	    if test $ac_cv_lbl_flex_v24 = no ; then
+		    s="2.4 or higher required"
+		    AC_MSG_WARN(ignoring obsolete flex executable ($s))
+		    $1=lex
+	    fi
+    fi
+    if test "$with_bison" = no ; then
+	    $2=yacc
+    else
+	    AC_CHECK_PROGS($2, bison, yacc)
+    fi
+    if test "$$2" = bison ; then
+	    $2="$$2 -y"
+    fi
+    if test "$$1" != lex -a "$$2" = yacc -o "$$1" = lex -a "$$2" != yacc ; then
+	    AC_MSG_WARN(don't have both flex and bison; reverting to lex/yacc)
+	    $1=lex
+	    $2=yacc
+    fi
+    if test "$$1" = flex -a -n "$3" ; then
+	    $1="$$1 -P$3"
+	    $2="$$2 -p $3"
+    fi])
+
+dnl
+dnl Checks to see if union wait is used with WEXITSTATUS()
+dnl
+dnl usage:
+dnl
+dnl	AC_LBL_UNION_WAIT
+dnl
+dnl results:
+dnl
+dnl	DECLWAITSTATUS (defined)
+dnl
+AC_DEFUN(AC_LBL_UNION_WAIT,
+    [AC_MSG_CHECKING(if union wait is used)
+    AC_CACHE_VAL(ac_cv_lbl_union_wait,
+	AC_TRY_COMPILE([
+#	include <sys/types.h>
+#	include <sys/wait.h>],
+	    [int status;
+	    u_int i = WEXITSTATUS(status);
+	    u_int j = waitpid(0, &status, 0);],
+	    ac_cv_lbl_union_wait=no,
+	    ac_cv_lbl_union_wait=yes))
+    AC_MSG_RESULT($ac_cv_lbl_union_wait)
+    if test $ac_cv_lbl_union_wait = yes ; then
+	    AC_DEFINE(DECLWAITSTATUS,union wait)
+    else
+	    AC_DEFINE(DECLWAITSTATUS,int)
+    fi])
+
+dnl
+dnl Checks to see if the sockaddr struct has the 4.4 BSD sa_len member
+dnl
+dnl usage:
+dnl
+dnl	AC_LBL_SOCKADDR_SA_LEN
+dnl
+dnl results:
+dnl
+dnl	HAVE_SOCKADDR_SA_LEN (defined)
+dnl
+AC_DEFUN(AC_LBL_SOCKADDR_SA_LEN,
+    [AC_MSG_CHECKING(if sockaddr struct has sa_len member)
+    AC_CACHE_VAL(ac_cv_lbl_sockaddr_has_sa_len,
+	AC_TRY_COMPILE([
+#	include <sys/types.h>
+#	include <sys/socket.h>],
+	[u_int i = sizeof(((struct sockaddr *)0)->sa_len)],
+	ac_cv_lbl_sockaddr_has_sa_len=yes,
+	ac_cv_lbl_sockaddr_has_sa_len=no))
+    AC_MSG_RESULT($ac_cv_lbl_sockaddr_has_sa_len)
+    if test $ac_cv_lbl_sockaddr_has_sa_len = yes ; then
+	    AC_DEFINE(HAVE_SOCKADDR_SA_LEN)
+    fi])
+
+dnl
+dnl Checks to see if -R is used
+dnl
+dnl usage:
+dnl
+dnl	AC_LBL_HAVE_RUN_PATH
+dnl
+dnl results:
+dnl
+dnl	ac_cv_lbl_have_run_path (yes or no)
+dnl
+AC_DEFUN(AC_LBL_HAVE_RUN_PATH,
+    [AC_MSG_CHECKING(for ${CC-cc} -R)
+    AC_CACHE_VAL(ac_cv_lbl_have_run_path,
+	[echo 'main(){}' > conftest.c
+	${CC-cc} -o conftest conftest.c -R/a1/b2/c3 >conftest.out 2>&1
+	if test ! -s conftest.out ; then
+		ac_cv_lbl_have_run_path=yes
+	else
+		ac_cv_lbl_have_run_path=no
+	fi
+	rm -f conftest*])
+    AC_MSG_RESULT($ac_cv_lbl_have_run_path)
+    ])
+
+dnl
+dnl Due to the stupid way it's implemented, AC_CHECK_TYPE is nearly useless.
+dnl
+dnl usage:
+dnl
+dnl	AC_LBL_CHECK_TYPE
+dnl
+dnl results:
+dnl
+dnl	int32_t (defined)
+dnl	u_int32_t (defined)
+dnl
+AC_DEFUN(AC_LBL_CHECK_TYPE,
+    [AC_MSG_CHECKING(for $1 using $CC)
+    AC_CACHE_VAL(ac_cv_lbl_have_$1,
+	AC_TRY_COMPILE([
+#	include "confdefs.h"
+#	include <sys/types.h>
+#	if STDC_HEADERS
+#	include <stdlib.h>
+#	include <stddef.h>
+#	endif],
+	[$1 i],
+	ac_cv_lbl_have_$1=yes,
+	ac_cv_lbl_have_$1=no))
+    AC_MSG_RESULT($ac_cv_lbl_have_$1)
+    if test $ac_cv_lbl_have_$1 = no ; then
+	    AC_DEFINE($1, $2)
+    fi])
 
 dnl
 dnl Checks to see if unaligned memory accesses fail
@@ -217,7 +537,6 @@ EOF
 	    AC_DEFINE(LBL_ALIGN)
     fi])
 
-
 dnl
 dnl If using gcc and the file .devel exists:
 dnl	Compile with -g (if supported) and -Wall
@@ -247,7 +566,7 @@ AC_DEFUN(AC_LBL_DEVEL,
 			    fi
 			    $1="$$1 -Wall"
 			    if test $ac_cv_lbl_gcc_vers -gt 1 ; then
-				    $1="$$1 -pedantic -Wmissing-prototypes -Wstrict-prototypes"
+				    $1="$$1 -Wmissing-prototypes -Wstrict-prototypes"
 			    fi
 		    fi
 	    else
@@ -272,13 +591,14 @@ AC_DEFUN(AC_LBL_DEVEL,
     fi])
 
 dnl
-dnl Attempt to determine additional libraries needed for network programs
+dnl Improved version of AC_CHECK_LIB
 dnl
 dnl Thanks to John Hawkinson (jhawk@mit.edu)
 dnl
 dnl usage:
 dnl
-dnl	AC_LBL_LIBRARY_NET
+dnl	AC_LBL_CHECK_LIB(LIBRARY, FUNCTION [, ACTION-IF-FOUND [,
+dnl	    ACTION-IF-NOT-FOUND [, OTHER-LIBRARIES]]])
 dnl
 dnl results:
 dnl
@@ -289,7 +609,7 @@ define(AC_LBL_CHECK_LIB,
 [AC_MSG_CHECKING([for $2 in -l$1])
 dnl Use a cache variable name containing both the library and function name,
 dnl because the test really is for library $1 defining function $2, not
-dnl just for library $1.  Separate tests with the same $1 and different $2s
+dnl just for library $1.  Separate tests with the same $1 and different $2's
 dnl may have different results.
 ac_lib_var=`echo $1['_']$2['_']$5 | sed 'y%./+- %__p__%'`
 AC_CACHE_VAL(ac_cv_lbl_lib_$ac_lib_var,
