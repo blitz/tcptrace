@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996
+ * Copyright (c) 1994, 1995, 1996, 1997
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,8 +50,10 @@ static char const rcsid[] =
 /* NOTE:  This is for version 5 of the file.  Other file formats may not work
  correctly.*/
 
+static char ep_version;
+
 struct EPFileHeader {
-    char	version;	/* file version (must be 5 or 6)*/
+    char	version;	/* file version (must be 5, 6, or 7)*/
     char	status;		/* filler to fill to even boundary*/
 };
 
@@ -84,16 +86,6 @@ struct EPFilePacket3 {
 };
 
 
-struct EPPacketData {
-    /*unsigned char packetHeaderStart[];
-      struct
-      {*/
-    unsigned char destAddr[6];		/* address of destination*/
-    unsigned char sourceAddr[6];	/* address of source*/
-    unsigned short protoType;		/* ethernet protocol type*/
-    unsigned char *packetDataStart;	/* here is the packet data*/
-};
-
 
 /* byte swapping */
 /* Mac's are in network byte order.  If this machine is NOT, then */
@@ -109,8 +101,10 @@ unsigned long mactime;
 #define Real_Size_FP3 20 
 
 #define Mac2unix 2082844800u  /* difference between Unix and Mac timestamp */
-#define VERSION_NEW 0x0600    /* Version 6 */
-#define VERSION_OLD 0x0500    /* Version 5 */ 
+
+#define VERSION_7 7    /* Version 7 */
+#define VERSION_6 6    /* Version 6 */
+#define VERSION_5 5    /* Version 5 */ 
 
 
 /* static buffers for reading */
@@ -145,16 +139,31 @@ pread_EP(
 	}
 	hdr.packetLength = ntohs(hdr.packetLength);
 	hdr.sliceLength = ntohs(hdr.sliceLength);
+
+	if (debug>1) {
+	    printf("EP_read: next packet: original length: %d, saved length: %d\n",
+		   hdr.packetLength, hdr.sliceLength);
+	}
+	    
 	
 	if ((rlen=fread(&hdr2,1,Real_Size_FP2,stdin)) !=Real_Size_FP2) {
 	    if (rlen != 0)
 		fprintf(stderr,"Bad EP header\n");
 	    return(0);
 	}
-	if ((rlen=fread(&hdr3,1,Real_Size_FP3,stdin)) != Real_Size_FP3) {
-	    if (rlen != 0)
-		fprintf(stderr,"Bad EP header\n");
-	    return(0);
+	if ((ep_version == VERSION_5) || (ep_version == VERSION_6)) {
+	    if ((rlen=fread(&hdr3,1,Real_Size_FP3,stdin)) != Real_Size_FP3) {
+		if (rlen != 0)
+		    fprintf(stderr,"Bad EP header\n");
+		return(0);
+	    }
+	} else {
+	    /* only 10 bytes in version 7, I don't know the details */
+	    if ((rlen=fread(&hdr3,10,1,stdin)) != 1) {
+		if (rlen != 0)
+		    fprintf(stderr,"Bad EP v7 header\n");
+		return(0);
+	    }
 	}
 	hdr3.timestamp = ntohl(hdr3.timestamp);
 
@@ -172,6 +181,10 @@ pread_EP(
 	    return(0);
 	}
 
+
+	if (debug > 3)
+	    PrintRawDataHex("EP_READ: Ethernet Dump", pep, (char *)(pep+1)-1);
+
 	/* read the rest of the packet */
 	len -= sizeof(struct ether_header);
 	if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
@@ -181,6 +194,16 @@ pread_EP(
 			len);
 	    return(0);
 	}
+
+	if (debug > 3)
+	    PrintRawDataHex("EP_READ: IP Dump", pip_buf, (char *)pip_buf+len-1);
+
+	/* round to 2 bytes for V7 */
+	if (ep_version == VERSION_7) {
+	    if (len%2 != 0)
+		fseek(stdin,1,SEEK_CUR);
+	}
+
 	ptime->tv_sec  = mactime + (hdr3.timestamp / 1000); /*milliseconds div 1000*/
 	ptime->tv_usec = 1000 * (hdr3.timestamp % 1000);
 	*plen          = hdr.packetLength;
@@ -254,15 +277,18 @@ pread_f *is_EP(void)
 
 
     /* check for EP */
-    if (nhdr.version != 6  && nhdr.version != 5 ) {
+    if (nhdr.version != VERSION_7 &&
+	nhdr.version != VERSION_6 &&
+	nhdr.version != VERSION_5 ) {
 	if (debug)
-	    fprintf(stderr,"I don't think this is version 5 or 6 Ether Peek File\n");
+	    fprintf(stderr,"I don't think this is version 5, 6, or 7 Ether Peek File\n");
 
 	return(NULL);
     } 
 
     if (debug)
 	printf("EP file version: %d\n", nhdr.version);
+    ep_version = nhdr.version;
 
     /* OK, it's mine.  Init some stuff */
     pep = MallocZ(sizeof(struct ether_header));
