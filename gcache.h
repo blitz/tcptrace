@@ -25,9 +25,7 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
-static char const copyright[] =
-    "@(#)Copyright (c) 1996\nOhio University.  All rights reserved.\n";
-static char const rcsid[] =
+static char const rcsid_gcache[] =
     "@(#)$Header$";
 
 
