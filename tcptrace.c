@@ -81,6 +81,8 @@ Bool printticks = FALSE;
 Bool printtrunc = FALSE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
+Bool graph_seq_zero = FALSE;
+Bool graph_zero_len_pkts = TRUE;
 Bool plot_tput_instant = TRUE;
 Bool filter_output = FALSE;
 int debug = 0;
@@ -356,7 +358,11 @@ Graphing detail options\n\
   -C      produce color plot[s]\n\
   -M      produce monochrome (b/w) plot[s]\n\
   -AN     Average N segments for throughput graphs, default is 10\n\
-  -z      plot time axis from 0 rather than wall clock time\n\
+  -z      zero axis options
+    -z      plot time axis from 0 rather than wall clock time (backward compat)\n\
+    -zx     plot time axis from 0 rather than wall clock time\n\
+    -zy     plot sequence numbers from 0 (time sequence graphs only)\n\
+    -zxy    plot both axes from 0\n\
   -y      omit the (yellow) instantaneous throughput points in tput graph\n\
 Misc options\n\
   -Z      dump raw rtt sample times to file[s]\n\
@@ -1028,7 +1034,24 @@ ParseArgs(
 		  case 'w': printtrunc = TRUE; break;
 		  case 'y': plot_tput_instant = FALSE; break;
 		  case 'q': printsuppress = TRUE; break;
-		  case 'z': graph_time_zero = TRUE; break;
+		  case 'z':
+		    if (strcmp(argv[i],"z") == 0) {
+			/* backward compat, just zero the time */
+			graph_time_zero = TRUE;
+		    } else if (strcasecmp(argv[i],"zx") == 0) {
+			graph_time_zero = TRUE;
+		    } else if (strcasecmp(argv[i],"zy") == 0) {
+			graph_seq_zero = TRUE;
+		    } else if ((strcasecmp(argv[i],"zxy") == 0) ||
+			       (strcasecmp(argv[i],"zyx") == 0)) {
+			/* set BOTH to zero */
+			graph_time_zero = TRUE;
+			graph_seq_zero = TRUE;
+		    } else {
+			BadArg(argsource, "only -z -zx -zy and -zxy are legal\n");
+		    }
+		    *(argv[i]+1) = '\00';
+		    break;
 		  case 'f':
 		    filter_output = TRUE;
 		    if (*(argv[i]+1)) {
@@ -1100,7 +1123,24 @@ ParseArgs(
 		  case 't': printticks = !TRUE; break;
 		  case 'w': printtrunc = !TRUE; break;
 		  case 'q': printsuppress = !TRUE; break;
-		  case 'z': graph_time_zero = !TRUE; break;
+		  case 'z':
+		    if (strcmp(argv[i],"z") == 0) {
+			/* backward compat, just zero the time */
+			graph_time_zero = !TRUE;
+		    } else if (strcasecmp(argv[i],"zx") == 0) {
+			graph_time_zero = !TRUE;
+		    } else if (strcasecmp(argv[i],"zy") == 0) {
+			graph_seq_zero = !TRUE;
+		    } else if ((strcasecmp(argv[i],"zxy") == 0) ||
+			       (strcasecmp(argv[i],"zyx") == 0)) {
+			/* set BOTH to zero */
+			graph_time_zero = !TRUE;
+			graph_seq_zero = !TRUE;
+		    } else {
+			BadArg(argsource, "only +z +zx +zy and +zxy are legal\n");
+		    }
+		    *(argv[i]+1) = '\00';
+		    break;
 		  default:
 		    Usage();
 		}
@@ -1138,6 +1178,7 @@ DumpFlags(void)
 	fprintf(stderr,"show_out_order:	  %d\n", show_out_order);
 	fprintf(stderr,"save_tcp_data:    %d\n", save_tcp_data);
 	fprintf(stderr,"graph_time_zero:  %d\n", graph_time_zero);
+	fprintf(stderr,"graph_seq_zero:   %d\n", graph_seq_zero);
 	fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
 	fprintf(stderr,"ending pnum:      %lu\n", endpnum);
 	fprintf(stderr,"throughput intvl: %d\n", thru_interval);
