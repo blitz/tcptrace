@@ -142,7 +142,7 @@ LDFLAGS += ${PCAP_LDFLAGS}
 
 # Source Files
 CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
-	netm.c output.c plotter.c print.c rexmit.c snoop.c	\
+	netm.c output.c plotter.c print.c rexmit.c snoop.c tsh.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \
 	version.c
