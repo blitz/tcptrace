@@ -109,8 +109,8 @@ pread_ns(
 	char tt;
 	double timestamp;
 	int junk;
-	char type[100];
-	char flags[100];
+	char type[16];
+	char flags[16];
 	int iteration;
 	int seq;
 	int is_ack;
@@ -268,8 +268,8 @@ int pread_ns_fulltcp(
 	char tt;
 	double timestamp;
 	int junk;
-	char type[100];
-	char flags[100];
+	char type[16];
+	char flags[16];
 	int iteration;
 	int seqno;
 	int ackno;
@@ -283,7 +283,7 @@ int pread_ns_fulltcp(
 
 	++linenum;
 
-	isend = fgets(myline, 80, SYS_STDIN);
+	isend = fgets(myline, 128, SYS_STDIN);
 	if (isend == NULL) {  // end of file
 		return 0;
 	}
@@ -311,6 +311,7 @@ int pread_ns_fulltcp(
 
 	/* if we can't match all 18 fields, we give up on the file */
 	if (rlen != 18) {
+		fprintf(stderr, "\"%s\"\n", myline);
 	    fprintf(stderr,"Bad NS packet header in line %u only [%d] arguments can be matched expected 14 or 18 \n", linenum, rlen);
 	    fprintf(stderr,"Is this a Full Tcp Header?\n");
 	    return(0);
