@@ -274,6 +274,7 @@ extern timeval current_time;
 
 
 /* external routine decls */
+double sqrt(double x);
 char *ether_ntoa();
 void bzero(void *, int);
 void bcopy(void *, void *,int);

@@ -33,7 +33,6 @@ static char const rcsid[] =
 
 #include "tcptrace.h"
 #include "gcache.h"
-#include <math.h>
 
 
 /* local routines */
