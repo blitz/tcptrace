@@ -290,7 +290,8 @@ new_plotter(
 	     ((strcmp(ylabel,"sequence number") == 0)&&(!graph_seq_zero))?
 	     "double":"signed");
 
-    Mfprintf(f,"title\n%s\n", title);
+    if (show_title)
+        Mfprintf(f,"title\n%s\n", title);
     Mfprintf(f,"xlabel\n%s\n", xlabel);
     Mfprintf(f,"ylabel\n%s\n", ylabel);
 
