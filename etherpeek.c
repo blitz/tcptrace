@@ -126,7 +126,8 @@ pread_EP(
     int		 	*ptlen,
     void		**pphys,
     int			*pphystype,
-    struct ip		**ppip)
+    struct ip		**ppip,
+    void		**pplast)
 {
     int packlen;
     int rlen;
@@ -191,6 +192,7 @@ pread_EP(
 	    *ptlen = hdr.packetLength;
 
 	*ppip  = (struct ip *) pip_buf;
+	*pplast = (char *)pip_buf+len-1; /* last byte in the IP packet */
 	*pphys  = pep;
 	*pphystype = PHYS_ETHER;
 

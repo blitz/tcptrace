@@ -57,7 +57,8 @@ struct supported_formats {
 /*	    int		 	*ptlen,					*/
 /*	    void		**pphys,				*/
 /*	    int			*pphystype,				*/
-/*	    struct ip		**ppip)					*/
+/*	    struct ip		**ppip,					*/
+/*	    void		**pplast)				*/
 /*   the reader function should return 0 at EOF and 1 otherwise		*/
 /* This routine must return ONLY IP packets, but they need not all be	*/
 /* TCP packets (if not, they're ignored).				*/

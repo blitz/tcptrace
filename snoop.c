@@ -67,7 +67,8 @@ pread_snoop(
     int		 	*ptlen,
     void		**pphys,
     int			*pphystype,
-    struct ip		**ppip)
+    struct ip		**ppip,
+    void		**pplast)
 {
     int packlen;
     int rlen;
@@ -119,6 +120,7 @@ pread_snoop(
 
 
 	*ppip  = (struct ip *) pip_buf;
+	*pplast = (char *)pip_buf+packlen-sizeof(struct ether_header)-1; /* last byte in the IP packet */
 	*pphys  = pep;
 	*pphystype = PHYS_ETHER;
 

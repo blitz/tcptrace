@@ -277,7 +277,7 @@ ProcessFile(void)
 
     while (1) {
         /* read the next packet */
-	ret = (*ppread)(&current_time,&len,&tlen,&phys,&phystype,&pip);
+	ret = (*ppread)(&current_time,&len,&tlen,&phys,&phystype,&pip,&plast);
 	if (ret == 0) /* EOF */
 	    break;
 
@@ -346,7 +346,7 @@ for other packet types, I just don't have a place to test them\n\n");
 	/* print the packet, if requested */
 	if (printem) {
 	    printf("Packet %d\n", pnum);
-	    printpacket(len,tlen,phys,phystype,pip);
+	    printpacket(len,tlen,phys,phystype,pip,plast);
 	}
 
 	/* we must assume it's an IP packet, but */
@@ -355,9 +355,6 @@ for other packet types, I just don't have a place to test them\n\n");
 	    continue;
 
         /* perform packet analysis */
-	plast = (void *)((unsigned)pip + tlen - 1);
-	if (phystype == PHYS_ETHER)
-	    plast = (void *)((u_int)plast - sizeof(struct ether_header));
 	ptp = dotrace(pip,plast);
 
 	/* also, pass the packet to any modules defined */

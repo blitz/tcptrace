@@ -214,10 +214,9 @@ printpacket(
      int		tlen,
      void		*phys,
      int		phystype,
-     struct ip		*pip)
+     struct ip		*pip,
+     void 		*plast)
 {
-    void *plast = NULL;
-
     if (len == tlen)
         printf("\tPacket Length: %d\n", len);
     else
@@ -228,7 +227,6 @@ printpacket(
     switch(phystype) {
       case PHYS_ETHER:
 	printeth_packet(phys);
-	plast = (void *)((unsigned)pip + tlen - sizeof(struct ether_header) - 1);
 	break;
       default:
 	printf("\tPhysical layer: %d (not understood)\n", phystype);

@@ -83,3 +83,5 @@
 4.0.3 - Thu Jul 24, 1997
   Fixed tcpdump.c to work with lastest libpcap
    (can no longer assume that header is aligned :-(  )
+  Added plast into all packet reading routines to better check for the end
+   of packets
