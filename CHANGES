@@ -116,4 +116,6 @@
   Added -z flag to plot time axis from 0 rather than wallclock time
   big lint cleanup
   added support for "configure" to simplify cross-platform stuff
+  added Mark's "data xmit time" code
+
 
