@@ -8,54 +8,50 @@
 /* NOTE:  This is for version 5 of the file.  Other file formats may not work
  correctly.*/
 
-   struct EPFileHeader
-	{
-	char	version;	/* file version (must be 5 or 6)*/
-	char	status;		/* filler to fill to even boundary*/
-        };
-   struct EPFileHeader2
-      {
-        unsigned long	length;		/* length of file*/
-	unsigned long	numPackets;	/* number of packets contained in the file*/
-	unsigned long	timeDate;	/* time and date stamp of the file (MAC format)*/
-	unsigned long	timeStart;	/* time of the first packet in the file*/
-        unsigned long	timeStop;	/* time of the last packet in the file*/
-        unsigned long	futureUse[7];	 /*reserved for future use and irrelavent to us!*/
-	};
+struct EPFileHeader {
+    char	version;	/* file version (must be 5 or 6)*/
+    char	status;		/* filler to fill to even boundary*/
+};
 
-  struct EPFilePacket
-	{
-	unsigned short packetLength;	/* total packet length */
-	unsigned short sliceLength;	/* sliced length of packet*/
-        };
-  struct EPFilePacket2
-        {
-	unsigned char flags;		/* crc, frame, runt, ...*/
-	unsigned char status;		/* slice, trunc, ...*/
-         };
-  struct EPFilePacket3
-        { 
-	unsigned long  timestamp;	/* timestamp in milliseconds*/
-	short destNum,			/* str corresponding to ether address*/
-		  srcNum,		/* dnum is entry in table*/
-		  protoNum;		/* table number for the protocol*/
-	char protoStr[8];		/* protocol identity string (NOT null terminated!)*/
-	unsigned short filterNum;	/* index to filter table*/
+struct EPFileHeader2 {
+    unsigned long length;	/* length of file*/
+    unsigned long numPackets;	/* number of packets contained in the file*/
+    unsigned long timeDate;	/* time and date stamp of the file (MAC format)*/
+    unsigned long timeStart;	/* time of the first packet in the file*/
+    unsigned long timeStop;	/* time of the last packet in the file*/
+    unsigned long futureUse[7];	/*reserved for future use and irrelavent to us!*/
+};
 
-		};
+struct EPFilePacket {
+    unsigned short packetLength;/* total packet length */
+    unsigned short sliceLength;	/* sliced length of packet*/
+};
+
+struct EPFilePacket2 {
+    unsigned char flags;	/* crc, frame, runt, ...*/
+    unsigned char status;	/* slice, trunc, ...*/
+};
+
+struct EPFilePacket3 { 
+    unsigned long  timestamp;	/* timestamp in milliseconds*/
+    short destNum;		/* str corresponding to ether address*/
+    short srcNum;		/* dnum is entry in table*/
+    short protoNum;		/* table number for the protocol*/
+    char protoStr[8];		/* protocol identity string (NOT null terminated!)*/
+    unsigned short filterNum;	/* index to filter table*/
+};
 
 
+struct EPPacketData {
+    /*unsigned char packetHeaderStart[];
+      struct
+      {*/
+    unsigned char destAddr[6];		/* address of destination*/
+    unsigned char sourceAddr[6];	/* address of source*/
+    unsigned short protoType;		/* ethernet protocol type*/
+    unsigned char *packetDataStart;	/* here is the packet data*/
+};
 
-	struct EPPacketData
-		{
-		/*unsigned char packetHeaderStart[];
-		struct
-			{*/
-			unsigned char destAddr[6];	/* address of destination*/
-			unsigned char sourceAddr[6];	/* address of source*/
-			unsigned short protoType;	/* ethernet protocol type*/
-			unsigned char *packetDataStart;/* here is the packet data*/
-			};
   
 unsigned long mactime;
 

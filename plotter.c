@@ -10,12 +10,11 @@
  */
 
 #include "tcptrace.h"
-#include <stdarg.h>
 
 
 /* locally global parameters */
 static int max_plotters;
-static FILE **fplot;
+static MFILE **fplot;
 static tcb **p2plast;
 static PLOTTER plotter_ix = NO_PLOTTER;
 static char *temp_color = NULL;
@@ -58,7 +57,7 @@ plot_init()
 {
     max_plotters = 2*max_tcp_pairs;
 
-    fplot = (FILE **) MallocZ(max_plotters * sizeof(FILE *));
+    fplot = (MFILE **) MallocZ(max_plotters * sizeof(MFILE *));
     p2plast = (tcb **) MallocZ(max_plotters * sizeof(tcb *));
 }
 
@@ -122,7 +121,7 @@ DoPlot(
      ...)
 {
     va_list	ap;
-    FILE *f = NULL;
+    MFILE *f = NULL;
 
     va_start(ap,fmt);
 
@@ -141,12 +140,12 @@ DoPlot(
 	return;
 
     if (temp_color) {
-	fprintf(f,"%s ",temp_color);
+	Mfprintf(f,"%s ",temp_color);
 	temp_color = NULL;
     }
 
-    vfprintf(f,fmt,ap);
-    fprintf (f,"\n");
+    Mvfprintf(f,fmt,ap);
+    Mfprintf (f,"\n");
 
     va_end(ap);
 
@@ -160,7 +159,7 @@ new_plotter(
      char *title)
 {
     PLOTTER pl;
-    FILE *f;
+    MFILE *f;
     char *filename;
 
     ++plotter_ix;
@@ -176,13 +175,13 @@ new_plotter(
     if (debug)
 	fprintf(stderr,"Plotter %d file is '%s'\n", pl, filename);
 
-    if ((f = fopen(filename,"w")) == NULL) {
+    if ((f = Mfopen(filename,"w")) == NULL) {
 	perror(filename);
 	return(NO_PLOTTER);
     }
 
-    fprintf(f,"timeval unsigned\n");
-    fprintf(f,"title\n%s\n", title);
+    Mfprintf(f,"timeval unsigned\n");
+    Mfprintf(f,"title\n%s\n", title);
 
     fplot[pl] = f;
     p2plast[pl] = plast;
@@ -195,21 +194,21 @@ void
 plotter_done()
 {
     PLOTTER pl;
-    FILE *f;
+    MFILE *f;
     char *fname;
 
     for (pl = 0; pl < plotter_ix; ++pl) {
 	if ((f = fplot[pl]) == NULL)
 	    continue;
 	if (!ignore_non_comp || ConnComplete(p2plast[pl]->ptp)) {
-	    fprintf(f,"go\n");
-	    fclose(f);
+	    Mfprintf(f,"go\n");
+	    Mfclose(f);
 	} else {
 	    fname = p2plast[pl]->tsg_plotfile;
 	    if (debug)
 		fprintf(stderr,"Removing incomplete plot file '%s'\n",
 			fname);
-	    fclose(f);
+	    Mfclose(f);
 	    if (unlink(fname) != 0)
 		perror(fname);
 	}

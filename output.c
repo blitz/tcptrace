@@ -203,11 +203,11 @@ PrintTrace(
     fprintf(stdout,"\tlast packet:   %s\n", ts2ascii(&ptp->last_time));
 
     etime = elapsed(ptp->first_time,ptp->last_time);
-    fprintf(stdout,"\telapsed time:  %lu:%02lu:%02lu.%04lu\n",
+    fprintf(stdout,"\telapsed time:  %lu:%02lu:%02lu.%06lu\n",
 	    (etime / 1000000) / (60 * 24),
 	    (etime / 1000000) % (60 * 24) / 60,
 	    ((etime / 1000000) % (60 * 24)) % 60,
-	    (etime % 1000000) / 100);
+	    (etime % 1000000));
     fprintf(stdout,"\ttotal packets: %lu\n", ptp->packets);
 	
 
@@ -218,7 +218,7 @@ PrintTrace(
     if (pab->reset_count || pba->reset_count)
 	StatlineI("resets sent","","%8lu", pab->reset_count, pba->reset_count);
     StatlineI("ack pkts sent","","%8lu", pab->ack_pkts, pba->ack_pkts);
-    StatlineI("unique bytes","","%8lu",
+    StatlineI("unique bytes sent","","%8lu",
 	      pab->data_bytes-pab->rexmit_bytes,
 	      pba->data_bytes-pba->rexmit_bytes);
 #ifdef OLD

@@ -54,17 +54,17 @@ struct supported_formats {
 
 /* install the is_GLORP() routines supported */
 struct supported_formats file_formats[] = {
-#ifdef GROK_EP
-	{is_EP,		"etherpeek", "etherpeek -- Mac sniffer program"},
-#endif GROK_EP
-#ifdef GROK_SNOOP
-	{is_snoop,	"snoop","Sun Snoop -- Distributed with Solaris"},
-#endif GROK_SNOOP
-#ifdef GROK_NETM
-	{is_netm,	"netmetrix","Net Metrix -- Commercial program from HP"},
-#endif GROK_NETM
 #ifdef GROK_TCPDUMP
 	{is_tcpdump,	"tcpdump","tcpdump -- Public domain program from LBL"},
 #endif GROK_TCPDUMP
+#ifdef GROK_SNOOP
+	{is_snoop,	"snoop","Sun Snoop -- Distributed with Solaris"},
+#endif GROK_SNOOP
+#ifdef GROK_EP
+	{is_EP,		"etherpeek", "etherpeek -- Mac sniffer program"},
+#endif GROK_EP
+#ifdef GROK_NETM
+	{is_netm,	"netmetrix","Net Metrix -- Commercial program from HP"},
+#endif GROK_NETM
 	{NULL,NULL},	/* You must NOT remove this entry */
 };

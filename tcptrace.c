@@ -50,7 +50,7 @@ static void
 Usage(
     char *prog)
 {
-    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPSX] [+bclnprtCPS] [-(BEmio)N]* file\n", prog);
+    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPSX] [+bclnprtCPS] [-(BETmio)N]* file\n", prog);
     fprintf(stderr,"\
   -b      brief synopsis\n\
   -c      ignore non-complete connections\n\
@@ -71,6 +71,7 @@ Usage(
   -P      create plot files\n\
   -R      dump rtt samples to files\n\
   -S      use short names (list \"host.b.c\" as just \"host\")\n\
+  -Tn     output instantaneous throughput plot files (every N packets)\n\
   -X      print in hexidecimal\n\
   +[v]    reverse the setting of the -[v] flag\n");
     Version();
@@ -157,6 +158,13 @@ main(
 		  case 'E':
 		    endpnum = atoi(argv[i]+1);
 		    *(argv[i]+1) = '\00'; break;
+		  case 'T':
+		    thru_interval = atoi(argv[i]+1);
+		    if (thru_interval < 1) {
+			fprintf(stderr, "for -TN, N must be at least 1\n");
+			Usage(argv[0]);
+		    }
+		    *(argv[i]+1) = '\00'; break;
 		  case 'm':
 		    max_tcp_pairs = atoi(argv[i]+1);
 		    if (max_tcp_pairs <= 0) {
@@ -228,6 +236,7 @@ main(
 	fprintf(stderr,"hex printing:     %d\n", hex);
 	fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
 	fprintf(stderr,"ending pnum:      %lu\n", endpnum);
+	fprintf(stderr,"throughput intvl: %d\n", thru_interval);
     }
 
     if (debug) {

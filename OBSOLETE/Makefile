@@ -34,8 +34,8 @@ else
 endif
 
 
-OFILES= etherpeek.o gcache.o tcptrace.o names.o netm.o output.o \
-	plotter.o print.o snoop.o tcpdump.o trace.o rexmit.o
+OFILES= etherpeek.o gcache.o tcptrace.o mfiles.o names.o netm.o output.o \
+	plotter.o print.o snoop.o tcpdump.o thruput.o trace.o rexmit.o 
 
 tcptrace: ${OFILES}
 	${CC} ${LDFLAGS} ${CFLAGS} ${OFILES} -o tcptrace ${LDLIBS}
@@ -47,7 +47,7 @@ ci:
 	ci -q -l -t-initial -mlatest Makefile *.h *.c
 
 clean:
-	rm -f *.o tcptrace core *.xpl *.PS.?
+	rm -f *.o tcptrace core *.xpl *.rtt *.tput *.PS.?
 
 tidy:
 	rm -f core [a-z]2[a-z].xpl [a-z][a-z]2[a-z][a-z].xpl *.PS.?

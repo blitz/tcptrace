@@ -26,6 +26,7 @@
 #include <ctype.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <stdarg.h>
 
 
 
@@ -53,6 +54,9 @@ typedef struct in_addr ipaddr;
 typedef u_char Bool;
 #define TRUE	1
 #define FALSE	0
+
+/* type for an internal file pointer */
+typedef struct mfile MFILE;
 
 
 /* test 2 IP addresses for equality */
@@ -142,12 +146,18 @@ typedef struct tcb {
     double	retr_tm_sum2;	/* sum of squares, for stdev */
     u_long	retr_tm_count;	/* for averages */
 
+    /* Instantaneous throughput info */
+    struct	timeval	thru_firsttime;	/* time of first packet this interval */
+    u_long	thru_pkts;	/* number of packets this interval */
+    u_long	thru_bytes;	/* number of bytes this interval */
+    MFILE	*thru_dump_file;/* throughput data dump file name */
+    
     /* Time Sequence Graph info for this one */
     PLOTTER	tsg_plotter;
     char	*tsg_plotfile;
 
     /* Dumped RTT samples */
-    FILE	*rtt_dump_file;
+    MFILE	*rtt_dump_file;
 
     /* host name letter(s) */
     char	*host_letter;
@@ -198,6 +208,7 @@ extern tcp_pair **ttp;		/* array of pointers to allocated pairs */
 
 
 /* option flags */
+extern int thru_interval;
 extern Bool colorplot;
 extern int debug;
 extern Bool hex;
@@ -274,6 +285,13 @@ char *EndpointName(ipaddr,portnum);
 PLOTTER new_plotter(tcb *plast, char *title);
 int rexmit(tcb *, seqnum, seglen, Bool *);
 void ack_in(tcb *, seqnum);
+void DoThru(tcb *ptcb, int nbytes);
+struct mfile *Mfopen(char *fname, char *mode);
+int Mfprintf(MFILE *pmf, char *format, ...);
+int Mvfprintf(MFILE *pmf, char *format, va_list ap);
+int Mfclose(MFILE *pmf);
+int Mfflush(MFILE *pmf);
+void Minit();
 
 
 /* TCP flags macros */

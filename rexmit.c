@@ -495,21 +495,21 @@ dump_rtt_sample(
     unsigned long etime_rtt)
 {
     /* if the FILE is "-1", couldn't open file */
-    if (ptcb->rtt_dump_file == (FILE *) -1) {
+    if (ptcb->rtt_dump_file == (MFILE *) -1) {
 	return;
     }
 
     /* if the FILE is NULL, open file */
-    if (ptcb->rtt_dump_file == (FILE *) NULL) {
-	FILE *f;
+    if (ptcb->rtt_dump_file == (MFILE *) NULL) {
+	MFILE *f;
 	static char filename[15];
 
 	sprintf(filename,"%s2%s.rtt",
 		ptcb->host_letter, ptcb->ptwin->host_letter);
 
-	if ((f = fopen(filename,"w")) == NULL) {
+	if ((f = Mfopen(filename,"w")) == NULL) {
 	    perror(filename);
-	    ptcb->rtt_dump_file = (FILE *) -1;
+	    ptcb->rtt_dump_file = (MFILE *) -1;
 	}
 
 	if (debug)
@@ -518,7 +518,7 @@ dump_rtt_sample(
 	ptcb->rtt_dump_file = f;
     }
 
-    fprintf(ptcb->rtt_dump_file,"%lu %lu\n",
+    Mfprintf(ptcb->rtt_dump_file,"%lu %lu\n",
 	    pseg->seq_firstbyte,
 	    etime_rtt/1000  /* convert from us to ms */ );
 }
