@@ -195,16 +195,24 @@ static struct ext_bool_op {
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
 
 
+/* extended variable verification routines */
+static void VerifyOutputDir(char *varname, char *value);
+
+
 /* extended variable options */
 /* they must all be strings */
 static struct ext_var_op {
     char *var_optname;		/* what it's called when you set it */
     char **var_popt;		/* the variable itself */
+    void (*var_verify)(char *varname,
+		       char *value);
+				/* function to call to verify that the
+				   value is OK (if non-null) */
     char *var_descr;		/* variable description */
 } extended_vars[] = {
-    {"output_dir", &output_file_dir,
+    {"output_dir", &output_file_dir, VerifyOutputDir,
      "directory where all output files are placed"},
-    {"output_prefix", &output_file_prefix,
+    {"output_prefix", &output_file_prefix, NULL,
      "prefix all output files with this string"},
 };
 #define NUM_EXTENDED_VARS (sizeof(extended_vars) / sizeof(struct ext_var_op))
@@ -1373,8 +1381,8 @@ CheckArguments(
 
 
 
-/* these extended boolean options are table driven, to make it easier to add more
-   later without messing them up */
+/* these extended boolean options are table driven, to make it easier to
+   add more later without messing them up */
 static void
 ParseExtendedBool(
     char *argsource,
@@ -1545,6 +1553,12 @@ ParseExtendedVar(
 	if (debug>2)
 	    fprintf(stderr,"Set extended variable '%s' to '%s'\n",
 		    argname, *pvop_found->var_popt);
+	if (pvop_found->var_verify) {
+	    /* call the verification routine */
+	    if (debug>2)
+		fprintf(stderr,"verifying extended variable '%s'\n", argname);
+	    (*pvop_found->var_verify)(argname,*pvop_found->var_popt);
+	}
 	free(arg);
 	return;
     }
@@ -1559,6 +1573,21 @@ ParseExtendedVar(
     }
     BadArg(argsource, "Ambiguous extended variable argument '%s'\n", arg);
     /* never returns */
+}
+
+
+static void
+VerifyOutputDir(
+    char *varname,
+    char *value)
+{
+    if (access(value,F_OK) != 0) {
+	perror(value);
+	fprintf(stderr,
+		"Create the output directory '%s' before running\n",
+		value);
+	exit(1);
+    }
 }
 
 
