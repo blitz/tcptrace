@@ -27,6 +27,7 @@
 
 
 #include "tcptrace.h"
+#include <netinet/udp.h>
 
 /* the names of IPv6 extensions that we understand */
 char *
@@ -85,20 +86,21 @@ ipv6_nextheader(
  * gettcp:  return a pointer to a tcp header.
  * Skips either ip or ipv6 headers
  */
-struct tcphdr *
-gettcp(
+static void *
+findheader(
+    u_int ipproto,
     struct ip *pip,
     void **pplast)
 {
     struct ipv6 *pip6 = (struct ipv6 *)pip;
     char nextheader;
-    struct tcphdr *ptcp;
     struct ipv6_ext *pheader;
+    void *theheader;
 
     /* IPv4 is easy */
     if (PIP_ISV4(pip)) {
-	/* make sure it's TCP */
-	if (pip->ip_p != IPPROTO_TCP)
+	/* make sure it's what we want */
+	if (pip->ip_p != ipproto)
 	    return(NULL);
 
 	/* check the fragment field, if it's not the first fragment,
@@ -114,7 +116,7 @@ gettcp(
 	}
 
 	/* OK, it starts here */
-	ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
+	theheader = ((char *)pip + 4*pip->ip_hl);
 
 	/* adjust plast in accordance with ip_len (really short packets get garbage) */
 	if (((unsigned)pip + ntohs(pip->ip_len) - 1) < (unsigned)(*pplast)) {
@@ -131,7 +133,7 @@ gettcp(
 	}
 #endif
 
-	return (ptcp);
+	return (theheader);
     }
 
     /* otherwise, we only understand IPv6 */
@@ -142,13 +144,13 @@ gettcp(
     nextheader = pip6->ip6_nheader;
     pheader = (struct ipv6_ext *)(pip6+1);
 
-    /* loop until we find a TCP header or give up */
+    /* loop until we find the header we want or give up */
     while (1) {
 	/* sanity check, if we're reading bogus header, the length might */
 	/* be wonky, so make sure before you dereference anything!! */
 	if ((void *)pheader < (void *)pip) {
 	    if (debug>1)
-		printf("gettcp: bad extension header math, skipping packet\n");
+		printf("findheader: bad extension header math, skipping packet\n");
 	    return(NULL);
 	}
 	
@@ -156,20 +158,23 @@ gettcp(
 	/* might be truncated, or might be bad header math */
 	if ((void *)pheader > *pplast) {
 	    if (debug>3)
-		printf("gettcp: packet truncated before TCP header\n");
+		printf("findheader: packet truncated before finding header\n");
 	    return(NULL);
 	}
 
+	/* this is what we want */
+	if (nextheader == ipproto)
+	    return(pheader);
+
 	switch (nextheader) {
-	    /* this is what we want */
 	  case IPPROTO_TCP:
-	    return((struct tcphdr *) pheader);
+	    return(NULL);	/* didn't find it */
+	  case IPPROTO_UDP:
+	    return(NULL);	/* didn't find it */
 
 	    /* non-tcp protocols */
 	  case IPV6HDR_NONXTHDR:
 	  case IPPROTO_ICMPV6:
-	  case IPPROTO_UDP:
-	    return(NULL);
 
 	    /* fragmentation */
 	  case IPV6HDR_FRAGMENT:
@@ -216,6 +221,37 @@ gettcp(
 }
 
 
+/*
+ * gettcp:  return a pointer to a tcp header.
+ * Skips either ip or ipv6 headers
+ */
+struct tcphdr *
+gettcp(
+    struct ip *pip,
+    void **pplast)
+{
+    struct tcphdr *ptcp;
+    ptcp = (struct tcphdr *)findheader(IPPROTO_TCP,pip,pplast);
+    return(ptcp);
+}
+
+
+/*
+ * getudp:  return a pointer to a udp header.
+ * Skips either ip or ipv6 headers
+ */
+struct udphdr *
+getudp(
+    struct ip *pip,
+    void **pplast)
+{
+    struct udphdr *pudp;
+    pudp = (struct udphdr *)findheader(IPPROTO_UDP,pip,pplast);
+    return(pudp);
+}
+
+
+
 /* 
  * gethdrlength: returns the length of the header in the case of ipv4
  *               returns the length of all the headers in the case of ipv6
@@ -239,6 +275,8 @@ int gethdrlength (struct ip *pip, void *plast)
 	    if (nextheader == IPV6HDR_NONXTHDR)
 		return length;
 	    if (nextheader == IPPROTO_TCP)
+		return length;
+	    if (nextheader == IPPROTO_UDP)
 		return length;
 	    if (nextheader == IPV6HDR_FRAGMENT)
 	    {
