@@ -115,9 +115,13 @@ pread_EP(
 		fprintf(stderr,"Bad EP header\n");
 	    return(0);
 	}
-	packlen = hdr.sliceLength; 
-	/* round up to multiple of 4 bytes */
-	len = (packlen + 3) & ~0x3;
+
+	if (hdr.sliceLength)
+	    packlen = hdr.sliceLength; 
+	else
+	    packlen = hdr.packetLength;
+     
+	len= packlen;
 
 	/* read the ethernet header */
 	rlen=fread(pep,1,sizeof(struct ether_header),stdin);
