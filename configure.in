@@ -25,10 +25,6 @@ AC_LBL_DEVEL(V_CCOPT)
 dnl check for needed network libraries
 AC_LBL_LIBRARY_NET()
 
-
-dnl Checks for sometime-missing ether_ntoa function
-AC_CHECK_FUNCS(ether_ntoa)
-
 dnl use fpurge if available, otherwise fflush
 AC_CHECK_FUNCS(fpurge)
 
