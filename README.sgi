@@ -1,0 +1,39 @@
+[I got the following very useful note from a user at SGI with some notes
+ on compiler problems.  As nobody has ever mentioned these problems before,
+ I suspect that they are peculiar to the SGI C compiler.  Perhaps these
+ notes will be helpful to others...
+
+ sdo - Fri Sep 18, 1998]
+
+
+Date: Mon, 14 Sep 1998 22:07:02 -0300
+From: Alejandro Saez <xxxxxxxxxxxx>
+Organization: Silicon Chile
+To: ostermann@cs.ohiou.edu
+Subject: IRIX problem solved
+
+Hi,
+
+[...]
+
+I compiled the program on a IRIX 6.2 SGI workstation. First of all,
+the SGI cc compiler didn't work basically because it doesn't accept
+(unlike gcc) unterminated strings for formated output functions (it
+forces you to have a long line) so this was a problem for the
+postscript generation bit. I installed gcc, and here a new problem
+arose. Some of your files (mfiles.c, tcptrace.c and plotter.c),
+includes and uses the stdarg.h include file. This file uses a SGI
+compiler built-in macro called __builtin_alignof, so when using gcc,
+ld would complain about not being able to resolve that symbol (makes
+sense, it's provided by cc). I was able to solve it by making a local
+copy of stdarg.h and changing ocurences of __builtin_alignof by
+__alignof__ which is a gcc extension. Of course I had to change
+#include <stdarg.h> for #include "stdarg.h" but the nice thing is it
+worked (well, it compiled and run with no arguments). I though you
+would like to hear about this. Hope comes in handy.
+
+
+------------------------------------------------------------------------
+Alejandro Saez
+Software Engineer
+Silicon Chile S.A.
