@@ -74,3 +74,8 @@
 4.0.1 - Tue Jul 15, 1997
   Ready for next public release (I hope)
   Verified on the platforms I have access to
+
+4.0.2 - Wed Jul 16, 1997
+  Added '-W' option to turn off Mark's estimated Cwin stuff, it's not
+    generally useful
+  Added raw packet printing to mod_http

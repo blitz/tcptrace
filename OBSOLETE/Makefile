@@ -96,7 +96,7 @@ ${OFILES}: tcptrace.h config.h
 #
 # just for RCS
 ci:
-	ci -u -q -t-initial -mlatest Makefile *.h *.c
+	ci -u -q -t-initial -mlatest Makefile README* CHANGES *.h *.c
 
 #
 # for cleaning up
