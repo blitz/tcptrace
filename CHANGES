@@ -591,3 +591,15 @@ output.c to keep gcc3.3 from warning on MacOSX 10.3.
 
 All the changes you see above in the 6.4.x series are part of the release
 6.6.0.
+
+6.6.1: 25 Nov 2003 Mani
+-----
+
+Includes a bugfix by Ramani, that restored the old semantics of the
+SameConn() and WhichDir() functions and includes
+new functions AVL_CheckHash() and AVL_CheckDir() to support the AVL tree
+hash-bucket implementation.
+
+Includes a fix to ns.c to correctly read port numbers; added
+functionality to track LEAST variables and reno LEAST algorithm to trace.c;
+added isRTO() in rexmit.c : all by Wes.
