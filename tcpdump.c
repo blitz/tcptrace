@@ -42,7 +42,7 @@ pcap_t *pcap;
 /* the callback needed for pcap's pcap_offline_read routine		*/
 static struct ether_header *callback_pep;
 static struct pcap_pkthdr *callback_phdr;
-static int ip_buf[MAX_IP_PACKLEN];
+static int ip_buf[IP_MAXPACKET];
 
 extern int pcap_offline_read();
 
@@ -56,8 +56,8 @@ static int callback(
     static int offset = -1;
 
     iplen = phdr->caplen;
-    if (iplen > MAX_IP_PACKLEN)
-	iplen = MAX_IP_PACKLEN;
+    if (iplen > IP_MAXPACKET)
+	iplen = IP_MAXPACKET;
 
     type = pcap_datalink(pcap);
 
