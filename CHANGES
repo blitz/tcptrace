@@ -136,4 +136,5 @@
     and resulting in a HUGE amount of data if the tcp header was
     truncated.  Changed to unsigned.
   count/print truncated bytes/segs ALWAYS, not just when extracting data
+  changed to use flex/bison for better portability
 
