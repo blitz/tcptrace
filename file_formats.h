@@ -73,11 +73,14 @@ struct supported_formats file_formats[] = {
 	{is_snoop,	"snoop","Sun Snoop -- Distributed with Solaris"},
 #endif /* GROK_SNOOP */
 #ifdef GROK_ETHERPEEK
-	{is_EP,		"etherpeek", "etherpeek -- Mac sniffer program"},
+	{is_EP,		"etherpeek","etherpeek -- Mac sniffer program"},
 #endif /* GROK_ETHERPEEK */
 #ifdef GROK_NETM
 	{is_netm,	"netmetrix","Net Metrix -- Commercial program from HP"},
 #endif /* GROK_NETM */
+#ifdef GROK_NS
+	{is_ns,		"ns","ns -- network simulator from LBL"},
+#endif /* GROK_NS */
 #ifdef GROK_NLANR
 	{is_nlanr,	"tsh","NLANL Tsh Format"},
 #endif /* GROK_NLANR */
