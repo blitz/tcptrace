@@ -95,11 +95,8 @@ DEFINES += -DGROK_ETHERPEEK
 # Just a quick installation rule, not much to do
 # 
 ################################################################## 
-INSTALL = ./install-sh -c
 # Pathname of directory to install the binary
 BINDIR = /usr/local/bin
-install: tcptrace
-	$(INSTALL) -m 755 -o bin -g bin tcptrace ${BINDIR}/tcptrace
 
 
 ################################################################## 
@@ -225,6 +222,11 @@ tarfile: versnum
 bigtarfile:
 	cd ..; /usr/sbin/tar -cfv $$HOME/tcptrace.tar tcptrace
 
+#
+# just a quick installation rule
+INSTALL = ./install-sh -c
+install: tcptrace
+	$(INSTALL) -m 755 -o bin -g bin tcptrace ${BINDIR}/tcptrace
 
 #
 # static file dependencies
