@@ -1,8 +1,10 @@
 #!/bin/sh
 #
-# translate tcptrace-style xplot input to gnuplot input
+# xpl2gpl is a utility that converters tcptrace-style xplot input to gnuplot input.
 #
+# Avinash Lakhiani <avinash.lakhiani@ohiou.edu>, Ohio Universtiy.
 #
+# July 12, 2001
 
 # Argument checking
 if [ $# -eq 1 ]
@@ -38,15 +40,15 @@ function file_name(dataset)
 # This function sets the x & y -axis formats
 function format_to(datatype) {
 	if (datatype == "unsigned")
-		return("%g");
+		return("%.0f");
 	if (datatype == "signed")
-		return("%g");
+		return("%.0f");
 	if (datatype == "double")
-		return("%g");
+		return("%.0f");
 	if (datatype == "timeval")
-		return("%g");
+		return("%.0f");
 	if (datatype == "dtime")
-		return("%g");
+		return("%.0f");
 	printf("Unknown datatype: \"%s\"\n", datatype) > "/dev/tty";
 	exit;
 }
@@ -82,6 +84,9 @@ BEGIN	   {
 		dataset_index=-1.;
 		entered = 0;
 		
+		#No. of sec. from Jan 01, 1970 to Jan 01, 2000
+		secs_2000=946684800.0;
+		
 		# get the axis types
 		getline;
 		xaxis_type=$1;
@@ -97,10 +102,9 @@ BEGIN	   {
 # go.
 
 # What the action statements below do:-
-# For all the patterns the corresponding actions behave more or less the same.
-# Depending on the current color and style the function data_set_name returns the
-# corresponding filename. After adjusting the x-axis co-ordinates, the x & y
-# co-ordinates are written to this file.
+# For all the patterns, the corresponding actions behave more or less the same.
+# Depending on the current color and style, the function data_set_name returns the
+# corresponding filename. The x & y co-ordinates are then written to this file.
 
 /^title$/  { getline; TITLE=$0; next; }
 /^xlabel$/ { getline; XLABEL=$0; next; }
@@ -113,16 +117,6 @@ BEGIN	   {
 		}
 
 
-/^ltext.*$/	{
-			dataset=$4;
-			getline;
-			if (! labels[dataset]) {
-				labels[dataset] = $0;
-			}
-			next;
-		}
-
-
 /^dot .*$/      {
 			current_dataset_style = $1;
 			if(NF == 4)
@@ -130,14 +124,7 @@ BEGIN	   {
 			xpoint=$2;
 			ypoint=$3;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-			    if (initial_x == -1) {
-			    initial_x=$2;
-			}
-			xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}	
 			
@@ -149,17 +136,8 @@ BEGIN	   {
 			ypoint=$3;
 			x1point=$4;
 			y1point=$5;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1)
-				{
-				    initial_x=$2;
-				}
-				xpoint-=initial_x;
-				x1point-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
-			printf("%s %s\n", x1point, y1point) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			printf("\n") >> current_dataset_file;
 			next;
 		}
@@ -172,15 +150,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -191,15 +161,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -227,47 +189,19 @@ BEGIN	   {
 			{
 			    current_dataset_style = "cross";
 			    current_dataset_file = data_set_name(current_dataset_color, current_dataset_style);
-			    
-			    if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			    {
-				if (initial_x == -1)
-				{
-				    initial_x=xpoint;
-				}
-				xpoint-=initial_x;
-			    }
-			    printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			    printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			    next;
 			 }
 
 			 else
 			 {
 			    current_dataset_file = data_set_name(prev_dataset_color, prev_dataset_style);
-			    if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			    {
-				if (initial_x == -1)
-				{
-				    initial_x=xpoint;
-				}
-				xpoint-=initial_x;
-			    }
-			    printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
-			  
+			    printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			    current_dataset_file = data_set_name(current_dataset_color, current_dataset_style);
-			    if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			    {
-				if (initial_x == -1)
-				{
-				    initial_x=x1point;
-				}
-				x1point-=initial_x;
-				if(current_dataset_style == "line" || current_dataset_style == "dline")
-				    x2point-=initial_x;
-			    }
-			    printf("%s %s\n", x1point, y1point) >> current_dataset_file;
+			    printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			    if(current_dataset_style == "line" || current_dataset_style == "dline")
 			    {
-				printf("%s %s\n", x1point, y1point) >> current_dataset_file;
+				printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 				printf("\n") >> current_dataset_file;
 			    }
 				
@@ -282,14 +216,7 @@ BEGIN	   {
 			xpoint=$2;
 			ypoint=$3;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-			    if (initial_x == -1) {
-			    initial_x=$2;
-			}
-			xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}	
 
@@ -300,14 +227,7 @@ BEGIN	   {
 			xpoint=$2;
 			ypoint=$3;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-			    if (initial_x == -1) {
-			    initial_x=$2;
-			}
-			xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}	
 
@@ -318,15 +238,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}		
 
@@ -337,15 +249,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1)
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+                        printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -356,15 +260,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -376,15 +272,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -395,17 +283,8 @@ BEGIN	   {
 			ypoint=$3;
 			x1point=$4;
 			y1point=$5;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1)
-				{
-				    initial_x=$2;
-				}
-				xpoint-=initial_x;
-				x1point-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
-			printf("%s %s\n", x1point, y1point) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			printf("\n") >> current_dataset_file;
 			next;
 		}
@@ -416,16 +295,22 @@ BEGIN	   {
 			xpoint=$2;
   			ypoint=$3;
 			getline;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-			    if (initial_x == -1) {
-			    initial_x=xpoint;
-			}
-			xpoint-=initial_x;
-			}
-			printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file; 
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f\n", $1, xpoint, secs_2000, ypoint) >> labels_file;
+			else printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file;
 			next;
-		}	
+		}
+		
+/^ltext.*$/	{
+			xpoint=$2;
+  			ypoint=$3;
+                        if(NR == 4)
+			  current_dataset_color = $4;
+			getline;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f\n", $1, xpoint, secs_2000, ypoint) >> labels_file;
+			else printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file;
+			next;
+		}
+
 
 /^go$/		{next}
 
@@ -442,6 +327,9 @@ END	{
 		printf("set ylabel \"%s\"\n", YLABEL) >> gpl_file;
 		printf("set format x \"%s\"\n", xaxis_format) >> gpl_file;
 		printf("set format y \"%s\"\n", yaxis_format) >> gpl_file;
+		if(xaxis_type == "timeval" || xaxis_type == "dtime") {
+		  printf("set xdata time\n") >> gpl_file;
+		}
 		printf("set nokey\n") >> gpl_file;
 
 		printf("load \"%s\";\n", labels_file) >> gpl_file;
@@ -462,111 +350,147 @@ END	{
 
 		    if(file_style[dataset] == "dot")
 		    {
-			printf("index %d with dots", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with dots", ++dataset_index) >> gpl_file;
+			else printf("index %d with dots", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "line")
 		    {
-			printf("index %d with lines", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with lines", ++dataset_index) >> gpl_file;
+			else printf("index %d with lines", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;    
 		    }	
 		    if(file_style[dataset] == "diamond") 
 		    {
-			printf("index %d with points pt 1", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 1", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 1", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "box")
 		    {
-			printf("index %d with points pt 3", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 3", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 3", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "cross") 
 		    {
-			printf("index %d with points pt 4", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 4", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 4", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "uarrow") 
 		    {
-			printf("index %d with points pt 1", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 1", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 1", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "darrow") 
 		    {
-			printf("index %d with points pt 1", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 1", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 1", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "dtick")
 		    {
-			printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 2", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "utick")
 		    {
-			printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 2", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "x")
 		    {
-			printf("index %d with points pt 4", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 4", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 4", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "plus")
 		    {
-			printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 2", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "ltick")
 		    {
-			printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 2", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "rtick")
 		    {
-			printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 2", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "htick")
 		    {
-			printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 2", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "vtick")
 		    {
-			printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 2", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 2", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 
 		    if(file_style[dataset] == "larrow")
 		    {
-			printf("index %d with points pt 5", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 5", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 5", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "rarrow")
 		    {
-			printf("index %d with points pt 5", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with points pt 5", ++dataset_index) >> gpl_file;
+			else printf("index %d with points pt 5", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		    if(file_style[dataset] == "dline")
 		    {
-			printf("index %d with linespoints pt 4", ++dataset_index) >> gpl_file;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with linespoints pt 4", ++dataset_index) >> gpl_file;
+			else printf("index %d with linespoints pt 4", ++dataset_index) >> gpl_file;
 			printf("\n\n") >> FILE;
+			close( FILE );
 			printf("%s ", FILE) >> dataset_file;
 		    }
 		}
@@ -576,22 +500,20 @@ END	{
 		printf("set output \"%s.ps\"\n", BASENAME) >> gpl_file;
 		printf("replot\n") >> gpl_file;
 		printf("pause -1;\n") >> gpl_file;
-
+		close( gpl_file );
 		printf("> %s", dataset_final_file) >> dataset_file;
+		close( dataset_file );
 
 # Concatenting all the datasets and deleting the individual files
 
 		if(entered)
-		{
 		  system("./" dataset_file);
-		  close( dataset_file );
-		}
 		system("rm -f " remove_files);
 		system("rm -f " dataset_file);
 	}	
 ' $1 # end of AWK
 
-elif [ "$1" = "-s" ]
+elif [ "$1" = "-s" ]  #'-s' option part
 then
 
 # Extracting file-basename from the xplot filename 
@@ -624,15 +546,15 @@ function file_name(dataset)
 
 function format_to(datatype) {
 	if (datatype == "unsigned")
-		return("%g");
+		return("%.0f");
 	if (datatype == "signed")
-		return("%g");
+		return("%.0f");
 	if (datatype == "double")
-		return("%g");
+		return("%.0f");
 	if (datatype == "timeval")
-		return("%g");
+		return("%.0f");
 	if (datatype == "dtime")
-		return("%g");
+		return("%.0f");
 	printf("Unknown datatype: \"%s\"\n", datatype) > "/dev/tty";
 	exit;
 }
@@ -658,11 +580,6 @@ BEGIN	   {
 		labels_file = BASENAME ".labels"            # Stores all the labels in the plot
 		printf("") >> labels_file;
 		current_dataset_file = "/nofile";           # Stores the filename for the current dataset 
-#		dataset_final_file = BASENAME ".datasets";  # The final file containing all the data that is to be plotted			
-#		dataset_file = BASENAME ".files";	    # Contains the list of dataset files that are to be concatenated to generated the final dataset file
-
-#		printf("#!/bin/ksh\ncat ") >> dataset_file; # These two lines create the script file for final concatenation
-#		system("chmod u+x " dataset_file);		
 
 		# Inital Values
 		labels_present = 0;
@@ -670,6 +587,9 @@ BEGIN	   {
 		initial_y=-1.;
 		dataset_index=-1.;
 		entered = 0;
+		
+		#No. of sec. from Jan 01, 1970 to Jan 01, 2000
+		secs_2000=946684800.0;
 		
 		# get the axis types
 		getline;
@@ -681,11 +601,14 @@ BEGIN	   {
 
 # Parsing begins here
 # Valid plotting styles in xplot:-
-# title, xlabel, ylabel, COLOR(as below), ltext, dot, line , diamond, box, uarrow, darrow, larrow, rarrow, utick, dtick, ltick, rtick, vtick, htick, dline, atext, go
+# title, xlabel, ylabel, COLOR(as below), ltext, dot, line , diamond, box, uarrow,
+# darrow, larrow, rarrow, utick, dtick, ltick, rtick, vtick, htick, dline, atext,
+# go.
 
 # What the action statements below do:-
-# For all the patterns the corresponding actions behave more or less the same i.e. depending on the current color and style the function data_set_name returns
-# the corresponding filename. After adjusting the x-axis value by subtracting from initial_x, the x & y co-ordinates are written to this file.
+# For all the patterns, the corresponding actions behave more or less the same.
+# Depending on the current color and style, the function data_set_name returns the
+# corresponding filename. The x & y co-ordinates are then written to this file.
 
 
 /^title$/  { getline; TITLE=$0; next; }
@@ -698,17 +621,6 @@ BEGIN	   {
 		 next;
 		}
 
-
-/^ltext.*$/	{
-			dataset=$4;
-			getline;
-			if (! labels[dataset]) {
-				labels[dataset] = $0;
-			}
-			next;
-		}
-
-
 /^dot .*$/      {
 			current_dataset_style = $1;
 			if(NF == 4)
@@ -716,14 +628,7 @@ BEGIN	   {
 			xpoint=$2;
 			ypoint=$3;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-			    if (initial_x == -1) {
-			    initial_x=$2;
-			}
-			xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}	
 			
@@ -735,17 +640,8 @@ BEGIN	   {
 			ypoint=$3;
 			x1point=$4;
 			y1point=$5;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1)
-				{
-				    initial_x=$2;
-				}
-				xpoint-=initial_x;
-				x1point-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
-			printf("%s %s\n", x1point, y1point) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			printf("\n") >> current_dataset_file;
 			next;
 		}
@@ -758,15 +654,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -777,15 +665,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -813,47 +693,19 @@ BEGIN	   {
 			{
 			    current_dataset_style = "cross";
 			    current_dataset_file = data_set_name(current_dataset_color, current_dataset_style);
-			    
-			    if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			    {
-				if (initial_x == -1)
-				{
-				    initial_x=xpoint;
-				}
-				xpoint-=initial_x;
-			    }
-			    printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			    printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			    next;
 			 }
 
 			 else
 			 {
 			    current_dataset_file = data_set_name(prev_dataset_color, prev_dataset_style);
-			    if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			    {
-				if (initial_x == -1)
-				{
-				    initial_x=xpoint;
-				}
-				xpoint-=initial_x;
-			    }
-			    printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
-			  
+			    printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			    current_dataset_file = data_set_name(current_dataset_color, current_dataset_style);
-			    if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			    {
-				if (initial_x == -1)
-				{
-				    initial_x=x1point;
-				}
-				x1point-=initial_x;
-				if(current_dataset_style == "line" || current_dataset_style == "dline")
-				    x2point-=initial_x;
-			    }
-			    printf("%s %s\n", x1point, y1point) >> current_dataset_file;
+			    printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			    if(current_dataset_style == "line" || current_dataset_style == "dline")
 			    {
-				printf("%s %s\n", x1point, y1point) >> current_dataset_file;
+				printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 				printf("\n") >> current_dataset_file;
 			    }
 				
@@ -868,14 +720,7 @@ BEGIN	   {
 			xpoint=$2;
 			ypoint=$3;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-			    if (initial_x == -1) {
-			    initial_x=$2;
-			}
-			xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}	
 
@@ -886,14 +731,7 @@ BEGIN	   {
 			xpoint=$2;
 			ypoint=$3;
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-			    if (initial_x == -1) {
-			    initial_x=$2;
-			}
-			xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}	
 
@@ -904,15 +742,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}		
 
@@ -923,15 +753,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1)
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+                        printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -942,15 +764,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -962,15 +776,7 @@ BEGIN	   {
 			current_dataset_file = data_set_name(current_dataset_color, current_dataset_style); 
 			xpoint=$2;
 			ypoint=$3;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1) 
-				{
-					initial_x=$2;
-				}
-				xpoint-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
 			next;
 		}
 
@@ -981,41 +787,34 @@ BEGIN	   {
 			ypoint=$3;
 			x1point=$4;
 			y1point=$5;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-				if (initial_x == -1)
-				{
-				    initial_x=$2;
-				}
-				xpoint-=initial_x;
-				x1point-=initial_x;
-			}
-			printf("%s %s\n", xpoint, ypoint) >> current_dataset_file;
-			printf("%s %s\n", x1point, y1point) >> current_dataset_file;
+			printf("%f %f\n", xpoint, ypoint) >> current_dataset_file;
+			printf("%f %f\n", x1point, y1point) >> current_dataset_file;
 			printf("\n") >> current_dataset_file;
 			next;
 		}
-
 
 
 /^atext .*$/    {
 			xpoint=$2;
   			ypoint=$3;
 			getline;
-			if(xaxis_type == "timeval" || xaxis_type == "dtime")
-			{
-			    if (initial_x == -1) {
-			    initial_x=xpoint;
-			}
-			xpoint-=initial_x;
-			}
-			printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file; 
-			labels_present++;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f\n", $1, xpoint, secs_2000, ypoint) >> labels_file;
+			else printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file;
 			next;
-		}	
+		}
+		
+/^ltext.*$/	{
+			xpoint=$2;
+  			ypoint=$3;
+                        if(NR == 4)
+			  current_dataset_color = $4;
+			getline;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f\n", $1, xpoint, secs_2000, ypoint) >> labels_file;
+			else printf("set label \"%s\" at %f, %f\n", $1, xpoint, ypoint) >> labels_file;
+			next;
+		}
 
 /^go$/		{next}
-
 
 	{printf("Bad line %d: \"%s\"\n", NR, $0); next;}
 
@@ -1035,7 +834,7 @@ END	{
  		for (dataset in dataset_type)
 		{
 		    
-		    FILE=file_name(dataset);
+		    FILE=file_name(dataset);          # if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("index %d using ($1-946684800.0):2 with linespoints pt 4", ++dataset_index) >> gpl_file;
 		    if (first)
 			printf("plot ") >> gpl_file;
 		    else
@@ -1044,58 +843,130 @@ END	{
 		    printf("\"%s\" ", FILE) >> gpl_file;
 
 		    if(file_style[dataset] == "dot")
-			printf("with dots") >> gpl_file;
-
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with dots") >> gpl_file;
+		        else printf("with dots") >> gpl_file;
+			close( FILE );		      
+		    }
+		    
 		    if(file_style[dataset] == "line")
-			printf("with lines") >> gpl_file;
-			
-		    if(file_style[dataset] == "diamond") 
-			printf("with points pt 1") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with lines") >> gpl_file;
+		        else printf("with lines") >> gpl_file;
+			close( FILE );
+		    }
+		    
+		    if(file_style[dataset] == "diamond")
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 1") >> gpl_file;
+		        else printf("with points pt 1") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "box")
-			printf("with points pt 3") >> gpl_file;
-			
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 3") >> gpl_file;
+		        else printf("with points pt 3") >> gpl_file;
+			close( FILE );
+		    }
+		
 		    if(file_style[dataset] == "cross") 
-			printf("with points pt 4") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 4") >> gpl_file;
+			else printf("with points pt 4") >> gpl_file;
+			close( FILE );
+		    }
+		
+		    if(file_style[dataset] == "uarrow")
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 1") >> gpl_file;
+			else printf("with points pt 1") >> gpl_file;
+			close( FILE );
+		    }
 			
-		    if(file_style[dataset] == "uarrow") 
-			printf("with points pt 1") >> gpl_file;
-			
-		    if(file_style[dataset] == "darrow") 
-			printf("with points pt 1") >> gpl_file;
+		    if(file_style[dataset] == "darrow")
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 1") >> gpl_file;
+			else printf("with points pt 1") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "dtick")
-			printf("with points pt 2") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 2") >> gpl_file;
+			else printf("with points pt 2") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "utick")
-			printf("with points pt 2") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 2") >> gpl_file;
+			else printf("with points pt 2") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "x")
-			printf("with points pt 4") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 4") >> gpl_file;
+			else printf("with points pt 4") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "plus")
-			printf("with points pt 2") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 2") >> gpl_file;
+			else printf("with points pt 2") >> gpl_file;
+			close( FILE );
+		    }
+					
+		    if(file_style[dataset] == "ltick") 
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 2") >> gpl_file;
+			else printf("with points pt 2") >> gpl_file;
+			close( FILE );
+		    }
 			
-		    if(file_style[dataset] == "ltick")
-			printf("with points pt 2") >> gpl_file;
-			
-		    if(file_style[dataset] == "rtick")
-			printf("with points pt 2") >> gpl_file;
+		    if(file_style[dataset] == "rtick") 
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 2") >> gpl_file;
+			else printf("with points pt 2") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "htick")
-			printf("with points pt 2") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 2") >> gpl_file;
+			else printf("with points pt 2") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "vtick")
-			printf("with points pt 2") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 2") >> gpl_file;
+			else printf("with points pt 2") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "larrow")
-			printf("with points pt 5") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 5") >> gpl_file;
+			else printf("with points pt 5") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "rarrow")
-			printf("with points pt 5") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with points pt 5") >> gpl_file;
+			else printf("with points pt 5") >> gpl_file;
+			close( FILE );
+		    }
 			
 		    if(file_style[dataset] == "dline")
-			printf("with linespoints pt 4") >> gpl_file;
+		    {
+		        if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("using ($1-946684800.0):2 with linespoints pt 4") >> gpl_file;
+			else printf("with linespoints pt 4") >> gpl_file;
+			close( FILE );
+		    }
 			
 		}
 		}
@@ -1105,6 +976,7 @@ END	{
 		printf("replot\n") >> gpl_file;
 		if(labels_present)    printf("load \"%s\";\n", labels_file) >> gpl_file;
 		printf("pause -1;\n") >> gpl_file;
+		close( gpl_file );
 
 	}	
 ' $2  # end of AWK
