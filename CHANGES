@@ -646,3 +646,9 @@ PipeFitting() function.
 
 Fixed the callback function in tcpdump.c to prevent garbage data from
 getting into the ip_buf buffer.
+
+6.6.7: 4 Nov 2004 Mani with help from Dr.Ostermann & Josh
+-----
+
+Fixed bugs found in the AVL search function that had major bugs /
+complexity issues. 
