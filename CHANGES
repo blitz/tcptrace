@@ -131,3 +131,9 @@
   first cut at the output filtering code (slick!)
 5.0.2
   added support for DLT_RAW under tcpdump (pcap)
+5.0.3
+  bug fix for John Tysko, tcp_length & tcp_data_length were unsigned
+    and resulting in a HUGE amount of data if the tcp header was
+    truncated.  Changed to unsigned.
+  count/print truncated bytes/segs ALWAYS, not just when extracting data
+
