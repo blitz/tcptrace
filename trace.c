@@ -1380,7 +1380,7 @@ dotrace(
     /* check for hardware duplicates */
     /* only works for IPv4, IPv6 has no mandatory ID field */
     if (PIP_ISV4(pip) && docheck_hw_dups)
-    if (PIP_ISV4(pip))
+	hw_dup = check_hw_dups(pip->ip_id, th_seq, thisdir);
 
 
     /* Kevin Lahey's ECN code */
