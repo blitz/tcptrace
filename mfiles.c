@@ -197,6 +197,10 @@ Mfclose(
     MFILE *pmf)
 {
     int ret;
+
+    if (debug>1)
+	fprintf(stderr,"Mfclose: called for file '%s'\n", pmf->fname);
+	
     Mcheck(pmf);
     ret=fclose(pmf->stream);
     pmf->stream = NULL;
