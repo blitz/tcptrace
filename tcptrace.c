@@ -79,8 +79,9 @@ Bool printsuppress = FALSE;
 Bool printem = FALSE;
 Bool printallofem = FALSE;
 Bool printticks = FALSE;
-Bool printtrunc = FALSE;
-Bool printbadmbz = FALSE;
+Bool warn_printtrunc = FALSE;
+Bool warn_printbadmbz = FALSE;
+Bool warn_printhwdups = FALSE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
 Bool graph_seq_zero = FALSE;
@@ -873,7 +874,7 @@ GrabOnly(
 
 
 /* convert a buffer to an argc,argv[] pair */
-static void
+void
 StringToArgv(
     char *buf,
     int *pargc,
@@ -1038,8 +1039,9 @@ ParseArgs(
 		  case 'd': ++debug; break;
 		  case 'v': Version(); exit(0); break;
 		  case 'w':
-		    printtrunc = TRUE;
-		    printbadmbz = TRUE;
+		    warn_printtrunc = TRUE;
+		    warn_printbadmbz = TRUE;
+		    warn_printhwdups = TRUE;
 		    break;
 		  case 'y': plot_tput_instant = FALSE; break;
 		  case 'q': printsuppress = TRUE; break;
@@ -1142,8 +1144,9 @@ ParseArgs(
 		  case 's': use_short_names = !TRUE; break;
 		  case 't': printticks = !TRUE; break;
 		  case 'w':
-		    printtrunc = !TRUE;
-		    printbadmbz = !TRUE;
+		    warn_printtrunc = !TRUE;
+		    warn_printbadmbz = !TRUE;
+		    warn_printhwdups = !TRUE;
 		    break;
 		  case 'q': printsuppress = !TRUE; break;
 		  case 'z':
@@ -1183,7 +1186,9 @@ DumpFlags(void)
 {
 	fprintf(stderr,"printbrief:       %d\n", printbrief);
 	fprintf(stderr,"printsuppress:    %d\n", printsuppress);
-	fprintf(stderr,"printtrunc:       %d\n", printtrunc);
+	fprintf(stderr,"warn_printtrunc:  %d\n", warn_printtrunc);
+	fprintf(stderr,"warn_printbadmbz: %d\n", warn_printbadmbz);
+	fprintf(stderr,"warn_printhwdups: %d\n", warn_printhwdups);
 	fprintf(stderr,"print_rtt:        %d\n", print_rtt);
 	fprintf(stderr,"graph tsg:        %d\n", graph_tsg);
 	fprintf(stderr,"graph rtt:        %d\n", graph_rtt);

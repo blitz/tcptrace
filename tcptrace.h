@@ -346,8 +346,9 @@ extern Bool printsuppress;
 extern Bool printem;
 extern Bool printallofem;
 extern Bool printticks;
-extern Bool printtrunc;
-extern Bool printbadmbz;
+extern Bool warn_printtrunc;
+extern Bool warn_printbadmbz;
+extern Bool warn_printhwdups;
 extern Bool show_out_order;
 extern Bool show_rexmit;
 extern Bool show_zero_window;
@@ -449,6 +450,7 @@ struct tcb *ptp2ptcb(tcp_pair *ptp, struct ip *pip, struct tcphdr *ptcp);
 void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr);
 int IP_SAMEADDR (ipaddr addr1, ipaddr addr2);
 void PcapSavePacket(char *filename, struct ip *pip, void *plast);
+void StringToArgv(char *buf, int *pargc, char ***pargv);
 
 /* filter routines */
 void HelpFilter(void);

@@ -130,7 +130,7 @@ printip_packet(
     /* print an ipv6 header */
     if (PIP_ISV6(pip)) {
 	if ((unsigned)pip+sizeof(struct ipv6)-1 > (unsigned)plast) {
-	    if (printtrunc)
+	    if (warn_printtrunc)
 		printf("\t[packet truncated too short for IP details]\n");
 	    ++ctrunc;
 	    return;
@@ -142,7 +142,7 @@ printip_packet(
     if (PIP_ISV4(pip)) {
 	/* make sure we have enough of the packet */
 	if ((unsigned)pip+sizeof(struct ip)-1 > (unsigned)plast) {
-	    if (printtrunc)
+	    if (warn_printtrunc)
 		printf("\t[packet truncated too short for IP details]\n");
 	    ++ctrunc;
 	    return;
@@ -167,7 +167,7 @@ printipv4(
     
     /* make sure we have enough of the packet */
     if ((unsigned)pip+sizeof(struct ip)-1 > (unsigned)plast) {
-	if (printtrunc)
+	if (warn_printtrunc)
 	    printf("\t[packet truncated too short for IP details]\n");
 	++ctrunc;
 	return;
@@ -234,7 +234,7 @@ printtcp_packet(
 
     /* make sure we have enough of the packet */
     if ((unsigned)ptcp+sizeof(struct tcphdr)-1 > (unsigned)plast) {
-	if (printtrunc)
+	if (warn_printtrunc)
 	    printf("\t[packet truncated too short for TCP details]\n");
 	++ctrunc;
 	return;
