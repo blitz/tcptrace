@@ -62,10 +62,12 @@ Bool print_rtt = FALSE;
 Bool printbrief = TRUE;
 Bool printem = FALSE;
 Bool printticks = FALSE;
+Bool printtrunc = FALSE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
 int pnum = 0;
+int ctrunc = 0;
 
 /* globals */
 struct timeval current_time;
@@ -113,6 +115,7 @@ Misc options\n\
   -t      'tick' off the packet numbers as a progress indication\n\
   -mN     max TCP pairs to keep\n\
   -v      print version information and exit\n\
+  -w      print warning message when packets are too short to process\n\
   -d      whistle while you work (enable debug, use -d -d for more output)\n\
   +[v]    reverse the setting of the -[v] flag (for booleans)\n\
 ");
@@ -212,6 +215,7 @@ ProcessFile(void)
     int fix;
     int len;
     int tlen;
+    void *plast;
 
 
     /* determine which input file format it is... */
@@ -295,6 +299,25 @@ ProcessFile(void)
 	    continue;
 	}
 
+	/* another sanity check, only understand ETHERNET right now */
+	if (phystype != PHYS_ETHER) {
+	    static int not_ether = 0;
+
+	    ++not_ether;
+	    if (not_ether == 5) {
+		fprintf(stderr,
+			"More non-ethernet packets skipped (last warning)\n");
+		fprintf(stderr, "\n\
+If you'll send me a trace and offer to help, I can add support\n\
+for other packet types, I just don't have a place to test them\n\n");
+	    } else if (not_ether < 5) {
+		fprintf(stderr,
+			"Skipping packet %d, not an ethernet packet\n",
+			pnum);
+	    } /* else, just shut up */
+	    continue;
+	}
+
 	/* print the packet, if requested */
 	if (printem) {
 	    printf("Packet %d\n", pnum);
@@ -307,7 +330,10 @@ ProcessFile(void)
 	    continue;
 
         /* perform packet analysis */
-	dotrace(len,pip);
+	plast = (void *)((unsigned)pip + tlen - 1);
+	if (phystype == PHYS_ETHER)
+	    plast -= sizeof(struct ether_header);
+	dotrace(pip,plast);
 
 	/* for efficiency, only allow a signal every 1000 packets	*/
 	/* (otherwise the system call overhead will kill us)		*/
@@ -391,6 +417,7 @@ ParseArgs(
 
 		  case 'd': ++debug; break;
 		  case 'v': Version(); exit(0); break;
+		  case 'w': printtrunc = TRUE; break;
 		  case 'i':
 		    ++saw_i_or_o;
 		    IgnoreConn(atoi(argv[i]+1));
@@ -452,6 +479,7 @@ ParseArgs(
 		  case 'r': print_rtt = !TRUE; break;
 		  case 's': use_short_names = !TRUE; break;
 		  case 't': printticks = !TRUE; break;
+		  case 'w': printtrunc = !TRUE; break;
 		  default:
 		    Usage(argv[0]);
 		}
@@ -474,6 +502,7 @@ static void
 DumpFlags(void)
 {
 	fprintf(stderr,"printbrief:       %d\n", printbrief);
+	fprintf(stderr,"printtrunc:       %d\n", printtrunc);
 	fprintf(stderr,"print_rtt:        %d\n", print_rtt);
 	fprintf(stderr,"graph tsg:        %d\n", graph_tsg);
 	fprintf(stderr,"graph rtt:        %d\n", graph_rtt);

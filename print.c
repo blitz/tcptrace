@@ -40,8 +40,8 @@ static char const rcsid[] =
 
 /* local routines */
 static void printeth_packet(struct ether_header *);
-static void printip_packet(struct ip *);
-static void printtcp_packet(struct ip *);
+static void printip_packet(struct ip *, void *plast);
+static void printtcp_packet(struct ip *, void *plast);
 static char *ParenServiceName(portnum);
 static char *ParenHostName(ipaddr);
 
@@ -87,8 +87,17 @@ printeth_packet(
 
 static void
 printip_packet(
-    struct ip *pip)
+    struct ip *pip,
+    void *plast)
 {
+    /* make sure we have enough of the packet */
+    if ((unsigned)pip+sizeof(struct ip)-1 > (unsigned)plast) {
+	if (printtrunc)
+	    printf("\t[packet truncated too short for IP details]\n");
+	++ctrunc;
+	return;
+    }
+
     printf("\tIP  Srce: %s %s\n",
 	   inet_ntoa(pip->ip_src),
 	   ParenHostName(pip->ip_src));
@@ -106,6 +115,7 @@ printip_packet(
 	(ntohs(pip->ip_p) == IPPROTO_EGP)?"(EGP)":
 	"");
 
+    printf("\t  IPHLEN: %d\n", pip->ip_hl*4);
     printf("\t     TTL: %d\n", pip->ip_ttl);
     printf("\t     LEN: %d\n", ntohs(pip->ip_len));
     printf("\t      ID: %d\n", ntohs(pip->ip_id));
@@ -115,7 +125,8 @@ printip_packet(
 
 static void
 printtcp_packet(
-    struct ip *pip)
+    struct ip *pip,
+    void *plast)
 {
     unsigned tcp_length;
     unsigned tcp_data_length;
@@ -123,6 +134,14 @@ printtcp_packet(
     u_char *pdata;
 
     ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
+
+    /* make sure we have enough of the packet */
+    if ((unsigned)ptcp+sizeof(struct tcphdr)-1 > (unsigned)plast) {
+	if (printtrunc)
+	    printf("\t[packet truncated too short for TCP details]\n");
+	++ctrunc;
+	return;
+    }
 
     /* calculate data length */
     tcp_length = ntohs(pip->ip_len) - (4 * pip->ip_hl);
@@ -156,7 +175,7 @@ printtcp_packet(
         printf("\t    OPTS: %u bytes\t",
 	       (ptcp->th_off*4) - sizeof(struct tcphdr));
 
-	ptcpo = ParseOptions(ptcp,1000);
+	ptcpo = ParseOptions(ptcp,plast);
 
 	if (ptcpo->mss != -1)
 	    printf(" MSS(%d)", ptcpo->mss);
@@ -193,6 +212,8 @@ printpacket(
      int		phystype,
      struct ip		*pip)
 {
+    void *plast = NULL;
+
     if (len == tlen)
         printf("\tPacket Length: %d\n", len);
     else
@@ -200,10 +221,10 @@ printpacket(
 
     printf("\tCollected: %s\n", ts2ascii(&current_time));
 
-
     switch(phystype) {
       case PHYS_ETHER:
 	printeth_packet(phys);
+	plast = (void *)((unsigned)pip + tlen - sizeof(struct ether_header) - 1);
 	break;
       default:
 	printf("\tPhysical layer: %d (not understood)\n", phystype);
@@ -212,11 +233,11 @@ printpacket(
 
 
     /* it's always supposed to be an IP packet */
-    printip_packet(pip);
+    printip_packet(pip,plast);
 
 
     if (ntohs(pip->ip_p) == IPPROTO_TCP)
-	printtcp_packet(pip);
+	printtcp_packet(pip,plast);
 }
 
 

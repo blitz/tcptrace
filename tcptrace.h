@@ -264,6 +264,7 @@ extern Bool print_rtt;
 extern Bool printbrief;
 extern Bool printem;
 extern Bool printticks;
+extern Bool printtrunc;
 extern Bool show_out_order;
 extern Bool show_rexmit;
 extern Bool show_zero_window;
@@ -272,6 +273,7 @@ extern int debug;
 extern int thru_interval;
 extern int pnum;
 
+extern int ctrunc;
 extern timeval current_time;
 
 
@@ -315,7 +317,7 @@ void plotter_darrow(PLOTTER, timeval, u_long);
 void plotter_box(PLOTTER, timeval, u_long);
 void plotter_arrow(PLOTTER, timeval, u_long, char);
 void plot_init(void);
-void dotrace(int, struct ip *);
+void dotrace(struct ip *, void *plast);
 void PrintTrace(tcp_pair *);
 void PrintBrief(tcp_pair *);
 void OnlyConn(int);
@@ -339,7 +341,7 @@ int Mvfprintf(MFILE *pmf, char *format, va_list ap);
 int Mfclose(MFILE *pmf);
 int Mfflush(MFILE *pmf);
 void Minit(void);
-struct tcp_options *ParseOptions(struct tcphdr *ptcp,int plen);
+struct tcp_options *ParseOptions(struct tcphdr *ptcp, void *plast);
 
 
 /* TCP flags macros */
