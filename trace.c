@@ -42,9 +42,9 @@ static int closed_conn_count = 0;
 static Bool *ignore_pairs = NULL;/* which ones will we ignore */
 static Bool bottom_letters = 0;	/* I don't use this anymore */
 static Bool more_conns_ignored = FALSE;
+static double sample_elapsed_time=0; /* to keep track of owin samples */
+static double total_elapsed_time=0; /* to keep track of owin samples */ 
 static int num_removed_tcp_pairs = 0;
-
-
 
 /* provided globals  */
 int num_tcp_pairs = -1;	/* how many pairs we've allocated */
@@ -329,6 +329,8 @@ NewTTP(
     }
     ptp = MakeTcpPair();
     ++num_tcp_pairs;
+    ptp = ttp[num_tcp_pairs] = MallocZ(sizeof(tcp_pair));
+    ptp->ignore_pair = ignore_pairs[num_tcp_pairs];
 
     if (!run_continuously) {
       /* make a new one, if possible */
@@ -425,6 +427,10 @@ NewTTP(
 		new_line(ptp->a2b.owin_plotter, "avg owin", "blue");
 	    ptp->b2a.owin_avg_line =
 		new_line(ptp->b2a.owin_plotter, "avg owin", "blue");
+	    ptp->a2b.owin_wavg_line =
+		new_line(ptp->a2b.owin_plotter, "wavg owin", "green");
+	    ptp->b2a.owin_wavg_line =
+		new_line(ptp->b2a.owin_plotter, "wavg owin", "green");
 	}
     }
 
@@ -1118,7 +1124,6 @@ dotrace(
 
 
     /* bug fix:  it's legal to have the same end points reused.  The */
-
     /* program uses a heuristic of looking at the elapsed time from */
     /* the last packet on the previous instance and the number of FINs */
     /* in the last instance.  If we don't increment the fin_count */
@@ -1751,21 +1756,50 @@ dotrace(
     /* un-acked bytes */
     if (!SYN_SET(ptcp) && !out_order && !retrans) {
 	u_long owin;
-	u_long owin = end - otherdir->ack;
-
+	/* If there has been no ack from the other direction, owin is just 
+	// If there has been no ack from the other direction, owin is just bytes in this pkt.
+		owin = end - start ;
+	}
+	else {
+		/* ack  always acks 'received + 1' bytes, so subtract 1 
+		// ack  always acks 'received + 1' bytes, so subtract 1 for owin
+	}
+	
+	if (owin > thisdir->owin_max)
 	    thisdir->owin_max = owin;
 	if ((owin > 0) &&
 	    ((thisdir->owin_min == 0) ||
 	     (owin < thisdir->owin_min)))
 	    thisdir->owin_min = owin;
 	
-	thisdir->owin_tot += owin;
+	thisdir->owin_tot += owin;	
+       	thisdir->owin_count++;
+
+	/* adding mark's suggestion of weighted owin */
+	// adding mark's suggestion of weighted owin	
+	if (thisdir->previous_owin_sample_time.tv_sec == 0) { // if this is first ever sample for thisdir
+		thisdir->previous_owin_sample = owin;
+	}
+	else { 
+		/* weight each owin sample with the duration that it exists for */
+		// weight each owin sample with the duration that it exists for 
+        	total_elapsed_time = (elapsed(ptp_save->first_time, ptp_save->last_time))/1000000;
+		thisdir->owin_wavg += (u_llong)((thisdir->previous_owin_sample) * sample_elapsed_time);
+		/* graph owin_wavg */
+		if (thisdir->owin_plotter != NO_PLOTTER) {
+			extend_line(thisdir->owin_wavg_line, thisdir->previous_owin_sample_time,
+		        	(total_elapsed_time)?((u_llong)((thisdir->owin_wavg)/total_elapsed_time)):0);
+		} 
+	    	thisdir->previous_owin_sample_time = thisdir->last_time;
+		thisdir->previous_owin_sample = owin;
+	}
+
 	/* graph owin */
 	if (thisdir->owin_plotter != NO_PLOTTER) {
 	    extend_line(thisdir->owin_line, current_time, owin);
 	    extend_line(thisdir->owin_avg_line, current_time,
 			(thisdir->owin_count?(thisdir->owin_tot/thisdir->owin_count):0)); 
-			thisdir->owin_tot / thisdir->ack_pkts);
+	}
     }
     if (run_continuously) {
       UpdateConnLists(tcp_ptr, ptcp);
@@ -1959,6 +1993,11 @@ trace_init(void)
     initted = TRUE;
 
     /* create an array to hold any pairs that we might create */
+    ttp = (tcp_pair **) MallocZ(max_tcp_pairs * sizeof(tcp_pair *));
+
+    /* create an array to keep track of which ones to ignore */
+    ignore_pairs = (Bool *) MallocZ(max_tcp_pairs * sizeof(Bool));
+    if (!run_continuously) {
         /* create an array to hold any pairs that we might create */
         ttp = (tcp_pair **) MallocZ(max_tcp_pairs * sizeof(tcp_pair *));
       

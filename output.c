@@ -268,10 +268,13 @@ PrintTrace(
 	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
     if (print_owin) {
 	StatLineI("max owin","bytes", pab->owin_max, pba->owin_max);
-	StatLineI("min owin","bytes", pab->owin_min, pba->owin_min);
+	StatLineI("min non-zero owin","bytes", pab->owin_min, pba->owin_min);
 	StatLineI("avg owin","bytes",
-		  pab->ack_pkts==0?0:pab->owin_tot/pab->ack_pkts,
-		  pba->ack_pkts==0?0:pba->owin_tot/pba->ack_pkts);
+		  pab->owin_count==0?0:pab->owin_tot/pab->owin_count,
+		  pba->owin_count==0?0:pba->owin_tot/pba->owin_count);
+	StatLineI("wavg owin","bytes", 
+		  (u_llong)(pab->owin_wavg/((double)etime/1000000)), 
+		  (u_llong)(pba->owin_wavg/((double)etime/1000000)));
     }
     StatLineI("initial window","bytes",
 	      pab->initialwin_bytes, pba->initialwin_bytes);

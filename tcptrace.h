@@ -310,6 +310,10 @@ typedef struct tcb {
     u_long	owin_max;
     u_long	owin_min;
     u_llong	owin_tot;
+    u_llong	owin_wavg;  /* weighted owin */
+    u_llong     owin_count;
+    u_long	previous_owin_sample;
+    timeval     previous_owin_sample_time;
 
     /* RTT stats for singly-transmitted segments */
     double	rtt_last;	/* RTT as of last good ACK (microseconds) */
@@ -382,6 +386,7 @@ typedef struct tcb {
     PLOTTER	owin_plotter;
     PLINE	owin_line;
     PLINE	owin_avg_line;
+    PLINE 	owin_wavg_line;
 
     /* for tracking unidirectional idle time */
     timeval	last_time;	/* last packet SENT from this side */
