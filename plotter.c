@@ -774,9 +774,9 @@ CallDoPlot(
     ...)	   
 {
    struct timeval t1;
-   u_long x1;
+   u_long x1 = 0;
    struct timeval t2;
-   u_long x2;	   
+   u_long x2 = 0;	   
    va_list ap;
    struct plotter_info *ppi;
    char fmt[200];
