@@ -130,7 +130,7 @@ LDFLAGS += ${PCAP_LDFLAGS}
 CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c	\
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
-	filt_scanner.c filt_parser.c filter.c \
+	filt_scanner.c filt_parser.c filter.c udp.c \
 	version.c
 MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
@@ -223,6 +223,7 @@ tcpdump.o: tcptrace.h tcpdump.h
 tcptrace.o: tcptrace.h  file_formats.h modules.h mod_http.h version.h
 thruput.o: tcptrace.h 
 trace.o: tcptrace.h  gcache.h
+udp.o: tcptrace.h  gcache.h
 compress.o: tcptrace.h  compress.h
 mod_http.o: tcptrace.h 
 mod_traffic.o: tcptrace.h  mod_traffic.h
