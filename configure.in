@@ -16,6 +16,10 @@ AC_CHECK_LIB(m, main)
 dnl See if "unsigned long long int" works
 AC_CHECK_SIZEOF(unsigned long long int)
 
+dnl Find a good type for "seqnum"
+AC_CHECK_SIZEOF(unsigned long int)
+AC_CHECK_SIZEOF(unsigned int)
+
 
 dnl include additional checking if developing
 AC_LBL_DEVEL(V_CCOPT)
