@@ -114,4 +114,6 @@
   fixed bug in extract_contents (for mod_http) that caused it to fail if the first segment
     seen was not the first segment of the connection (oops!)
   Added -z flag to plot time axis from 0 rather than wallclock time
+  big lint cleanup
+  added support for "configure" to simplify cross-platform stuff
 

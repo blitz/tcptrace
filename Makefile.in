@@ -96,8 +96,6 @@ INCLS = -I. @V_INCLS@ ${PCAP_INCS}
 
 # Standard CFLAGS
 # Probably want full optimization
-#   Warning, without -fno-builtin, a bug in gcc 2.7.2 forces an
-#   alignment error on my Sparc when it re-writes memcpy()...
 # FreeBSD needs	-Ae
 # HP needs	-Ae
 CFLAGS = $(CCOPT) $(DEFINES) @V_DEFINES@ $(INCLS)
@@ -119,16 +117,12 @@ LDFLAGS += ${PCAP_LDFLAGS}
 #CFLAGS	+= -pg
 #LDFLAGS += /usr/lib/libdl.so.1
 
-# for testing "cleanness" before distribution
-#CFLAGS	+= -pedantic -Wall
-
-
-
 
 # Standard files
 CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
 	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c \
 	missing.c compress.c version.c
+MODULES=mod_http.c mod_traffic.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
 
 
@@ -156,12 +150,15 @@ ${OFILES}: tcptrace.h
 #
 # just for RCS
 ci:
-	ci -u -q -t-initial -mlatest Makefile README* CHANGES *.h *.c
+	ci -u -q -t-initial -mlatest *.c *.h \
+		Makefile.in configure.in config.guess config.sub aclocal.m4 \
+		README* INSTALL* CHANGES WWW COPYRIGHT
 
 #
 # for cleaning up
 clean:
-	rm -f *.o tcptrace core *.xpl *.dat .devel
+	rm -f *.o tcptrace core *.xpl *.dat .devel \
+		config.cache config.log config.status bin.*
 noplots:
 	rm -f *.xpl *.dat
 
@@ -203,6 +200,9 @@ mod_traffic.o: tcptrace.h  mod_traffic.h
 # make development version
 develop devel:
 	touch .devel
+
+configure: configure.in
+	autoconf
 
 
 #
