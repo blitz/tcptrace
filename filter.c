@@ -1544,7 +1544,7 @@ VFuncTput(
     if (etime == 0.0)
 	return(0);
 
-    tput_f = (double)(ptcb->data_bytes-ptcb->rexmit_bytes) / etime;
+    tput_f = (double)(ptcb->unique_bytes) / etime;
     tput = (u_llong)(tput_f+0.5);
 
     if (debug)

@@ -218,13 +218,7 @@ PrintTrace(
     StatLineI("ack pkts sent","", pab->ack_pkts, pba->ack_pkts);
     StatLineI("pure acks sent","", pab->pureack_pkts, pba->pureack_pkts);
     StatLineI("unique bytes sent","",
-	      pab->data_bytes-pab->rexmit_bytes,
-	      pba->data_bytes-pba->rexmit_bytes);
-#ifdef OLD
-    StatLineI("unique packets","",
-	      pab->data_pkts-pab->rexmit_pkts,
-	      pba->data_pkts-pba->rexmit_pkts);
-#endif /* OLD */
+	      pab->unique_bytes, pba->unique_bytes);
     StatLineI("actual data pkts","", pab->data_pkts, pba->data_pkts);
     StatLineI("actual data bytes","", pab->data_bytes, pba->data_bytes);
     StatLineI("rexmt data pkts","", pab->rexmit_pkts, pba->rexmit_pkts);
@@ -296,8 +290,8 @@ PrintTrace(
 		  pab->fin-pab->syn-1,
 		  pba->fin-pba->syn-1);
 	StatLineI("missed data","bytes",
-		  pab->fin-pab->syn-1-(pab->data_bytes-pab->rexmit_bytes),
-		  pba->fin-pba->syn-1-(pba->data_bytes-pba->rexmit_bytes));
+		  pab->fin-pab->syn-1-pab->unique_bytes,
+		  pba->fin-pba->syn-1-pba->unique_bytes);
     } else {
 	StatLineP("ttl stream length","","%s","NA","NA");
 	StatLineP("missed data","","%s","NA","NA");
@@ -335,8 +329,8 @@ PrintTrace(
 	StatLineP("throughput","","%s","NA","NA");
     else
 	StatLineF("throughput","Bps","%8.0f",
-		  (double) (pab->data_bytes-pab->rexmit_bytes) / etime,
-		  (double) (pba->data_bytes-pba->rexmit_bytes) / etime);
+		  (double) (pab->unique_bytes) / etime,
+		  (double) (pba->unique_bytes) / etime);
 
     if (print_rtt) {
 	fprintf(stdout,"\n");

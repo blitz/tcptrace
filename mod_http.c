@@ -856,8 +856,8 @@ connection (FINs) were not found in trace file.\n");
 
     /* see if we got all the bytes */
     missing = pab->trunc_bytes + pba->trunc_bytes;
-    missing += pab->fin-pab->syn-1-(pab->data_bytes-pab->rexmit_bytes);
-    missing += pba->fin-pba->syn-1-(pba->data_bytes-pba->rexmit_bytes);
+    missing += pab->fin-pab->syn-1-(pab->unique_bytes);
+    missing += pba->fin-pba->syn-1-(pba->unique_bytes);
 
     if (missing != 0)
 	printf("WARNING!!!!  Information may be invalid, %ld bytes were not captured\n",

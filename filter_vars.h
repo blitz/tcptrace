@@ -46,6 +46,7 @@ struct filter_line filters[] = {
     {"data_bytes",	V_ULLONG, PTCB_C_S(data_bytes),"bytes of data"},
     {"data_segs",	V_ULLONG, PTCB_C_S(data_pkts),"segments of data"},
     {"data_segs_push",	V_ULLONG, PTCB_C_S(data_pkts_push),"segments with PUSH set"},
+    {"unique_bytes",	V_ULLONG, PTCB_C_S(unique_bytes),"non-retransmitted bytes"},
     {"rexmit_bytes",	V_ULLONG, PTCB_C_S(rexmit_bytes),"retransmitted bytes"},
     {"rexmit_segs",	V_ULLONG, PTCB_C_S(rexmit_pkts),"segments w/ retransmitted data"},
     {"ack_segs",	V_ULLONG, PTCB_C_S(ack_pkts),"segments containing ACK"},
