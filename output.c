@@ -229,13 +229,13 @@ PrintBrief(
     /* warning for hardware duplicates */
     if (pab->num_hardware_dups != 0) {
 	fprintf(stdout,
-		"  ** Warning, %s2%s: detected %lu hardware duplicates (same seq # and IP ID)\n",
+		"    ** Warning, %s2%s: detected %lu hardware duplicate(s) (same seq # and IP ID)\n",
 		pab->host_letter, pba->host_letter,
 		pab->num_hardware_dups);
     }
     if (pba->num_hardware_dups != 0) {
 	fprintf(stdout,
-		"    ** Warning, %s2%s: detected %lu hardware duplicates (same seq # and IP ID)\n",
+		"    ** Warning, %s2%s: detected %lu hardware duplicate(s) (same seq # and IP ID)\n",
 		pba->host_letter, pab->host_letter,
 		pba->num_hardware_dups);
     }
