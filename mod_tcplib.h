@@ -57,8 +57,8 @@ void * tcplib_newconn(tcp_pair *ptp);
 #define IPPORT_KLOGIN2 543
 #define IPPORT_NLOGIN 758
 #define IPPORT_TELNET 23
-#define IPPORT_FTP_DATA 21
-#define IPPORT_FTP_CONTROL 20
+#define IPPORT_FTP_DATA 20
+#define IPPORT_FTP_CONTROL 21
 #define IPPORT_SMTP 25
 
 #define IPPORT_NFS 2049
