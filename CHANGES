@@ -40,3 +40,11 @@
      resizable (now supports an "infinite" number of connections)
   changed elapsed() routine to return double to prevent overflow
      of microsecond stored in a long int
+  changes by Rich Jones at HP to run under HPUX
+     mostly fixed the non-ansii standard
+	#endif FOO
+       to be
+	#endif /* FOO */
+  fixed minor printing bug, 1323 flags printed wrong,
+	bug introduced by previous "bug fix" :-(
+     
