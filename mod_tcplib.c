@@ -1293,15 +1293,15 @@ void tcplib_do_telnet_duration()
 	    /* Find the conversation with the longest duration.
 	     * This will determine the length of the array we'll need
 	     * to store our counts
+	     *
+	     * (temp is in milliseconds)
 	     */
-	    temp = ((pair->last_time.tv_sec -
-		     pair->first_time.tv_sec)*1000) +
-		   ((pair->last_time.tv_usec -
-		     pair->first_time.tv_usec)/1000);
+	    temp = (int)(elapsed(pair->first_time,pair->last_time)/1000.0);
 
 	    /* Update the maximum duration */
-	    if (temp > max_size)
+	    if (temp > max_size) {
 		max_size = temp;
+	    }
 
 	    count++;
 
@@ -1311,9 +1311,8 @@ void tcplib_do_telnet_duration()
     /* Allocate the array */
     count_list = MallocZ(sizeof(int) * ((max_size/100)+1));
 
-    /* Reset the array */
-    for(i = 0; i < ((max_size/100)+1); i++)
-	count_list[i] = 0;
+/*     printf("max_size is %d, array holds %d\n", */
+/* 	   max_size, (max_size/100)+1); */
 
     /* Fill the array */
     for(i = 0; i < num_tcp_pairs; i++) {
@@ -1333,14 +1332,17 @@ void tcplib_do_telnet_duration()
 	    temp /= 100;
 
 	    /* increment the number of instances at this time. */
+/* 	    printf("storing at count_list[%d]\n", temp); */
 	    count_list[temp]++;
 	}
     }
 
     /* Integrate the old data */
-    if (old_stuff)
-	for(i = 0; i < filelines; i++)
+    if (old_stuff) {
+	for(i = 0; i < filelines; i++) {
 	    count_list[(old_stuff[i].time/100)] += old_stuff[i].count;
+	}
+    }
 
     /* Open the file */
     if (!(fil = fopen(namedfile(TCPLIB_TELNET_DURATION_FILE), "w"))) {
@@ -1872,10 +1874,7 @@ void tcplib_do_ftp_itemsize()
 	}
     }
 
-    size_list = MallocZ(sizeof(int) * ((max_size)+1));
-
-    for(i = 0; i < ((max_size/5)+1); i++) 
-	size_list[i] = 0;
+    size_list = MallocZ(sizeof(int) * ((max_size/5)+1));
 
     /* fill out the array */
     for(i = 0; i < num_tcp_pairs; i++) {
@@ -1886,6 +1885,9 @@ void tcplib_do_ftp_itemsize()
 	   || is_ftp_data_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
+
+	    if ((temp/5) >= (max_size/5)+1)
+		printf("ftp_itemsize: %d\n", temp/5);
 
 	    size_list[temp/5]++;
 	}
@@ -1903,7 +1905,7 @@ void tcplib_do_ftp_itemsize()
 
     fprintf(fil, "Article Size (bytes)\t%% Articles\tRunning Sum\tCounts\n");
 
-    for(i = 0; i < ((max_size)+ 1); i++) {
+    for(i = 0; i < ((max_size/5)+ 1); i++) {
 	temp = i;
 
 	curr_count += size_list[i];
@@ -2006,9 +2008,6 @@ void tcplib_do_ftp_control_size()
 
     size_list = MallocZ(sizeof(int) * (max_size+1));
 
-    for(i = 0; i < (max_size+1); i++) 
-	size_list[i] = 0;
-
     /* fill out the array */
     for(i = 0; i < num_tcp_pairs; i++) {
 	pair = ttp[i];
@@ -2018,6 +2017,9 @@ void tcplib_do_ftp_control_size()
 	   || is_ftp_control_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
+
+	    if ((temp) >= (max_size)+1)
+		printf("ftp_control: %d\n", temp);
 
 	    size_list[temp]++;
 	}
@@ -2150,9 +2152,6 @@ void tcplib_do_smtp()
 
     size_list = MallocZ(sizeof(int) * ((max_size / 5)+1));
 
-    for(i = 0; i < ((max_size/5)+1); i++) 
-	size_list[i] = 0;
-
     /* fill out the array */
     for(i = 0; i < num_tcp_pairs; i++) {
 	pair = ttp[i];
@@ -2162,6 +2161,9 @@ void tcplib_do_smtp()
 	   || is_smtp_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
+
+	    if ((temp/5) >= (max_size/5)+1)
+		printf("ftp_control: %d\n", temp/5);
 
 	    size_list[(temp/5)]++;
 	}
@@ -2285,10 +2287,7 @@ void tcplib_do_nntp_itemsize()
 	}
     }
 
-    size_list = MallocZ(sizeof(int) * (max_size+1) / 1024);
-
-    for(i = 0; i < (max_size+1); i++) 
-	size_list[i/1024] = 0;
+    size_list = MallocZ(sizeof(int) * (max_size / 1024)+1);
 
     /* fill out the array */
     for(i = 0; i < num_tcp_pairs; i++) {
@@ -2299,6 +2298,9 @@ void tcplib_do_nntp_itemsize()
 	   || is_nntp_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
+
+	    if ((temp/1024) >= (max_size/1024)+1)
+		printf("nntp_itemsize: %d\n", temp/1024);
 
 	    size_list[temp/1024]++;
 	}
@@ -2316,7 +2318,7 @@ void tcplib_do_nntp_itemsize()
 
     fprintf(fil, "Article Size (bytes)\t%% Articles\tRunning Sum\tCounts\n");
 
-    for(i = 0; i < (max_size+1)/1024; i++) {
+    for(i = 0; i < (max_size/1024)+1; i++) {
 	curr_count += size_list[i];
 
 	if (size_list[i]) {
@@ -2438,9 +2440,6 @@ void tcplib_do_http_itemsize()
 
     size_list = MallocZ(sizeof(int) * (max_size+1));
 
-    for(i = 0; i < (max_size+1); i++) 
-	size_list[i] = 0;
-
     /* fill out the array */
     for(i = 0; i < num_tcp_pairs; i++) {
 	pair = ttp[i];
@@ -2450,6 +2449,9 @@ void tcplib_do_http_itemsize()
 	   || is_http_port(pair->addr_pair.b_port)){
 	    
 	    temp = (pair->a2b.data_bytes) + (pair->b2a.data_bytes);
+
+	    if ((temp) >= (max_size+1))
+		printf("ftp_http_itemsize: %d\n", temp);
 
 	    size_list[temp]++;
 	}
