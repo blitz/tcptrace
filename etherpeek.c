@@ -246,11 +246,6 @@ pread_EP(
 
 		ptime->tv_sec  = usecs / 1000000 - Mac2unix;
 		ptime->tv_usec = usecs % 1000000;
-
-		if (0)
-		    printf("hi: %u  lo: %u usecs: %lld  tv_sec: %lu  tv_usec: %06lu\n",
-			   (unsigned)hdrv7.timestamphi, (unsigned)hdrv7.timestamplo,
-			   usecs, ptime->tv_sec, ptime->tv_usec);
 	    }
 #else /* HAVE_LONG_LONG */
 	    {
@@ -267,11 +262,6 @@ pread_EP(
 
 		/* usecs is easier, the part we want is all in the lower word */
 		ptime->tv_usec = usecs - (double)ptime->tv_sec * 1000000.0;
-
-		if (0)
-		    printf("hi: %lu  lo: %lu usecs: %f  tv_sec: %lu  tv_usec: %06lu\n",
-			   (tt_uint32)hdrv7.timestamphi, (tt_uint32)hdrv7.timestamplo,
-			   usecs, ptime->tv_sec, ptime->tv_usec);
 	    }
 #endif /* HAVE_LONG_LONG */
 
