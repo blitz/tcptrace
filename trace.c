@@ -1342,7 +1342,7 @@ dotrace(
 		if (ptcpo->sack_count > 1) {
 		    char buf[5]; /* can't be more than 1 digit! */
 		    snprintf(buf,sizeof(buf),"%u",scount+1);	/* 1-base, rather than 0-base */
-		    sprintf(buf,"%u",scount);
+		    sprintf(buf,"%u",scount+1);	/* 1-base, rather than 0-base */
 				 current_time,
 				 SeqRep(otherdir,ptcpo->sacks[scount].sack_right),
 				 "r", buf);
