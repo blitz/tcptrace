@@ -282,7 +282,38 @@ retransmitted.
 ============================================================
 Mon Dec 14, 1998S
 
->> Is there any way to always use some set of flags??
+>> Is there any way to always use the same set of flags??
 
 You can store commonly-used tcptrace arguments in "~/.tcptracerc"
 (comments start with '#') or in envariable "TCPTRACEOPTS".
+
+============================================================
+Wed Dec 16, 1998
+
+>> it seems to be running VERY slowly, and using very little CPU time
+
+It might be stuck trying to resolve IP addresses.  Try running it with
+"-n" to NOT resolve.  I almost always use "-n" when looking at
+non-local traces.  It sometimes takes FOREVER to resolve the names
+otherwise.
+
+A quick check of what it's doing is to use the "-t" option that gives
+you visual feedback of its progress; it displays the number of packets
+processed so far, percentage done (unless compressed), and the
+"elapsed trace file time".  If it's not doing at least several hundred
+packets per second, then it's probably stuck doing DNS lookups.
+============================================================
+Wed Dec 16, 1998
+
+>> with "-t", why is the the percentage done more than 100%
+
+Probably one of:
+
+1) If it's a live file, ie one that tcpdump is currently writing, then the
+   "percentage done" is based on the original size of the file.  As
+   such, depending on how fast the file is growing compared to the
+   horsepower of the processor, the figure might be way off.
+
+2) If it's a compressed file, tcptrace doesn't know how long it'll be.  For
+   gzipped files of headers only, it usually runs up to around 100%+275% (or
+   almost 4 to one compression). 
