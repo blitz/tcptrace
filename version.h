@@ -30,11 +30,27 @@ static char const rcsid_version[] =
 
 
 /* source code version information */
-#define VERSION "Ostermann's tcptrace -- version 5.0.10 -- Fri Oct 16, 1998"
+#define VERSION_MAJOR	5
+#define VERSION_MINOR	0
+#define VERSION_BUGFIX	10
+#define VERSION_DATE	"Fri Oct 16, 1998"
+
+
+
+/* the rest of these are just ugly conversion constants */
+#define STRINGIZE(y) #y
+#define ADD_QUOTES(x) STRINGIZE (x)
+
+/* just the digits */
+#define VERS_DIGITS   VERSION_MAJOR##.##VERSION_MINOR##.##VERSION_BUGFIX
+#define VERSION_NUM ADD_QUOTES(VERS_DIGITS)
+
+/* the string to print */
+#define VERSION  "Ostermann's tcptrace -- version " VERSION_NUM " -- " VERSION_DATE
+
 
 /* build information */
 /* constants filled in when version.c is compiled */
 extern char *built_bywhom;
 extern char *built_when;
 extern char *built_where;
-
