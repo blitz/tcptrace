@@ -38,6 +38,7 @@ struct plotter_info {
     MFILE *fplot;		/* the file that hold the plot */
     tcb *p2plast;		/* the TCB that this goes with (if any) */
     timeval zerotime;		/* first time stamp in this plot (see -z) */
+    char *filename;		/* redundant copy of name for debugging */
 };
 
 
@@ -95,9 +96,10 @@ xp_timestamp(
 
 	/* (in)sanity check */
 	if (time.tv_sec < 0) {
-	    fprintf(stderr,"Internal error in plotting...\n\
+	    fprintf(stderr,"Internal error in plotting (plot file '%s')...\n\
 ZERO-based X-axis plotting requested and elements are not plotted in\n\
-increasing time order.  Try without the '-z' flag\n");
+increasing time order.  Try without the '-z' flag\n",
+		    ppi->filename);
 /* 	    exit(-5); */
 	}
     }
@@ -290,6 +292,7 @@ new_plotter(
 
     ppi->fplot = f;
     ppi->p2plast = plast;
+    ppi->filename = strdup(filename);
 
     return(pl);
 }
