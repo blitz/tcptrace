@@ -95,7 +95,7 @@ static char const rcsid_ipv6[] =
 /*
  * IPv6 address data structure.
  */
-#ifndef __WIN32
+#ifdef __WIN32
 typedef struct in6_addr {
 	u_char	s6_addr[16];	/* IPv6 address */
 } in6_addr;

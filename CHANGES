@@ -565,3 +565,13 @@ trace_done() function in trace.c).
 
 Fixed bunch of gcc3.3.1 warnings in erf.c (unused variable warning), netm.c,
 ns.c (dereferencing type-punned pointer warnings).
+
+6.4.15: 21 OCT 2003 Mani
+------
+
+Fixed the typo(?) that made us have a #ifndef __WIN32 to #ifdef __WIN32 in
+ipv6.h for the in6_addr structure definition.
+
+Patching in changes to mod_http.c making it more robust to print
+information in cases where connections get closed with RST instead of
+FINs and other trivia based on Yufei Wang's patch.

@@ -516,6 +516,12 @@ MFMap(
     }
     len = Mftell(mf);
 
+    if (len == 0) {
+      *firstbyte = NULL;
+      *lastbyte = NULL;
+      return;
+    }
+  
     /* Memory map the entire file */
     fd = Mfileno(mf);
     vaddr = mmap((caddr_t) 0,	/* put it anywhere	*/
@@ -613,7 +619,7 @@ WhenAcked(
     for (pts = phead->next; pts != NULL; pts = pts->next) {
 /* 	fprintf(stderr,"Checking pos %ld against %ld\n", */
 /* 		position, pts->position); */
-	if (pts->position > position) {
+	if (pts->position >= position) {
 	    /* sent after this one */
 	    return(pts->thetime);
 	}
@@ -689,6 +695,11 @@ FindContent(
 
        /* Memory map the entire file (I hope it's short!) */
        MFMap(mf,&pdata,&plast);
+      
+       if (pdata == NULL) {
+	 return;
+       }
+      
        pch = pdata;
        
        ph->total_reply_length = (unsigned) (plast - pdata);
@@ -821,12 +832,33 @@ FindContent(
 		  /*
 		   * No content-length header, so delimit response
 		   * by end of file.
+		   * 
+		   * But, make sure we do not have a "\r\n\r\n" string
+		   * in the response, because that might indicate the 
+		   * beginning of a following response.
+		   * (Patch from Yufei Wang)
 		   */
 		  else {
-		     pget->content_length = plast - pch;
+		   char *start = pch;
+		   while (pch <= (char *)plast) {
+		     if (strncmp(pch, "\r\n\r\n", 4) == 0) {
+		       pch += 4;
+		       state = ContentStateStartHttp;
+		       break;
+		     } else {
+		       pch++;
+		     }
+		   } 
+		   
+		   if (state == ContentStateStartHttp) {
+		     pget->content_length = pch - start;
+		   } else {
+		     /* calculate the content length */
+		     pget->content_length = plast - start + 1;
 		     pch = plast + 1;
+		   }
 		  }
-		  
+		 
 		  /* Set next state and do original tcptrace
 		   * processing based on what we learned above.
 		   */
@@ -875,6 +907,27 @@ FindContent(
    
 }
 
+static char * formatGetString(char * s) 
+{
+  int len = strlen(s);
+  int i = 0;
+  int j = 0;
+  char *buf = (char *)malloc(len);
+  char ascii[2];
+  while (i < len) {
+    if (s[i] == '%') {
+      ascii[0] = s[i+1];
+      ascii[1] = s[i+2];
+      buf[j++] = atoi(ascii);
+      i = i+3;
+    } else {
+      buf[j++] = s[i];
+      i++;
+    }
+  }
+  buf[j] = 0;
+  return buf;
+}
 
 static void
 FindGets(
@@ -905,7 +958,11 @@ FindGets(
 
       /* Memory map the entire file (I hope it's short!) */
       MFMap(mf,&pdata,&plast);
-      
+
+      if (pdata == NULL) {
+	return;
+      }
+	
       ph->total_request_length = (unsigned) (plast - pdata);
       ph->total_request_count = 0;
       
@@ -990,7 +1047,7 @@ FindGets(
 		}
 		getbuf[j] = *pch2;
 	     }
-	     pget->get_string = strdup(getbuf);
+	     pget->get_string = formatGetString(getbuf);
 	     
 	     /* grab the time stamps */
 	     pget->get_time =
@@ -1195,12 +1252,41 @@ HttpPrintone(
     printf("  Client Syn Time:      %s (%.3f)\n",
 	   ts2ascii(&ph->c_syn_time),
 	   ts2d(&ph->c_syn_time));
-    printf("  Server Fin Time:      %s (%.3f)\n",
-	   ts2ascii(&ph->s_fin_time),
-	   ts2d(&ph->s_fin_time));
-    printf("  Client Fin Time:      %s (%.3f)\n",
-	   ts2ascii(&ph->c_fin_time),
-	   ts2d(&ph->c_fin_time));
+  
+   /* From the patch by Yufei Wang
+    * Print "Server Rst Time" if the last segment we saw was a RST
+    *       "Server Fin Time" if we saw a FIN
+    *       "Server Last Time" if neither FIN/RST was received to indicate
+    *                          the time the last segment was seen from the
+    *                          server. */
+
+   if ((pba->fin_count == 0) && (pba->reset_count > 0)) {
+	printf("  Server Rst Time:      %s (%.3f)\n",
+		ts2ascii(&pba->last_time),
+		ts2d(&pba->last_time));
+    } else if (pba->fin_count == 0) {
+	printf("  Server Last Time:      %s (%.3f)\n",
+	       ts2ascii(&pba->last_time),
+	       ts2d(&pba->last_time));
+    } else {
+    	printf("  Server Fin Time:      %s (%.3f)\n",
+	   	ts2ascii(&ph->s_fin_time),
+	   	ts2d(&ph->s_fin_time));
+    }
+    /* Similarly information is printed out for the Client end-point.*/	
+    if ((pab->fin_count == 0) && (pab->reset_count > 0)) {
+	printf("  Client Rst Time:      %s (%.3f)\n",
+		ts2ascii(&pab->last_time),
+		ts2d(&pab->last_time));
+    } else if (pab->fin_count == 0) {
+	printf("  Client Last Time:      %s (%.3f)\n",
+		ts2ascii(&pab->last_time),
+		ts2d(&pab->last_time));
+    } else {
+    	printf("  Client Fin Time:      %s (%.3f)\n",
+	   	ts2ascii(&ph->c_fin_time),
+	   	ts2d(&ph->c_fin_time));
+    }
 
 #ifdef HTTP_SAFE
     /* check the SYNs */
@@ -1208,11 +1294,21 @@ HttpPrintone(
 	printf("\
 No additional information available, beginning of \
 connection (SYNs) were not found in trace file.\n");
-	return;
+	return;      
     }
 
-    /* check the FINs */
-    if ((pab->fin_count == 0) || (pba->fin_count == 0)) {
+    /* check if we had RSTs (Patch from Yufei Wang)*/
+    if ((pab->reset_count > 0) || (pba->reset_count > 0)) {
+      /* Do nothing */
+    }
+      /* check the FINs */
+      /* Note from Yufei Wang : If we see a FIN from only one direction,
+       * we shall not panic, but print out information that we have under the
+       * assumption that either a RST was sent in the missing direction or the
+       * FIN segment was lost from packet capture. The information we have
+       * is still worth printing out. Hence we have a "&&" instead of a "||"
+       * in the following condition. */
+      else if ((pab->fin_count == 0) && (pba->fin_count == 0)) {
 	printf("\
 No additional information available, end of \
 connection (FINs) were not found in trace file.\n");
@@ -1222,9 +1318,32 @@ connection (FINs) were not found in trace file.\n");
 
     /* see if we got all the bytes */
     missing = pab->trunc_bytes + pba->trunc_bytes;
-    missing += pab->fin-pab->syn-1-(pab->unique_bytes);
-    missing += pba->fin-pba->syn-1-(pba->unique_bytes);
 
+    /* Patch from Yufei Wang :
+     * Adding in a check to see if the connection were closed with RST/FIN 
+     * and calculating the "missing" field appropriately
+     */
+  
+    if (pab->fin_count > 0)
+      missing += ( (pab->fin - pab->syn -1)- pab->unique_bytes);
+    else if (pab->reset_count > 0) {
+      /* Check to make sure if no segments were observed between SYN and RST
+       * The following check does not work if file is huge and seq space rolled
+       * over - To be fixed - Mani */
+      if (pab->latest_seq != pab->syn)
+	missing += ( (pab->latest_seq - pab->syn -1) - pab->unique_bytes);
+    }
+  
+    if (pba->fin_count > 0)
+      missing += ( (pba->fin - pba->syn -1)- pba->unique_bytes);
+    else if (pba->reset_count > 0) {
+      /* Check to make sure if no segments were observed between SYN and RST
+       * The following check does not work if file is huge and seq space rolled
+       * over - To be fixed - Mani */
+      if (pba->latest_seq != pba->syn)
+	missing += ( (pba->latest_seq - pba->syn -1) - pba->unique_bytes);
+    }
+  
     if (missing != 0)
 	printf("WARNING!!!!  Information may be invalid, %ld bytes were not captured\n",
 	       missing);
