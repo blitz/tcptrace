@@ -114,7 +114,7 @@ pread_tsh(
     ipb->ip_p = 6;
     ipb->ip_sum = inbuf[18]<<8 + inbuf[19]; 
     ipb->ip_id = inbuf[12]<<8 + inbuf[13];
-    *plen += sizeof(struct ip) + inbuf[10]<<8 + inbuf[11];
+    *plen = sizeof(struct ip) + *(short *)&(inbuf[10]);
     ipb->ip_len = htons(*plen);
 
     if (inbuf[17] == IPPROTO_TCP) {
