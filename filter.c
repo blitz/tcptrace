@@ -546,9 +546,9 @@ PrintConst(
 	break;
       case V_BOOL:
 	if (debug)
-	    sprintf(buf,"BOOL(%s)",  pf->un.constant.bool?"TRUE":"FALSE");
+	    sprintf(buf,"BOOL(%s)",  BOOL2STR(pf->un.constant.bool));
 	else
-	    sprintf(buf,"%s", pf->un.constant.bool?"TRUE":"FALSE");
+	    sprintf(buf,"%s", BOOL2STR(pf->un.constant.bool));
 	break;
       default: {
 	    fprintf(stderr,"PrintConst: unknown constant type %d (%s)\n",
@@ -632,7 +632,7 @@ Res2Str(
       case V_ULLONG:	sprintf(buf,"ULLONG(%llu)",pres->val.u_longint); break;
       case V_LLONG:	sprintf(buf,"LLONG(%lld)", pres->val.longint); break;
       case V_STRING:	sprintf(buf,"STRING(%s)",pres->val.string); break;
-      case V_BOOL:	sprintf(buf,"BOOL(%s)",  pres->val.bool?"TRUE":"FALSE"); break;
+      case V_BOOL:	sprintf(buf,"BOOL(%s)",  BOOL2STR(pres->val.bool)); break;
       default: {
 	  fprintf(stderr,"Res2Str: unknown constant type %d (%s)\n",
 		  pres->vartype, Vartype2Str(pres->vartype));
@@ -1099,7 +1099,7 @@ EvalRelopUnsigned(
 	printf("EvalUnsigned %lu %s %lu returns %s\n",
 #endif /* HAVE_LONG_LONG */
 	       varl, Op2Str(pf->op), varr,
-	       ret?"TRUE":"FALSE");
+	       BOOL2STR(ret));
 
 
     return;
@@ -1151,7 +1151,7 @@ EvalRelopSigned(
 	printf("EvalSigned %ld %s %ld returns %s\n",
 #endif /* HAVE_LONG_LONG */
 	       varl, Op2Str(pf->op), varr, 
-	       ret?"TRUE":"FALSE");
+	       BOOL2STR(ret));
 
     return;
 }
@@ -1204,7 +1204,7 @@ EvalRelopString(
     if (debug)
 	printf("EvalString '%s' %s '%s' returns %s\n",
 	       varl, Op2Str(pf->op), varr, 
-	       ret?"TRUE":"FALSE");
+	       BOOL2STR(ret));
 
     return;
 }
@@ -1446,7 +1446,7 @@ PassesFilter(
     if (debug)
 	printf("PassesFilter('%s<->%s') returns %s\n",
 	       ptp->a_endpoint, ptp->b_endpoint,
-	       ret?"TRUE":"FALSE");
+	       BOOL2STR(ret));
 
     return(ret);
 }
