@@ -154,7 +154,7 @@ findheader(
 	    if (debug>1) {
 		printf("findheader: Skipping IPv4 non-initial fragment\n");
 		if (debug > 2) {
-		    printpacket(100,100,NULL,0,pip,*pplast);
+		    printpacket(100,100,NULL,0,pip,*pplast,NULL);
 		}
 	    }
 	    return (1);

@@ -1334,7 +1334,7 @@ dotrace(
 		    (char *)plast - (char *)pip + 1,
 		    NULL,0,	/* physical stuff not known here */
 		    pip,plast,thisdir);
-		    pip,plast);
+    }
 
     /* grab the address from this packet */
     CopyAddr(&tp_in.addr_pair, pip,

@@ -67,7 +67,7 @@ static char const rcsid[] =
 /* local routines */
 static void printeth_packet(struct ether_header *);
 static void printip_packet(struct ip *, void *plast);
-static void printtcp_packet(struct ip *, void *plast);
+static void printtcp_packet(struct ip *, void *plast, tcb *tcb);
 static void printudp_packet(struct ip *, void *plast);
 static char *ParenServiceName(portnum);
 static char *ParenHostName(struct ipaddr addr);
@@ -75,6 +75,7 @@ static void printipv4(struct ip *pip, void *plast);
 static void printipv6(struct ipv6 *pipv6, void *plast);
 static char *ipv6addr2str(struct in6_addr addr);
 static void printipv4_opt_addrs(char *popt, int ptr, int len);
+static char *PrintSeqRep(tcb *ptcb, u_long seq);
 
 
 
@@ -346,7 +347,8 @@ printipv4_opt_addrs(
 static void
 printtcp_packet(
     struct ip *pip,
-    void *plast)
+    void *plast,
+    tcb *thisdir)
 {
     unsigned tcp_length;
     unsigned tcp_data_length;
@@ -354,6 +356,7 @@ printtcp_packet(
     int i;
     u_char *pdata;
     struct ipv6 *pipv6;
+    tcb *otherdir = NULL;
 
     /* find the tcp header */
     if (gettcp(pip, &ptcp, &plast))
@@ -376,6 +379,10 @@ printtcp_packet(
     }
     tcp_data_length = tcp_length - (4 * TH_OFF(ptcp));
 
+    /* find the tcb's (if available) */
+    if (thisdir)
+	otherdir = thisdir->ptwin;
+
     printf("\tTCP SPRT: %u %s\n",
 	   ntohs(ptcp->th_sport),
 	   ParenServiceName(ntohs(ptcp->th_sport)));
@@ -392,12 +399,8 @@ printtcp_packet(
 	   SYN_SET(ptcp)?   'S':'-',
 	   FIN_SET(ptcp)?   'F':'-',
 	   ptcp->th_flags);
-    printf(
-	hex?"\t     SEQ: 0x%08x\n":"\t     SEQ: %d\n",
-	ntohl(ptcp->th_seq));
-    printf(
-	hex?"\t     ACK: 0x%08x\n":"\t     ACK: %d\n",
-	ntohl(ptcp->th_ack));
+    printf("\t     SEQ: %s\n", PrintSeqRep(thisdir,  ntohl(ptcp->th_seq)));
+    printf("\t     ACK: %s\n", PrintSeqRep(otherdir, ntohl(ptcp->th_ack)));
     printf("\t     WIN: %u\n", ntohs(ptcp->th_win));
     printf("\t    HLEN: %u", TH_OFF(ptcp)*4);
     if ((char *)ptcp + TH_OFF(ptcp)*4 - 1 > (char *)plast) {
@@ -465,9 +468,12 @@ printtcp_packet(
 	if (ptcpo->sack_count >= 0) {
 	    printf(" SACKS(%d)", ptcpo->sack_count);
 	    for (i=0; i < ptcpo->sack_count; ++i) {
-		printf("[0x%08lx-0x%08lx]",
-		       (u_long)ptcpo->sacks[i].sack_left,
-		       (u_long)ptcpo->sacks[i].sack_right);
+		printf("[%s-",
+		       PrintSeqRep(otherdir,
+				   (u_long)ptcpo->sacks[i].sack_left));
+		printf("%s]",
+		       PrintSeqRep(otherdir,
+				   (u_long)ptcpo->sacks[i].sack_right));
 	    }
 	}
 	if (ptcpo->echo_req != -1)
@@ -562,7 +568,8 @@ printpacket(
      void		*phys,
      int		phystype,
      struct ip		*pip,
-     void 		*plast)
+     void 		*plast,
+     tcb		*tcb)
 {
     if (len == 0)
 	/* original length unknown */
@@ -590,7 +597,7 @@ printpacket(
 
 
     /* this will fail if it's not TCP */
-    printtcp_packet(pip,plast);
+    printtcp_packet(pip,plast,tcb);
 
     /* this will fail if it's not UDP */
     printudp_packet(pip,plast);
@@ -753,5 +760,27 @@ Ether_Ntoa (struct ether_addr *e)
     pe = (unsigned char *) e;
     snprintf(buf,sizeof(buf),"%02x:%02x:%02x:%02x:%02x:%02x",
 	    pe[0], pe[1], pe[2], pe[3], pe[4], pe[5]);
+    return(buf);
+}
+
+
+
+/* represent the sequence numbers absolute or relative to 0 */
+/* N.B.: will fail will sequence space wraps around more than once */
+static char *
+PrintSeqRep(
+    tcb *ptcb,
+    u_long seq)
+{
+    static char buf[20];
+    
+    if (ptcb && print_seq_zero && (ptcb->syn_count>0)) {
+	/* Relative form */
+	sprintf(buf,hex?"0x%08x(R)":"%d(R)",
+		seq - ptcb->syn);
+    } else {
+	/* Absolute form */
+	sprintf(buf,hex?"0x%08x":"%d",seq);
+    }
     return(buf);
 }

@@ -124,6 +124,7 @@ Bool docheck_hw_dups = TRUE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
 Bool graph_seq_zero = FALSE;
+Bool print_seq_zero = FALSE;
 Bool graph_zero_len_pkts = TRUE;
 Bool plot_tput_instant = TRUE;
 Bool filter_output = FALSE;
@@ -237,6 +238,8 @@ static struct ext_bool_op {
      "print all packets AND dump the TCP/UDP data"},
     {"continuous", &run_continuously, TRUE,
      "run continuously and don't provide a summary"},
+    {"print_seq_zero", &print_seq_zero, TRUE,
+     "print sequence numbers as offset from initial sequence number"},
     {"limit_conn_num", &conn_num_threshold, TRUE,
      "limit the maximum number of connections kept at a time in real-time mode"},
 	{"xplot_all_files", &xplot_all_files, TRUE,
@@ -1018,7 +1021,7 @@ for other packet types, I just don't have a place to test them\n\n");
 	/* print the packet, if requested */
 	if (printallofem || dump_packet_data) {
 	    printf("Packet %lu\n", pnum);
-	    printpacket(len,tlen,phys,phystype,pip,plast);
+	    printpacket(len,tlen,phys,phystype,pip,plast,NULL);
 	}
 
 	/* keep track of global times */

@@ -392,3 +392,12 @@ Completely revamped the http module with code sent by Bruce Mah.
 Added code to verify TCP and UDP checksums in IPv6 packets.
 However, code has not been tested thoroughly yet.
 
+6.0.1 - Mon Dec  3, 2001
+
+This is the version we'll release
+
+Also, added support with --print_seq_zero for printing sequence numbers
+  as relative to the SYN rather than absolute.  NOTE: this only works for
+  "-P" which uses connection records, but NOT for "-p" (which doesn't)
+  Also fixed the SACK-printing code to print in decimal if requested
+
