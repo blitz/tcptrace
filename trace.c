@@ -713,6 +713,7 @@ dotrace(
     tcp_seq	th_ack;		/* acknowledgement number */
     u_short	th_win;		/* window */
     u_long	eff_win;	/* window after scaling */
+    u_short     th_urp;         /* URGENT pointer */
     enum t_ack	ack_type=NORMAL; /* how should we draw the ACK */
     seqnum	old_this_windowend; /* for graphing */
     ptp_ptr	*tcp_ptr = NULL;
@@ -753,6 +754,8 @@ dotrace(
     ptp_save->last_time = current_time;
 
 
+    /* bug fix:  it's legal to have the same end points reused.  The */
+
     /* program uses a heuristic of looking at the elapsed time from */
     /* the last packet on the previous instance and the number of FINs */
     /* in the last instance.  If we don't increment the fin_count */
@@ -779,6 +782,23 @@ dotrace(
 
 
     /* compute the "effective window", which is the advertised window */
+    /* with scaling */
+    if (ACK_SET(ptcp) || SYN_SET(ptcp)) {
+	eff_win = (u_long) th_win;
+
+	/* N.B., the window_scale stored for the connection DURING 3way */
+	/* handshaking is the REQUESTED scale.  It's only valid if both */
+	/* sides request scaling.  AFTER we've seen both SYNs, that field */
+	/* is reset (above) to contain zero.  Note that if we */
+	/* DIDN'T see the SYNs, the windows will be off. */
+ 	/* Jamshid: Remember that the window is never scaled in SYN */
+	if (thisdir->f1323_ws && otherdir->f1323_ws)
+    } else {
+	eff_win = 0;
+    }
+
+    
+    /* idle-time stats */
     if (!ZERO_TIME(&thisdir->last_time)) {
 	u_llong itime = elapsed(thisdir->last_time,current_time);
 	if (itime > thisdir->idle_max)
@@ -841,9 +861,7 @@ dotrace(
 
     if (ACK_SET(ptcp)) {
 	thisdir->windowend = th_ack + eff_win;
-	unsigned int win = th_win << thisdir->window_scale;
-
-	thisdir->windowend = th_ack + win;
+    }
     /* end bugfix */
 
 
@@ -1153,7 +1171,7 @@ dotrace(
     /* check for RESET */
     if (RESET_SET(ptcp)) {
 	u_long plot_at;
-	unsigned int plot_at;
+
 	/* if there's an ACK in this packet, plot it there */
 	/* otherwise, plot it at the last valid ACK we have */
 	if (ACK_SET(ptcp))
@@ -1182,26 +1200,23 @@ dotrace(
     
 	thisdir->win_last=eff_win;
 	if (eff_win > thisdir->win_max)
-	unsigned int win = th_win << thisdir->window_scale;
+	    thisdir->win_max = eff_win;
 
-	if (win > thisdir->win_max)
-	    thisdir->win_max = win;
-	if ((win > 0) &&
+	if ((eff_win > 0) &&
 	     (eff_win < thisdir->win_min)))
-	     (win < thisdir->win_min)))
-	    thisdir->win_min = win;
-	thisdir->win_tot += win;
+	    thisdir->win_min = eff_win;
+	
+    }
 
     /* draw the ack and win in the other plotter */
     if (ACK_SET(ptcp)) {
 	seqnum ack = th_ack;
-	unsigned int ack = th_ack;
-	unsigned int win = th_win << thisdir->window_scale;
-	unsigned int winend;
+	u_long winend;
+
 	winend = ack + eff_win;
-	winend = ack + win;
+      
 	if (eff_win == 0) {
-	if (win == 0) {
+	    ++thisdir->win_zero_ct;
 	    if (to_tsgpl != NO_PLOTTER && show_zero_window) {
 		plotter_temp_color(to_tsgpl, text_color);
 		plotter_text(to_tsgpl,
@@ -1984,7 +1999,7 @@ cksum(
 {
     u_char *pchar = pvoid;
     u_long sum = 0;
-    unsigned long sum = 0;
+
     while (nbytes >= 2) {
 	/* can't assume pointer alignment :-( */
 	sum += (pchar[0]<<8);
