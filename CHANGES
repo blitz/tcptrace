@@ -175,4 +175,7 @@
   fixed bug report from Mark, SYN RTT's weren't being included in min
 	RTT report.  Fixed so that both SYNs and FINs are included in that
 	calculation.
+5.0.9 - Thu Sep 24, 1998
+  fixed bug with "only" connections not detecting reuse of ports
+
 
