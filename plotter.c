@@ -6,11 +6,35 @@
 
 
 static FILE *fplot[MAX_PLOTTERS] = {NULL};
-static tcp_pair *p2ptp[MAX_PLOTTERS] = {NULL};
+static struct last *p2plast[MAX_PLOTTERS] = {NULL};
 static PLOTTER plotter_ix = -1;
 
 
 #define PLOT if(plotem) DoPlot
+
+
+
+char *HostLetter(ix)
+     u_int ix;
+{
+	static char name[10];
+	char ch1;
+	char ch2;
+
+	ch1 = ix / 26;
+	ch2 = ix % 26;
+	
+	if (ix < 26) {
+		sprintf(name,"%c",'a' + ch2);
+	} else if (ix < (26*26)) {
+		sprintf(name,"%c%c", 'a' + ch1 - 1, 'a' + ch2);
+	} else {
+		fprintf(stderr,"Fatal, too many hosts to name\n");
+		exit(-1);
+	}
+
+	return(name);
+}
 
 
 
@@ -20,9 +44,11 @@ char *PlotName(pl)
 	static char filename[10];
 
 	if ((pl % 2) == 0)
-	    sprintf(filename,"%c2%c", 'a' + pl, 'a' + pl + 1);
+	    sprintf(filename,"%s2%s",
+		    strdup(HostLetter(pl)), strdup(HostLetter(pl + 1)));
 	else
-	    sprintf(filename,"%c2%c", 'a' + pl, 'a' + pl - 1);
+	    sprintf(filename,"%s2%s",
+		    strdup(HostLetter(pl)), strdup(HostLetter(pl - 1)));
 
 	return(filename);
 }
@@ -56,8 +82,8 @@ static void DoPlot(pl, fmt, va_alist)
 
 
 int
-plotter_init(ptp,title)
-     tcp_pair *ptp;
+plotter_init(plast,title)
+     struct last *plast;
      char *title;
 {
 	PLOTTER pl;
@@ -86,7 +112,8 @@ plotter_init(ptp,title)
 	fprintf(f,"title\n%s\n", title);
 
 	fplot[pl] = f;
-	p2ptp[pl] = ptp;
+	p2plast[pl] = plast;
+	plast->plotfile = strdup(filename);
 	return(pl);
 }
 
@@ -100,11 +127,11 @@ plotter_done()
 
 	for (pl = 0; pl < plotter_ix; ++pl) {
 		f = fplot[pl];
-		if (!ignore_non_comp || Complete(p2ptp[pl])) {
+		if (!ignore_non_comp || Complete(p2plast[pl]->ptp)) {
 			fprintf(f,"go\n");
 			fclose(f);
 		} else {
-			fname = PlotName(pl);
+			fname = p2plast[pl]->plotfile;
 			if (debug)
 			    fprintf(stderr,"Removing incomplete plot file '%s'\n",
 				    fname);

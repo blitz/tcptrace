@@ -15,13 +15,17 @@
 
 
 /* maximum number of TCP pairs to maintain */
-#define MAX_TCP_PAIRS 10
+#define MAX_TCP_PAIRS 30
 
 
 typedef int PLOTTER;
 
 
 struct last {
+	/* parent pointer */
+	struct stcp_pair *ptp;
+
+	/* TCP information */
 	u_long	ack;
 	u_long	seq;
 	u_long	windowend;
@@ -41,9 +45,10 @@ struct last {
 
 	/* plotter for this one */
 	PLOTTER	plotter;
+	char	*plotfile;
 
-	/* host name letter */
-	char	host_letter;
+	/* host name letter(s) */
+	char	*host_letter;
 };
 
 typedef u_int hash;
@@ -51,13 +56,13 @@ typedef u_int hash;
 typedef struct {
 	u_long	a_address;
 	u_long	b_address;
-	u_short	a_port;
-	u_short	b_port;
+	u_long	a_port;
+	u_long	b_port;
 	hash	hash;
 } tcp_pair_addr;
 
 
-typedef struct {
+struct stcp_pair {
 	/* endpoint identification */
 	tcp_pair_addr	addr_pair;
 
@@ -71,7 +76,8 @@ typedef struct {
 	u_short		fin_count;
 	struct last	a2b;
 	struct last	b2a;
-} tcp_pair;
+};
+typedef struct stcp_pair tcp_pair;
 
 
 /* option flags */
@@ -114,4 +120,5 @@ void printpacket();
 void printtcp();     
 void trace_done();
 int Complete();
+char *HostLetter();
 
