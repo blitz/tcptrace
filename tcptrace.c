@@ -205,6 +205,8 @@ static struct ext_bool_op {
      "mark triple dupacks on time sequence graphs"},
     {"showzerolensegs", &graph_zero_len_pkts,  TRUE,
      "show zero length packets on time sequence graphs"},
+	{"showzwndprobes", &show_zwnd_probes, TRUE,
+	 "show zero window probe packets on time sequence graphs"},
     {"showtitle", &show_title,  TRUE,
      "show title on the graphs"},
     {"res_addr", &resolve_ipaddresses,  TRUE,
