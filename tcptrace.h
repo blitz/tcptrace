@@ -429,6 +429,7 @@ extern Bool hex;
 extern Bool ignore_non_comp;
 extern Bool resolve_ipaddresses;
 extern Bool resolve_ports;
+extern Bool verify_checksums;
 extern Bool print_rtt;
 extern Bool print_cwin;
 extern Bool printbrief;
@@ -561,6 +562,8 @@ void StringToArgv(char *buf, int *pargc, char ***pargv);
 void CopyAddr(tcp_pair_addrblock *, struct ip *pip,portnum,portnum);
 int WhichDir(tcp_pair_addrblock *, tcp_pair_addrblock *);
 int SameConn(tcp_pair_addrblock *, tcp_pair_addrblock *, int *);
+Bool ip_cksum_valid(struct ip *pip, void *plast);
+Bool tcp_cksum_valid(struct ip *pip, struct tcphdr *ptcp, void *plast);
 
 /* high-level line drawing */
 PLINE new_line(PLOTTER pl, char *label, char *color);

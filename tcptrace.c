@@ -98,6 +98,7 @@ Bool filter_output = FALSE;
 Bool do_udp = FALSE;
 Bool resolve_ipaddresses = TRUE;
 Bool resolve_ports = TRUE;
+Bool verify_checksums = FALSE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
@@ -150,6 +151,8 @@ static struct ext_bool_op {
      "resolve IP addresses into names (may be slow)"},
     {"res_port", &resolve_ports,  TRUE,
      "resolve port numbers into names"},
+    {"checksum", &verify_checksums,  TRUE,
+     "verify IP and TCP checksums"},
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
 

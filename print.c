@@ -196,6 +196,10 @@ printipv4(
     printf("\t     TTL: %d\n", pip->ip_ttl);
     printf("\t     LEN: %d\n", ntohs(pip->ip_len));
     printf("\t      ID: %d\n", ntohs(pip->ip_id));
+    printf("\t   CKSUM: 0x%04x", ntohs(pip->ip_sum));
+    if (verify_checksums)
+	printf(" (%s)", ip_cksum_valid(pip,plast)?"CORRECT":"WRONG");
+    printf("\n");
 
     /* fragmentation stuff */
     offset = ntohs(pip->ip_off) << 3;
@@ -278,6 +282,12 @@ printtcp_packet(
 	printf("\t    MBZ: 0x%01x (these are supposed to be zero!)\n",
 	       ptcp->th_x2);
     }
+    printf("\t   CKSUM: 0x%04x", ntohs(ptcp->th_sum));
+    if (verify_checksums)
+	printf(" (%s)", tcp_cksum_valid(pip,ptcp,plast)?"CORRECT":"WRONG");
+    printf("\n");
+
+
     pdata = (u_char *)ptcp + ptcp->th_off*4;
     printf("\t    DLEN: %u",
 	   tcp_data_length);
