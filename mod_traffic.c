@@ -692,7 +692,7 @@ AgeTraffic(void)
 
     /* ============================================================ */
     /* report of RTT */
-    if (doplot_rtt) {
+    if (doplot_rtt && (rtt_samples > 0)) {
 	int rtt_avg;
 
 	/* convert to average rtt */
@@ -700,8 +700,10 @@ AgeTraffic(void)
 
 	/* draw lines */
 	extend_line(line_rtt_avg, current_time, rtt_avg);
-	extend_line(line_rtt_min, current_time, rtt_min);
-	extend_line(line_rtt_max, current_time, rtt_max);
+	if (rtt_min != -1)
+	    extend_line(line_rtt_min, current_time, rtt_min);
+	if (rtt_max != -1)
+	    extend_line(line_rtt_max, current_time, rtt_max);
 
 	/* reset interval counters */
 	rtt_ttl = 0;
