@@ -103,7 +103,7 @@ static void RemoveOldConns(ptp_ptr **conn_list_head,
 			   int *conn_count);
 static void RemoveConn(const ptp_ptr *tcp_ptr);
 static void RemoveTcpPair(const ptp_ptr *tcp_ptr);
-
+static Bool MissingData(tcp_pair *ptp);
 
 /* options */
 Bool show_zero_window = TRUE;
@@ -2416,11 +2416,12 @@ dotrace(
 void
 trace_done(void)
 {
-    tcp_pair *ptp;
-    FILE *f_passfilter = NULL;
-    int ix;
-    static int count = 0;
-     
+  tcp_pair *ptp;
+  FILE *f_passfilter = NULL;
+  int ix;
+  static int count = 0;
+  Bool incomplete_pkt_capture = FALSE;
+  
   if (!run_continuously) {
     if (!printsuppress) {
 	if (tcp_trace_count == 0) {
@@ -2547,7 +2548,14 @@ trace_done(void)
 			  fprintf(f_passfilter, ",%d", ix+1);
 		   }
 	       /******************************/
-	    }
+	      
+	      /* If we are extracting packet contents (-e option), we shall check to
+	       * see if we missed segments during packet capture causing the
+	       * X2Y_contents.dat files that we drop to contain voids in them.
+	       * We shall emit a warning upon such an event below. */
+	      if (save_tcp_data && !incomplete_pkt_capture && MissingData(ptp)) 
+		incomplete_pkt_capture = TRUE;
+	    }	  
 	}
     }
   }
@@ -2558,6 +2566,11 @@ trace_done(void)
 	fclose(f_passfilter);
     }
 
+    if (incomplete_pkt_capture) {
+      fprintf(stderr, "\nWarning : some extracted files are incomplete!\n");
+      fprintf(stderr, "          Please see -l output for more detail.\n");
+    }
+  
     if ((debug>2) && !nonames)
 	cadump();
 }
@@ -3430,4 +3443,86 @@ udp_cksum_valid(
     }
     
     return(udp_cksum(pip,pudp,plast) == 0);
+}
+
+/* Did we miss any segment during packet capture? */
+static Bool
+MissingData(tcp_pair *ptp)
+{
+  tcb *pab = &ptp->a2b;
+  tcb *pba = &ptp->b2a;
+  
+  u_llong stream_length_pab=0, stream_length_pba=0;
+  u_long pab_last, pba_last;
+  
+  /* If packets were truncated (due to shorter snaplen) we miss data */
+  if ( (pab->trunc_bytes > 0) || (pba->trunc_bytes > 0) )
+    return TRUE;
+  
+  /* Also, if we missed whole segments (pcap dozing off) we miss data.
+   * The following code yanked off from output.c handles seq-space
+   * wrap around - Mani
+   * 
+   * Compare to theoretical length of the stream (not just what
+   * we saw) using the SYN and FIN
+   * Seq. Space wrap around calculations:
+   * Calculate stream length using last_seq_num seen, first_seq_num
+   * seen and wrap_count.
+   * first_seq_num = syn
+   * If reset_set, last_seq_num = latest_seq
+   *          else last_seq_num = fin
+   */
+    
+    pab_last = (pab->reset_count>0)?pab->latest_seq:pab->fin;    
+    pba_last = (pba->reset_count>0)?pba->latest_seq:pba->fin;
+    
+    /* calculating stream length for direction pab */
+    if ((pab->syn_count > 0) && (pab->fin_count > 0)) {
+	if (pab->seq_wrap_count > 0) {
+	    if (pab_last > pab->syn) {
+		stream_length_pab = pab_last + (MAX_32 * pab->seq_wrap_count) - pab->syn - 1;
+	    }
+	    else {
+		stream_length_pab = pab_last + (MAX_32 * (pab->seq_wrap_count+1)) - pab->syn - 1;
+	    }
+	}
+	else {
+	    if (pab_last > pab->syn) {
+		stream_length_pab = pab_last - pab->syn - 1;
+	    }
+	    else {
+		stream_length_pab = MAX_32 + pab_last - pab->syn - 1;
+	    }
+	}
+    }
+
+    /* calculating stream length for direction pba */
+    if ((pba->syn_count > 0) && (pba->fin_count > 0)) {
+	if (pba->seq_wrap_count > 0) {
+	    if (pba_last > pba->syn) {
+		stream_length_pba = pba_last + (MAX_32 * pba->seq_wrap_count) - pba->syn - 1;
+	    }
+	    else {
+		stream_length_pba = pba_last + (MAX_32 * (pba->seq_wrap_count+1)) - pba->syn - 1;
+	    }
+	}
+	else {
+	    if (pba_last > pba->syn) {
+		stream_length_pba = pba_last - pba->syn - 1;
+	    }
+	    else {
+		stream_length_pba = MAX_32 + pba_last - pba->syn - 1;
+	    }
+	}
+    }
+
+    /* Alright, now that we have the stream length in either direction,
+     * if the stream length is not equal to the total unique bytes we 
+     * seen, we must have missed whole segments
+     */
+     if ( (stream_length_pab != pab->unique_bytes) ||
+	  (stream_length_pba != pba->unique_bytes) )
+       return TRUE;
+
+  return FALSE;
 }

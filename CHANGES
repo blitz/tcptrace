@@ -608,3 +608,10 @@ added isRTO() in rexmit.c : all by Wes.
 -----
 
 Fixed tcpdump.c to trace IP packets buried under VLAN headers.
+
+6.6.3: 1 Mar 2004 Mani
+-----
+
+Added a function MissingData() in trace.c to check if TCP segments were
+missing or were truncated when the -e option is given to extract
+contents.
