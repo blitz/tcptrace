@@ -86,7 +86,26 @@ struct ipv6 {
 };
 
 
+/* IPv6 extension header format */
+struct ipv6_ext {
+    u_char	ip6ext_nheader;	/* Next Header */
+    u_char	ip6ext_len;	/* number of bytes in this header */
+    u_char	ip6ext_data[1];	/* optional data */
+};
+
+
+/* IPv6 fragmentation header */
+struct ipv6_ext_frag {
+    u_char	ip6ext_fr_nheader;	/* Next Header */
+    u_char	ip6ext_fr_res;	/* (reserved) */
+    u_short	ip6ext_fr_offset; /* fragment offset(13),res(2),M(1) */
+    u_long	ip6ext_fr_ID;	/* ID field */
+};
+
+
 /* tcptrace's IPv6 access routines */
 struct tcphdr *gettcp(struct ip *pip, void *plast);
 int gethdrlength (struct ip *pip, void *plast);
 int getpayloadlength (struct ip *pip, void *plast);
+struct ipv6_ext *ipv6_nextheader(void *pheader0, u_char *pnextheader);
+char *ipv6_header_name(u_char nextheader);
