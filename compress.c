@@ -67,6 +67,7 @@ static void PipeFitting(FILE *f_pipe, FILE *f_header, FILE *f_stdin);
 static int header_length = -1;
 static Bool is_compressed = FALSE;
 static FILE * f_orig_stdin = NULL;
+static int child_pid = -1;
 
 
 
@@ -349,7 +350,6 @@ CompOpenPipe(
 {
     int fdpipe[2];
     char *abspath;
-    int pid;
     int i;
     char *args[COMP_MAX_ARGS];
 
@@ -391,12 +391,12 @@ CompOpenPipe(
 	exit(-1);
     }
 
-    pid = fork();
-    if (pid == -1) {
+    child_pid = fork();
+    if (child_pid == -1) {
 	perror("fork");
 	exit(-1);
     }
-    if (pid == 0) {
+    if (child_pid == 0) {
 	/* child */
 	dup2(fdpipe[1],1);  /* redirect child's stdout to pipe */
 
@@ -504,7 +504,6 @@ FILE *
 PipeHelper(void)
 {
     int fdpipe[2];
-    int pid;
     FILE *f_return;
 
     /* On coming in, here's what's in the FDs: */
@@ -517,12 +516,12 @@ PipeHelper(void)
     }
     /* remember: fdpipe[0] is for reading, fdpipe[1] is for writing */
 
-    pid = fork();
-    if (pid == -1) {
+    child_pid = fork();
+    if (child_pid == -1) {
 	perror("fork");
 	exit(-1);
     }
-    if (pid == 0) {
+    if (child_pid == 0) {
 	/* be the helper process */
 	FILE *f_pipe;
 
@@ -548,7 +547,7 @@ PipeHelper(void)
     if (debug>1)
 	fprintf(stderr,
 		"PipeHelper: forked off child %d to deal with stdin\n",
-		pid);
+		child_pid);
 
     /* clean up the fd's */
     close(fdpipe[1]);
@@ -629,7 +628,14 @@ void
 CompCloseFile(
     char *filename)
 {
+    /* Hmmm... this was commented out, I wonder why? */
 /*     fclose(stdin); */
+
+    /* if we have a child, make sure it's dead */
+    if (child_pid != -1) {
+	kill(child_pid,SIGTERM);
+	child_pid = -1;
+    }
 
     /* in case we have children child still in the background */
     while (wait(0) != -1)
