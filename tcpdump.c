@@ -95,8 +95,14 @@ static int callback(
 	memcpy((char *)ip_buf,buf+offset,iplen);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
+      case DLT_RAW:
+	/* raw IP */
+	offset = 0;
+	memcpy((char *)ip_buf,buf+offset,iplen);
+	callback_plast = ip_buf+iplen-offset-1;
+	break;
       default:
-	fprintf(stderr,"Don't understand packet format (%d)\n", type);
+	fprintf(stderr,"Don't understand link-level format (%d)\n", type);
 	exit(1);
     }
 
@@ -191,9 +197,13 @@ pread_f *is_tcpdump(void)
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "NULL";
 	break;
+      case DLT_RAW:
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "RAW_IP";
+	break;
       default:
 	if (debug)
-	    fprintf(stderr,"is_tcpdump: Don't understand packet format (%d)\n", type);
+	    fprintf(stderr,"is_tcpdump: I think it's tcpdump, but I don't understand link format (%d)\n", type);
 	rewind(stdin);
 	return(NULL);
     }
