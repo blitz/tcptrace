@@ -38,7 +38,7 @@ create rtt sample graph[s]
 create time sequence graph[s]
 .TP 5
 .B \-N
-create cwin graph[s] (data on _N_etwork)
+create owin graph[s] (_o_utstanding data on _N_etwork)
 .TP 5
 .B \-F
 create segsize graph[s]
