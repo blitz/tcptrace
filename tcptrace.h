@@ -1113,7 +1113,7 @@ struct ipaddr *IPV6ADDR2ADDR(struct in6_addr *addr6);
 #endif /* IP_MAXPACKET */
 
 /* max 32 bit number */
-#define MAX_32 (0x100000000)
+#define MAX_32 (0x100000000LL)
 
 #ifndef ETHERTYPE_REVARP
 #define ETHERTYPE_REVARP        0x8035

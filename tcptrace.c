@@ -1748,7 +1748,7 @@ ParseExtendedOpt(
 {
      int i;
      struct ext_opt *popt_found = NULL;
-     char *argtext,*opt;
+     char *argtext,*opt=NULL;
      int arglen;
      
      /* there must be at least SOME text there */
