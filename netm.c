@@ -41,16 +41,16 @@ static char const rcsid[] =
 
 #ifdef GROK_NETM
 
-
 #define NETM_DUMP_OFFSET 0x1000
+
 
 /* netm file header format */
 struct netm_header {
 	int	netm_key;
 	int	version;
 };
-#define VERSION_OLD 3
-#define VERSION_NEW 4
+#define NETM_VERSION_OLD 3
+#define NETM_VERSION_NEW 4
 #define NETM_KEY 0x6476
 
 
@@ -74,6 +74,8 @@ struct netm_packet_header {
     int	unused5;
 };
 
+
+/* netm packet header format */
 
 int netm_oldversion;
 
@@ -111,7 +113,7 @@ pread_netm(
 	    return(0);
 	}
 
-	packlen = hdr.tlen;
+	packlen = ntohl(hdr.tlen);
 	/* round up to multiple of 4 bytes */
 	len = (packlen + 3) & ~0x3;
 
@@ -136,15 +138,15 @@ pread_netm(
 	    struct netm_packet_header_old *pho;
 	    pho = (struct netm_packet_header_old *) &hdr;
 
-	    ptime->tv_sec  = pho->tstamp_secs;
-	    ptime->tv_usec = pho->tstamp_usecs;
-	    *plen          = pho->len;
-	    *ptlen         = pho->tlen;
+	    ptime->tv_sec  = ntohl(pho->tstamp_secs);
+	    ptime->tv_usec = ntohl(pho->tstamp_usecs);
+	    *plen          = ntohl(pho->len);
+	    *ptlen         = ntohl(pho->tlen);
 	} else {
-	    ptime->tv_sec  = hdr.tstamp_secs;
-	    ptime->tv_usec = hdr.tstamp_usecs;
-	    *plen          = hdr.len;
-	    *ptlen         = hdr.tlen;
+	    ptime->tv_sec  = ntohl(hdr.tstamp_secs);
+	    ptime->tv_usec = ntohl(hdr.tstamp_usecs);
+	    *plen          = ntohl(hdr.len);
+	    *ptlen         = ntohl(hdr.tlen);
 	}
 
 
@@ -154,10 +156,9 @@ pread_netm(
 
 
 	/* if it's not TCP/IP, then skip it */
-	if ((pep->ether_type != ETHERTYPE_IP) ||
+	if ((ntohs(pep->ether_type) != ETHERTYPE_IP) ||
 	    ((*ppip)->ip_p != IPPROTO_TCP))
 	    continue;
-
 
 	return(1);
     }
@@ -178,6 +179,10 @@ int (*is_netm(void))()
     }
     rewind(stdin);
 
+    /* convert to local byte order */
+    nhdr.netm_key = ntohl(nhdr.netm_key);
+    nhdr.version = ntohl(nhdr.version);
+
     /* check for NETM */
     if (nhdr.netm_key != NETM_KEY) {
 	return(NULL);
@@ -185,9 +190,9 @@ int (*is_netm(void))()
 
 
     /* check version */
-    if (nhdr.version == VERSION_OLD)
+    if (nhdr.version == NETM_VERSION_OLD)
 	netm_oldversion = 1;
-    else if (nhdr.version == VERSION_NEW)
+    else if (nhdr.version == NETM_VERSION_NEW)
 	netm_oldversion = 0;
     else {
 	fprintf(stderr,"Bad NETM file header version: %d\n",

@@ -85,6 +85,12 @@ pread_snoop(
 	    return(0);
 	}
 
+	/* convert some stuff to host byte order */
+	hdr.tlen = ntohl(hdr.tlen);
+	hdr.len = ntohl(hdr.len);
+	hdr.secs = ntohl(hdr.secs);
+	hdr.usecs = ntohl(hdr.usecs);
+
 	packlen = hdr.tlen;
 	/* round up to multiple of 4 bytes */
 	len = (packlen + 3) & ~0x3;
@@ -117,7 +123,7 @@ pread_snoop(
 	*pphystype = PHYS_ETHER;
 
 	/* if it's not TCP/IP, then skip it */
-	if ((pep->ether_type != ETHERTYPE_IP) ||
+	if ((ntohs(pep->ether_type) != ETHERTYPE_IP) ||
 	    ((*ppip)->ip_p != IPPROTO_TCP))
 	    continue;
 
