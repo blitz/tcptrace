@@ -233,3 +233,5 @@
     (which threw off missed data and throughput)
   fixed a bug where rexmitted SYNs were not being included in the
     rexmit counts (also fixed marking on tsg graphs)
+  added another case to the connection-splicing code to fix something
+    I saw with FACK/SACK
