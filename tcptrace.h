@@ -557,6 +557,8 @@ struct tcp_options {
 #define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"
 #define CONTENTS_FILE_EXTENSION		"_contents.dat"
 
+/* name of file to store filtered output into */
+#define PASS_FILTER_FILENAME		"PF"
 
 /* packet-reading options... */
 /* the type for a packet reading routine */
