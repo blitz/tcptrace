@@ -285,6 +285,12 @@ pread_EP(
 
 	/* read the rest of the packet */
 	len -= sizeof(struct ether_header);
+	if (len >= IP_MAXPACKET) {
+	    /* sanity check */
+	    fprintf(stderr,
+		    "pread_EP: invalid next packet, IP len is %d, return EOF\n", len);
+	    return(0);
+	}
 	if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
 	    if (rlen != 0)
 		if (debug)
