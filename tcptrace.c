@@ -80,7 +80,7 @@ Bool printem = FALSE;
 Bool printallofem = FALSE;
 Bool printticks = FALSE;
 Bool printtrunc = FALSE;
-Bool printbadmbz = TRUE;
+Bool printbadmbz = FALSE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
 Bool graph_seq_zero = FALSE;
@@ -1037,7 +1037,10 @@ ParseArgs(
 
 		  case 'd': ++debug; break;
 		  case 'v': Version(); exit(0); break;
-		  case 'w': printtrunc = TRUE; break;
+		  case 'w':
+		    printtrunc = TRUE;
+		    printbadmbz = TRUE;
+		    break;
 		  case 'y': plot_tput_instant = FALSE; break;
 		  case 'q': printsuppress = TRUE; break;
 		  case 'z':
@@ -1138,7 +1141,10 @@ ParseArgs(
 		  case 'r': print_rtt = !TRUE; break;
 		  case 's': use_short_names = !TRUE; break;
 		  case 't': printticks = !TRUE; break;
-		  case 'w': printtrunc = !TRUE; break;
+		  case 'w':
+		    printtrunc = !TRUE;
+		    printbadmbz = !TRUE;
+		    break;
 		  case 'q': printsuppress = !TRUE; break;
 		  case 'z':
 		    if (strcmp(argv[i],"z") == 0) {
