@@ -374,7 +374,14 @@ printtcp_packet(
 	hex?"\t     ACK: 0x%08x\n":"\t     ACK: %d\n",
 	ntohl(ptcp->th_ack));
     printf("\t     WIN: %u\n", ntohs(ptcp->th_win));
-    printf("\t    HLEN: %u\n", ptcp->th_off*4);
+    printf("\t    HLEN: %u", ptcp->th_off*4);
+    if ((u_long)ptcp + ptcp->th_off*4 - 1 > (u_long)plast) {
+	/* not all there */
+	printf(" (only %ld bytes in dump file)",
+	       (u_long)plast - (u_long)ptcp + 1);
+    }
+    printf("\n");
+    
     if (ptcp->th_x2 != 0) {
 	printf("\t    MBZ: 0x%01x (these are supposed to be zero!)\n",
 	       ptcp->th_x2);
@@ -390,17 +397,33 @@ printtcp_packet(
     printf("\n");
 
 
-    printf("\t    DLEN: %u",
-	   tcp_data_length);
-    if ((u_long)pdata + tcp_data_length > ((u_long)plast+1))
-	printf(" (only %ld bytes in dump file)\n",
-	       (u_long)plast - (u_long)pdata + 1);
+    printf("\t    DLEN: %u", tcp_data_length);
+    if ((tcp_data_length != 0) &&
+	((u_long)pdata + tcp_data_length > ((u_long)plast+1))) {
+	int available =  (u_long)plast - (u_long)pdata + 1;
+	if (available > 1)
+	    printf(" (only %ld bytes in dump file)",
+		   (u_long)plast - (u_long)pdata + 1);
+	else
+	    printf(" (none of it in dump file)");
+    }
     printf("\n");
     if (ptcp->th_off != 5) {
 	struct tcp_options *ptcpo;
 
-        printf("\t    OPTS: %u bytes\t",
+        printf("\t    OPTS: %u bytes",
 	       (ptcp->th_off*4) - sizeof(struct tcphdr));
+	if ((u_long)ptcp + ptcp->th_off*4 - 1 > (u_long)plast) {
+	    /* not all opts were stored */
+	    u_long available = 1 + (u_long)plast -
+		((u_long)ptcp + sizeof(struct tcphdr));
+	    if (available > 1)
+		printf(" (%lu bytes in file)", available);
+	    else
+		printf(" (none of it in dump file)");
+	}
+
+	printf("\t");
 
 	ptcpo = ParseOptions(ptcp,plast);
 
