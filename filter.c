@@ -1485,9 +1485,9 @@ Filter Syntax:\n\
         the one for the Client or 's_' meaning the value for the Server.  If\n\
 	the prefix is omitted, it means \"either one\" (effectively becoming\n\
 	\"c_VAR OR s_VAR)\").  As shorthand for a conjunction instead, you can\n\
-	use the syntax 'b_' (as in b_mss>100), meaning 'B'oth, (effectively becoming\n\
-	\"c_VAR AND s_VAR)\").  For completeness, 'e_' means 'E'ither, which is\n\
-	the normal default with no prefix.\n\
+	use the syntax 'b_' (as in b_mss>100), meaning 'B'oth, (effectively\n\
+	becoming \"c_VAR AND s_VAR)\").  For completeness, 'e_' means 'E'ither,\n\
+	which is the normal default with no prefix.\n\
      constant:\n\
 	strings:	anything in double quotes\n\
 	booleans:	TRUE FALSE\n\
@@ -1495,7 +1495,7 @@ Filter Syntax:\n\
   arithmetic operations: \n\
      any of the operators + - * / %% \n\
      performed on 'numbers'.  Normal operator precedence\n\
-	 is maintained (or use parens)\n\
+        is maintained (or use parens)\n\
   relational operators\n\
      any of < > = != >= <= applied to 'numbers'\n\
   boolean operators\n\
