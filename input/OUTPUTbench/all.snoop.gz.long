@@ -19,6 +19,8 @@ TCP connection 1:
      total packets:            43           total packets:            54      
      ack pkts sent:            43           ack pkts sent:            54      
      pure acks sent:           17           pure acks sent:            4      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:       273           unique bytes sent:     16126      
      actual data pkts:         26           actual data pkts:         50      
      actual data bytes:       273           actual data bytes:     16126      
@@ -73,6 +75,8 @@ TCP connection 2:
      total packets:            14           total packets:             8      
      ack pkts sent:            14           ack pkts sent:             8      
      pure acks sent:           14           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:      8192      
      actual data pkts:          0           actual data pkts:          8      
      actual data bytes:         0           actual data bytes:      8192      
@@ -127,6 +131,8 @@ TCP connection 3:
      total packets:            15           total packets:            12      
      ack pkts sent:            15           ack pkts sent:            12      
      pure acks sent:            6           pure acks sent:            3      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         9           unique bytes sent:       962      
      actual data pkts:          9           actual data pkts:          9      
      actual data bytes:         9           actual data bytes:       962      
@@ -181,6 +187,8 @@ TCP connection 4:
      total packets:             3           total packets:             2      
      ack pkts sent:             3           ack pkts sent:             2      
      pure acks sent:            3           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:        77      
      actual data pkts:          0           actual data pkts:          2      
      actual data bytes:         0           actual data bytes:        77      
@@ -235,6 +243,8 @@ TCP connection 5:
      total packets:            15           total packets:            20      
      ack pkts sent:            15           ack pkts sent:            20      
      pure acks sent:            5           pure acks sent:           10      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        32           unique bytes sent:        10      
      actual data pkts:         10           actual data pkts:         10      
      actual data bytes:        32           actual data bytes:        10      
@@ -289,6 +299,8 @@ TCP connection 6:
      total packets:             8           total packets:             6      
      ack pkts sent:             8           ack pkts sent:             6      
      pure acks sent:            4           pure acks sent:            2      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         6           unique bytes sent:        61      
      actual data pkts:          4           actual data pkts:          4      
      actual data bytes:         6           actual data bytes:        61      
@@ -343,6 +355,8 @@ TCP connection 7:
      total packets:            34           total packets:            17      
      ack pkts sent:            34           ack pkts sent:            17      
      pure acks sent:           17           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        17           unique bytes sent:        47      
      actual data pkts:         17           actual data pkts:         17      
      actual data bytes:        17           actual data bytes:        47      
@@ -397,6 +411,8 @@ TCP connection 8:
      total packets:             3           total packets:             3      
      ack pkts sent:             3           ack pkts sent:             3      
      pure acks sent:            2           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         3           unique bytes sent:       720      
      actual data pkts:          1           actual data pkts:          2      
      actual data bytes:         3           actual data bytes:       720      
@@ -451,6 +467,8 @@ TCP connection 9:
      total packets:            14           total packets:             8      
      ack pkts sent:            14           ack pkts sent:             8      
      pure acks sent:           14           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:      8192      
      actual data pkts:          0           actual data pkts:          8      
      actual data bytes:         0           actual data bytes:      8192      
@@ -505,6 +523,8 @@ TCP connection 10:
      total packets:             4           total packets:             3      
      ack pkts sent:             4           ack pkts sent:             3      
      pure acks sent:            2           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         6           unique bytes sent:         6      
      actual data pkts:          2           actual data pkts:          2      
      actual data bytes:         6           actual data bytes:         6      
@@ -559,6 +579,8 @@ TCP connection 11:
      total packets:             8           total packets:             6      
      ack pkts sent:             8           ack pkts sent:             6      
      pure acks sent:            4           pure acks sent:            2      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        12           unique bytes sent:      1186      
      actual data pkts:          4           actual data pkts:          4      
      actual data bytes:        12           actual data bytes:      1186      
@@ -613,6 +635,8 @@ TCP connection 12:
      total packets:            32           total packets:             0      
      ack pkts sent:            32           ack pkts sent:             0      
      pure acks sent:            0           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        34           unique bytes sent:         0      
      actual data pkts:         32           actual data pkts:          0      
      actual data bytes:        68           actual data bytes:         0      
@@ -669,6 +693,8 @@ TCP connection 13:
      total packets:             8           total packets:             8      
      ack pkts sent:             8           ack pkts sent:             8      
      pure acks sent:            0           pure acks sent:            8      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:       245           unique bytes sent:         0      
      actual data pkts:          8           actual data pkts:          0      
      actual data bytes:       245           actual data bytes:         0      
@@ -723,6 +749,8 @@ TCP connection 14:
      total packets:             4           total packets:             6      
      ack pkts sent:             4           ack pkts sent:             6      
      pure acks sent:            2           pure acks sent:            2      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         8           unique bytes sent:       617      
      actual data pkts:          2           actual data pkts:          4      
      actual data bytes:         8           actual data bytes:      1129      
@@ -777,6 +805,8 @@ TCP connection 15:
      total packets:            28           total packets:            22      
      ack pkts sent:            28           ack pkts sent:            22      
      pure acks sent:           14           pure acks sent:            5      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        16           unique bytes sent:       525      
      actual data pkts:         14           actual data pkts:         17      
      actual data bytes:        16           actual data bytes:       525      
@@ -831,6 +861,8 @@ TCP connection 16:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:       437           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:       437           actual data bytes:         0      
@@ -885,6 +917,8 @@ TCP connection 17:
      total packets:            16           total packets:            16      
      ack pkts sent:            16           ack pkts sent:            16      
      pure acks sent:            8           pure acks sent:            8      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         8           unique bytes sent:         8      
      actual data pkts:          8           actual data pkts:          8      
      actual data bytes:         8           actual data bytes:         8      
@@ -939,6 +973,8 @@ TCP connection 18:
      total packets:             9           total packets:             7      
      ack pkts sent:             9           ack pkts sent:             7      
      pure acks sent:            5           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        11           unique bytes sent:       381      
      actual data pkts:          4           actual data pkts:          6      
      actual data bytes:        11           actual data bytes:       381      
@@ -993,6 +1029,8 @@ TCP connection 19:
      total packets:            16           total packets:             8      
      ack pkts sent:            16           ack pkts sent:             8      
      pure acks sent:            8           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         8           unique bytes sent:        59      
      actual data pkts:          8           actual data pkts:          8      
      actual data bytes:         8           actual data bytes:        59      
@@ -1047,6 +1085,8 @@ TCP connection 20:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        55           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:        55           actual data bytes:         0      
@@ -1101,6 +1141,8 @@ TCP connection 21:
      total packets:             9           total packets:             7      
      ack pkts sent:             8           ack pkts sent:             7      
      pure acks sent:            1           pure acks sent:            6      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:      3695           unique bytes sent:         0      
      actual data pkts:          7           actual data pkts:          0      
      actual data bytes:      3695           actual data bytes:         0      
@@ -1155,6 +1197,8 @@ TCP connection 22:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:       327           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:       327           actual data bytes:         0      
@@ -1209,6 +1253,8 @@ TCP connection 23:
      total packets:             4           total packets:             2      
      ack pkts sent:             4           ack pkts sent:             2      
      pure acks sent:            0           pure acks sent:            2      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:       327           unique bytes sent:         0      
      actual data pkts:          4           actual data pkts:          0      
      actual data bytes:       327           actual data bytes:         0      
@@ -1263,6 +1309,8 @@ TCP connection 24:
      total packets:            25           total packets:            17      
      ack pkts sent:            25           ack pkts sent:            17      
      pure acks sent:           12           pure acks sent:            5      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        15           unique bytes sent:        47      
      actual data pkts:         13           actual data pkts:         12      
      actual data bytes:        15           actual data bytes:        47      
@@ -1317,6 +1365,8 @@ TCP connection 25:
      total packets:            12           total packets:             7      
      ack pkts sent:            12           ack pkts sent:             7      
      pure acks sent:            6           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         6           unique bytes sent:        19      
      actual data pkts:          6           actual data pkts:          6      
      actual data bytes:         6           actual data bytes:        19      
@@ -1371,6 +1421,8 @@ TCP connection 26:
      total packets:            12           total packets:             7      
      ack pkts sent:            12           ack pkts sent:             7      
      pure acks sent:            6           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         6           unique bytes sent:        24      
      actual data pkts:          6           actual data pkts:          6      
      actual data bytes:         6           actual data bytes:        24      
@@ -1425,6 +1477,8 @@ TCP connection 27:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        37           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:        37           actual data bytes:         0      
@@ -1479,6 +1533,8 @@ TCP connection 28:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        38           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:        38           actual data bytes:         0      
@@ -1533,6 +1589,8 @@ TCP connection 29:
      total packets:            11           total packets:             6      
      ack pkts sent:            11           ack pkts sent:             6      
      pure acks sent:            6           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         6           unique bytes sent:        12      
      actual data pkts:          5           actual data pkts:          6      
      actual data bytes:         6           actual data bytes:        12      
@@ -1587,6 +1645,8 @@ TCP connection 30:
      total packets:            42           total packets:            24      
      ack pkts sent:            42           ack pkts sent:            24      
      pure acks sent:           24           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        21           unique bytes sent:       554      
      actual data pkts:         18           actual data pkts:         24      
      actual data bytes:        21           actual data bytes:       554      
@@ -1641,6 +1701,8 @@ TCP connection 31:
      total packets:            20           total packets:            18      
      ack pkts sent:            20           ack pkts sent:            18      
      pure acks sent:           18           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         2           unique bytes sent:      1473      
      actual data pkts:          2           actual data pkts:         18      
      actual data bytes:         2           actual data bytes:      1473      
@@ -1695,6 +1757,8 @@ TCP connection 32:
      total packets:             3           total packets:             3      
      ack pkts sent:             3           ack pkts sent:             3      
      pure acks sent:            2           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         1           unique bytes sent:       401      
      actual data pkts:          1           actual data pkts:          2      
      actual data bytes:         1           actual data bytes:       401      
@@ -1749,6 +1813,8 @@ TCP connection 33:
      total packets:             8           total packets:             5      
      ack pkts sent:             8           ack pkts sent:             5      
      pure acks sent:            6           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         3           unique bytes sent:       415      
      actual data pkts:          2           actual data pkts:          4      
      actual data bytes:         3           actual data bytes:       415      
@@ -1803,6 +1869,8 @@ TCP connection 34:
      total packets:             2           total packets:             2      
      ack pkts sent:             2           ack pkts sent:             2      
      pure acks sent:            1           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         1           unique bytes sent:        72      
      actual data pkts:          1           actual data pkts:          1      
      actual data bytes:         1           actual data bytes:        72      
@@ -1857,6 +1925,8 @@ TCP connection 35:
      total packets:             3           total packets:             3      
      ack pkts sent:             3           ack pkts sent:             3      
      pure acks sent:            2           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         3           unique bytes sent:       396      
      actual data pkts:          1           actual data pkts:          2      
      actual data bytes:         3           actual data bytes:       396      
@@ -1911,6 +1981,8 @@ TCP connection 36:
      total packets:             5           total packets:             5      
      ack pkts sent:             5           ack pkts sent:             5      
      pure acks sent:            0           pure acks sent:            5      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:       165           unique bytes sent:         0      
      actual data pkts:          5           actual data pkts:          0      
      actual data bytes:       242           actual data bytes:         0      
@@ -1965,6 +2037,8 @@ TCP connection 37:
      total packets:             3           total packets:             2      
      ack pkts sent:             3           ack pkts sent:             2      
      pure acks sent:            0           pure acks sent:            2      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        92           unique bytes sent:         0      
      actual data pkts:          3           actual data pkts:          0      
      actual data bytes:        92           actual data bytes:         0      
@@ -2019,6 +2093,8 @@ TCP connection 38:
      total packets:             3           total packets:             3      
      ack pkts sent:             3           ack pkts sent:             3      
      pure acks sent:            0           pure acks sent:            3      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        92           unique bytes sent:         0      
      actual data pkts:          3           actual data pkts:          0      
      actual data bytes:        92           actual data bytes:         0      
@@ -2073,6 +2149,8 @@ TCP connection 39:
      total packets:             3           total packets:             4      
      ack pkts sent:             3           ack pkts sent:             4      
      pure acks sent:            2           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         3           unique bytes sent:      1002      
      actual data pkts:          1           actual data pkts:          3      
      actual data bytes:         3           actual data bytes:      1002      
@@ -2127,6 +2205,8 @@ TCP connection 40:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            1           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:         0      
      actual data pkts:          0           actual data pkts:          0      
      actual data bytes:         0           actual data bytes:         0      
@@ -2181,6 +2261,8 @@ TCP connection 41:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            1           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:         0      
      actual data pkts:          0           actual data pkts:          0      
      actual data bytes:         0           actual data bytes:         0      
@@ -2235,6 +2317,8 @@ TCP connection 42:
      total packets:             2           total packets:             2      
      ack pkts sent:             2           ack pkts sent:             2      
      pure acks sent:            1           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         1           unique bytes sent:         1      
      actual data pkts:          1           actual data pkts:          1      
      actual data bytes:         1           actual data bytes:         1      
@@ -2289,6 +2373,8 @@ TCP connection 43:
      total packets:             3           total packets:             2      
      ack pkts sent:             3           ack pkts sent:             2      
      pure acks sent:            0           pure acks sent:            2      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:      1041           unique bytes sent:         0      
      actual data pkts:          3           actual data pkts:          0      
      actual data bytes:      1041           actual data bytes:         0      
@@ -2343,6 +2429,8 @@ TCP connection 44:
      total packets:             2           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            1           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:         0      
      actual data pkts:          0           actual data pkts:          0      
      actual data bytes:         0           actual data bytes:         0      
@@ -2397,6 +2485,8 @@ TCP connection 45:
      total packets:             4           total packets:             4      
      ack pkts sent:             4           ack pkts sent:             4      
      pure acks sent:            3           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         2           unique bytes sent:       183      
      actual data pkts:          1           actual data pkts:          4      
      actual data bytes:         2           actual data bytes:       183      
@@ -2451,6 +2541,8 @@ TCP connection 46:
      total packets:             2           total packets:             2      
      ack pkts sent:             2           ack pkts sent:             2      
      pure acks sent:            1           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         2           unique bytes sent:       164      
      actual data pkts:          1           actual data pkts:          1      
      actual data bytes:         2           actual data bytes:       164      
@@ -2505,6 +2597,8 @@ TCP connection 47:
      total packets:             4           total packets:             3      
      ack pkts sent:             4           ack pkts sent:             3      
      pure acks sent:            2           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        27           unique bytes sent:      3152      
      actual data pkts:          2           actual data pkts:          3      
      actual data bytes:        27           actual data bytes:      3152      
@@ -2559,6 +2653,8 @@ TCP connection 48:
      total packets:             3           total packets:             2      
      ack pkts sent:             3           ack pkts sent:             2      
      pure acks sent:            1           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        34           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:        34           actual data bytes:         0      
@@ -2613,6 +2709,8 @@ TCP connection 49:
      total packets:             8           total packets:             5      
      ack pkts sent:             8           ack pkts sent:             5      
      pure acks sent:            2           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:       452           unique bytes sent:       171      
      actual data pkts:          6           actual data pkts:          5      
      actual data bytes:       452           actual data bytes:       171      
@@ -2667,6 +2765,8 @@ TCP connection 50:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            1           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:        82      
      actual data pkts:          0           actual data pkts:          1      
      actual data bytes:         0           actual data bytes:        82      
@@ -2721,6 +2821,8 @@ TCP connection 51:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            1           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:         0      
      actual data pkts:          0           actual data pkts:          0      
      actual data bytes:         0           actual data bytes:         0      
@@ -2775,6 +2877,8 @@ TCP connection 52:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:        80           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:        80           actual data bytes:         0      
@@ -2829,6 +2933,8 @@ TCP connection 53:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            0           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         1           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:         1           actual data bytes:         0      
@@ -2883,6 +2989,8 @@ TCP connection 54:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            1           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:         0           unique bytes sent:         0      
      actual data pkts:          0           actual data pkts:          0      
      actual data bytes:         0           actual data bytes:         0      
@@ -2937,6 +3045,8 @@ TCP connection 55:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            0           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
      unique bytes sent:       267           unique bytes sent:         0      
      actual data pkts:          1           actual data pkts:          0      
      actual data bytes:       267           actual data bytes:         0      

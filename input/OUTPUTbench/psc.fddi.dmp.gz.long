@@ -17,6 +17,8 @@ TCP connection 1:
      total packets:           240           total packets:           289      
      ack pkts sent:           239           ack pkts sent:           289      
      pure acks sent:           67           pure acks sent:          150      
+     sack pkts sent:            0           sack pkts sent:           77      
+     max sack blks/ack:         0           max sack blks/ack:         4      
      unique bytes sent:    200026           unique bytes sent:    200003      
      actual data pkts:        171           actual data pkts:        138      
      actual data bytes:    246746           actual data bytes:    200003      
