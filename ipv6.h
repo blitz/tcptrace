@@ -110,7 +110,7 @@ struct ipv6_ext_frag {
 
 
 /* tcptrace's IPv6 access routines */
-struct tcphdr *gettcp(struct ip *pip, void *plast);
+struct tcphdr *gettcp(struct ip *pip, void **pplast);
 int gethdrlength (struct ip *pip, void *plast);
 int getpayloadlength (struct ip *pip, void *plast);
 struct ipv6_ext *ipv6_nextheader(void *pheader0, u_char *pnextheader);

@@ -228,7 +228,7 @@ printtcp_packet(
     struct ipv6 *pipv6;
 
     /* find the tcp header */
-    ptcp = gettcp(pip, plast);
+    ptcp = gettcp(pip, &plast);
     if (ptcp == NULL)
 	return;			/* not TCP */
 
