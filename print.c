@@ -239,7 +239,7 @@ printipv4(
 	    /* check for truncated option */
 	    if ((void *)(popt+len-1) > plast) {
 		printf("\t    IP option (truncated)\n");
-		continue;
+		break;
 	    }
 
 	    printf("\t    IP option %d (copy:%c  class:%s  number:%d)\n",
