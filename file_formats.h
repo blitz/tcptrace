@@ -51,13 +51,13 @@ struct supported_formats {
 /* install the is_GLORP() routines supported */
 struct supported_formats file_formats[] = {
 #ifdef GROK_SNOOP
-	{is_snoop, "Sun Snoop"},
+	{is_snoop, "Sun Snoop -- Distributed with Solaris"},
 #endif GROK_SNOOP
 #ifdef GROK_NETM
-	{is_netm, "Net Metrix"},
+	{is_netm, "Net Metrix -- Commercial program from HP"},
 #endif GROK_NETM
 #ifdef GROK_TCPDUMP
-	{is_tcpdump, "tcpdump"},
+	{is_tcpdump, "tcpdump -- Public domain program from LBL"},
 #endif GROK_TCPDUMP
 	{NULL,NULL},	/* You must NOT remove this entry */
 };
