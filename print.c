@@ -130,7 +130,6 @@ printtcp_packet(
 
 void
 printpacket(
-     struct timeval	time,
      int		len,
      int		tlen,
      void		*phys,
@@ -142,7 +141,7 @@ printpacket(
     else
         printf("\tPacket Length: %d (saved length %d)\n", len,tlen);
 
-    printf("\tCollected: %s\n", ts2ascii(&time));
+    printf("\tCollected: %s\n", ts2ascii(&current_time));
 
 
     switch(phystype) {

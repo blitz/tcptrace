@@ -166,20 +166,22 @@ PrintTrace(
 	    host1,host2,host2,host1);
 
     StatlineI("total packets","","%8lu", pab->packets, pba->packets);
+    if (pab->reset_count || pba->reset_count)
+	StatlineI("resets sent","","%8lu", pab->reset_count, pba->reset_count);
     StatlineI("ack pkts sent","","%8lu", pab->ack_pkts, pba->ack_pkts);
     StatlineI("unique bytes","","%8lu",
-	    pab->data_bytes-pab->rexmit_bytes,
-	    pba->data_bytes-pba->rexmit_bytes);
+	      pab->data_bytes-pab->rexmit_bytes,
+	      pba->data_bytes-pba->rexmit_bytes);
 #ifdef OLD
     StatlineI("unique packets","","%8lu",
-	     pab->data_pkts-pab->rexmit_pkts,
-	     pba->data_pkts-pba->rexmit_pkts);
+	      pab->data_pkts-pab->rexmit_pkts,
+	      pba->data_pkts-pba->rexmit_pkts);
 #endif OLD
     StatlineI("actual data pkts","","%8lu", pab->data_pkts, pba->data_pkts);
     StatlineI("actual data bytes","","%8lu", pab->data_bytes, pba->data_bytes);
     StatlineI("rexmt data pkts","","%8lu", pab->rexmit_pkts, pba->rexmit_pkts);
     StatlineI("rexmt data bytes","","%8lu", pab->rexmit_bytes, pba->rexmit_bytes);
-    StatlineI("outoforder pkts","","%8lu", pab->ooo_pkts, pba->ooo_pkts);
+    StatlineI("outoforder pkts","","%8lu", pab->out_order_pkts, pba->out_order_pkts);
     StatlineI("max segm size","bytes","%8lu",
 	      pab->max_seg_size,
 	      pba->max_seg_size);
@@ -193,8 +195,8 @@ PrintTrace(
     StatlineI("min win adv","bytes","%8lu", pab->win_min, pba->win_min);
     StatlineI("zero win adv","","%8lu", pab->win_zero_ct, pba->win_zero_ct);
     StatlineI("avg win adv","bytes","%8lu",
-	    pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
-	    pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
+	      pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
+	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
 
 
     /* do the throughput calcs */
@@ -203,23 +205,23 @@ PrintTrace(
 	      (double) (pab->data_bytes-pab->rexmit_bytes) / etime_float,
 	      (double) (pba->data_bytes-pba->rexmit_bytes) / etime_float);
 
-    if (dortt) {
+    if (print_rtt) {
 	fprintf(stdout,"\n");
 	StatlineI("RTT samples","","%8lu", pab->rtt_count, pba->rtt_count);
 	StatLineF("RTT min","ms","%8.1f",
-		 (double)pab->rtt_min/1000.0,
-		 (double)pba->rtt_min/1000.0);
+		  (double)pab->rtt_min/1000.0,
+		  (double)pba->rtt_min/1000.0);
 	StatLineF("RTT max","ms","%8.1f",
-		 (double)pab->rtt_max/1000.0,
-		 (double)pba->rtt_max/1000.0);
+		  (double)pab->rtt_max/1000.0,
+		  (double)pba->rtt_max/1000.0);
 	StatLineF("RTT avg","ms","%8.1f",
-		 Average(pab->rtt_sum, pab->rtt_count) / 1000.0,
-		 Average(pba->rtt_sum, pba->rtt_count) / 1000.0);
+		  Average(pab->rtt_sum, pab->rtt_count) / 1000.0,
+		  Average(pba->rtt_sum, pba->rtt_count) / 1000.0);
 	StatLineF("RTT stdev","ms","%8.1f",
-		 Stdev(pab->rtt_sum, pab->rtt_sum2, pab->rtt_count) / 1000.0,
-		 Stdev(pba->rtt_sum, pba->rtt_sum2, pba->rtt_count) / 1000.0);
+		  Stdev(pab->rtt_sum, pab->rtt_sum2, pab->rtt_count) / 1000.0,
+		  Stdev(pba->rtt_sum, pba->rtt_sum2, pba->rtt_count) / 1000.0);
 
-        if (pab->rtt_amback || pba->rtt_amback) {
+	if (pab->rtt_amback || pba->rtt_amback) {
 	    fprintf(stdout, "\
 \t  For the following 5 RTT statistics, only ACKs for
 \t  multiply-transmitted segments (ambiguous ACKs) were
@@ -227,44 +229,44 @@ PrintTrace(
 \t  of a segment.
 ");
 	    StatlineI("ambiguous acks","","%8lu",
-		     pab->rtt_amback, pba->rtt_amback);
+		      pab->rtt_amback, pba->rtt_amback);
 	    StatLineF("RTT min (last)","ms","%8.1f",
-		     (double)pab->rtt_min_last/1000.0,
-		     (double)pba->rtt_min_last/1000.0);
+		      (double)pab->rtt_min_last/1000.0,
+		      (double)pba->rtt_min_last/1000.0);
 	    StatLineF("RTT max (last)","ms","%8.1f",
-		     (double)pab->rtt_max_last/1000.0,
-		     (double)pba->rtt_max_last/1000.0);
+		      (double)pab->rtt_max_last/1000.0,
+		      (double)pba->rtt_max_last/1000.0);
 	    StatLineF("RTT avg (last)","ms","%8.1f",
-		     Average(pab->rtt_sum_last, pab->rtt_count_last) / 1000.0,
-		     Average(pba->rtt_sum_last, pba->rtt_count_last) / 1000.0);
+		      Average(pab->rtt_sum_last, pab->rtt_count_last) / 1000.0,
+		      Average(pba->rtt_sum_last, pba->rtt_count_last) / 1000.0);
 	    StatLineF("RTT sdv (last)","ms","%8.1f",
-		     Stdev(pab->rtt_sum_last, pab->rtt_sum2_last, pab->rtt_count_last) / 1000.0,
-		     Stdev(pba->rtt_sum_last, pba->rtt_sum2_last, pba->rtt_count_last) / 1000.0);
-	}
+		      Stdev(pab->rtt_sum_last, pab->rtt_sum2_last, pab->rtt_count_last) / 1000.0,
+		      Stdev(pba->rtt_sum_last, pba->rtt_sum2_last, pba->rtt_count_last) / 1000.0);
 
+	}
 	StatlineI("segs cum acked","","%8lu",
-		 pab->rtt_cumack, pba->rtt_cumack);
-	StatlineI("redundant acks","","%8lu",
-		 pab->rtt_unkack, pba->rtt_unkack);
+		  pab->rtt_cumack, pba->rtt_cumack);
+	StatlineI("duplicate acks","","%8lu",
+		  pab->rtt_dupack, pba->rtt_dupack);
 	if (debug)
 	    StatlineI("unknown acks:","","%8lu",
-		     pab->rtt_unkack, pba->rtt_unkack);
+		      pab->rtt_unkack, pba->rtt_unkack);
 	StatlineI("max # retrans","","%8lu",
-		 pab->retr_max, pba->retr_max);
+		  pab->retr_max, pba->retr_max);
 	StatLineF("min retr time","ms","%8.1f",
-		 (double)((double)pab->retr_min_tm/1000.0),
-		 (double)((double)pba->retr_min_tm/1000.0));
+		  (double)((double)pab->retr_min_tm/1000.0),
+		  (double)((double)pba->retr_min_tm/1000.0));
 	StatLineF("max retr time","ms","%8.1f",
-		 (double)((double)pab->retr_max_tm/1000.0),
-		 (double)((double)pba->retr_max_tm/1000.0));
+		  (double)((double)pab->retr_max_tm/1000.0),
+		  (double)((double)pba->retr_max_tm/1000.0));
 	StatLineF("avg retr time","ms","%8.1f",
-		 Average(pab->retr_tm_sum, pab->retr_tm_count) / 1000.0,
-		 Average(pba->retr_tm_sum, pba->retr_tm_count) / 1000.0);
+		  Average(pab->retr_tm_sum, pab->retr_tm_count) / 1000.0,
+		  Average(pba->retr_tm_sum, pba->retr_tm_count) / 1000.0);
 	StatlineI("sdv retr time","ms","%8.1f",
-		 Stdev(pab->retr_tm_sum, pab->retr_tm_sum2,
-		       pab->retr_tm_count) / 1000.0,
-		 Stdev(pba->retr_tm_sum, pba->retr_tm_sum2,
-		       pba->retr_tm_count) / 1000.0);
+		  Stdev(pab->retr_tm_sum, pab->retr_tm_sum2,
+			pab->retr_tm_count) / 1000.0,
+		  Stdev(pba->retr_tm_sum, pba->retr_tm_sum2,
+			pba->retr_tm_count) / 1000.0);
     }
 }
 

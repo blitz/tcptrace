@@ -35,7 +35,7 @@ endif
 
 
 OFILES= gcache.o main.o names.o netm.o output.o plotter.o print.o \
-	rtt.o snoop.o tcpdump.o trace.o rexmit.o
+	snoop.o tcpdump.o trace.o rexmit.o
 
 tcptrace: ${OFILES}
 	${CC} ${LDFLAGS} ${CFLAGS} ${OFILES} -o tcptrace ${LDLIBS}
@@ -57,16 +57,16 @@ depend:
 	makedepend ${INCS} -w 10 *.c
 # DO NOT DELETE
 
-gcache.o: tcptrace.h
 gcache.o: gcache.h
-main.o: tcptrace.h
+gcache.o: tcptrace.h
 main.o: file_formats.h
-names.o: tcptrace.h
+main.o: tcptrace.h
 names.o: gcache.h
-output.o: tcptrace.h
+names.o: tcptrace.h
 output.o: gcache.h
+output.o: tcptrace.h
 plotter.o: tcptrace.h
 print.o: tcptrace.h
-rtt.o: tcptrace.h
-trace.o: tcptrace.h
+rexmit.o: tcptrace.h
 trace.o: gcache.h
+trace.o: tcptrace.h
