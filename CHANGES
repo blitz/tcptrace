@@ -225,6 +225,8 @@
     well under these conditions (up to available swap space), before it
     just thrashed itself to a standstill.
 5.0.15 - Fri Nov 20, 1998
-    possible fix for pipe() failure with too many files open
+  possible fix for pipe() failure with too many files open
+  added some minor argument parsing checks
+  added a few extended arguments "--foo" to control lesser-used functions
 
 

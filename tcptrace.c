@@ -128,6 +128,7 @@ Help(
 {
     if (harg && *harg && strncmp(harg,"arg",3) == 0) {
 	Args();
+    } else if (harg && *harg && strncmp(harg,"xarg",3) == 0) {
 	UsageModules();
     } else if (harg && *harg && strncmp(harg,"filt",4) == 0) {
 	HelpFilter();
@@ -144,6 +145,7 @@ Help(
 	fprintf(stderr,"\
 For help on specific topics, try:  \n\
   -hargs    tell me about the program's arguments  \n\
+  -hxargs   tell me about the module arguments  \n\
   -hconfig  tell me about the configuration of this binary  \n\
   -houtput  explain what the output means  \n\
   -hfilter  output filtering help  \n\
@@ -400,8 +402,17 @@ Dump File Names\n\
   The files can be compressed, see compress.h for configuration.\n\
   If the dump file name is 'stdin', then we read from standard input\n\
     rather than from a file\n\
+Obscure options\n\
+  --showsacks        show SACK blocks on time sequence graphs\n\
+  --noshowsacks      DON'T show SACK blocks on time sequence graphs\n\
+  --showrexmit       mark retransmits on time sequence graphs\n\
+  --noshowrexmit     DON'T mark retransmits on time sequence graphs\n\
+  --showoutorder     mark out-of-order on time sequence graphs\n\
+  --noshowoutorder   DON'T mark out-of-order on time sequence graphs\n\
+  --showzerowindow   mark zero windows on time sequence graphs\n\
+  --noshowzerowindow DON'T mark zero windows on time sequence graphs\n\
 Module options\n\
-  -xMODULE_SPECIFIC\n\
+  -xMODULE_SPECIFIC  (see -hxargs for details)\n\
 ");
 }
 
@@ -438,10 +449,10 @@ ListModules(void)
     for (i=0; i < NUM_MODULES; ++i) {
 	fprintf(stderr,"  %-15s  %s\n",
 		modules[i].module_name, modules[i].module_descr);
-	if (modules[i].module_usage) {
-	    fprintf(stderr,"    usage:\n");
-	    (*modules[i].module_usage)();
-	}
+/* 	if (modules[i].module_usage) { */
+/* 	    fprintf(stderr,"    usage:\n"); */
+/* 	    (*modules[i].module_usage)(); */
+/* 	} */
     }
 }
 
@@ -629,7 +640,7 @@ ProcessFile(
 The first %d characters are all printable ASCII characters. All of the\n\
 packet grabbing formats that I understand output BINARY files that I\n\
 like to read.  Could it be that you've tried to give me the readable \n\
-output instead?.  For example, with tcpdump, you need to use:
+output instead?  For example, with tcpdump, you need to use:
 \t tcpdump -w outfile.dmp ; tcptrace outfile.dmp\n\
 rather than:
 \t tcpdump > outfile ; tcptrace outfile\n\n\
@@ -1129,6 +1140,31 @@ ParseArgs(
 	if (argv[i] == NULL)
 	    continue;
 
+	if (strncmp(argv[i],"--",2) == 0) {
+	    if (strcmp(argv[i],"--") == 0) {
+		BadArg(argsource, "Void extended argument\n");
+	    } else if (strcmp(argv[i],"--showsacks") == 0) {
+		show_sacks = TRUE;
+	    } else if (strcmp(argv[i],"--noshowsacks") == 0) {
+		show_sacks = FALSE;
+	    } else if (strcmp(argv[i],"--showrexmit") == 0) {
+		show_rexmit = TRUE;
+	    } else if (strcmp(argv[i],"--noshowrexmit") == 0) {
+		show_rexmit = FALSE;
+	    } else if (strcmp(argv[i],"--showoutorder") == 0) {
+		show_out_order = TRUE;
+	    } else if (strcmp(argv[i],"--noshowoutorder") == 0) {
+		show_out_order = FALSE;
+	    } else if (strcmp(argv[i],"--showzerowindow") == 0) {
+		show_zero_window = TRUE;
+	    } else if (strcmp(argv[i],"--noshowzerowindow") == 0) {
+		show_zero_window = FALSE;
+	    } else {
+		BadArg(argsource, "Bad extended argument '%s'\n", argv[i]);
+	    }
+	    continue;
+	}
+
 	if (*argv[i] == '-') {
 	    if (argv[i][1] == '\00') /* just a '-' */
 		Usage();
@@ -1136,17 +1172,30 @@ ParseArgs(
 	    while (*(++argv[i]))
 		switch (*argv[i]) {
 		  case 'A':
-		    thru_interval = atoi(argv[i]+1);
+		    if (isdigit((int)(*(argv[i]+1))))
+			thru_interval = atoi(argv[i]+1);
+		    else
+			BadArg(argsource, "-A  number missing\n");
 		    if (thru_interval <= 0)
 			BadArg(argsource, "-A  must be > 1\n");
 		    *(argv[i]+1) = '\00'; break;
 		  case 'B':
-		    beginpnum = atoi(argv[i]+1);
+		    if (isdigit((int)(*(argv[i]+1))))
+			beginpnum = atoi(argv[i]+1);
+		    else
+			BadArg(argsource, "-B  number missing\n");
+		    if (beginpnum < 0)
+			BadArg(argsource, "-B  must be >= 0\n");
 		    *(argv[i]+1) = '\00'; break;
 		  case 'C': colorplot = TRUE; break;
 		  case 'D': hex = FALSE; break;
 		  case 'E':
-		    endpnum = atoi(argv[i]+1);
+		    if (isdigit((int)(*(argv[i]+1))))
+			endpnum = atoi(argv[i]+1);
+		    else
+			BadArg(argsource, "-E  number missing\n");
+		    if (beginpnum < 0)
+			BadArg(argsource, "-E  must be >= 0\n");
 		    *(argv[i]+1) = '\00'; break;
 		  case 'F': graph_segsize = TRUE; break;
 		  case 'G':
@@ -1191,10 +1240,18 @@ ParseArgs(
 		    }
 		    break;
 		  case 'h': Help(argv[i]+1); *(argv[i]+1) = '\00'; break;
-		  case 'i':
-		    ++saw_i_or_o;
-		    IgnoreConn(atoi(argv[i]+1));
-		    *(argv[i]+1) = '\00'; break;
+		  case 'i': {
+		      int conn = -1;
+		      if (isdigit((int)(*(argv[i]+1))))
+			  conn = atoi(argv[i]+1);
+		      else
+			  BadArg(argsource, "-i  number missing\n");
+		      if (conn < 0)
+			  BadArg(argsource, "-i  must be >= 0\n");
+		      ++saw_i_or_o;
+		      IgnoreConn(conn);
+		      *(argv[i]+1) = '\00'; 
+		  } break;
 		  case 'l': printbrief = FALSE; break;
 		  case 'm':
 		    BadArg(argsource,
@@ -1338,6 +1395,7 @@ DumpFlags(void)
 	fprintf(stderr,"show_rexmit:      %d\n", show_rexmit);
 	fprintf(stderr,"show_zero_window: %d\n", show_zero_window);
 	fprintf(stderr,"show_out_order:	  %d\n", show_out_order);
+	fprintf(stderr,"show_sacks:	  %d\n", show_sacks);
 	fprintf(stderr,"save_tcp_data:    %d\n", save_tcp_data);
 	fprintf(stderr,"graph_time_zero:  %d\n", graph_time_zero);
 	fprintf(stderr,"graph_seq_zero:   %d\n", graph_seq_zero);
