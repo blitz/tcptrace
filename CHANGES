@@ -307,3 +307,6 @@
   bug fix from Brian Utterback in snoop.c.  Obscure alignment problem fixed.
   added "total data" graph to traffic module
   made counters "long long" in traffic module
+  patches from Kevin Lahey to print ECN information
+  patches from Kevin Lahey to read LBL Network Simulator (ns) output
+
