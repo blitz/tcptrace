@@ -216,6 +216,7 @@ char *ether_ntoa();
 void bzero(void *, int);
 void bcopy(void *, void *,int);
 void free(void *);
+int finite(double);
 
 
 /* global routine decls */
@@ -261,6 +262,7 @@ char *HostName(ipaddr);
 char *HostLetter(u_int);
 char *EndpointName(ipaddr,portnum);
 PLOTTER new_plotter(tcb *plast, char *title);
+int rexmit(seqspace *, u_long, u_long);
 
 
 /* TCP flags macros */
