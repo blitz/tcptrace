@@ -75,9 +75,6 @@ dnl case "$target_os" in
 dnl  *inux*)	V_INCLS="$V_INCLS -Ilinux-include";;
 dnl esac
 
-AC_PROG_YACC
-test "$YACC" = "yacc" && AC_MSG_ERROR("need bison or byacc")
-
 dnl define _BSD_SOURCE for libc-2
 if [[ -f /lib/libc-2* ]]; then
  V_DEFINES="$V_DEFINES -D_BSD_SOURCE"
