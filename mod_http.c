@@ -56,12 +56,23 @@ struct time_stamp {
 };
 
 
+/* info kept for each client */
+static struct client_info {
+    PLOTTER plotter;
+    char *clientname;
+    struct client_info *next;
+} *client_head = NULL;
+
+
 /* info kept for each connection */
 static struct http_info {
     timeval c_syn_time;		/* when CLIENT sent SYN */
     timeval s_syn_time;		/* when SERVER sent SYN */
     timeval c_fin_time;		/* when CLIENT sent FIN */
     timeval s_fin_time;		/* when SERVER sent FIN */
+
+    /* client record */
+    struct client_info *pclient;
 
     /* info about the TCP connection */
     tcp_pair *ptp;
@@ -100,6 +111,7 @@ static timeval WhenSent(struct time_stamp *phead, struct time_stamp *ptail,
 			u_long position);
 static timeval WhenAcked(struct time_stamp *phead, struct time_stamp *ptail,
 			 u_long position);
+static void MFUnMap(MFILE *mf, char *firstbyte);
 static void MFMap(MFILE *mf, char **firstbyte, char **lastbyte);
 static void FindGets(struct http_info *ph);
 static void FindContent(struct http_info *ph);
@@ -116,6 +128,7 @@ static double ts2d(timeval *pt);
 static void HttpPrintone(MFILE *pmf, struct http_info *ph);
 static void HttpDoPlot();
 static struct http_info *FindPH(tcp_pair *ptp, struct tcphdr *ptcp);
+static struct client_info *FindClient(char *clientname);
 
 
 /* useful macros */
@@ -176,8 +189,8 @@ DataOffset(
     else
 	off = tcb->syn-seq;
 
-    if (debug)
-	fprintf(stderr,"DataOffset: seq is %ld, syn is %ld, offset is %ld\n",
+    if (debug>1)
+	fprintf(stderr,"DataOffset: seq is %lu, syn is %lu, offset is %ld\n",
 		seq, tcb->syn, off);
 
     return(off);
@@ -299,6 +312,30 @@ AddTS(
     /* can't fail, the tail has timestamp 0 */
 }
 
+
+static struct client_info *
+FindClient(
+    char *clientname)
+{
+    struct client_info *p;
+
+    for (p=client_head; p; p = p->next) {
+	if (strcmp(clientname,p->clientname)==0) {
+	    return(p);
+	}
+    }
+
+    /* else, make one up */
+    p = MallocZ(sizeof(struct client_info));
+    p->next = client_head;
+    client_head = p;
+    p->clientname = strdup(clientname);
+    p->plotter = NO_PLOTTER;
+
+    return(p);
+}
+
+
 static struct http_info *
 FindPH(
     tcp_pair *ptp,
@@ -325,7 +362,11 @@ FindPH(
 	    ph->tcb_client = &ptp->a2b;
 	    ph->tcb_server = &ptp->b2a;
 	}
+
+	/* attach the client info */
+	ph->pclient = FindClient(HostName(ptp->addr_pair.a_address));
     }
+
 
     return(ph);
 }
@@ -452,13 +493,44 @@ MFMap(
 }
 
 
+
+static void
+MFUnMap(
+    MFILE *mf,
+    char *firstbyte)
+{
+    int fd;
+    int len;
+    
+    /* find length of file */
+    if (Mfseek(mf,0,SEEK_END) != 0) {
+	perror("fseek");
+	exit(-1);
+    }
+    len = Mftell(mf);
+
+    /* unmap it */
+    fd = Mfileno(mf);
+    if (munmap(firstbyte,len) != 0) {
+	perror("munmap");
+	exit(-1);
+    }
+
+    return;
+}
+
+
 static void
 HttpGather(
     struct http_info *ph)
 {
     while (ph) {
-	FindGets(ph);
-	FindContent(ph);
+	if (ph->tcb_client->extracted_contents_file &&
+	    ph->tcb_server->extracted_contents_file)
+	{
+	    FindGets(ph);
+	    FindContent(ph);
+	}
 
 	ph = ph->next;
     }
@@ -574,10 +646,12 @@ FindContent(
 
 	    if (!pget) {
 		/* no more questions, quit */
-		return;
+		break;
 	    }
 	}
     }
+
+    MFUnMap(mf,pdata);
 }
 
 
@@ -624,6 +698,8 @@ FindGets(
 	    pget->get_time = WhenSent(&ph->get_head,&ph->get_tail,position);
 	}
     }
+
+    MFUnMap(mf,pdata);
 }
 
 
@@ -635,7 +711,6 @@ char *ColorNames[NCOLORS] =
 static void
 HttpDoPlot()
 {
-    PLOTTER p = NO_PLOTTER;
     struct http_info *ph;
     struct get_info *pget;
     int y_axis = 1000;
@@ -644,6 +719,7 @@ HttpDoPlot()
     struct time_stamp *pts;
 
     for (ph=httphead; ph; ph=ph->next) {
+	PLOTTER p = ph->pclient->plotter;
 	tcp_pair *ptp = ph->ptp;
 	tcb a2b, b2a;
 
@@ -655,8 +731,18 @@ HttpDoPlot()
 
 	ix_color = (ix_color + 1) % NCOLORS;
 
-	if (p==NO_PLOTTER)
-	    p = new_plotter(&ptp->a2b,"HTTP","time","URL","_http.xpl");
+	/* find the plotter for this client */
+	if (p==NO_PLOTTER) {
+	    char title[256];
+	    sprintf(title, "Client %s HTTP trace\n", ph->pclient->clientname);
+	    p = ph->pclient->plotter =
+		new_plotter(&ptp->a2b,
+			    ph->pclient->clientname,	/* file name prefix */
+			    title,			/* plot title */
+			    "time", 			/* X axis */
+			    "URL",			/* Y axis */
+			    "_http.xpl");		/* file suffix */
+	}
 
 	y_axis += 2;
 
@@ -750,14 +836,6 @@ HttpPrintone(
 	   ptp->a_endpoint, ptp->b_endpoint,
 	   ptp->a2b.host_letter, ptp->b2a.host_letter);
 
-    /* see if we got all the bytes */
-    missing = pab->trunc_bytes + pba->trunc_bytes;
-    missing += pab->fin-pab->syn-1-(pab->data_bytes-pab->rexmit_bytes);
-    missing += pba->fin-pba->syn-1-(pba->data_bytes-pba->rexmit_bytes);
-    if (missing != 0)
-	printf("WARNING!!!!  Information may be invalid, %ld bytes were not captured\n",
-	       missing);
-
     printf("  Server Syn Time:      %s (%.3f)\n",
 	   ts2ascii(&ph->s_syn_time),
 	   ts2d(&ph->s_syn_time));
@@ -770,6 +848,31 @@ HttpPrintone(
     printf("  Client Fin Time:      %s (%.3f)\n",
 	   ts2ascii(&ph->c_fin_time),
 	   ts2d(&ph->c_fin_time));
+
+    /* check the SYNs */
+    if ((pab->syn_count == 0) || (pba->syn_count == 0)) {
+	printf("\
+No additional information available, beginning of\n\
+connection (SYNs) were not found in trace file.\n");
+	return;
+    }
+
+    /* check the FINs */
+    if ((pab->fin_count == 0) || (pba->fin_count == 0)) {
+	printf("\
+No additional information available, end of\n\
+connection (FINs) were not found in trace file.\n");
+	return;
+    }
+
+    /* see if we got all the bytes */
+    missing = pab->trunc_bytes + pba->trunc_bytes;
+    missing += pab->fin-pab->syn-1-(pab->data_bytes-pab->rexmit_bytes);
+    missing += pba->fin-pba->syn-1-(pba->data_bytes-pba->rexmit_bytes);
+
+    if (missing != 0)
+	printf("WARNING!!!!  Information may be invalid, %ld bytes were not captured\n",
+	       missing);
 
     for (pget = ph->gets_head; pget; pget = pget->next) {
 	printf("    Request for '%s'\n", pget->get_string);
