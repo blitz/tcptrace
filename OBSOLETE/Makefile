@@ -44,7 +44,7 @@ install: tcptrace
 	install -s tcptrace /usr/local/bin/tcptrace
 
 ci:
-	ci -q -l -t-initial -mlatest Makefile *.h *.c
+	ci -q -t-initial -mlatest Makefile *.h *.c
 
 clean:
 	rm -f *.o tcptrace core *.xpl *.rtt *.tput *.PS.?

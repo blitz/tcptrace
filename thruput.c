@@ -35,7 +35,9 @@ DoThru(
 	/* create the plotter file */
 	sprintf(title,"%s_==>_%s (throughput)",
 		ptcb->ptp->a_endpoint, ptcb->ptp->b_endpoint);
-	ptcb->thru_plotter = new_plotter(ptcb,title,"tput");
+	ptcb->thru_plotter = new_plotter(ptcb,title,
+					 
+					 THROUGHPUT_FILE_EXTENSION);
 	plotter_perm_color(ptcb->thru_plotter,"red");
 
 	return;

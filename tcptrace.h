@@ -159,6 +159,11 @@ typedef struct tcb {
     /* Dumped RTT samples */
     MFILE	*rtt_dump_file;
 
+    /* RTT Graph info for this one */
+    PLOTTER	rtt_plotter;
+    u_long	rtt_lastrtt;
+    struct	timeval	rtt_lasttime;
+
     /* host name letter(s) */
     char	*host_letter;
 } tcb;
@@ -220,6 +225,7 @@ extern Bool printem;
 extern Bool printticks;
 extern Bool show_rexmit;
 extern Bool print_rtt;
+extern Bool graph_rtt;
 extern Bool dump_rtt;
 extern Bool show_out_order;
 extern Bool show_zero_window;
@@ -341,3 +347,13 @@ void Minit();
 #define	SEQCMP(a, b)		((long)(a) - (long)(b))
 #define	SEQ_LESSTHAN(a, b)	(SEQCMP(a,b) < 0)
 #define	SEQ_GREATERTHAN(a, b)	(SEQCMP(a,b) > 0)
+
+
+/*
+ * File extensions to use
+ *
+ */
+#define RTT_DUMP_FILE_EXTENSION		"rttraw"
+#define RTT_GRAPH_FILE_EXTENSION	"rtt"
+#define PLOT_FILE_EXTENSION		"xpl"
+#define THROUGHPUT_FILE_EXTENSION	"tput"

@@ -34,6 +34,7 @@ static void rtt_retrans(tcb *, segment *);
 static void rtt_ackin(tcb *, segment *);
 static void freequad(quadrant **);
 static void dump_rtt_sample(tcb *, segment *, unsigned long);
+static void graph_rtt_sample(tcb *, segment *, unsigned long);
 
 
 
@@ -375,10 +376,14 @@ rtt_ackin(
 	++ptcb->rtt_amback;  /* ambiguous ACK */
     }
 
-
     /* dump RTT samples, if asked */
     if (dump_rtt) {
 	dump_rtt_sample(ptcb,pseg,etime_rtt);
+    }
+
+    /* plot RTT samples, if asked */
+    if (graph_rtt && (pseg->retrans == 0)) {
+	graph_rtt_sample(ptcb,pseg,etime_rtt);
     }
 }
 
@@ -504,8 +509,9 @@ dump_rtt_sample(
 	MFILE *f;
 	static char filename[15];
 
-	sprintf(filename,"%s2%s.rtt",
-		ptcb->host_letter, ptcb->ptwin->host_letter);
+	sprintf(filename,"%s2%s.%s",
+		ptcb->host_letter, ptcb->ptwin->host_letter,
+		RTT_DUMP_FILE_EXTENSION);
 
 	if ((f = Mfopen(filename,"w")) == NULL) {
 	    perror(filename);
@@ -521,4 +527,45 @@ dump_rtt_sample(
     Mfprintf(ptcb->rtt_dump_file,"%lu %lu\n",
 	    pseg->seq_firstbyte,
 	    etime_rtt/1000  /* convert from us to ms */ );
+}
+
+
+
+/* graph RTT samples in milliseconds */
+static void
+graph_rtt_sample(
+    tcb *ptcb,
+    segment *pseg,
+    unsigned long etime_rtt)
+{
+    char title[210];
+
+    /* if the FILE is NULL, open file */
+    if (ptcb->rtt_plotter == (PLOTTER) NULL) {
+	sprintf(title,"%s_==>_%s (rtt samples)",
+		ptcb->ptp->a_endpoint, ptcb->ptp->b_endpoint);
+	ptcb->rtt_plotter = new_plotter(ptcb,title,
+					RTT_GRAPH_FILE_EXTENSION);
+	plotter_perm_color(ptcb->rtt_plotter,"red");
+    }
+
+    if (etime_rtt <= 1)
+	return;
+
+    if (ptcb->rtt_lastrtt == 0) {
+	/* prime the pump */
+	ptcb->rtt_lastrtt = etime_rtt;
+	ptcb->rtt_lasttime = current_time;
+
+	return;
+    }
+
+    plotter_line(ptcb->rtt_plotter,
+		 ptcb->rtt_lasttime, (int) (ptcb->rtt_lastrtt / 1000),
+		 current_time, (int) (etime_rtt / 1000));
+    plotter_temp_color(ptcb->rtt_plotter,"yellow");
+    plotter_dot(ptcb->rtt_plotter, current_time, (int) (etime_rtt / 1000));
+
+    ptcb->rtt_lastrtt = etime_rtt;
+    ptcb->rtt_lasttime = current_time;
 }

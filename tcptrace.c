@@ -32,6 +32,7 @@ Bool ignore_non_comp = FALSE;
 Bool plotem = FALSE;
 Bool printbrief = FALSE;
 Bool print_rtt = FALSE;
+Bool graph_rtt = FALSE;
 Bool dump_rtt = FALSE;
 Bool printem = FALSE;
 Bool printticks = FALSE;
@@ -68,6 +69,7 @@ Usage(
   -C      produce color plots (modified xplot needed)\n\
   -D      print in decimal\n\
   -EN     last segment number to analyze (default last in file)\n\
+  -G      create rtt sample graphs\n\
   -P      create packet trace files\n\
   -R      dump rtt samples to files\n\
   -S      use short names (list \"host.b.c\" as just \"host\")\n\
@@ -140,6 +142,7 @@ main(
 		  case 'n': nonames = TRUE; break;
 		  case 'p': printem = TRUE; break;
 		  case 'r': print_rtt = TRUE; break;
+		  case 'G': graph_rtt = TRUE; break;
 		  case 'R': dump_rtt = TRUE; break;
 		  case 'T': thru_interval = 1; break;
 		  case 'S': use_short_names = TRUE; break;

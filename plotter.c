@@ -156,9 +156,9 @@ DoPlot(
 
 PLOTTER
 new_plotter(
-     tcb *plast,
-     char *title,
-     char *suffix)
+    tcb *plast,
+    char *title,
+    char *suffix)
 {
     PLOTTER pl;
     MFILE *f;
@@ -187,7 +187,7 @@ new_plotter(
 
     fplot[pl] = f;
     p2plast[pl] = plast;
-    plast->tsg_plotfile = strdup(filename);
+
     return(pl);
 }
 
