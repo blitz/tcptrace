@@ -77,7 +77,7 @@ static pcap_t *pcap;
 /* Interaction with pcap */
 static struct ether_header eth_header;
 #define EH_SIZE sizeof(struct ether_header)
-static int *ip_buf;  /* [IP_MAXPACKET/sizeof(int)] */
+static char *ip_buf;  /* [IP_MAXPACKET] */
 static struct pcap_pkthdr *callback_phdr;
 static void *callback_plast;
 
@@ -137,7 +137,7 @@ static int callback(
 	break;
       case PCAP_DLT_ATM_RFC1483:
 	/* ATM RFC1483 - LLC/SNAP ecapsulated atm */
-	memcpy((char *)ip_buf,buf+8,iplen);
+	memcpy((char*)ip_buf,buf+8,iplen);
 	callback_plast = ip_buf+iplen-8-1;
 	break;
       case PCAP_DLT_RAW:
@@ -177,6 +177,7 @@ static int callback(
 	break;
       default:
 	fprintf(stderr,"Don't understand link-level format (%d)\n", type);
+
 	exit(1);
     }
     
@@ -338,6 +339,7 @@ case 100:
       default:
 	if (debug)
 	    fprintf(stderr,"is_tcpdump: I think it's tcpdump, but I don't understand link format (%d)\n", type);
+       
 	rewind(stdin);
 	return(NULL);
     }
