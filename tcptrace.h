@@ -15,7 +15,7 @@
 
 
 /* maximum number of TCP pairs to maintain */
-#define MAX_TCP_PAIRS 30
+#define MAX_TCP_PAIRS 256
 
 
 typedef int PLOTTER;
