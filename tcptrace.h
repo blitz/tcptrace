@@ -299,6 +299,7 @@ typedef struct tcb {
     u_long	win_max;
     u_long	win_min;
     u_long	win_tot;
+	u_long  win_last;  /* last advertised window size*/
     u_long	win_zero_ct;
     u_llong	packets;
     u_char	syn_count;
@@ -309,6 +310,12 @@ typedef struct tcb {
     u_llong	out_order_pkts;	/* out of order packets */
     u_llong	sacks_sent;	/* sacks returned */
     u_long	ipv6_segments;	/* how many segments were ipv6? */
+
+								
+	/* Statistics to store the number of Zero window probes
+	 seen and the total number of bytes spent for it. */
+	u_long num_zwnd_probes;  
+	u_long zwnd_probe_bytes;
 
     /* stats on sequence numbers */
     seqnum	min_seq;	/* smallest seq number seen */
@@ -598,6 +605,7 @@ extern Bool show_zero_window;
 extern Bool show_sacks;
 extern Bool show_rtt_dongles;
 extern Bool show_triple_dupack;
+extern Bool show_zwnd_probes;
 extern Bool use_short_names;
 extern Bool save_tcp_data;
 extern Bool graph_time_zero;
