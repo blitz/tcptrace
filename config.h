@@ -45,6 +45,6 @@ static char const rcsid_config[] =
 #define GROK_NETM
 
 
-/* define GROK_SNOOP if you want tcptrace to understand the output
+/* define GROK_ETHERPEEK if you want tcptrace to understand the output
    format of the Macintosh program Etherpeek */
 #define GROK_ETHERPEEK
