@@ -1307,21 +1307,54 @@ dotrace(
 	}
 
 	/* track the most sack blocks in a single ack */
+	if (ptcpo->sack_count > 0) {
+	    ++thisdir->num_sacks;
+	    if (ptcpo->sack_count > thisdir->max_sack_blocks) 
+		thisdir->max_sack_blocks = ptcpo->sack_count;
+
+
 	if (to_tsgpl != NO_PLOTTER && show_sacks
 	    && (ptcpo->sack_count > 0)) {
 	    int scount;
 	    seqnum sack_top = ptcpo->sacks[0].sack_right;
+
+	    plotter_perm_color(to_tsgpl, sack_color);
+	    for (scount = 0; scount < ptcpo->sack_count; ++scount) {
 		plotter_line(to_tsgpl,
-		plotter_perm_color(to_tsgpl, sack_color);
 			     current_time,
 			     SeqRep(otherdir,ptcpo->sacks[scount].sack_left),
 			     current_time,
 			     SeqRep(otherdir,ptcpo->sacks[scount].sack_right));
 		/* make it easier to read multiple sacks by making them look like
-		plotter_text(to_tsgpl, current_time,
-			     SeqRep(otherdir,ptcpo->sacks[scount].sack_right),
-			     "a", "S");  /* 'S' is for Sack */
+		   |-----|  (sideways)
+		*/
+		plotter_htick(to_tsgpl,
+			      current_time,
+			      SeqRep(otherdir,ptcpo->sacks[scount].sack_left));
+		plotter_htick(to_tsgpl,
+			      current_time,
+			      SeqRep(otherdir,ptcpo->sacks[scount].sack_right));
+
+		/* if there's more than one, label the order */
+		/* purple number to the right of the top ("right" edge) */
+		if (ptcpo->sack_count > 1) {
+		    char buf[5]; /* can't be more than 1 digit! */
+		    snprintf(buf,sizeof(buf),"%u",scount+1);	/* 1-base, rather than 0-base */
+		    sprintf(buf,"%u",scount);
+				 current_time,
+				 SeqRep(otherdir,ptcpo->sacks[scount].sack_right),
+				 "r", buf);
+		}
+
+		/* maintain the highest SACK so we can label them all at once */
+		if (SEQ_GREATERTHAN(ptcpo->sacks[scount].sack_right, sack_top))
+		    sack_top = ptcpo->sacks[scount].sack_right;
+	    }
 	    /* change - just draw the 'S' above the highest one */
+	    plotter_text(to_tsgpl, current_time,
+			 SeqRep(otherdir,sack_top),
+			 "a", "S");  /* 'S' is for Sack */
+	}
 	thisdir->time = current_time;
 	thisdir->ack = ack;
 
