@@ -967,11 +967,15 @@ dotrace(
     }
 
     /* sequence number stats */
-    /* set minimum seq */
+    if ((thisdir->min_seq == 0) && (start != 0)) {
 	thisdir->min_seq = start; /* first byte in this segment */
-	thisdir->min_seq = start;
+	thisdir->max_seq = end;	  /* last byte in this segment */
+    }
     if (SEQ_GREATERTHAN (end,thisdir->max_seq)) {
-    thisdir->max_seq = end;
+	thisdir->max_seq = end;
+    }
+    thisdir->latest_seq = end;
+
 
     /* check for hardware duplicates */
     /* only works for IPv4, IPv6 has no mandatory ID field */
