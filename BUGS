@@ -1,0 +1,15 @@
+Known Bugs
+
+------------------------------------------------------------
+
+Wed May 13, 1998
+
+when file http.epeek.gz is run under solaris, the 14th packet comes up
+with a bogus length.  When the file is NOT compressed, it works fine.
+When the file is run under FreeBSD, compressed or not, it works fine.
+
+Very strange...
+
+------------------------------------------------------------
+
+Probably others... :-)
