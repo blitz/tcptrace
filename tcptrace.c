@@ -356,7 +356,7 @@ Formats(void)
     int i;
     
     fprintf(stderr,"Supported Input File Formats:\n");
-    for (i=0; file_formats[i].format_name; ++i)
+    for (i=0; i < NUM_FILE_FORMATS; ++i)
 	fprintf(stderr,"\t%-15s  %s\n",
 		file_formats[i].format_name,
 		file_formats[i].format_descr);
@@ -478,13 +478,14 @@ ProcessFile(
     filesize = str_stat.st_size;
 
     /* determine which input file format it is... */
-    fix = 0;
     ppread = NULL;
-    while (file_formats[fix].test_func != NULL) {
-	    if (debug)
-                fprintf(stderr,"Checking for file format '%s' (%s)\n",
-	                file_formats[fix].format_name,
-	                file_formats[fix].format_descr);
+    if (debug>1)
+	printf("NUM_FILE_FORMATS: %d\n", NUM_FILE_FORMATS);
+    for (fix=0; fix < NUM_FILE_FORMATS; ++fix) {
+	if (debug)
+	    fprintf(stderr,"Checking for file format '%s' (%s)\n",
+		    file_formats[fix].format_name,
+		    file_formats[fix].format_descr);
 	rewind(stdin);
 	ppread = (*file_formats[fix].test_func)();
 	if (ppread) {
@@ -497,13 +498,39 @@ ProcessFile(
 	    fprintf(stderr,"File format is NOT '%s'\n",
 		    file_formats[fix].format_name);
 	}
-	++fix;
     }
 
     /* if we haven't found a reader, then we can't continue */
     if (ppread == NULL) {
+	int count = 0;
+
 	fprintf(stderr,"Unknown input file format\n");
 	Formats();
+
+	/* check for ASCII, a common problem */
+	rewind(stdin);
+	while (1) {
+	    int ch;
+	    if ((ch = getchar()) == EOF)
+		break;
+	    if (!isprint(ch))
+		break;
+	    if (++count >= 20) {
+		/* first 20 are all ASCII */
+		fprintf(stderr,"\
+\n\nHmmmm.... this sure looks like an ASCII input file to me.\n\
+The first %d characters are all printable ASCII characters. All of the\n\
+packet grabbing formats that I understand output BINARY files that I\n\
+like to read.  Could it be that you've tried to give me the readable \n\
+output instead?.  For example, with tcpdump, you need to use:
+\t tcpdump -w outfile.dmp ; tcptrace outfile.dmp\n\
+rather than:
+\t tcpdump > outfile ; tcptrace outfile\n\n\
+", count);
+		exit(1);
+	    }
+	}
+	
 	exit(1);
     }
 
