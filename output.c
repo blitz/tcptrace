@@ -280,11 +280,7 @@ PrintTrace(
     etime = elapsed(ptp->first_time,ptp->last_time);
     etime_secs = etime / 1000000.0;
     etime_usecs = 1000000 * (etime/1000000.0 - (double)etime_secs);
-    fprintf(stdout,"\telapsed time:  %lu:%02lu:%02lu.%06lu\n",
-	    etime_secs / (60 * 60),
-	    etime_secs % (60 * 60) / 60,
-	    (etime_secs % (60 * 60)) % 60,
-	    etime_usecs);
+    fprintf(stdout,"\telapsed time:  %s\n", elapsed2str(etime));
 
 #ifdef HAVE_LONG_LONG
     fprintf(stdout,"\ttotal packets: %llu\n", ptp->packets);
@@ -629,4 +625,23 @@ StatLineOne(
 
     /* print the field */
     printf("%-18s %9s %-5s", labbuf, value, units);
+}
+
+
+char *
+elapsed2str(
+    double etime)
+{
+    static char buf[80];
+    u_long etime_secs;
+    u_long etime_usecs;
+
+    etime_secs = etime / 1000000.0;
+    etime_usecs = 1000000 * (etime/1000000.0 - (double)etime_secs);
+    sprintf(buf,"%lu:%02lu:%02lu.%06lu",
+	    etime_secs / (60 * 60),
+	    etime_secs % (60 * 60) / 60,
+	    (etime_secs % (60 * 60)) % 60,
+	    etime_usecs);
+    return(buf);
 }
