@@ -15,8 +15,7 @@ dump file formats supported are:
    NLANR Tsh Format
 
 To see the graphs, you'll also need Tim Shepard's xplot program,
-available on mercury.lcs.mit.edu:
-	ftp://mercury.lcs.mit.edu/pub/shep
+available at http://www.xplot.org
 
 I've switched to using "./configure" to set up the Makefile.  That
 seems to have eased portability problems a great deal.  Just say
