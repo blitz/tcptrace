@@ -411,6 +411,8 @@ NewTTP(
     ptp->a2b.tcp_strain = TCP_RENO;
     ptp->b2a.tcp_strain = TCP_RENO;
 
+    ptp->a2b.LEAST = ptp->b2a.LEAST = 0;
+
     /* init time sequence graphs */
     ptp->a2b.tsg_plotter = ptp->b2a.tsg_plotter = NO_PLOTTER;
     if (graph_tsg && !ptp->ignore_pair) {
@@ -1619,6 +1621,7 @@ dotrace(
 	retrans = TRUE;
 	thisdir->rexmit_pkts += 1;
 	thisdir->LEAST++;
+	thisdir->rexmit_bytes += retrans_num_bytes;
 	/* don't color the SYNs and FINs, it's confusing, we'll do them */
 	/* differently below... */
 	if (!(FIN_SET(ptcp)||SYN_SET(ptcp)) &&
@@ -2073,22 +2076,32 @@ dotrace(
 
 	/* also see if any of them are DSACKS - weddy */
 	/* eventually may come back and fix this, what if we+++++
+	   didn't see all the rexmits and so LEAST wesn't set
+	   high enough, now it's too low */
+	    /* case 1, first block under cumack */
 	    if (ptcpo->sacks[0].sack_right <= th_ack) {
-	    if (ptcpo->sacks[0].sack_right <= th_ack) ++thisdir->num_dsacks;
+	        thisdir->num_dsacks++;
+	        if (otherdir->LEAST > 0) otherdir->LEAST--;
+	    /* case 2, first block inside second */
 	    } else if (ptcpo->sack_count > 1) {
-	    else if (ptcpo->sack_count > 1) {
+	        if (ptcpo->sacks[0].sack_right <= ptcpo->sacks[1].sack_right
 	            && ptcpo->sacks[0].sack_left >= ptcpo->sacks[1].sack_left)
 	        {
-	            ++thisdir->num_dsacks;
+	            thisdir->num_dsacks++;
+	            if (otherdir->LEAST > 0) otherdir->LEAST--;
+	    /* case 3, first and second block overlap */
 	        } else if ((ptcpo->sacks[0].sack_left <=
-	        else if ((ptcpo->sacks[0].sack_left <=
+	                    ptcpo->sacks[1].sack_left &&
 	                  ptcpo->sacks[0].sack_right >
 	                    ptcpo->sacks[1].sack_left) ||
                          (ptcpo->sacks[0].sack_right >=
 	                    ptcpo->sacks[1].sack_right &&
 	                  ptcpo->sacks[0].sack_left <
 	                    ptcpo->sacks[1].sack_right)) {
-	                    ptcpo->sacks[1].sack_right)) ++thisdir->num_dsacks;
+                    thisdir->num_dsacks++;
+	            if (otherdir->LEAST > 0) otherdir->LEAST--;
+	        }
+	    }
 	    /* if we saw any dsacks from the other guy, we'll assume he did
                it on purpose and is a dsack tcp */
             if (thisdir->num_dsacks > 0) thisdir->tcp_strain = TCP_DSACK;
