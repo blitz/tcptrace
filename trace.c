@@ -109,6 +109,7 @@ Bool show_out_order = TRUE;
 Bool show_sacks = TRUE;
 Bool show_rtt_dongles = FALSE;
 Bool show_triple_dupack = TRUE;
+Bool show_zwnd_probes = TRUE;
 Bool nonames = FALSE;
 Bool use_short_names = FALSE;
 int thru_interval = 10;	/* in segments */
@@ -129,6 +130,7 @@ char *default_color	= "white";
 char *synfin_color	= "orange";
 char *push_color	= "white";	/* top arrow for PUSHed segments */
 char *ecn_color		= "yellow";
+char *probe_color   = "orange";
 
 /* ack diamond dongle colors */
 char *ackdongle_nosample_color	= "blue";
@@ -1097,6 +1099,7 @@ dotrace(
     PLOTTER     tlinepl;
     Bool	retrans;
     Bool 	probe;
+	Bool 	probe;
     Bool	ecn_ce = FALSE;
     Bool	ecn_echo = FALSE;
     Bool	cwr = FALSE;
@@ -1415,6 +1418,7 @@ dotrace(
     /* do rexmit stats */
     retrans = FALSE;
     probe = FALSE;
+	probe = FALSE;
     retrans_num_bytes = 0;
     if (SYN_SET(ptcp) || FIN_SET(ptcp) || tcp_data_length > 0) {
 	int len = tcp_data_length;
@@ -1424,7 +1428,17 @@ dotrace(
 	if (FIN_SET(ptcp)) ++len;
 
 								
-	retrans = retrans_num_bytes = rexmit(thisdir,start, len, &out_order);
+	/* Don't consider for rexmit, if the send window is 0 */
+	/* We are probably doing window probing.. */
+	if(otherdir->win_last==0 && otherdir->packets > 0){ 
+		probe=TRUE;
+		thisdir->num_zwnd_probes++;	
+		thisdir->zwnd_probe_bytes += tcp_data_length;
+	}
+	else
+		retrans_cnt = retrans_num_bytes = rexmit(thisdir,start, len, &out_order);
+		retrans = retrans_num_bytes = rexmit(thisdir,start, len, &out_order);
+	if (out_order)
 	    ++thisdir->out_order_pkts;
 
 	/* count anything NOT retransmitted as "unique" */
@@ -1444,8 +1458,10 @@ dotrace(
 		--retrans_cnt;
 		--retrans;
 	if (!probe){
-	if (retrans < len)
-	    thisdir->unique_bytes += (len - retrans);
+		if(retrans_cnt < len)
+		if(retrans < len)
+	    	thisdir->unique_bytes += (len - retrans);
+    }
 
 
     /* do rtt stats */
@@ -1487,7 +1503,13 @@ dotrace(
     }
    
     /* draw the packet */
-
+	if(probe) {
+		if(from_tsgpl != NO_PLOTTER && show_zwnd_probes){
+			plotter_perm_color(from_tsgpl,probe_color);
+			plotter_text(from_tsgpl,current_time,SeqRep (thisdir,end),
+						 "b", "P");
+		}
+	}
     if (from_tsgpl != NO_PLOTTER) {
 	plotter_perm_color(from_tsgpl, data_color);
 	if (SYN_SET(ptcp)) {		/* SYN  */
@@ -1611,6 +1633,7 @@ dotrace(
 
     
 	thisdir->win_last=eff_win;
+
 	if (eff_win > thisdir->win_max)
 	    thisdir->win_max = eff_win;
 
