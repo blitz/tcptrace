@@ -91,6 +91,7 @@ Bool warn_printtrunc = FALSE;
 Bool warn_printbadmbz = FALSE;
 Bool warn_printhwdups = FALSE;
 Bool warn_printbadcsum = FALSE;
+Bool warn_printbad_syn_fin_seq = FALSE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
 Bool graph_seq_zero = FALSE;
