@@ -547,8 +547,7 @@ ProcessFile(
 
 	    if (!warned) {
 		fprintf(stderr,
-			"Warning: saw at least one non-v4/v6 IP packet (vers:%d)\n",
-			pip->ip_v);
+			"Warning: saw at least one non-ip packet\n");
 		warned = TRUE;
 	    }
 
