@@ -186,7 +186,8 @@ version.o: ${CFILES} Makefile
 # easily.
 #
 filt_parser.c: filt_parser.y filter.h
-	bison -vd -p filtyy filt_parser.y -o filt_parser.c
+#	bison -vd -p filtyy filt_parser.y -o filt_parser.c
+	@YACC@ -vd -p filtyy -o filt_parser.c filt_parser.y
 	cp filt_parser.c flex_bison
 	cp filt_parser.h flex_bison
 filt_scanner.c: filt_scanner.l filter.h filt_parser.h
