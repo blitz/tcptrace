@@ -169,6 +169,8 @@ static struct ext_bool_op {
      "print warnings for hardware duplicates"},
     {"warn_printbadcsum", &warn_printbadcsum, TRUE,
      "print warnings when packets with bad checksums"},
+    {"warn_printbad_syn_fin_seq", &warn_printbad_syn_fin_seq, TRUE,
+     "print warnings when SYNs or FINs rexmitted with different sequence numbers"},
 
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
