@@ -1,0 +1,85 @@
+1 arg remaining, starting with 'chdlc.erf.gz'
+
+Packet 1
+	Packet Length: 308
+	Collected: Fri Jun 22 05:53:38.532316 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 1.30.197.172 
+	IP  Dest: 198.19.1.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 304
+	      ID: 0
+	   CKSUM: 0xebe9 (CORRECT)
+	  OFFSET: 0x0000
+	TCP SPRT: 0 
+	    DPRT: 0 
+	     FLG:   ------ (0x00)
+	     SEQ: 0xffeb0000
+	     ACK: 0x00000000
+	     WIN: 0
+	    HLEN: 20
+	   CKSUM: 0xd187 (WRONG)
+	    DLEN: 264
+	    data: 264 bytes
+Packet 2
+	Packet Length: 308
+	Collected: Fri Jun 22 05:53:38.532517 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 1.30.197.173 
+	IP  Dest: 198.19.1.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 304
+	      ID: 0
+	   CKSUM: 0xebe8 (CORRECT)
+	  OFFSET: 0x0000
+	TCP SPRT: 0 
+	    DPRT: 0 
+	     FLG:   ------ (0x00)
+	     SEQ: 0xffeb0000
+	     ACK: 0x00000000
+	     WIN: 0
+	    HLEN: 20
+	   CKSUM: 0xd187 (WRONG)
+	    DLEN: 264
+	    data: 264 bytes
+Packet 3
+	Packet Length: 308
+	Collected: Fri Jun 22 05:53:38.532718 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 1.30.197.174 
+	IP  Dest: 198.19.1.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 304
+	      ID: 0
+	   CKSUM: 0xebe7 (CORRECT)
+	  OFFSET: 0x0000
+	TCP SPRT: 0 
+	    DPRT: 0 
+	     FLG:   ------ (0x00)
+	     SEQ: 0xffeb0000
+	     ACK: 0x00000000
+	     WIN: 0
+	    HLEN: 20
+	   CKSUM: 0xd187 (WRONG)
+	    DLEN: 264
+	    data: 264 bytes
+3 packets seen, 0 TCP packets traced
+trace file elapsed time: 0:00:00.000402
+bad IP checksums:  0
+bad TCP checksums: 3
+no traced TCP packets

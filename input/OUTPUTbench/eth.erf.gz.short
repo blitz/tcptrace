@@ -1,0 +1,8 @@
+1 arg remaining, starting with 'eth.erf.gz'
+
+22 packets seen, 22 TCP packets traced
+trace file elapsed time: 0:00:00.921455
+TCP connection info:
+*** 2 packets were too short to process at some point
+	(use -w option to show details)
+  1: 216.35.116.64:31943 - 130.216.74.4:80 (a2b)   10>   12<  (complete)

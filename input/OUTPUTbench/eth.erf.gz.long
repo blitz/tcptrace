@@ -1,0 +1,81 @@
+1 arg remaining, starting with 'eth.erf.gz'
+
+22 packets seen, 22 TCP packets traced
+trace file elapsed time: 0:00:00.921455
+TCP connection info:
+1 TCP connection traced:
+*** 2 packets were too short to process at some point
+	(use -w option to show details)
+TCP connection 1:
+	host a:        216.35.116.64:31943
+	host b:        130.216.74.4:80
+	complete conn: yes
+	first packet:  Tue Jun 12 14:00:02.095017 2001
+	last packet:   Tue Jun 12 14:00:03.016472 2001
+	elapsed time:  0:00:00.921455
+	total packets: 22
+	filename:      eth.erf.gz
+   a->b:			      b->a:
+     total packets:            10           total packets:            12      
+     ack pkts sent:             9           ack pkts sent:            12      
+     pure acks sent:            7           pure acks sent:            2      
+     sack pkts sent:            0           sack pkts sent:            0      
+     dsack pkts sent:           0           dsack pkts sent:           0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
+     unique bytes sent:       198           unique bytes sent:     10909      
+     actual data pkts:          1           actual data pkts:          9      
+     actual data bytes:       198           actual data bytes:     10909      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          1           pushed data pkts:          6      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
+     mss requested:             0 bytes     mss requested:             0 bytes
+     max segm size:           198 bytes     max segm size:          1460 bytes
+     min segm size:           198 bytes     min segm size:           101 bytes
+     avg segm size:           197 bytes     avg segm size:          1211 bytes
+     max win adv:           65535 bytes     max win adv:            6432 bytes
+     min win adv:           32850 bytes     min win adv:            5840 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           36118 bytes     avg win adv:            6382 bytes
+     max owin:                199 bytes     max owin:               7402 bytes
+     min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
+     avg owin:                 23 bytes     avg owin:               3621 bytes
+     wavg owin:                41 bytes     wavg owin:              4447 bytes
+     initial window:          198 bytes     initial window:         2048 bytes
+     initial window:            1 pkts      initial window:            2 pkts 
+     ttl stream length:       198 bytes     ttl stream length:     10909 bytes
+     missed data:               0 bytes     missed data:               0 bytes
+     truncated data:          198 bytes     truncated data:        10909 bytes
+     truncated packets:         1 pkts      truncated packets:         9 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.360 secs 
+     idletime max:          199.6 ms        idletime max:          378.2 ms   
+     throughput:              215 Bps       throughput:            11839 Bps  
+
+     RTT samples:               3           RTT samples:               7      
+     RTT min:                 0.8 ms        RTT min:               152.9 ms   
+     RTT max:                11.8 ms        RTT max:               228.2 ms   
+     RTT avg:                 4.4 ms        RTT avg:               188.8 ms   
+     RTT stdev:               6.3 ms        RTT stdev:              28.4 ms   
+
+     RTT from 3WHS:          11.8 ms        RTT from 3WHS:         152.9 ms   
+
+     RTT full_sz smpls:         1           RTT full_sz smpls:         4      
+     RTT full_sz min:         0.8 ms        RTT full_sz min:       177.9 ms   
+     RTT full_sz max:         0.8 ms        RTT full_sz max:       228.2 ms   
+     RTT full_sz avg:         0.8 ms        RTT full_sz avg:       190.7 ms   
+     RTT full_sz stdev:       0.0 ms        RTT full_sz stdev:      25.0 ms   
+
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            3      
+     duplicate acks:            0           duplicate acks:            1      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

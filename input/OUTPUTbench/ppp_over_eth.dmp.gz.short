@@ -1,0 +1,6 @@
+1 arg remaining, starting with 'ppp_over_eth.dmp.gz'
+
+10 packets seen, 10 TCP packets traced
+trace file elapsed time: 0:00:00.508968
+TCP connection info:
+  1: 138.217.69.153:2049 - 65.166.64.143:80 (a2b)    5>    5<  (complete)

@@ -1,0 +1,7 @@
+1 arg remaining, starting with 'rawppp.pcap.gz'
+
+25 packets seen, 25 TCP packets traced
+trace file elapsed time: 0:00:06.002288
+TCP connection info:
+  1: 172.50.10.3:1026 - 192.168.10.6:21 (a2b)    3>    2<
+  2: 192.168.10.6:20 - 172.50.10.3:1029 (c2d)   11>    9<

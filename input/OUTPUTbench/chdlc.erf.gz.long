@@ -1,0 +1,227 @@
+1 arg remaining, starting with 'chdlc.erf.gz'
+
+3 packets seen, 3 TCP packets traced
+trace file elapsed time: 0:00:00.000402
+TCP connection info:
+3 TCP connections traced:
+TCP connection 1:
+	host a:        1.30.197.172:0
+	host b:        198.19.1.1:0
+	complete conn: no	(SYNs: 0)  (FINs: 0)
+	first packet:  Fri Jun 22 05:53:38.532316 2001
+	last packet:   Fri Jun 22 05:53:38.532316 2001
+	elapsed time:  0:00:00.000000
+	total packets: 1
+	filename:      chdlc.erf.gz
+   a->b:			      b->a:
+     total packets:             1           total packets:             0      
+     ack pkts sent:             0           ack pkts sent:             0      
+     pure acks sent:            0           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     dsack pkts sent:           0           dsack pkts sent:           0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
+     unique bytes sent:       264           unique bytes sent:         0      
+     actual data pkts:          1           actual data pkts:          0      
+     actual data bytes:       264           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          0           pushed data pkts:          0      
+     SYN/FIN pkts sent:       0/0           SYN/FIN pkts sent:       0/0      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
+     mss requested:             0 bytes     mss requested:             0 bytes
+     max segm size:           264 bytes     max segm size:             0 bytes
+     min segm size:           264 bytes     min segm size:             0 bytes
+     avg segm size:           263 bytes     avg segm size:             0 bytes
+     max win adv:               0 bytes     max win adv:               0 bytes
+     min win adv:               0 bytes     min win adv:               0 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:               0 bytes     avg win adv:               0 bytes
+     max owin:                264 bytes     max owin:                  0 bytes
+     min non-zero owin:       264 bytes     min non-zero owin:         0 bytes
+     avg owin:                264 bytes     avg owin:                  0 bytes
+     wavg owin:                NA           wavg owin:                NA      
+     initial window:          264 bytes     initial window:            0 bytes
+     initial window:            1 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.000 secs 
+     idletime max:            0.4 ms        idletime max:             NA ms   
+     throughput:               NA           throughput:               NA      
+
+     RTT samples:               0           RTT samples:               0      
+     RTT min:                 0.0 ms        RTT min:                 0.0 ms   
+     RTT max:                 0.0 ms        RTT max:                 0.0 ms   
+     RTT avg:                 0.0 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           0.0 ms        RTT from 3WHS:           0.0 ms   
+
+     RTT full_sz smpls:         0           RTT full_sz smpls:         0      
+     RTT full_sz min:         0.0 ms        RTT full_sz min:         0.0 ms   
+     RTT full_sz max:         0.0 ms        RTT full_sz max:         0.0 ms   
+     RTT full_sz avg:         0.0 ms        RTT full_sz avg:         0.0 ms   
+     RTT full_sz stdev:       0.0 ms        RTT full_sz stdev:       0.0 ms   
+
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 2:
+	host c:        1.30.197.173:0
+	host d:        198.19.1.1:0
+	complete conn: no	(SYNs: 0)  (FINs: 0)
+	first packet:  Fri Jun 22 05:53:38.532517 2001
+	last packet:   Fri Jun 22 05:53:38.532517 2001
+	elapsed time:  0:00:00.000000
+	total packets: 1
+	filename:      chdlc.erf.gz
+   c->d:			      d->c:
+     total packets:             1           total packets:             0      
+     ack pkts sent:             0           ack pkts sent:             0      
+     pure acks sent:            0           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     dsack pkts sent:           0           dsack pkts sent:           0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
+     unique bytes sent:       264           unique bytes sent:         0      
+     actual data pkts:          1           actual data pkts:          0      
+     actual data bytes:       264           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          0           pushed data pkts:          0      
+     SYN/FIN pkts sent:       0/0           SYN/FIN pkts sent:       0/0      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
+     mss requested:             0 bytes     mss requested:             0 bytes
+     max segm size:           264 bytes     max segm size:             0 bytes
+     min segm size:           264 bytes     min segm size:             0 bytes
+     avg segm size:           263 bytes     avg segm size:             0 bytes
+     max win adv:               0 bytes     max win adv:               0 bytes
+     min win adv:               0 bytes     min win adv:               0 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:               0 bytes     avg win adv:               0 bytes
+     max owin:                264 bytes     max owin:                  0 bytes
+     min non-zero owin:       264 bytes     min non-zero owin:         0 bytes
+     avg owin:                264 bytes     avg owin:                  0 bytes
+     wavg owin:                NA           wavg owin:                NA      
+     initial window:          264 bytes     initial window:            0 bytes
+     initial window:            1 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.000 secs 
+     idletime max:            0.2 ms        idletime max:             NA ms   
+     throughput:               NA           throughput:               NA      
+
+     RTT samples:               0           RTT samples:               0      
+     RTT min:                 0.0 ms        RTT min:                 0.0 ms   
+     RTT max:                 0.0 ms        RTT max:                 0.0 ms   
+     RTT avg:                 0.0 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           0.0 ms        RTT from 3WHS:           0.0 ms   
+
+     RTT full_sz smpls:         0           RTT full_sz smpls:         0      
+     RTT full_sz min:         0.0 ms        RTT full_sz min:         0.0 ms   
+     RTT full_sz max:         0.0 ms        RTT full_sz max:         0.0 ms   
+     RTT full_sz avg:         0.0 ms        RTT full_sz avg:         0.0 ms   
+     RTT full_sz stdev:       0.0 ms        RTT full_sz stdev:       0.0 ms   
+
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 3:
+	host e:        1.30.197.174:0
+	host f:        198.19.1.1:0
+	complete conn: no	(SYNs: 0)  (FINs: 0)
+	first packet:  Fri Jun 22 05:53:38.532718 2001
+	last packet:   Fri Jun 22 05:53:38.532718 2001
+	elapsed time:  0:00:00.000000
+	total packets: 1
+	filename:      chdlc.erf.gz
+   e->f:			      f->e:
+     total packets:             1           total packets:             0      
+     ack pkts sent:             0           ack pkts sent:             0      
+     pure acks sent:            0           pure acks sent:            0      
+     sack pkts sent:            0           sack pkts sent:            0      
+     dsack pkts sent:           0           dsack pkts sent:           0      
+     max sack blks/ack:         0           max sack blks/ack:         0      
+     unique bytes sent:       264           unique bytes sent:         0      
+     actual data pkts:          1           actual data pkts:          0      
+     actual data bytes:       264           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     zwnd probe pkts:           0           zwnd probe pkts:           0      
+     zwnd probe bytes:          0           zwnd probe bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          0           pushed data pkts:          0      
+     SYN/FIN pkts sent:       0/0           SYN/FIN pkts sent:       0/0      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
+     mss requested:             0 bytes     mss requested:             0 bytes
+     max segm size:           264 bytes     max segm size:             0 bytes
+     min segm size:           264 bytes     min segm size:             0 bytes
+     avg segm size:           263 bytes     avg segm size:             0 bytes
+     max win adv:               0 bytes     max win adv:               0 bytes
+     min win adv:               0 bytes     min win adv:               0 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:               0 bytes     avg win adv:               0 bytes
+     max owin:                264 bytes     max owin:                  0 bytes
+     min non-zero owin:       264 bytes     min non-zero owin:         0 bytes
+     avg owin:                264 bytes     avg owin:                  0 bytes
+     wavg owin:                NA           wavg owin:                NA      
+     initial window:          264 bytes     initial window:            0 bytes
+     initial window:            1 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.000 secs 
+     idletime max:            0.0 ms        idletime max:             NA ms   
+     throughput:               NA           throughput:               NA      
+
+     RTT samples:               0           RTT samples:               0      
+     RTT min:                 0.0 ms        RTT min:                 0.0 ms   
+     RTT max:                 0.0 ms        RTT max:                 0.0 ms   
+     RTT avg:                 0.0 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           0.0 ms        RTT from 3WHS:           0.0 ms   
+
+     RTT full_sz smpls:         0           RTT full_sz smpls:         0      
+     RTT full_sz min:         0.0 ms        RTT full_sz min:         0.0 ms   
+     RTT full_sz max:         0.0 ms        RTT full_sz max:         0.0 ms   
+     RTT full_sz avg:         0.0 ms        RTT full_sz avg:         0.0 ms   
+     RTT full_sz stdev:       0.0 ms        RTT full_sz stdev:       0.0 ms   
+
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

@@ -1,0 +1,276 @@
+1 arg remaining, starting with 'ppp_over_eth.dmp.gz'
+
+Packet 1
+	Packet Length: 74
+	Collected: Mon Jul 14 05:53:06.705270 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 138.217.69.153 
+	IP  Dest: 65.166.64.143 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 60
+	      ID: 62130
+	   CKSUM: 0xf561 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 2049 
+	    DPRT: 80 
+	     FLG:   ----S- (0x02)
+	     SEQ: 0x0185fa88
+	     ACK: 0x00000000
+	     WIN: 5656
+	    HLEN: 40
+	   CKSUM: 0xd2dc (CORRECT)
+	    DLEN: 0
+	    OPTS: 20 bytes	 MSS(1414) WS(0) TS(2106,0) SACKREQ
+Packet 2
+	Packet Length: 78
+	Collected: Mon Jul 14 05:53:06.722244 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 65.166.64.143 
+	IP  Dest: 138.217.69.153 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 64
+	      ID: 8944
+	   CKSUM: 0xc920 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 2049 
+	     FLG:   -A--S- (0x12)
+	     SEQ: 0x1a06d7d4
+	     ACK: 0x0185fa89
+	     WIN: 8484
+	    HLEN: 44
+	   CKSUM: 0xea80 (CORRECT)
+	    DLEN: 0
+	    OPTS: 24 bytes	 MSS(1460) WS(0) TS(1316588214,2106) SACKREQ
+Packet 3
+	Packet Length: 66
+	Collected: Mon Jul 14 05:53:06.723248 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 138.217.69.153 
+	IP  Dest: 65.166.64.143 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 52
+	      ID: 62131
+	   CKSUM: 0xf568 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 2049 
+	    DPRT: 80 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x0185fa89
+	     ACK: 0x1a06d7d5
+	     WIN: 5656
+	    HLEN: 32
+	   CKSUM: 0x3657 (CORRECT)
+	    DLEN: 0
+	    OPTS: 12 bytes	 TS(2107,1316588214)
+Packet 4
+	Packet Length: 255
+	Collected: Mon Jul 14 05:53:06.724269 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 138.217.69.153 
+	IP  Dest: 65.166.64.143 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 241
+	      ID: 62132
+	   CKSUM: 0xf4aa (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 2049 
+	    DPRT: 80 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x0185fa89
+	     ACK: 0x1a06d7d5
+	     WIN: 5656
+	    HLEN: 32
+	   CKSUM: 0x3509 (CORRECT)
+	    DLEN: 189
+	    OPTS: 12 bytes	 TS(2107,1316588214)
+	    data: 189 bytes
+Packet 5
+	Packet Length: 66
+	Collected: Mon Jul 14 05:53:06.745243 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 65.166.64.143 
+	IP  Dest: 138.217.69.153 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 52
+	      ID: 9200
+	   CKSUM: 0x082d (CORRECT)
+	  OFFSET: 0x0000
+	TCP SPRT: 80 
+	    DPRT: 2049 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x1a06d7d5
+	     ACK: 0x0185fb46
+	     WIN: 16195
+	    HLEN: 32
+	   CKSUM: 0x0c6c (CORRECT)
+	    DLEN: 0
+	    OPTS: 12 bytes	 TS(1316588217,2107)
+Packet 6
+	Packet Length: 386
+	Collected: Mon Jul 14 05:53:07.199341 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 65.166.64.143 
+	IP  Dest: 138.217.69.153 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 372
+	      ID: 20720
+	   CKSUM: 0xd9ec (CORRECT)
+	  OFFSET: 0x0000
+	TCP SPRT: 80 
+	    DPRT: 2049 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x1a06d7d5
+	     ACK: 0x0185fb46
+	     WIN: 16384
+	    HLEN: 32
+	   CKSUM: 0xb766 (CORRECT)
+	    DLEN: 320
+	    OPTS: 12 bytes	 TS(1316588262,2107)
+	    data: 320 bytes
+Packet 7
+	Packet Length: 66
+	Collected: Mon Jul 14 05:53:07.200160 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 65.166.64.143 
+	IP  Dest: 138.217.69.153 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 52
+	      ID: 20976
+	   CKSUM: 0xda2c (CORRECT)
+	  OFFSET: 0x0000
+	TCP SPRT: 80 
+	    DPRT: 2049 
+	     FLG:   -A---F (0x11)
+	     SEQ: 0x1a06d915
+	     ACK: 0x0185fb46
+	     WIN: 16384
+	    HLEN: 32
+	   CKSUM: 0x0a41 (CORRECT)
+	    DLEN: 0
+	    OPTS: 12 bytes	 TS(1316588262,2107)
+Packet 8
+	Packet Length: 66
+	Collected: Mon Jul 14 05:53:07.201180 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 138.217.69.153 
+	IP  Dest: 65.166.64.143 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 52
+	      ID: 62133
+	   CKSUM: 0xf566 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 2049 
+	    DPRT: 80 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x0185fb46
+	     ACK: 0x1a06d915
+	     WIN: 5656
+	    HLEN: 32
+	   CKSUM: 0x33fa (CORRECT)
+	    DLEN: 0
+	    OPTS: 12 bytes	 TS(2155,1316588262)
+Packet 9
+	Packet Length: 66
+	Collected: Mon Jul 14 05:53:07.202159 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 138.217.69.153 
+	IP  Dest: 65.166.64.143 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 52
+	      ID: 62134
+	   CKSUM: 0xf565 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 2049 
+	    DPRT: 80 
+	     FLG:   -A---F (0x11)
+	     SEQ: 0x0185fb46
+	     ACK: 0x1a06d916
+	     WIN: 5656
+	    HLEN: 32
+	   CKSUM: 0x33f8 (CORRECT)
+	    DLEN: 0
+	    OPTS: 12 bytes	 TS(2155,1316588262)
+Packet 10
+	Packet Length: 66
+	Collected: Mon Jul 14 05:53:07.214239 2003
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 65.166.64.143 
+	IP  Dest: 138.217.69.153 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 52
+	      ID: 22512
+	   CKSUM: 0xd42c (CORRECT)
+	  OFFSET: 0x0000
+	TCP SPRT: 80 
+	    DPRT: 2049 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x1a06d916
+	     ACK: 0x0185fb47
+	     WIN: 16384
+	    HLEN: 32
+	   CKSUM: 0x0a0e (CORRECT)
+	    DLEN: 0
+	    OPTS: 12 bytes	 TS(1316588264,2155)
+10 packets seen, 10 TCP packets traced
+trace file elapsed time: 0:00:00.508968
+bad IP checksums:  0
+bad TCP checksums: 0
+TCP connection info:
+  1: 138.217.69.153:2049 - 65.166.64.143:80 (a2b)    5>    5<  (complete)

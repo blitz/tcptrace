@@ -1,0 +1,6 @@
+1 arg remaining, starting with 'ppp_encap.dmp.gz'
+
+27 packets seen, 25 TCP packets traced
+trace file elapsed time: 0:00:06.883153
+TCP connection info:
+  1: 198.166.90.39:54942 - 159.18.1.3:22 (a2b)   11>   14<

@@ -1,0 +1,371 @@
+1 arg remaining, starting with 'atm.erf.gz'
+
+Packet 1
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:04.558952 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 56
+	      ID: 60634
+	   CKSUM: 0xe7a3 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -A--S- (0x12)
+	     SEQ: 0x56b9831f
+	     ACK: 0x64f77553
+	     WIN: 31740
+	    HLEN: 36 (only 20 bytes in dump file)
+	   CKSUM: 0xd1c8 (too short to verify)
+	    DLEN: 0
+	    OPTS: 16 bytes (none of it in dump file)	
+Packet 2
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:04.799870 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 52
+	      ID: 60635
+	   CKSUM: 0xe7a6 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x56b98320
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0xe7cf (too short to verify)
+	    DLEN: 0
+	    OPTS: 12 bytes (none of it in dump file)	
+Packet 3
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:04.911244 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60636
+	   CKSUM: 0xe24d (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b98320
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0xede0 (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 4
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:04.914398 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60637
+	   CKSUM: 0xe24c (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b98878
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0xf07a (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 5
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.161445 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60638
+	   CKSUM: 0xe24b (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b98dd0
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0xdbd1 (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 6
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.164596 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60639
+	   CKSUM: 0xe24a (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b99328
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0x989b (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 7
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.167744 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60640
+	   CKSUM: 0xe249 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b99880
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0x9a23 (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 8
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.409611 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60641
+	   CKSUM: 0xe248 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b99dd8
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0x7595 (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 9
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.412756 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60642
+	   CKSUM: 0xe247 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b9a330
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0x0590 (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 10
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.415910 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60643
+	   CKSUM: 0xe246 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b9a888
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0xdb9f (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 11
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.506494 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 1420
+	      ID: 60644
+	   CKSUM: 0xe245 (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x56b9ade0
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0xd100 (too short to verify)
+	    DLEN: 1368 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 1368 bytes
+Packet 12
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.509640 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 628
+	      ID: 60645
+	   CKSUM: 0xe55c (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -AP--F (0x19)
+	     SEQ: 0x56b9b338
+	     ACK: 0x64f77689
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0xea94 (too short to verify)
+	    DLEN: 576 (none of it in dump file)
+	    OPTS: 12 bytes (none of it in dump file)	
+	    data: 576 bytes
+Packet 13
+	Packet Length: 48
+	Collected: Tue Jun 12 14:00:05.750656 2001
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.216.128.100 
+	IP  Dest: 209.202.148.58 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 61
+	     LEN: 52
+	      ID: 60646
+	   CKSUM: 0xe79b (CORRECT)
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 3631 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x56b9b579
+	     ACK: 0x64f7768a
+	     WIN: 31740
+	    HLEN: 32 (only 20 bytes in dump file)
+	   CKSUM: 0xb4b7 (too short to verify)
+	    DLEN: 0
+	    OPTS: 12 bytes (none of it in dump file)	
+13 packets seen, 13 TCP packets traced
+trace file elapsed time: 0:00:01.191703
+bad IP checksums:  0
+bad TCP checksums: 0
+TCP connection info:
+*** 26 packets were too short to process at some point
+	(use -w option to show details)
+  1: 130.216.128.100:80 - 209.202.148.58:3631 (a2b)   13>    0<  (unidirectional)
