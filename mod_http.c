@@ -65,7 +65,7 @@ static char const rcsid[] =
 #define DEFAULT_SERVER_PORT 80
 
 
-/* Revised HTTP module with a new HTTP parser provided by Bruce Mah*/
+/* Revised HTTP module with a new HTTP parser provided by Bruce Mah */
 
 /* codes for different message types */
 typedef enum {
@@ -1274,7 +1274,147 @@ connection (FINs) were not found in trace file.\n");
       
       printf("    %s %s\n", MethodCodeString[pget->method],
 	     pget->get_string);
-      printf("\tResponse Code:       %d\n", pget->response_code);
+      
+      /* Interpretation of response codes as per RFC 2616 - HTTP/1.1 */
+      switch (pget->response_code) {
+	 /* Informational 1xx */
+       case 100 :
+	 printf("\tResponse Code:       %d (Continue)\n", pget->response_code);
+	 break;
+       case 101 :
+	 printf("\tResponse Code:       %d (Switching Protocols)\n", pget->response_code);
+	 break;	 
+	 
+	 /* Successful 2xx */
+       case 200 :
+	 printf("\tResponse Code:       %d (OK)\n", pget->response_code);
+	 break;	 
+       case 201 :
+	 printf("\tResponse Code:       %d (Created)\n", pget->response_code);
+	 break;	 
+       case 202 :
+	 printf("\tResponse Code:       %d (Accepted)\n", pget->response_code);
+	 break;	 
+       case 203 :
+	 printf("\tResponse Code:       %d (Non-Authoritative Information)\n", pget->response_code);
+	 break;	 
+       case 204 :
+	 printf("\tResponse Code:       %d (No Content)\n", pget->response_code);
+	 break;	 
+       case 205 :
+	 printf("\tResponse Code:       %d (Reset Content)\n", pget->response_code);
+	 break;	 
+       case 206 :
+	 printf("\tResponse Code:       %d (Partial Content)\n", pget->response_code);
+	 break;
+	 
+	 /* Redirection 3xx */
+       case 300 :
+	 printf("\tResponse Code:       %d (Multiple Choices)\n", pget->response_code);
+	 break;	 
+       case 301 :
+	 printf("\tResponse Code:       %d (Moved Permanently)\n", pget->response_code);
+	 break;	 
+       case 302 :
+	 printf("\tResponse Code:       %d (Found)\n", pget->response_code);
+	 break;	 
+       case 303 :
+	 printf("\tResponse Code:       %d (See Other)\n", pget->response_code);
+	 break;	 
+       case 304 :
+	 printf("\tResponse Code:       %d (Not Modified)\n", pget->response_code);
+	 break;	 
+       case 305 :
+	 printf("\tResponse Code:       %d (Use Proxy)\n", pget->response_code);
+	 break;	 
+       case 306 :
+	 printf("\tResponse Code:       %d (Unused)\n", pget->response_code);
+	 break;
+       case 307 :
+	 printf("\tResponse Code:       %d (Temporary Redirect)\n", pget->response_code);
+	 break;	 
+
+	 /* Client Error 4xx */
+       case 400 :
+	 printf("\tResponse Code:       %d (Bad Request)\n", pget->response_code);
+	 break;	 
+       case 401 :
+	 printf("\tResponse Code:       %d (Unauthorized)\n", pget->response_code);
+	 break;	 
+       case 402 :
+	 printf("\tResponse Code:       %d (Payment Required)\n", pget->response_code);
+	 break;	 
+       case 403 :
+	 printf("\tResponse Code:       %d (Forbidden)\n", pget->response_code);
+	 break;	 
+       case 404 :
+	 printf("\tResponse Code:       %d (Not Found)\n", pget->response_code);
+	 break;	 
+       case 405 :
+	 printf("\tResponse Code:       %d (Method Not Allowed)\n", pget->response_code);
+	 break;	 
+       case 406 :
+	 printf("\tResponse Code:       %d (Not Acceptable)\n", pget->response_code);
+	 break;	 
+       case 407 :
+	 printf("\tResponse Code:       %d (Proxy Authentication Required)\n", pget->response_code);
+	 break;	 
+       case 408 :
+	 printf("\tResponse Code:       %d (Request Timeout)\n", pget->response_code);
+	 break;	 
+       case 409 :
+	 printf("\tResponse Code:       %d (Conflict)\n", pget->response_code);
+	 break;	 
+       case 410 :
+	 printf("\tResponse Code:       %d (Gone)\n", pget->response_code);
+	 break;	 
+       case 411 :
+	 printf("\tResponse Code:       %d (Length Required)\n", pget->response_code);
+	 break;	 
+       case 412 :
+	 printf("\tResponse Code:       %d (Precondition Failed)\n", pget->response_code);
+	 break;	 
+       case 413 :
+	 printf("\tResponse Code:       %d (Request Entity Too Large)\n", pget->response_code);
+	 break;	 
+       case 414 :
+	 printf("\tResponse Code:       %d (Request-URI Too Long)\n", pget->response_code);
+	 break;	 
+       case 415 :
+	 printf("\tResponse Code:       %d (Unsupported Media Type)\n", pget->response_code);
+	 break;	 
+       case 416 :
+	 printf("\tResponse Code:       %d (Requested Range Not Satisfiable)\n", pget->response_code);
+	 break;	 
+       case 417:
+	 printf("\tResponse Code:       %d (Expectation Failed)\n", pget->response_code);
+	 break;
+	 
+	 /* Server Error 5xx */
+       case 500 :
+	 printf("\tResponse Code:       %d (Internal Server Error)\n", pget->response_code);
+	 break;	 
+       case 501 :
+	 printf("\tResponse Code:       %d (Not Implemented)\n", pget->response_code);
+	 break;	 
+       case 502 :
+	 printf("\tResponse Code:       %d (Bad Gateway)\n", pget->response_code);
+	 break;	 
+       case 503 :
+	 printf("\tResponse Code:       %d (Service Unavailable)\n", pget->response_code);
+	 break;	 
+       case 504 :
+	 printf("\tResponse Code:       %d (Gateway Timeout)\n", pget->response_code);
+	 break;	 
+       case 505 :
+	 printf("\tResponse Code:       %d (HTTP Version Not Supported)\n", pget->response_code);
+	 break;	 
+	   
+       default :
+	 printf("\tResponse Code:       %d (unknown response code)\n", pget->response_code);
+
+      }
+      
       printf("\tRequest Length:      %u\n", request_length);
       printf("\tReply Length:        %u\n", reply_length);
       printf("\tContent Length:      %d\n", pget->content_length);
