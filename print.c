@@ -467,8 +467,14 @@ printtcp_packet(
 	}
         printf("\n");
     }
-    if (tcp_data_length > 0)
-	printf("\t    data: %u bytes\n", tcp_data_length);
+    if (tcp_data_length > 0) {
+	if (dump_packet_data) {
+	    char *ptcp_data = (char *)ptcp + (4 * ptcp->th_off);
+	    PrintRawData("   data", ptcp_data, plast, TRUE);
+	} else {
+	    printf("\t    data: %u bytes\n", tcp_data_length);
+	}
+    }
 }
 
 
@@ -504,6 +510,9 @@ printudp_packet(
     if ((u_long)pdata + ntohs(pudp->uh_ulen) > ((u_long)plast+1))
 	printf(" (only %ld bytes in dump file)\n",
 	       (u_long)plast - (u_long)pdata + 1);
+    if (ntohs(pudp->uh_ulen) > 0) {
+	PrintRawData("   data", pdata, plast, TRUE);
+    }
 }
 
 
@@ -586,7 +595,8 @@ void
 PrintRawData(
     char *label,
     void *pfirst,
-    void *plast)
+    void *plast,
+    Bool octal)			/* hex or octal? */
 {
     int lcount = 0;
     int count = (unsigned)plast - (unsigned)pfirst + 1;
@@ -596,27 +606,34 @@ PrintRawData(
 	return;
 
     printf("========================================\n");
-    printf("%s (%d bytes):\n\t", label, count);
+    printf("%s (%d bytes):\n", label, count);
 
     while (pch <= (u_char *) plast) {
 	if ((*pch == '\r') && (*(pch+1) == '\n')) {
-	    printf("\n\t");
+	    printf("\n");
 	    ++pch;
 	    lcount = 0;
 	} else if (isprint(*pch)) {
 	    putchar(*pch);
 	    lcount+=1;
 	} else {
-	    printf("\\%03o", *pch);
-	    lcount+=3;
+	    if (octal) {
+		printf("\\%03o", *pch);
+		lcount+=4;
+	    } else {
+		printf("0x%02x", *pch);
+		lcount+=4;
+	    }
 	}
-	if (lcount > 60) {
-	    printf("\n\t");
+	if (lcount > 70) {
+	    printf("\\\n");
 	    lcount = 0;
 	}
 	++pch;
     }
-    printf("\n");
+    if (lcount != 0)
+	printf("\\\n");
+    printf("========================================\n");
 }
 
 
@@ -626,26 +643,7 @@ PrintRawDataHex(
     void *pfirst,
     void *plast)
 {
-    int lcount = 0;
-    int count = (unsigned)plast - (unsigned)pfirst + 1;
-    u_char *pch = pfirst;
-
-    if (count <= 0)
-	return;
-
-    printf("========================================\n");
-    printf("%s (%d bytes):\n\t", label, count);
-
-    while (pch <= (u_char *) plast) {
-	printf("%02x ", *pch);
-
-	if (++lcount > 15) {
-	    printf("\n\t");
-	    lcount = 0;
-	}
-	++pch;
-    }
-    printf("\n");
+    PrintRawData(label,pfirst,plast,FALSE);
 }
 
 
