@@ -36,15 +36,15 @@
 
 
 /* local routines */
-static char *PrintConst(struct filter_node *pfn);
-static char *PrintVar(struct filter_node *pfn);
-static void EvalRelopUnsigned(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pfn);
-static void EvalRelopSigned(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pfn);
-static void EvalFilter(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pfn);
-static void EvalRelopString(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pfn);
-static void EvalVariable(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pfn);
-static void EvalConstant(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pfn);
-static char *PrintFilterInternal(struct filter_node *pfn);
+static char *PrintConst(struct filter_node *pf);
+static char *PrintVar(struct filter_node *pf);
+static void EvalRelopUnsigned(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pf);
+static void EvalRelopSigned(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pf);
+static void EvalFilter(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pf);
+static void EvalRelopString(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pf);
+static void EvalVariable(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pf);
+static void EvalConstant(tcp_pair *ptp, struct filter_res *pres, struct filter_node *pf);
+static char *PrintFilterInternal(struct filter_node *pf);
 static char *Res2Str(struct filter_res *pres);
 static struct filter_node *MustBeType(enum vartype var_needed, struct filter_node *pf);
 static struct filter_node *LookupVar(char *varname, Bool fclient);
@@ -173,34 +173,69 @@ MustBeType(
 struct filter_node *
 MakeUnaryNode(
     enum optype op,
-    struct filter_node *pf)
+    struct filter_node *pf_in)
 {
-    struct filter_node *pfn;
+    struct filter_node *pf = NULL;
+    struct filter_node *pf1;
 
-    /* type checking */
-    if (op == OP_NOT)
-	pf = MustBeType(V_BOOL,pf);
+    /* walk everybody on the list and copy */
+    for (pf1 = pf_in; pf1; pf1=pf1->next_var) {
+	struct filter_node *pf_new;
 
-    pfn = MallocZ(sizeof(struct filter_node));
-    pfn->op = op;
-    pfn->vartype = pf->vartype;
+	/* type checking */
+	if (op == OP_NOT)
+	    pf_in = MustBeType(V_BOOL,pf_in);
 
-    pfn->un.unary.pf = pf;
+	pf_new = MallocZ(sizeof(struct filter_node));
+	pf_new->op = op;
+	pf_new->vartype = pf->vartype;
+	pf_new->un.unary.pf = pf1;
 
-    return(pfn);
+	/* add to the linked list of unaries */
+	if (pf == NULL) {
+	    pf = pf_new;
+	} else {
+	    pf_new->next_var = pf;
+	    pf = pf_new;
+	}
+    }
+
+    return(pf);
 }
 
 
-struct filter_node *
-MakeBinaryNode(
+
+static struct filter_node *
+MakeDisjunction(
+    struct filter_node *left,
+    struct filter_node *right)
+{
+    struct filter_node *pf;
+
+    /* construct a high-level OR to hook them together */
+    pf = MallocZ(sizeof(struct filter_node));
+    pf->op = OP_OR;
+    pf->vartype = V_BOOL;
+
+    /* hook the two opnodes together */
+    pf->un.binary.left = left;
+    pf->un.binary.right = right;
+
+    /* return the OR node */
+    return(pf);
+}
+
+
+static struct filter_node *
+MakeOneBinaryNode(
     enum optype op,
     struct filter_node *pf_left,
     struct filter_node *pf_right)
 {
-    struct filter_node *pfn;
+    struct filter_node *pf;
 
-    pfn = MallocZ(sizeof(struct filter_node));
-    pfn->op = op;
+    pf = MallocZ(sizeof(struct filter_node));
+    pf->op = op;
 
     /* type checking */
     switch (op) {
@@ -208,7 +243,7 @@ MakeBinaryNode(
       case OP_OR:
 	pf_left = MustBeType(V_BOOL,pf_left);
 	pf_right = MustBeType(V_BOOL,pf_right);
-	pfn->vartype = V_BOOL;
+	pf->vartype = V_BOOL;
 	break;
 
       case OP_PLUS:
@@ -235,7 +270,7 @@ MakeBinaryNode(
 	    pf_left = MustBeType(V_LLONG,pf_left);
 	}
 
-	pfn->vartype = pf_left->vartype;
+	pf->vartype = pf_left->vartype;
 	break;
 
       case OP_EQUAL:
@@ -264,7 +299,7 @@ MakeBinaryNode(
 	    pf_left = MustBeType(V_LLONG,pf_left);
 	}
 
-	pfn->vartype = V_BOOL;
+	pf->vartype = V_BOOL;
 	    
 	break;
 
@@ -273,12 +308,76 @@ MakeBinaryNode(
 		op, Op2Str(op));
 	exit(-1);
     }
-    
 
-    pfn->un.binary.left = pf_left;
-    pfn->un.binary.right = pf_right;
+    /* attach the children */
+    pf->un.binary.left = pf_left;
+    pf->un.binary.right = pf_right;
 
-    return(pfn);
+    return(pf);
+}
+
+
+
+
+struct filter_node *
+MakeBinaryNode(
+    enum optype op,
+    struct filter_node *pf_left,
+    struct filter_node *pf_right)
+{
+    struct filter_node *pf = NULL;
+    struct filter_node *pf1;
+    struct filter_node *pf2;
+
+    for (pf1 = pf_left; pf1; pf1=pf1->next_var) {
+	for (pf2 = pf_right; pf2; pf2=pf2->next_var) {
+	    struct filter_node *pf_new;
+	    /* make one copy */
+	    pf_new = MakeOneBinaryNode(op,pf1,pf2);
+
+	    if (debug)
+		printf("MakeBinaryNode: made %s\n", Filter2Str(pf_new));
+
+	    /* hook together as appropriate */
+	    switch (op) {
+	      case OP_PLUS:
+	      case OP_MINUS:
+	      case OP_TIMES:
+	      case OP_DIVIDE:
+		/* just keep a list */
+		if (pf == NULL) {
+		    pf = pf_new;
+		} else {
+		    pf_new->next_var = pf;
+		    pf = pf_new;
+		}
+		break;
+
+	      case OP_AND:
+	      case OP_OR:
+	      case OP_EQUAL:
+	      case OP_NEQUAL:
+	      case OP_GREATER:
+	      case OP_GREATER_EQ:
+	      case OP_LESS:
+	      case OP_LESS_EQ:
+		/* terminate the wildcard list by making OR nodes */
+		if (pf == NULL)
+		    pf = pf_new;
+		else
+		    pf = MakeDisjunction(pf,pf_new);
+		break;
+
+	      default:
+		fprintf(stderr,"MakeBinaryNode: invalid binary operand type %d (%s)\n",
+			op, Op2Str(op));
+		exit(-1);
+	    }
+
+	}
+    }
+
+    return(pf);
 }
 
 
@@ -286,23 +385,21 @@ struct filter_node *
 MakeVarNode(
     char *varname)
 {
-    struct filter_node *pfn;
+    struct filter_node *pf;
 
     if (strncasecmp(varname,"c_",2) == 0) {
 	/* just client */
-	pfn = LookupVar(varname+2,TRUE);
+	pf = LookupVar(varname+2,TRUE);
     } else if (strncasecmp(varname,"s_",2) == 0) {
 	/* just server */
-	pfn = LookupVar(varname+2,FALSE);
+	pf = LookupVar(varname+2,FALSE);
     } else {
-	/* BOTH */
-	fprintf(stderr,
-		"Must specify either server (s_) or client (c_) for variable %s\n",
-		varname);
-	exit(-1);
+	/* look up BOTH and return a list */
+	pf = LookupVar(varname,TRUE);/* client */
+	pf->next_var = LookupVar(varname,FALSE); /* server */
     }
 
-    return(pfn);
+    return(pf);
 }
 
 
@@ -310,28 +407,28 @@ struct filter_node *
 MakeStringConstNode(
     char *val)
 {
-    struct filter_node *pfn;
+    struct filter_node *pf;
 
-    pfn = MallocZ(sizeof(struct filter_node));
+    pf = MallocZ(sizeof(struct filter_node));
 
-    pfn->vartype = V_STRING;
-    pfn->un.constant.string = val;
+    pf->vartype = V_STRING;
+    pf->un.constant.string = val;
 
-    return(pfn);
+    return(pf);
 }
 
 struct filter_node *
 MakeBoolConstNode(
     Bool val)
 {
-    struct filter_node *pfn;
+    struct filter_node *pf;
 
-    pfn = MallocZ(sizeof(struct filter_node));
+    pf = MallocZ(sizeof(struct filter_node));
 
-    pfn->vartype = V_BOOL;
-    pfn->un.constant.bool = val;
+    pf->vartype = V_BOOL;
+    pf->un.constant.bool = val;
 
-    return(pfn);
+    return(pf);
 }
 
 
@@ -339,15 +436,15 @@ struct filter_node *
 MakeSignedConstNode(
     llong val)
 {
-    struct filter_node *pfn;
+    struct filter_node *pf;
 
-    pfn = MallocZ(sizeof(struct filter_node));
+    pf = MallocZ(sizeof(struct filter_node));
 
-    pfn->op = OP_CONSTANT;
-    pfn->vartype = V_LLONG;
-    pfn->un.constant.longint = val;
+    pf->op = OP_CONSTANT;
+    pf->vartype = V_LLONG;
+    pf->un.constant.longint = val;
 
-    return(pfn);
+    return(pf);
 }
 
 
@@ -355,15 +452,15 @@ struct filter_node *
 MakeUnsignedConstNode(
     u_llong val)
 {
-    struct filter_node *pfn;
+    struct filter_node *pf;
 
-    pfn = MallocZ(sizeof(struct filter_node));
+    pf = MallocZ(sizeof(struct filter_node));
 
-    pfn->op = OP_CONSTANT;
-    pfn->vartype = V_ULLONG;
-    pfn->un.constant.u_longint = val;
+    pf->op = OP_CONSTANT;
+    pf->vartype = V_ULLONG;
+    pf->un.constant.u_longint = val;
 
-    return(pfn);
+    return(pf);
 }
 
 /**************************************************************/
@@ -376,39 +473,39 @@ MakeUnsignedConstNode(
 
 static char *
 PrintConst(
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     char buf[100];
     
     /* for constants */
-    switch (pfn->vartype) {
+    switch (pf->vartype) {
       case V_ULLONG:
 	if (debug)
-	    sprintf(buf,"ULLONG(%llu)",pfn->un.constant.u_longint);
+	    sprintf(buf,"ULLONG(%llu)",pf->un.constant.u_longint);
 	else
-	    sprintf(buf,"%llu",pfn->un.constant.u_longint);
+	    sprintf(buf,"%llu",pf->un.constant.u_longint);
 	break;
       case V_LLONG:
 	if (debug)
-	    sprintf(buf,"LLONG(%lld)", pfn->un.constant.longint);
+	    sprintf(buf,"LLONG(%lld)", pf->un.constant.longint);
 	else
-	    sprintf(buf,"%lld", pfn->un.constant.longint);
+	    sprintf(buf,"%lld", pf->un.constant.longint);
 	break;
       case V_STRING:
 	if (debug)
-	    sprintf(buf,"STRING(%s)",pfn->un.constant.string);
+	    sprintf(buf,"STRING(%s)",pf->un.constant.string);
 	else
-	    sprintf(buf,"%s",pfn->un.constant.string);
+	    sprintf(buf,"%s",pf->un.constant.string);
 	break;
       case V_BOOL:
 	if (debug)
-	    sprintf(buf,"BOOL(%s)",  pfn->un.constant.bool?"TRUE":"FALSE");
+	    sprintf(buf,"BOOL(%s)",  pf->un.constant.bool?"TRUE":"FALSE");
 	else
-	    sprintf(buf,"%s", pfn->un.constant.bool?"TRUE":"FALSE");
+	    sprintf(buf,"%s", pf->un.constant.bool?"TRUE":"FALSE");
 	break;
       default: {
 	    fprintf(stderr,"PrintConst: unknown constant type %d (%s)\n",
-		    pfn->vartype, Vartype2Str(pfn->vartype));
+		    pf->vartype, Vartype2Str(pf->vartype));
 	    exit(-1);
 	}
     }
@@ -420,21 +517,21 @@ PrintConst(
 
 static char *
 PrintVar(
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     char buf[100];
 
 
     if (debug)
 	sprintf(buf,"VAR(%s,'%s%s',%d)",
-		Vartype2Str(pfn->vartype),
-		pfn->un.variable.fclient?"c_":"s_",
-		pfn->un.variable.name,
-		pfn->un.variable.offset);
+		Vartype2Str(pf->vartype),
+		pf->un.variable.fclient?"c_":"s_",
+		pf->un.variable.name,
+		pf->un.variable.offset);
     else
 	sprintf(buf,"%s%s",
-		pfn->un.variable.fclient?"c_":"s_",
-		pfn->un.variable.name);
+		pf->un.variable.fclient?"c_":"s_",
+		pf->un.variable.name);
 
     /* small memory leak, but it's just done once for debugging... */
     return(strdup(buf));
@@ -502,37 +599,37 @@ Res2Str(
 
 void
 PrintFilter(
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
-    printf("%s\n", PrintFilterInternal(pfn));
+    printf("%s\n", PrintFilterInternal(pf));
 }
 
 
 char *
 Filter2Str(
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
-    return(PrintFilterInternal(pfn));
+    return(PrintFilterInternal(pf));
 }
 
 
 static char *
 PrintFilterInternal(
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     /* I'm tolerating a memory leak here because it's mostly just for debugging */
     char buf[1024];
 
-    if (!pfn)
+    if (!pf)
 	return("");
 
-    switch(pfn->op) {
+    switch(pf->op) {
       case OP_CONSTANT:
-	sprintf(buf,"%s", PrintConst(pfn));
+	sprintf(buf,"%s", PrintConst(pf));
 	return(strdup(buf));
 
       case OP_VARIABLE:
-	sprintf(buf,"%s", PrintVar(pfn));
+	sprintf(buf,"%s", PrintVar(pf));
 	return(strdup(buf));
 
       case OP_AND:
@@ -548,24 +645,24 @@ PrintFilterInternal(
       case OP_TIMES:
       case OP_DIVIDE:
 	sprintf(buf,"(%s%s%s)",
-		PrintFilterInternal(pfn->un.binary.left),
-		Op2Str(pfn->op),
-		PrintFilterInternal(pfn->un.binary.right));
+		PrintFilterInternal(pf->un.binary.left),
+		Op2Str(pf->op),
+		PrintFilterInternal(pf->un.binary.right));
 	return(strdup(buf));
 
       case OP_NOT:
 	sprintf(buf," NOT(%s)",
-	       PrintFilterInternal(pfn->un.unary.pf));
+	       PrintFilterInternal(pf->un.unary.pf));
 	return(strdup(buf));
 
       case OP_SIGNED:
 	sprintf(buf," SIGNED(%s)",
-	       PrintFilterInternal(pfn->un.unary.pf));
+	       PrintFilterInternal(pf->un.unary.pf));
 	return(strdup(buf));
 
       default:
 	fprintf(stderr,"PrintFilter: unknown op %d (%s)\n",
-		pfn->op, Op2Str(pfn->op));
+		pf->op, Op2Str(pf->op));
 	exit(-1);
     }
 }
@@ -578,23 +675,23 @@ LookupVar(
     Bool fclient)
 {
     int i;
-    struct filter_node *pfn;
+    struct filter_node *pf;
     void *ptr;
 
     for (i=0; i < NUM_FILTERS; ++i) {
-	struct filter_line *pf = &filters[i];
-	if (strcasecmp(varname,pf->varname) == 0) {
+	struct filter_line *pfl = &filters[i];
+	if (strcasecmp(varname,pfl->varname) == 0) {
 	    /* we found it */
-	    pfn = MallocZ(sizeof(struct filter_node));
-	    pfn->op = OP_VARIABLE;
-	    switch (pf->vartype) {
+	    pf = MallocZ(sizeof(struct filter_node));
+	    pf->op = OP_VARIABLE;
+	    switch (pfl->vartype) {
 	      case V_CHAR:	
 	      case V_INT:	
 	      case V_LLONG:	
 	      case V_LONG:	
 	      case V_SHORT:	
 	      case V_FUNC:	
-		pfn->vartype = V_LLONG; /* we'll promote on the fly */
+		pf->vartype = V_LLONG; /* we'll promote on the fly */
 		break;
 	      case V_UCHAR:	
 	      case V_UINT:	
@@ -602,24 +699,24 @@ LookupVar(
 	      case V_ULONG:	
 	      case V_USHORT:	
 	      case V_UFUNC:	
-		pfn->vartype = V_ULLONG; /* we'll promote on the fly */
+		pf->vartype = V_ULLONG; /* we'll promote on the fly */
 		break;
 	      default:
-		pfn->vartype = pf->vartype; 
+		pf->vartype = pf->vartype; 
 	    }
-	    pfn->un.variable.realtype = pf->vartype;
-	    pfn->un.variable.name = strdup(varname);
+	    pf->un.variable.realtype = pfl->vartype;
+	    pf->un.variable.name = strdup(varname);
 	    if (fclient)
-		ptr = (void *)pf->cl_addr;
+		ptr = (void *)pfl->cl_addr;
 	    else
-		ptr = (void *)pf->sv_addr;
-	    if ((pf->vartype == V_FUNC) || (pf->vartype == V_UFUNC))
-		pfn->un.variable.offset = (u_int)ptr;
+		ptr = (void *)pfl->sv_addr;
+	    if ((pfl->vartype == V_FUNC) || (pfl->vartype == V_UFUNC))
+		pf->un.variable.offset = (u_int)ptr;
 	    else
-		pfn->un.variable.offset = ptr - (void *)&ptp_dummy;
-	    pfn->un.variable.fclient = fclient;
+		pf->un.variable.offset = ptr - (void *)&ptp_dummy;
+	    pf->un.variable.fclient = fclient;
 
-	    return(pfn);
+	    return(pf);
 	}
     }
 
@@ -683,12 +780,12 @@ Ptr2Unsigned(
 static char *
 Var2String(
     tcp_pair *ptp,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     void *ptr;
     char *str;
 
-    ptr = (char *)ptp + pfn->un.variable.offset;
+    ptr = (char *)ptp + pf->un.variable.offset;
     str = *((char **)ptr);
 
     if (str == NULL)
@@ -705,13 +802,13 @@ Var2String(
 static u_long
 Var2Signed(
     tcp_pair *ptp,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     void *ptr;
 
-    ptr = (char *)ptp + pfn->un.variable.offset;
+    ptr = (char *)ptp + pf->un.variable.offset;
 
-    switch (pfn->un.variable.realtype) {
+    switch (pf->un.variable.realtype) {
       case V_LLONG: return(Ptr2Signed(ptp,V_LLONG,ptr));
       case V_LONG:  return(Ptr2Signed(ptp,V_LONG,ptr));
       case V_INT:   return(Ptr2Signed(ptp,V_INT,ptr));
@@ -720,13 +817,13 @@ Var2Signed(
       case V_FUNC:
       {   /* call the function */
 	  llong (*pfunc)(tcp_pair *ptp);
-	  pfunc = (llong (*)(tcp_pair *))(pfn->un.variable.offset);
+	  pfunc = (llong (*)(tcp_pair *))(pf->un.variable.offset);
 	  return((*pfunc)(ptp));
       }
       default: {
 	  fprintf(stderr,
 		  "Filter eval error, can't convert variable type %s to signed\n",
-		  Vartype2Str(pfn->un.variable.realtype));
+		  Vartype2Str(pf->un.variable.realtype));
 	  exit(-1);
       }
     }
@@ -737,13 +834,13 @@ Var2Signed(
 static u_long
 Var2Unsigned(
     tcp_pair *ptp,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     void *ptr;
 
-    ptr = (char *)ptp + pfn->un.variable.offset;
+    ptr = (char *)ptp + pf->un.variable.offset;
 
-    switch (pfn->un.variable.realtype) {
+    switch (pf->un.variable.realtype) {
       case V_ULLONG: return(Ptr2Unsigned(ptp,V_ULLONG,ptr));
       case V_ULONG:  return(Ptr2Unsigned(ptp,V_ULONG,ptr));
       case V_UINT:   return(Ptr2Unsigned(ptp,V_UINT,ptr));
@@ -753,13 +850,13 @@ Var2Unsigned(
       case V_UFUNC:
       {   /* call the function */
 	  u_llong (*pfunc)(tcp_pair *ptp);
-	  pfunc = (u_llong (*)(tcp_pair *))(pfn->un.variable.offset);
+	  pfunc = (u_llong (*)(tcp_pair *))(pf->un.variable.offset);
 	  return((*pfunc)(ptp));
       }
       default: {
 	  fprintf(stderr,
 		  "Filter eval error, can't convert variable type %s to unsigned\n",
-		  Vartype2Str(pfn->un.variable.realtype));
+		  Vartype2Str(pf->un.variable.realtype));
 	  exit(-1);
       }
     }
@@ -768,15 +865,15 @@ Var2Unsigned(
 
 static u_llong
 Const2Unsigned(
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
-    switch (pfn->vartype) {
-      case V_ULLONG:	return((u_llong) pfn->un.constant.u_longint);
-      case V_LLONG:	return((u_llong) pfn->un.constant.longint);
+    switch (pf->vartype) {
+      case V_ULLONG:	return((u_llong) pf->un.constant.u_longint);
+      case V_LLONG:	return((u_llong) pf->un.constant.longint);
       default: {
 	  fprintf(stderr,
 		  "Filter eval error, can't convert constant type %d (%s) to unsigned\n",
-		  pfn->vartype, Vartype2Str(pfn->vartype));
+		  pf->vartype, Vartype2Str(pf->vartype));
 	  exit(-1);
       }
     }
@@ -785,15 +882,15 @@ Const2Unsigned(
 
 static llong
 Const2Signed(
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
-    switch (pfn->vartype) {
-      case V_ULLONG:	return((llong) pfn->un.constant.u_longint);
-      case V_LLONG:	return((llong) pfn->un.constant.longint);
+    switch (pf->vartype) {
+      case V_ULLONG:	return((llong) pf->un.constant.u_longint);
+      case V_LLONG:	return((llong) pf->un.constant.longint);
       default: {
 	  fprintf(stderr,
 		  "Filter eval error, can't convert constant type %d (%s) to signed\n",
-		  pfn->vartype, Vartype2Str(pfn->vartype));
+		  pf->vartype, Vartype2Str(pf->vartype));
 	  exit(-1);
       }
     }
@@ -804,7 +901,7 @@ static void
 EvalMathopUnsigned(
     tcp_pair *ptp,
     struct filter_res *pres,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     u_llong varl;
     u_llong varr;
@@ -812,22 +909,22 @@ EvalMathopUnsigned(
     u_llong ret;
 
     /* grab left hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.left);
+    EvalFilter(ptp,&res,pf->un.binary.left);
     varl = res.val.u_longint;
 
     /* grab right hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.right);
+    EvalFilter(ptp,&res,pf->un.binary.right);
     varr = res.val.u_longint;
 
     /* perform the operation */
-    switch (pfn->op) {
+    switch (pf->op) {
       case OP_PLUS:	  ret = (varl + varr); break;
       case OP_MINUS:	  ret = (varl - varr); break;
       case OP_TIMES:	  ret = (varl * varr); break;
       case OP_DIVIDE:	  ret = (varl / varr); break;
       default: {
 	  fprintf(stderr,"EvalMathodUnsigned: unsupported binary op: %d (%s)\n",
-		  pfn->op, Vartype2Str(pfn->op));
+		  pf->op, Vartype2Str(pf->op));
 	  exit(-1);
       }
     }
@@ -842,7 +939,7 @@ EvalMathopUnsigned(
 #else /* HAVE_LONG_LONG */
 	printf("EvalMathopUnsigned %lu %s %lu returns %s\n",
 #endif /* HAVE_LONG_LONG */
-	       varl, Op2Str(pfn->op), varr,
+	       varl, Op2Str(pf->op), varr,
 	       Res2Str(pres));
 
 
@@ -855,7 +952,7 @@ static void
 EvalMathopSigned(
     tcp_pair *ptp,
     struct filter_res *pres,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     llong varl;
     llong varr;
@@ -863,22 +960,22 @@ EvalMathopSigned(
     llong ret;
 
     /* grab left hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.left);
+    EvalFilter(ptp,&res,pf->un.binary.left);
     varl = res.val.longint;
 
     /* grab right hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.right);
+    EvalFilter(ptp,&res,pf->un.binary.right);
     varr = res.val.longint;
 
     /* perform the operation */
-    switch (pfn->op) {
+    switch (pf->op) {
       case OP_PLUS:	  ret = (varl + varr); break;
       case OP_MINUS:	  ret = (varl - varr); break;
       case OP_TIMES:	  ret = (varl * varr); break;
       case OP_DIVIDE:	  ret = (varl / varr); break;
       default: {
 	  fprintf(stderr,"EvalMathodSigned: unsupported binary op: %d (%s)\n",
-		  pfn->op, Vartype2Str(pfn->op));
+		  pf->op, Vartype2Str(pf->op));
 	  exit(-1);
       }
     }
@@ -893,7 +990,7 @@ EvalMathopSigned(
 #else /* HAVE_LONG_LONG */
 	printf("EvalMathopSigned %ld %s %ld returns %s\n",
 #endif /* HAVE_LONG_LONG */
-	       varl, Op2Str(pfn->op), varr,
+	       varl, Op2Str(pf->op), varr,
 	       Res2Str(pres));
 
 
@@ -907,7 +1004,7 @@ static void
 EvalRelopUnsigned(
     tcp_pair *ptp,
     struct filter_res *pres,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     u_llong varl;
     u_llong varr;
@@ -915,15 +1012,15 @@ EvalRelopUnsigned(
     Bool ret;
 
     /* grab left hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.left);
+    EvalFilter(ptp,&res,pf->un.binary.left);
     varl = res.val.u_longint;
 
     /* grab right hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.right);
+    EvalFilter(ptp,&res,pf->un.binary.right);
     varr = res.val.u_longint;
 
     /* perform the operation */
-    switch (pfn->op) {
+    switch (pf->op) {
       case OP_GREATER:    ret = (varl >  varr); break;
       case OP_GREATER_EQ: ret = (varl >= varr); break;
       case OP_LESS:	  ret = (varl <  varr); break;
@@ -932,7 +1029,7 @@ EvalRelopUnsigned(
       case OP_NEQUAL:	  ret = (varl != varr); break;
       default: {
 	  fprintf(stderr,"EvalUnsigned: unsupported binary op: %d (%s)\n",
-		  pfn->op, Vartype2Str(pfn->op));
+		  pf->op, Vartype2Str(pf->op));
 	  exit(-1);
       }
     }
@@ -947,7 +1044,7 @@ EvalRelopUnsigned(
 #else /* HAVE_LONG_LONG */
 	printf("EvalUnsigned %lu %s %lu returns %s\n",
 #endif /* HAVE_LONG_LONG */
-	       varl, Op2Str(pfn->op), varr,
+	       varl, Op2Str(pf->op), varr,
 	       ret?"TRUE":"FALSE");
 
 
@@ -961,7 +1058,7 @@ static void
 EvalRelopSigned(
     tcp_pair *ptp,
     struct filter_res *pres,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     llong varl;
     llong varr;
@@ -969,14 +1066,14 @@ EvalRelopSigned(
     Bool ret;
 
     /* grab left hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.left);
+    EvalFilter(ptp,&res,pf->un.binary.left);
     varl = res.val.longint;
 
     /* grab right hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.right);
+    EvalFilter(ptp,&res,pf->un.binary.right);
     varr = res.val.longint;
 
-    switch (pfn->op) {
+    switch (pf->op) {
       case OP_GREATER:     ret = (varl >  varr); break;
       case OP_GREATER_EQ:  ret = (varl >= varr); break;
       case OP_LESS:        ret = (varl <  varr); break;
@@ -999,7 +1096,7 @@ EvalRelopSigned(
 #else /* HAVE_LONG_LONG */
 	printf("EvalSigned %ld %s %ld returns %s\n",
 #endif /* HAVE_LONG_LONG */
-	       varl, Op2Str(pfn->op), varr, 
+	       varl, Op2Str(pf->op), varr, 
 	       ret?"TRUE":"FALSE");
 
     return;
@@ -1013,7 +1110,7 @@ static void
 EvalRelopString(
     tcp_pair *ptp,
     struct filter_res *pres,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     char *varl;
     char *varr;
@@ -1022,17 +1119,17 @@ EvalRelopString(
     int cmp;
 
     /* grab left hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.left);
+    EvalFilter(ptp,&res,pf->un.binary.left);
     varl = res.val.string;
 
     /* grab right hand side */
-    EvalFilter(ptp,&res,pfn->un.binary.right);
+    EvalFilter(ptp,&res,pf->un.binary.right);
     varr = res.val.string;
 
     /* compare the strings */
     cmp = strcmp(varl,varr);
  
-    switch (pfn->op) {
+    switch (pf->op) {
       case OP_GREATER:	   ret = (cmp >  0); break;
       case OP_GREATER_EQ:  ret = (cmp >= 0); break;
       case OP_LESS:	   ret = (cmp <  0); break;
@@ -1041,7 +1138,7 @@ EvalRelopString(
       case OP_NEQUAL:	   ret = (cmp != 0); break;
       default: {
 	  fprintf(stderr,"EvalRelopString: unsupported operating %d (%s)\n",
-		  pfn->op, Op2Str(pfn->op));
+		  pf->op, Op2Str(pf->op));
 	  exit(-1);
       }
     }
@@ -1052,7 +1149,7 @@ EvalRelopString(
 
     if (debug)
 	printf("EvalString '%s' %s '%s' returns %s\n",
-	       varl, Op2Str(pfn->op), varr, 
+	       varl, Op2Str(pf->op), varr, 
 	       ret?"TRUE":"FALSE");
 
     return;
@@ -1063,16 +1160,16 @@ static void
 EvalVariable(
     tcp_pair *ptp,
     struct filter_res *pres,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
-    switch (pfn->vartype) {
+    switch (pf->vartype) {
       case V_CHAR:	
       case V_SHORT:	
       case V_INT:	
       case V_LONG:	
       case V_LLONG:	
 	pres->vartype = V_LLONG;
-	pres->val.u_longint = Var2Signed(ptp,pfn);
+	pres->val.u_longint = Var2Signed(ptp,pf);
 	break;
 
       case V_UCHAR:	
@@ -1081,22 +1178,22 @@ EvalVariable(
       case V_ULONG:	
       case V_ULLONG:	
 	pres->vartype = V_ULLONG;
-	pres->val.longint = Var2Unsigned(ptp,pfn);
+	pres->val.longint = Var2Unsigned(ptp,pf);
 	break;
 
       case V_STRING:	
 	pres->vartype = V_STRING;
-	pres->val.string = Var2String(ptp,pfn);
+	pres->val.string = Var2String(ptp,pf);
 	break;
 
       case V_BOOL:
 	pres->vartype = V_BOOL;
-	pres->val.bool = (Var2Unsigned(ptp,pfn) != 0);
+	pres->val.bool = (Var2Unsigned(ptp,pf) != 0);
 	break;
 
       default:
 	fprintf(stderr,"EvalVariable: unknown var type %d (%s)\n",
-		pfn->vartype, Vartype2Str(pfn->vartype));
+		pf->vartype, Vartype2Str(pf->vartype));
     }
 
 }
@@ -1107,16 +1204,16 @@ static void
 EvalConstant(
     tcp_pair *ptp,
     struct filter_res *pres,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
-    switch (pfn->vartype) {
+    switch (pf->vartype) {
       case V_CHAR:	
       case V_SHORT:	
       case V_INT:	
       case V_LONG:	
       case V_LLONG:	
 	pres->vartype = V_LLONG;
-	pres->val.u_longint = Const2Signed(pfn);
+	pres->val.u_longint = Const2Signed(pf);
 	break;
 
       case V_UCHAR:	
@@ -1125,22 +1222,22 @@ EvalConstant(
       case V_ULONG:	
       case V_ULLONG:	
 	pres->vartype = V_LLONG;
-	pres->val.longint = Const2Unsigned(pfn);
+	pres->val.longint = Const2Unsigned(pf);
 	break;
 
       case V_STRING:	
 	pres->vartype = V_STRING;
-	pres->val.string = Var2String(ptp,pfn);
+	pres->val.string = Var2String(ptp,pf);
 	break;
 
       case V_BOOL:
 	pres->vartype = V_BOOL;
-	pres->val.bool = (Var2Unsigned(ptp,pfn) != 0);
+	pres->val.bool = (Var2Unsigned(ptp,pf) != 0);
 	break;
 
       default:
 	fprintf(stderr,"EvalVariable: unknown var type %d (%s)\n",
-		pfn->vartype, Vartype2Str(pfn->vartype));
+		pf->vartype, Vartype2Str(pf->vartype));
     }
 
 }
@@ -1152,51 +1249,51 @@ static void
 EvalFilter(
     tcp_pair *ptp,
     struct filter_res *pres,
-    struct filter_node *pfn)
+    struct filter_node *pf)
 {
     struct filter_res res;
     
-    if (!pfn) {
+    if (!pf) {
 	fprintf(stderr,"EvalFilter called with NULL!!!\n");
 	exit(-1);
     }
 
     /* variables are easy */
-    if (pfn->op == OP_VARIABLE) {
-	EvalVariable(ptp,pres,pfn);
+    if (pf->op == OP_VARIABLE) {
+	EvalVariable(ptp,pres,pf);
 	return;
     }
 
     /* constants are easy */
-    if (pfn->op == OP_CONSTANT) {
-	EvalConstant(ptp,pres,pfn);
+    if (pf->op == OP_CONSTANT) {
+	EvalConstant(ptp,pres,pf);
 	return;
     }
 
-    switch (pfn->op) {
+    switch (pf->op) {
       case OP_EQUAL:
       case OP_NEQUAL:
       case OP_GREATER:
       case OP_GREATER_EQ:
       case OP_LESS:
       case OP_LESS_EQ:
-	if (pfn->un.binary.left->vartype == V_ULLONG) {
-	    EvalRelopUnsigned(ptp,&res,pfn);
+	if (pf->un.binary.left->vartype == V_ULLONG) {
+	    EvalRelopUnsigned(ptp,&res,pf);
 	    pres->vartype = V_BOOL;
 	    pres->val.bool = res.val.bool;
-	} else if (pfn->un.binary.left->vartype == V_LLONG) {
-	    EvalRelopSigned(ptp,&res,pfn);
+	} else if (pf->un.binary.left->vartype == V_LLONG) {
+	    EvalRelopSigned(ptp,&res,pf);
 	    pres->vartype = V_BOOL;
 	    pres->val.bool = res.val.bool;
-	} else if (pfn->un.binary.left->vartype == V_STRING) {
-	    EvalRelopString(ptp,&res,pfn);
+	} else if (pf->un.binary.left->vartype == V_STRING) {
+	    EvalRelopString(ptp,&res,pf);
 	    pres->vartype = V_LLONG;
 	    pres->val.longint = res.val.longint;
 	} else {
 	    fprintf(stderr,
 		    "EvalFilter: binary op %d (%s) not supported on data type %d (%s)\n",
-		    pfn->op, Op2Str(pfn->op),
-		    pfn->vartype, Vartype2Str(pfn->vartype));
+		    pf->op, Op2Str(pf->op),
+		    pf->vartype, Vartype2Str(pf->vartype));
 	    exit(-1);
 	}
 	break;
@@ -1205,36 +1302,36 @@ EvalFilter(
       case OP_MINUS:
       case OP_TIMES:
       case OP_DIVIDE:
-	if (pfn->un.binary.left->vartype == V_ULLONG) {
-	    EvalMathopUnsigned(ptp,&res,pfn);
+	if (pf->un.binary.left->vartype == V_ULLONG) {
+	    EvalMathopUnsigned(ptp,&res,pf);
 	    pres->vartype = V_ULLONG;
 	    pres->val.u_longint = res.val.u_longint;
-	} else if (pfn->un.binary.left->vartype == V_LLONG) {
-	    EvalMathopSigned(ptp,&res,pfn);
+	} else if (pf->un.binary.left->vartype == V_LLONG) {
+	    EvalMathopSigned(ptp,&res,pf);
 	    pres->vartype = V_LLONG;
 	    pres->val.longint = res.val.longint;
 	} else {
 	    fprintf(stderr,
 		    "EvalFilter: binary op %d (%s) not supported on data type %d (%s)\n",
-		    pfn->op, Op2Str(pfn->op),
-		    pfn->vartype, Vartype2Str(pfn->vartype));
+		    pf->op, Op2Str(pf->op),
+		    pf->vartype, Vartype2Str(pf->vartype));
 	    exit(-1);
 	}
 	break;
 
       case OP_AND:
       case OP_OR:
-	if (pfn->vartype == V_BOOL) {
+	if (pf->vartype == V_BOOL) {
 	    struct filter_res res1;
 	    struct filter_res res2;
 	    Bool ret;
-	    if (pfn->op == OP_OR) {
-		EvalFilter(ptp,&res1,pfn->un.binary.left);
-		EvalFilter(ptp,&res2,pfn->un.binary.right);
+	    if (pf->op == OP_OR) {
+		EvalFilter(ptp,&res1,pf->un.binary.left);
+		EvalFilter(ptp,&res2,pf->un.binary.right);
 		ret = res1.val.bool || res2.val.bool;
 	    } else {
-		EvalFilter(ptp,&res1,pfn->un.binary.left);
-		EvalFilter(ptp,&res2,pfn->un.binary.right);
+		EvalFilter(ptp,&res1,pf->un.binary.left);
+		EvalFilter(ptp,&res2,pf->un.binary.right);
 		ret = res1.val.bool &&  res2.val.bool;
 	    }
 	    pres->vartype = V_BOOL;
@@ -1242,22 +1339,22 @@ EvalFilter(
 	} else {
 	    fprintf(stderr,
 		    "EvalFilter: binary op %d (%s) not supported on data type %d (%s)\n",
-		    pfn->op, Op2Str(pfn->op),
-		    pfn->vartype, Vartype2Str(pfn->vartype));
+		    pf->op, Op2Str(pf->op),
+		    pf->vartype, Vartype2Str(pf->vartype));
 	    exit(-1);
 	}
 	break;
 
       case OP_NOT:
-	if (pfn->vartype == V_BOOL) {
-	    EvalFilter(ptp,&res,pfn->un.unary.pf);
+	if (pf->vartype == V_BOOL) {
+	    EvalFilter(ptp,&res,pf->un.unary.pf);
 	    pres->vartype = V_BOOL;
 	    pres->val.bool = !res.val.bool;
 	} else {
 	    fprintf(stderr,
 		    "EvalFilter: unary operation %d (%s) not supported on data type %d (%s)\n",
-		    pfn->op, Op2Str(pfn->op),
-		    pfn->vartype, Vartype2Str(pfn->vartype));
+		    pf->op, Op2Str(pf->op),
+		    pf->vartype, Vartype2Str(pf->vartype));
 	    exit(-1);
 	}
 	break;
@@ -1265,14 +1362,14 @@ EvalFilter(
       default:
 	fprintf(stderr,
 		"EvalFilter: operation %d (%s) not supported on data type %d (%s)\n",
-		pfn->op,Op2Str(pfn->op),
-		pfn->vartype,Vartype2Str(pfn->vartype));
+		pf->op,Op2Str(pf->op),
+		pf->vartype,Vartype2Str(pf->vartype));
 	exit(-1);
     }
 
     if (debug)
 	printf("EvalFilter('%s') returns %s\n",
-	       Filter2Str(pfn),Res2Str(pres));
+	       Filter2Str(pf),Res2Str(pres));
 
     return;
 }
