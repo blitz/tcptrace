@@ -37,7 +37,7 @@ dnl check for the IPv6 routines inet_pton
 AC_CHECK_FUNCS(inet_pton)
 
 AC_MSG_CHECKING(how to print unsigned long long)
-AC_SUBST(U_LONG_LONG_TYPE)
+AC_SUBST(FS_ULL)
 dnl AC_TRY_RUN is a test program that performs a run-time test to find out
 dnl the correct syntax to print unsigned long long ints in printf stmts.
 dnl If strcmp returns 0, we are on an enironment that uses %llu, otherwise

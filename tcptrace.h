@@ -65,19 +65,20 @@ static char const rcsid_tcptrace[] =
 #define HAVE_LONG_LONG
 typedef unsigned long long int u_llong;
 typedef long long int llong;
-#else /* LONG LONG */
-typedef unsigned long int u_llong;
-typedef long int llong;
-#endif /* LONG LONG */
-
 /* Thanks to MacOSX, they use %qu to print unsigned long long ints */
 /* There is a test to see if we need to use %qu or %llu to print these variables */
 /* The test is located in configure.in */
 #ifdef USE_LLU
-#define U_LONG_LONG_TYPE "llu" /* For most systems use llu */
-#else
-#define U_LONG_LONG_TYPE "qu"  /* MacOSX use qu */
-#endif
+#define FS_ULL "llu" /* For most systems use llu */
+#else /* USE_LLU */
+#define FS_ULL "qu"  /* MacOSX use qu */
+#endif /* USE_LLU */
+
+#else /* LONG LONG */
+typedef unsigned long int u_llong;
+typedef long int llong;
+#define FS_ULL "lu" /* For most systems use llu */
+#endif /* LONG LONG */
 
 /* plotter information */
 typedef int PLOTTER;

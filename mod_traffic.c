@@ -996,17 +996,17 @@ bytes: %12lu  pkts: %10lu  conns: %8lu  tput: %8lu B/s\n",
 	     etime_secs, elapsed2str(etime));
 
     /* ttl bytes */
-    Mfprintf(pmf, "%" U_LONG_LONG_TYPE " ttl bytes sent, %.3f bytes/second\n",
+    Mfprintf(pmf, "%" FS_ULL " ttl bytes sent, %.3f bytes/second\n",
 	     data_nbytes_all,
 	     (float)data_nbytes_all / ((float)etime_secs));
 
     /* ttl bytes (nonrexmit)*/
-    Mfprintf(pmf, "%" U_LONG_LONG_TYPE " ttl non-rexmit bytes sent, %.3f bytes/second\n",
+    Mfprintf(pmf, "%" FS_ULL " ttl non-rexmit bytes sent, %.3f bytes/second\n",
 	     data_nbytes_nonrexmit,
 	     (float)data_nbytes_nonrexmit / ((float)etime_secs));
 
     /* ttl bytes (nonrexmit)*/
-    Mfprintf(pmf, "%" U_LONG_LONG_TYPE " ttl rexmit bytes sent, %.3f bytes/second\n",
+    Mfprintf(pmf, "%" FS_ULL " ttl rexmit bytes sent, %.3f bytes/second\n",
 	     data_nbytes_all - data_nbytes_nonrexmit,
 	     (float)(data_nbytes_all - data_nbytes_nonrexmit) /
 	     ((float)etime_secs));

@@ -569,10 +569,10 @@ PrintConst(
     switch (pf->vartype) {
       case V_ULLONG:
 	if (debug)
-	    sprintf(buf,"ULLONG(%" U_LONG_LONG_TYPE ")",
+	    sprintf(buf,"ULLONG(%" FS_ULL ")",
 		    pf->un.constant.u_longint);
 	else
-	    sprintf(buf,"%" U_LONG_LONG_TYPE,pf->un.constant.u_longint);
+	    sprintf(buf,"%" FS_ULL,pf->un.constant.u_longint);
 	break;
       case V_LLONG:
 	if (debug)
@@ -677,7 +677,7 @@ Res2Str(
     
     /* for constants */
     switch (pres->vartype) {
-      case V_ULLONG:	sprintf(buf,"ULLONG(%" U_LONG_LONG_TYPE ")",pres->val.u_longint); break;
+      case V_ULLONG:	sprintf(buf,"ULLONG(%" FS_ULL ")",pres->val.u_longint); break;
       case V_LLONG:	sprintf(buf,"LLONG(%lld)", pres->val.longint); break;
       case V_STRING:	sprintf(buf,"STRING(%s)",pres->val.string); break;
       case V_BOOL:	sprintf(buf,"BOOL(%s)",  BOOL2STR(pres->val.bool)); break;
@@ -1081,12 +1081,9 @@ EvalMathopUnsigned(
     pres->vartype = V_ULLONG;
     pres->val.u_longint = ret;
 
-    if (debug)
-#ifdef HAVE_LONG_LONG
-	printf("EvalMathopUnsigned %" U_LONG_LONG_TYPE " %s %" U_LONG_LONG_TYPE " returns %s\n",
-#else /* HAVE_LONG_LONG */
-	printf("EvalMathopUnsigned %lu %s %lu returns %s\n",
-#endif /* HAVE_LONG_LONG */
+	if (debug)
+		printf("EvalMathopUnsigned %" FS_ULL " %s %" FS_ULL " returns %s\n",
+
 	       varl, Op2Str(pf->op), varr,
 	       Res2Str(pres));
 
@@ -1190,11 +1187,7 @@ EvalRelopUnsigned(
     pres->val.bool = ret;
 
     if (debug)
-#ifdef HAVE_LONG_LONG
-	printf("EvalUnsigned %" U_LONG_LONG_TYPE " %s %" U_LONG_LONG_TYPE " returns %s\n",
-#else /* HAVE_LONG_LONG */
-	printf("EvalUnsigned %lu %s %lu returns %s\n",
-#endif /* HAVE_LONG_LONG */
+	printf("EvalUnsigned %" FS_ULL " %s %" FS_ULL " returns %s\n",
 	       varl, Op2Str(pf->op), varr,
 	       BOOL2STR(ret));
 
@@ -1772,7 +1765,7 @@ VFuncTput(
     tput = (u_llong)(tput_f+0.5);
 
     if (debug)
-	printf("VFuncTput(%s<->%s) = %" U_LONG_LONG_TYPE "\n",
+	printf("VFuncTput(%s<->%s) = %" FS_ULL "\n",
 	       ptcb->ptp->a_endpoint,
 	       ptcb->ptp->b_endpoint,
 	       tput);

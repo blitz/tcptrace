@@ -2339,7 +2339,7 @@ s%@build_os@%$build_os%g
 s%@SHLICC2@%$SHLICC2%g
 s%@CC@%$CC%g
 s%@SET_MAKE@%$SET_MAKE%g
-s%@U_LONG_LONG_TYPE@%$U_LONG_LONG_TYPE%g
+s%@FS_ULL@%$FS_ULL%g
 s%@YACC@%$YACC%g
 s%@V_CCOPT@%$V_CCOPT%g
 s%@V_INCLS@%$V_INCLS%g
