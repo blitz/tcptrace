@@ -228,5 +228,5 @@
   possible fix for pipe() failure with too many files open
   added some minor argument parsing checks
   added a few extended arguments "--foo" to control lesser-used functions
-
+  fixed PAGESIZE reference for Craig Metz - not under some Linux
 
