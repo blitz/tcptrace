@@ -608,7 +608,7 @@ FindTTP(
 		printf("a2b.reset_count: %d\n", ptp->a2b.reset_count);
 		printf("b2a.reset_count: %d\n", ptp->b2a.reset_count);
 		printf("dir: %d (%s)\n", dir, dir==A2B?"A2B":"B2A");
-		printf("seq:    %lu \n", ntohl(ptcp->th_seq));
+		printf("seq:    %lu \n", (u_long)ntohl(ptcp->th_seq));
 		printf("winend: %lu \n", otherdir->windowend);
 		printf("syn:    %lu \n", otherdir->syn);
 		printf("SEQ_GREATERTHAN winend: %d\n", 
