@@ -30,7 +30,7 @@ static char const rcsid_version[] =
 
 
 /* source code version information */
-#define VERSION "Ostermann's tcptrace -- version 5.0.3 -- Wed May 13, 1998"
+#define VERSION "Ostermann's tcptrace -- version 5.0.4 -- Thu May 14, 1998"
 
 /* build information */
 /* constants filled in when version.c is compiled */
