@@ -1,0 +1,20 @@
+To build tcptrace on windows using the cygwin UNIX environment follow the
+steps below:
+
+1. For Windows 95/98/Me:
+       cp cygwin-libs/win9x/libwpcap.a cygwin-libs/
+
+   For Windows NT/2000/XP:
+       cp cygwin-libs/winNT/libwpcap.a cygwin-libs/
+
+2. ./configure
+3. make (This leaves tcptrace.exe in the current directory)
+4. Installation:
+       - Copy the *.dll files from cygwin-libs/win9x/ "OR" cygwin-libs/winNT/
+         into C:\WINDOWS\System32\ (OR C:\WINDOWS\System\)
+       - Copy tcptrace.exe (just built in step 3) into C:\WINDOWS\
+
+You should now be able to access tcptrace system-wide.
+
+--Avinash Lakhiani (alakhian@tcptrace.org)
+  4 July 2002
