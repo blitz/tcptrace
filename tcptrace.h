@@ -784,7 +784,7 @@ typedef int pread_f(struct timeval *, int *, int *, void **,
 /* I've had problems with the memcpy function that gcc stuffs into the program
    and alignment problems.  This should fix it! */
 void *MemCpy(void *p1, void *p2, size_t n); /* in tcptrace.c */
-#define memcpy(p1,p2,n) MemCpy(p1,p2,n);
+#define memcpy(p1,p2,n) MemCpy(p1,p2,n)
 
 
 /*
