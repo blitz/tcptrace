@@ -248,7 +248,7 @@ rttgraph_read(
     /* convert to ms buckets */
     rtt_ms = (u_long) (rtt_us / 1000.0);
 
-    if (rtt_ms == 0)
+    if (debug && (rtt_ms == 0))
 	printf("rtt_ms is 0, rtt_us was %f\n", rtt_us);
 
     /* add in the sample RTT */
