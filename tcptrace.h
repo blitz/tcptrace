@@ -477,7 +477,7 @@ typedef struct ptp_ptr {
 #define REMOVE_LIVE_CONN_INTERVAL	8*3600	/* 8 hours */
 #define REMOVE_CLOSED_CONN_INTERVAL	8*60	/* 8 minutes */
 #define UPDATE_INTERVAL			30	/* 30 seconds */
-#define MAX_ACTIVE_CONN_NUM		50000	/* max number of connections */
+#define MAX_CONN_NUM			50000	/* max number of connections */
 						/* for continuous mode */
 
 /* minimal support for UDP "connections" */
@@ -583,7 +583,7 @@ extern Bool conn_num_threshold;
 extern u_long remove_live_conn_interval;
 extern u_long remove_closed_conn_interval;
 extern u_long update_interval;
-extern u_long max_active_conn_num;
+extern u_long max_conn_num;
 
 extern int debug;
 extern int thru_interval;

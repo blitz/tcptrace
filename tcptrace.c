@@ -111,7 +111,7 @@ Bool conn_num_threshold = FALSE;
 u_long remove_live_conn_interval = REMOVE_LIVE_CONN_INTERVAL;
 u_long remove_closed_conn_interval = REMOVE_CLOSED_CONN_INTERVAL;
 u_long update_interval = UPDATE_INTERVAL;
-u_long max_active_conn_num = MAX_ACTIVE_CONN_NUM;
+u_long max_conn_num = MAX_CONN_NUM;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = 0;
@@ -140,6 +140,10 @@ u_int numfiles;
 char *cur_filename;
 static char *progname;
 char *output_filename = NULL;
+static char *update_interval_st = NULL;
+static char *max_conn_num_st = NULL;
+static char *live_conn_interval_st = NULL;
+static char *closed_conn_interval_st = NULL;
 
 /* for elapsed processing time */
 struct timeval wallclock_start;
@@ -198,6 +202,8 @@ static struct ext_bool_op {
      "print all packets AND dump the TCP/UDP data"},
     {"continuous", &run_continuously, TRUE,
      "run continuously and don't provide a summary"},
+    {"limit_conn_num", &conn_num_threshold, TRUE,
+     "limit the maximum number of connections kept at a time in real-time mode"},
 
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
@@ -205,7 +211,11 @@ static struct ext_bool_op {
 
 /* extended variable verification routines */
 static void VerifyOutputDir(char *varname, char *value);
-
+static u_long VerifyPositive(char *varname, char *value);
+static void VerifyUpdateInt(char *varname, char *value);
+static void VerifyMaxConnNum(char *varname, char *value);
+static void VerifyLiveConnInt(char *varname, char *value);
+static void VerifyClosedConnInt(char *varname, char *value);
 
 /* extended variable options */
 /* they must all be strings */
@@ -222,6 +232,14 @@ static struct ext_var_op {
      "directory where all output files are placed"},
     {"output_prefix", &output_file_prefix, NULL,
      "prefix all output files with this string"},
+    {"update_interval", &update_interval_st, VerifyUpdateInt,
+     "time interval for updates in real-time mode"},
+    {"max_conn_num", &max_conn_num_st, VerifyMaxConnNum,
+     "maximum number of connections to keep at a time in real-time mode"},
+    {"remove_live_conn_interval", &live_conn_interval_st, VerifyLiveConnInt,
+     "idle time after which an open connection is removed in real-time mode"},
+    {"remove_closed_conn_interval", &closed_conn_interval_st, VerifyClosedConnInt,
+     "time interval after which a closed connection is removed in real-time mode"},
 };
 #define NUM_EXTENDED_VARS (sizeof(extended_vars) / sizeof(struct ext_var_op))
 
@@ -1607,6 +1625,70 @@ VerifyOutputDir(
 		value);
 	exit(1);
     }
+}
+
+
+static u_long
+VerifyPositive(
+    char *varname,
+    char *value)
+{
+    int i, ivalue = 0;
+
+    for (i = 0; i < strlen(value); i++) {
+        if (!isdigit(value[i])) {
+	    fprintf(stderr, 
+		    "Value '%s' is not valid for variable '%s'\n", 
+		    value, varname);
+	    exit(1);
+	}
+    }
+    ivalue = atoi(value);
+    if (ivalue <= 0) {
+	fprintf(stderr,
+		"Value '%s' is not valid for variable '%s'\n", 
+		value, varname);
+	exit(1);
+    }
+
+    return (u_long)ivalue;
+}
+
+
+static void
+VerifyUpdateInt(
+    char *varname,
+    char *value)
+{
+    update_interval = VerifyPositive(varname, value);
+}
+
+
+static void 
+VerifyMaxConnNum(
+    char *varname, 
+    char *value)
+{
+    max_conn_num = VerifyPositive(varname, value);
+    conn_num_threshold = TRUE;
+}
+
+
+static void 
+VerifyLiveConnInt(
+    char *varname, 
+    char *value)
+{
+    remove_live_conn_interval = VerifyPositive(varname, value);
+}
+
+
+static void 
+VerifyClosedConnInt(
+    char *varname, 
+    char *value)
+{
+    remove_closed_conn_interval = VerifyPositive(varname, value);  
 }
 
 

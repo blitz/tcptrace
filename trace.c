@@ -329,8 +329,6 @@ NewTTP(
     }
     ptp = MakeTcpPair();
     ++num_tcp_pairs;
-    ptp = ttp[num_tcp_pairs] = MallocZ(sizeof(tcp_pair));
-    ptp->ignore_pair = ignore_pairs[num_tcp_pairs];
 
     if (!run_continuously) {
       /* make a new one, if possible */
@@ -675,7 +673,7 @@ FindTTP(
       ptph->ptp = (void *)ptr;
       if (conn_num_threshold) {
 	active_conn_count++;
-	if (active_conn_count > max_active_conn_num) {
+	if (active_conn_count > max_conn_num) {
 	  ptp_ptr *last_ptr = live_conn_list_tail;
 	  live_conn_list_tail = last_ptr->prev;
 	  live_conn_list_tail->next = NULL;
@@ -734,7 +732,7 @@ UpdateConnLists(
 	active_conn_count--;
 	closed_conn_count++;
 	if (closed_conn_count > max_conn_num) {
-	if (closed_conn_count > max_active_conn_num) {
+	  ptp_ptr *last_ptr = closed_conn_list_tail;
 	  closed_conn_list_tail = last_ptr->prev;
 	  closed_conn_list_tail->next = NULL;
 	  RemoveConn(last_ptr);

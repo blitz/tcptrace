@@ -158,7 +158,7 @@ realtime_init(
    * different for different monitoring points) */
   /* conn_num_threshold = TRUE;
      update_interval = 60;
-     max_active_conn_num = 20000;
+     max_conn_num = 20000;
    */
   
   do_udp = TRUE;
