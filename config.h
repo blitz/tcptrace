@@ -35,8 +35,8 @@ static char const rcsid_config[] =
 
 
 /* define GROK_TCPDUMP if you want tcptrace to understand the output
-   format format of the LBL tcpdump program (actually, the pcap
-   libraries, which you'll need but are not included here) */
+   format format of the LBL tcpdump program (see the file README.tcpdump
+   for other options) */
 #define GROK_TCPDUMP
 
 
