@@ -81,7 +81,9 @@ struct filter_line filters[] = {
     {"rtt_amback",      V_ULLONG, PTCB_C_S(rtt_amback), "number of ambiguous ACKs"},
     {"rtt_cumack",      V_ULLONG, PTCB_C_S(rtt_cumack), "number of cumulative ACKs"},
     {"rtt_unkack",      V_ULLONG, PTCB_C_S(rtt_unkack), "number of unknown ACKs"},
-    {"rtt_dupack  ",    V_ULLONG, PTCB_C_S(rtt_dupack), "number of duplicate ACKs"},
+    {"rtt_dupack",      V_ULLONG, PTCB_C_S(rtt_dupack), "number of duplicate ACKs"},
+    {"rtt_nosample",    V_ULLONG, PTCB_C_S(rtt_nosample), "ACKs that generate no valid RTT sample"},
+    {"rtt_triple_dupack", V_ULLONG, PTCB_C_S(rtt_triple_dupack), "number of triple duplicate ACKs (fast rexmit)"},
 
     {"retr_max",        V_ULONG, PTCB_C_S(retr_max), "MAX rexmits of a single segment"},
     {"retr_min_tm",     V_ULONG, PTCB_C_S(retr_min_tm), "MIN time until rexmit (usecs)"},
