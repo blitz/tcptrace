@@ -1,0 +1,6 @@
+1 arg remaining, starting with 'dsack.dmp.gz'
+
+15710 packets seen, 15710 TCP packets traced
+trace file elapsed time: 0:02:31.129120
+TCP connection info:
+  1: 132.235.3.145:1024 - 132.235.3.157:5001 (a2b) 11597> 4113<  (complete)
