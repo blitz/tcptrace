@@ -502,3 +502,7 @@ the 3 dupacks required for fast-retransmit.
 -----
 Fixed the bug in processing IPv6 extension headers in ipv6.c:gethdrlength()
 based on the patch sent by Thomas Bohnert.
+
+6.4.4 : 19 MAY 2003 Wes
+-----
+Added dsack counter to long output format and dsack sample input and output
