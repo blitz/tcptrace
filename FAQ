@@ -929,3 +929,30 @@ Q53. How is the throughput in the throughput graph measured ?
 A53. It includes just the pure payload.
 
 ===========================================================================
+Tue Aug 27, 2002
+
+Q54. How can I calculate the delay and delay variation (jitter) with tcptrace
+     output? What about the "idletime max", how is this figure calculated?
+     
+A54. 'tcptrace -xtraffic -R <filename>'
+
+     might be useful if you are looking for the avg, min and max
+     round-trip-times (rtt).
+
+     Also,
+
+     'tcptrace -R <filename>'
+
+     might be useful for rtt sample graphs.
+     
+     You can calculate the delay variation by calculating "max. rtt - min rtt"
+                                       --Habib Habiby (Tarek) <td@maktoob.com>
+						       
+     As of the idletime max figures, they are printed for each connection and
+     each direction with the '-l' option. They are calculated as the largest
+     amount of time elapsed between any 2 consecutive packets seen in a
+     particular direction.
+
+===========================================================================
+
+
