@@ -1,0 +1,16 @@
+Unknown input file format
+Supported Input File Formats:
+	tcpdump          tcpdump -- Public domain program from LBL
+	snoop            Sun Snoop -- Distributed with Solaris
+	etherpeek        etherpeek -- Mac sniffer program
+	netmetrix        Net Metrix -- Commercial program from HP
+	ns               ns -- network simulator from LBL
+	netscout         NetScout Manager format
+	erf              Endace Extensible Record Format
+Try the tethereal program from the ethereal project to see if
+it can understand this capture format. If so, you may use 
+tethereal to convert it to a tcpdump format file as in :
+	 tethereal -r inputfile -w outputfile
+and feed the outputfile to tcptrace
+1 arg remaining, starting with 'nlanr.tsh.gz'
+
