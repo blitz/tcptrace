@@ -178,5 +178,24 @@
 5.0.9 - Thu Sep 24, 1998
   fixed bug with "only" connections not detecting reuse of ports
   added warnings for re-ordered packets and/or files
+5.0.10 - Thu Oct  1, 1998
+  bug fix in snoop.c, netm.c, and epeek.c
+    Just a check for bogus save files with invalid packet lengths to
+    keep the program from crashing without warning
+  fixed args in tcplib module to match the conventions in the other modules
+  added "long duration" connection graph to traffic module
+  bug fixes from Michele Clark - UNC
+    thruput plot files - graph for both directions had the same title
+    suggested making the type for the xplot sequence number axis "double"
+	rather than "unsigned".  The unsigned was from Tim Shepard's
+	original xplot demo files.  She says that double makes it work
+	better for large sequence numbers.  I'll try it and see if anybody
+	has trouble.
+  changed "new connection" heuristic.  Then a new connection uses the same
+    pair of ports as a previous connection, it wasn't always being detected.
+    This was originally pointed out by Brian Utterback and later by Mark
+    Allman.  New heuristic is more in line with RFC1122 (SYN is out of
+     the sequence space for the previous connection).
 
+	
 
