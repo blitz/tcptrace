@@ -626,7 +626,7 @@ PipeFitting(
     FILE *f_header,
     FILE *f_orig_stdin)
 {
-    char buf[4096];		/* just a big buffer */
+    char buf[COMP_HDR_SIZE];		/* just a big buffer */
     int len;
 
     // Fix the file synchronization problems and undefined behavior exhibited

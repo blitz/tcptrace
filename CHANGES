@@ -622,3 +622,22 @@ contents.
 Adding in the INBOUNDS module into the main tcptrace development tree.
 It is NOT built in by default though; you need to uncomment a line in
 Makefile.in to enable it.
+
+6.6.5: 1 Oct 2004 Mani
+-----
+
+* Josh fixed the file format searching order, putting tcpdump format to
+the end in file_formats.h as a work around for libpcap brokenness.
+
+* Fixed Mfopen() in mfiles.c to open content data files that we
+generate in "binary" mode - by changing fopen mode from "w" to "wb+" and "a"
+to "ab+". The 'b' is dummy in UNIX systems, but seems to have some
+semantic in the Windows world.
+
+* Fixed QuitSig() function in tcptrace.c by adding a call to
+udptrace_done() so that we print out UDP connection stats too (if one
+were piping live tcpdump traffic to tcptrace and "ctrl-c"-ed it in the
+middle, for example). On the way, also fixed the arbitrary "buf[4096]"
+declaration to be written correctly as "buf[COMP_HDR_SIZE]" in the
+PipeFitting() function. 
+

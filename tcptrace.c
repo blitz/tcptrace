@@ -1222,6 +1222,7 @@ QuitSig(
     FinishModules();
     plotter_done();
     trace_done();
+    udptrace_done();
     exit(1);
 }
 
