@@ -1,41 +1,43 @@
-Fri Aug  7, 1998
+Fri Nov  6, 1998
 
 In Use Options
 
--AN     Average N segments for throughput graphs, default is 10
--BN     first segment number to analyze (default 1)
--C      produce color plot[s]
--D      print in decimal
--EN     last segment number to analyze (default last in file)
--G	  create ALL 3 graphs
--M      produce monochrome (b/w) plot[s]
--O file output packets to tcpdump file
--R      create rtt sample graph[s]
--S      create time sequence graph[s]
--T      create throughput graph[s], (average over 10 segments, see -A)
--W      report on estimated congestion window (not generally useful)
--X      print in hexidecimal
--Z      dump raw rtt sample times to file[s]
+  -AN     Average N segments for throughput graphs, default is 10
+  -BN     first segment number to analyze (default 1)
+  -C      produce color plot[s]
+  -D      print in decimal
+  -EN     last segment number to analyze (default last in file)
+  -F      create segsize graph[s]
+  -G	  create ALL graphs
+  -M      produce monochrome (b/w) plot[s]
+  -N      create cwin graph[s] (data on _N_etwork)
+  -Ofile  dump matched packets to tcpdump file 'file'
+  -P      print packet contents for selected connections
+  -R      create rtt sample graph[s]
+  -S      create time sequence graph[s]
+  -T      create throughput graph[s], (average over 10 segments, see -A)
+  -W      report on estimated congestion window (not generally useful)
+  -X      print in hexidecimal
+  -Z      dump raw rtt sample times to file[s]
 
--b      brief output format
--c      ignore non-complete connections (didn't see syn's and fin's)
--d      whistle while you work (enable debug, use -d -d for more output)
--e      extract contents of each TCP stream into file
--f 	EXPR output filtering (see -hfilter)
--h      print help messages
--iN     ignore connection N (can use multiple times)
--l      long output format
--m	 obsolete
--n      don't resolve host or service names (much faster)
--oN     only connection N (can use multiple times)
--p      print individual packet contents (can be very long)
--q      no output (if you just want modules output)
--r      print rtt statistics (slower for large files)
--s      use short names (list \"picard.cs.ohiou.edu\" as just \"picard\")
--t      'tick' off the packet numbers as a progress indication
--u      minimal UDP stats too
--v      print version information and exit
--w      print warning message when packets are too short to process
--xMODULE_SPECIFIC
--y      omit the (yellow) instantaneous throughput points in tput graph
--zAXIS  plot time axis and sequence number from 0
+  -b      brief output format
+  -c      ignore non-complete connections (didn't see syn's and fin's)
+  -d      whistle while you work (enable debug, use -d -d for more output)
+  -e      extract contents of each TCP stream into file
+  -fEXPR  output filtering (see -hfilter)
+  -h      print help messages
+  -iN     ignore connection N (can use multiple times)
+  -l      long output format
+  -n      don't resolve host or service names (much faster)
+  -oN     only connection N (can use multiple times)
+  -p      print all packet contents (can be very long)
+  -q      no output (if you just want modules output)
+  -r      print rtt statistics (slower for large files)
+  -s      use short names (list \"picard.cs.ohiou.edu\" as just \"picard\")
+  -t      'tick' off the packet numbers as a progress indication
+  -u      print minimal UDP information too
+  -v      print version information and exit
+  -w      print various warning messages
+  -xMODULE_SPECIFIC
+  -y      omit the (yellow) instantaneous throughput points in tput graph
+  -z      zero axis options
