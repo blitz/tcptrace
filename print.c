@@ -51,6 +51,8 @@ static char *ipv6addr2str(struct in6_addr addr);
 
 
 /* Unix format: "Fri Sep 13 00:00:00 1986\n" */
+/*			   1         2          */
+/*		 012345678901234567890123456789 */
 char *
 ts2ascii(
     struct timeval	*ptime)
@@ -65,10 +67,13 @@ ts2ascii(
 
 	ptm = localtime(&ptime->tv_sec);
 	now = asctime(ptm);
-	now[19] = '\00';
 
+	/* splice in the microseconds */
+	now[19] = '\00';
 /* 	decimal = (ptime->tv_usec + 50) / 100;*/  /* for 4 digits */
 	decimal = ptime->tv_usec;  /* for 6 digits */
+
+	now[24] = '\00';	/* nuke the newline */
 	sprintf(buf, "%s.%06d %s", now, decimal, &now[20]);
 
 	return(buf);
