@@ -419,7 +419,7 @@ my_inet_ntop(int af, const char *src, char *dst, size_t size)
 
     /* address is 128 bits == 16 bytes == 8 shorts */
     for (i = 0; i < 8; i++) {
-	u_short twobytes = src_shorts[i];
+	u_short twobytes = ntohs(src_shorts[i]);
 
 	/* handle shorthand notation */
 	if (twobytes == 0) {
