@@ -715,6 +715,7 @@ dotrace(
     u_long	eff_win;	/* window after scaling */
     enum t_ack	ack_type=NORMAL; /* how should we draw the ACK */
     seqnum	old_this_windowend; /* for graphing */
+    ptp_ptr	*tcp_ptr = NULL;
     /* make sure we have enough of the packet */
     if ((char *)ptcp + sizeof(struct tcphdr)-1 > (char *)plast) {
     if ((unsigned)ptcp + sizeof(struct tcphdr)-1 > (unsigned)plast) {
@@ -834,11 +835,17 @@ dotrace(
     /* calculated BELOW the "only" point below.  Move that part of the */
     /* calculation up here! */
 
+    /* remember the OLD window end for graphing */
+    /* (bug fix - Thu Aug 12, 1999) */
+    old_this_windowend = thisdir->windowend;
+
+    if (ACK_SET(ptcp)) {
 	thisdir->windowend = th_ack + eff_win;
 	unsigned int win = th_win << thisdir->window_scale;
 
 	thisdir->windowend = th_ack + win;
     /* end bugfix */
+
 
 
     /***********************************************************************/
@@ -1263,11 +1270,11 @@ dotrace(
 	    plotter_perm_color(to_tsgpl, window_color);
 	    plotter_line(to_tsgpl,
 			 thisdir->time, SeqRep(otherdir,old_this_windowend),
-			 thisdir->time, SeqRep(otherdir,thisdir->windowend),
-			 current_time, SeqRep(otherdir,thisdir->windowend));
-	    if (thisdir->windowend != winend) {
+			 current_time, SeqRep(otherdir,old_this_windowend));
+	    if (old_this_windowend != winend) {
+		plotter_line(to_tsgpl,
 			     current_time, SeqRep(otherdir,old_this_windowend),
-			     current_time, SeqRep(otherdir,thisdir->windowend),
+			     current_time, SeqRep(otherdir,winend));
 	    } else {
 		plotter_utick(to_tsgpl, current_time, SeqRep(otherdir,winend));
 	    }
@@ -1292,7 +1299,8 @@ dotrace(
 	thisdir->time = current_time;
 	thisdir->ack = ack;
 
-/* 	thisdir->windowend = winend; (moved above "only" point) */
+/* 	thisdir->windowend = winend;  (moved above "only" point) */
+    }  /* end ACK_SET(ptcp) */
 
     /* do stats for initial window (first slow start) */
     /* (if there's data in this and we've NEVER seen */
