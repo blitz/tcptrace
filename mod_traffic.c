@@ -54,6 +54,11 @@ struct traffic_info {
     u_long last_nactive;
     u_long ttlactive;
 
+    /* open connections */
+    u_long nopen;
+    u_long last_nopen;
+    u_long ttlopen;
+
     /* which color is used for plotting */
     char *color;
 
@@ -72,6 +77,8 @@ static struct traffic_info **ports;  /* [NUM_PORTS] */
 /* additional info kept per connection */
 struct conn_info {
     Bool wasactive;		/* was this connection active over the interval? */
+    Bool wasopen;		/* was this this connection EVER open? */
+    Bool isopen;		/* is this connection open now? */
     struct traffic_info *pti1;	/* pointer to the port info for this one */
     struct traffic_info *pti2;	/* pointer to the port info for this one */
     struct conn_info *next;	/* next in the chain */
@@ -84,6 +91,8 @@ static struct conn_info *connhead = NULL;
 static PLOTTER plotter_bytes;
 static PLOTTER plotter_packets;
 static PLOTTER plotter_active;
+static PLOTTER plotter_open;
+static PLOTTER plotter_openclose;
 
 
 
@@ -98,7 +107,15 @@ static void CheckPortNum(unsigned portnum);
 static char *PortName(int port);
 
 /* other globals */
-float age_interval = 15.0;  /* 15 seconds by default */
+static float age_interval = 15.0;  /* 15 seconds by default */
+
+/* for other stats on connections */
+static int last_num_closes = 0;
+static int last_num_opens = 0;
+static int last_open_conns = 0;
+static int num_closes = 0;
+static int num_opens = 0;
+static int open_conns = 0;
 
 
 static void
@@ -175,6 +192,12 @@ traffic_init(
     if (!enable)
 	return(0);	/* don't call me again */
 
+    /* init the data storage structure */
+    ports = MallocZ(NUM_PORTS*sizeof(struct traffic_info *));
+
+    ports[0] = MakeTrafficRec(0);
+
+
     /* check for ports specification */
     if (portspec && *portspec) {
 
@@ -222,11 +245,6 @@ traffic_init(
 
     
 
-    /* init the data storage structure */
-    ports = MallocZ(NUM_PORTS*sizeof(struct traffic_info *));
-
-    ports[0] = MakeTrafficRec(0);
-
     /* open the output files */
     plotter_packets =
 	new_plotter(NULL,
@@ -245,6 +263,18 @@ traffic_init(
 		    "traffic_conns.xpl",
 		    "active connections over time by port",
 		    "time","active connections",
+		    NULL);
+    plotter_open =
+	new_plotter(NULL,
+		    "traffic_open.xpl",
+		    "open connections over time by port",
+		    "time","open connections",
+		    NULL);
+    plotter_openclose =
+	new_plotter(NULL,
+		    "traffic_openclose.xpl",
+		    "connections opened and closed over time",
+		    "time","number of connections",
 		    NULL);
 
     /* init the graphs and etc... */
@@ -347,6 +377,17 @@ traffic_read(
     /* OK, this connection is now active */
     pci->wasactive = 1;
 
+    /* check to see if it's really "open" (traffic in both directions) */
+    if (!pci->wasopen) {
+	if ((ptp->a2b.packets > 0) && (ptp->b2a.packets > 0)) {
+	    /* bidirectional: OK, we'll call it open */
+	    pci->wasopen = 1;
+	    pci->isopen = 1;
+	    ++num_opens;
+	    ++open_conns;
+	}
+    }
+
     /* add to port-specific counters */
     if (pti1) {
 	pti1->nbytes += bytes;
@@ -360,6 +401,16 @@ traffic_read(
     /* add to GLOBAL counters */
     ports[0]->nbytes += bytes;
     ports[0]->npackets += 1;
+
+    /* see if we're closing it */
+    if (FIN_SET(ptcp) || RESET_SET(ptcp)) {
+	if (pci->isopen) {
+	    pci->isopen = 0;
+	    ++num_closes;
+	    --open_conns;
+	}
+    }
+
 
     /* determine elapsed time and age the samples (every 15 seconds now) */
     if (elapsed(last_time,current_time)/1000000.0 > age_interval) {
@@ -389,6 +440,7 @@ AgeTraffic(void)
     struct traffic_info *pti;
     struct conn_info *pci;
     static timeval last_time = {0,0};
+    static Bool openclose_labelled = 0;
     float etime;
     int ups;			/* units per second */
 
@@ -405,7 +457,7 @@ AgeTraffic(void)
     if (etime == 0.0)
 	return;
 
-    /* roll the active connections into the port records */
+    /* roll the open/active connections into the port records */
     for (pci=connhead; pci; pci=pci->next) {
 	if (pci->wasactive) {
 	    if (pci->pti1)
@@ -415,8 +467,65 @@ AgeTraffic(void)
 	    pci->wasactive = 0;
 	    ++ports[0]->nactive;
 	}
+	if (pci->isopen) {
+	    if (pci->pti1)
+		++pci->pti1->nopen;
+	    if (pci->pti2)
+		++pci->pti2->nopen;
+	    ++ports[0]->nopen;
+	}
     }
     
+
+    /* plot connection activity */
+    /* opens */
+    plotter_perm_color(plotter_openclose, "green");
+    plotter_dot(plotter_openclose, current_time, num_opens);
+    if (last_time.tv_sec)
+	plotter_line(plotter_openclose,
+		     current_time, num_opens,
+		     last_time, last_num_opens);
+    last_num_opens = num_opens;
+    num_opens = 0;
+
+
+    /* closes */
+    plotter_perm_color(plotter_openclose, "red");
+    plotter_dot(plotter_openclose, current_time, num_closes);
+    if (last_time.tv_sec)
+	plotter_line(plotter_openclose,
+		     current_time, num_closes,
+		     last_time, last_num_closes);
+	
+    last_num_closes = num_closes;
+    num_closes = 0;
+
+    /* total open */
+    pti = FindPort(0);
+    plotter_perm_color(plotter_openclose, "blue");
+    plotter_dot(plotter_openclose, current_time, open_conns);
+    if (last_time.tv_sec)
+	plotter_line(plotter_openclose,
+		     current_time, open_conns,
+		     last_time, last_open_conns);
+    last_open_conns = open_conns;
+
+    /* insert labels */
+    if (!openclose_labelled) {
+	if (last_time.tv_sec != 0) {
+	    plotter_temp_color(plotter_openclose, "green");
+	    plotter_text(plotter_openclose, current_time, last_num_opens,
+			 "l", "Number Opens");
+	    plotter_temp_color(plotter_openclose, "red");
+	    plotter_text(plotter_openclose, current_time, last_num_closes,
+			 "l", "Number Closes");
+	    plotter_temp_color(plotter_openclose, "blue");
+	    plotter_text(plotter_openclose, current_time, open_conns,
+			 "l", "Total Open");
+	}
+	openclose_labelled = 1;
+    }
+
 
     /* print them out */
     for (pti=traffichead; pti; pti=pti->next) {
@@ -459,10 +568,20 @@ AgeTraffic(void)
 			 current_time, pti->nactive, last_time, pti->last_nactive);
 	pti->last_nactive = pti->nactive;
 
+	/* plot open connections */
+	plotter_perm_color(plotter_open, pti->color);
+	if (!pti->labelled || ((pti->nopen > 0) && (pti->last_nopen == 0)))
+	    plotter_text(plotter_open, current_time, pti->nopen,
+			 "l", PortName(pti->port));
+	plotter_dot(plotter_open, current_time, pti->nopen);
+	if (last_time.tv_sec)
+	    plotter_line(plotter_open,
+			 current_time, pti->nopen, last_time, pti->last_nopen);
+	pti->last_nopen = pti->nopen;
+
 	/* OK, we must have done the left hand label by now */
 	pti->labelled = 1;
     }
-
 
     /* zero them out */
     for (pti=traffichead; pti; pti=pti->next) {
@@ -472,6 +591,7 @@ AgeTraffic(void)
 	pti->nbytes = 0;
 	pti->npackets = 0;
 	pti->nactive = 0;
+	pti->nopen = 0;
     }
 
     last_time = current_time;
@@ -545,7 +665,7 @@ traffic_newconn(
     pci = MakeConnRec();
     pci->pti1 = FindPort(ptp->addr_pair.a_port);
     pci->pti2 = FindPort(ptp->addr_pair.b_port);
-    
+
     return(pci);
 }
 #endif /* LOAD_MODULE_TRAFFIC */
