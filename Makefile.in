@@ -297,6 +297,7 @@ rexmit.o: ipv6.h
 snoop.o: tcptrace.h
 snoop.o: ipv6.h
 tcpdump.o: tcptrace.h
+tcpdump.o: tcpdump.h
 tcpdump.o: ipv6.h
 tcptrace.o: tcptrace.h
 tcptrace.o: ipv6.h
