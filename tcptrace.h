@@ -325,6 +325,10 @@ typedef struct tcb {
     timeval	last_time;	/* last packet SENT from this side */
     u_llong	idle_max;	/* maximum idle time observed (usecs) */
 
+    /* for looking for interesting SACK blocks */
+    u_long	num_sacks;
+    u_long	max_sack_blocks;
+
     /* host name letter(s) */
     char	*host_letter;
 } tcb;
