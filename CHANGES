@@ -297,3 +297,5 @@
     cause a counter to wrap around, messing up the average
   fixed major bug in tcplib module, ftp data and control ports were backwards
   The -O options was writing IPv6 packets incorrectly (wrong length)
+5.1.5 - Wed Feb 17, 1999
+  fixed bug in reading .tcptracerc files, caused core dump on some files
