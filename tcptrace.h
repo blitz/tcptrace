@@ -471,6 +471,10 @@ extern u_long ctrunc;
 extern timeval current_time;
 extern char *output_filename;
 
+/* first and last packet timestamp */
+extern timeval first_packet;
+extern timeval last_packet;
+
 
 #define MAX_NAME 20
 
