@@ -38,11 +38,6 @@ static char const rcsid[] =
 	( (((y)&0xff)<<8) | (((y)&0xff00)>>8) )
 
 
-/* globals that all 3 versions share */
-static Bool tcpdump_doswap = FALSE;
-static u_int linktype;
-static u_int snaplen;
-
 
 /* (from bpf.h)
  * Data-link level type codes.
@@ -87,6 +82,7 @@ struct packet_header {
 };
 
 
+#ifdef BY_HAND
 static void
 swap_hdr(struct dump_file_header *pdfh)
 {
@@ -106,6 +102,7 @@ swap_phdr(struct packet_header *pph)
     pph->ts_secs  = SWAPLONG(pph->ts_secs);
     pph->ts_usecs = SWAPLONG(pph->ts_usecs);
 }
+#endif /* BY_HAND */
 
 
 
@@ -115,7 +112,7 @@ swap_phdr(struct packet_header *pph)
 static int find_ip_fddi(char* buf, int iplen) {
       char* ptr, *ptr2;
       int i;
-      char pattern[] = {0xAA, 0x03, 0x00, 0x00, 0x00, 0x08, 0x00};
+      u_char pattern[] = {0xAA, 0x03, 0x00, 0x00, 0x00, 0x08, 0x00};
 #define FDDIPATTERNLEN 7
 
       ptr = ptr2 = buf;
