@@ -2,6 +2,11 @@
 # Makefile for tcptrace
 #
 
+#
+# According to Jeff Semke, this define allows the program to compile
+# and run under NetBSD on a pentium box.
+#
+#DEFINES = -DI386_NBSD1
 
 #
 # User-configurable constants
@@ -18,7 +23,7 @@ LDFLAGS = -L/usr/local/lib
 # Warning, without -fno-builtin, a bug in gcc 2.7.2 forces an alignment
 # error on my Sparc when it re-writes memcpy()... 
 #
-CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS}
+CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 
 
 #
