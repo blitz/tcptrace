@@ -281,4 +281,6 @@
 		resolve_ipaddresses
 		resolve_ports
 	+-n still toggles both, but extended args let you control either
-  changed "-o" option to allow "-oM-N"	
+  changed "-o" option to allow "-oM-N"
+  bug fix from Jamshid Mahdavi, sack blocks not converted to local byte order
+	(made intel platforms plot/print sacks wrong)
