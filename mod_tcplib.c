@@ -68,15 +68,17 @@ typedef struct module_conninfo_tcb {
     /* cached connection type (incoming, remote, etc) */
     enum t_statsix ttype;
 
-    /* breakdown type */
-    short btype;
-
-    /* cached address info */
-    portnum	port;
-    ipaddr	ipaddr;
-
     /* cached data bytes */
     u_llong	data_bytes;
+
+    /* if it's FTP CONTROL, HTTP, or NNTP, we track numitems */
+    u_long numitems;
+
+    /* last time new data was sent */
+    timeval	last_data_time;
+
+    /* link back to REAL information */
+    tcb 	*ptcb;
 
     /* previous connection of same type */
     struct module_conninfo *prev_ttype;
@@ -89,6 +91,12 @@ typedef struct module_conninfo {
     struct module_conninfo_tcb tcb_cache_a2b;
     struct module_conninfo_tcb tcb_cache_b2a;
 
+    /* breakdown type */
+    short btype;
+
+    /* cached copy of address pair */
+    tcp_pair_addrblock	addr_pair;
+
     /* link back to the tcb's */
     tcp_pair *ptp;
 
@@ -99,8 +107,8 @@ typedef struct module_conninfo {
     /* previous connection in linked list of all connections */
     struct module_conninfo *prev;
 
-    /* if it's FTP CONTROL or NNTP, we track numitems */
-    u_long numitems;
+    /* for determining bursts */
+    tcb *tcb_lastdata;
 
     /* next connection in linked list by endpoint pairs */
     struct module_conninfo *next_pair;
@@ -141,11 +149,11 @@ static struct tcplibstats {
     timeval last_interval;
     int tcplib_breakdown_interval[NUM_APPS];
 
-    /* FTP endpoints hash table */
-    endpoint_pair *ftp_endpoints[ENDPOINT_PAIR_HASHSIZE];
-
     /* histogram files */
     FILE *hist_file;
+
+    /* For HTTP, we track idle time between bursts */
+    dyn_counter http_idletime;
 
     /* telnet packet sizes */
     dyn_counter throughput;
@@ -166,7 +174,11 @@ static char *output_dir = DEFAULT_TCPLIB_DATADIR;
 static char *current_file = NULL;
 
 /* characters to print in interval breakdown file */
-static const char breakdown_hash_char[] = { 'S', 'N', 'T', 'F', 'H' };
+static const char breakdown_hash_char[] = { 'S', 'N', 'T', 'F', 'H', 'f'};
+
+
+/* FTP endpoints hash table */
+endpoint_pair *ftp_endpoints[ENDPOINT_PAIR_HASHSIZE];
 
 
 /* internal types */
@@ -177,6 +189,7 @@ typedef Bool (*f_testinside) (module_conninfo *pmc,
 static u_long newconn_counter;	/* total conns */
 static u_long newconn_badport;	/* a port we don't want */
 static u_long newconn_goodport;	/* we want the port */
+static u_long newconn_ftp_data_heuristic; /* merely ASSUMED to be ftp data */
 /* conns by type */
 static u_long conntype_counter[NUM_TCB_TYPES];
 /* both flows have data */
@@ -192,7 +205,7 @@ static u_long conntype_noplex_counter[NUM_TCB_TYPES];
 
 /* Function Prototypes */
 static void ParseArgs(char *argstring);
-static int breakdown_type(portnum port);
+static int breakdown_type(tcp_pair *ptp);
 static void do_final_breakdown(char* filename, f_testinside p_tester,
 			       struct tcplibstats *pstats);
 static void do_all_final_breakdowns(void);
@@ -207,18 +220,20 @@ static void do_tcplib_next_duration(module_conninfo_tcb *ptcbc,
 				    module_conninfo *pmc);
 
 /* prototypes for connection-type determination */
-static Bool is_ftp_control_conn(module_conninfo *pmc);
-static Bool is_ftp_control_port(portnum port);
-static Bool is_ftp_data_conn(module_conninfo *pmc);
+static Bool is_ftp_ctrl_port(portnum port);
 static Bool is_ftp_data_port(portnum port);
-static Bool is_http_conn(module_conninfo *pmc);
 static Bool is_http_port(portnum port);
-static Bool is_nntp_conn(module_conninfo *pmc);
 static Bool is_nntp_port(portnum port);
-static Bool is_smtp_conn(module_conninfo *pmc);
 static Bool is_smtp_port(portnum port);
-static Bool is_telnet_conn(module_conninfo *pmc);
 static Bool is_telnet_port(portnum port);
+
+/* shorthand */
+#define is_ftp_ctrl_conn(pmc)	(pmc->btype == TCPLIBPORT_FTPCTRL)
+#define is_ftp_data_conn(pmc)	(pmc->btype == TCPLIBPORT_FTPDATA)
+#define is_http_conn(pmc)	(pmc->btype == TCPLIBPORT_HTTP)
+#define is_nntp_conn(pmc)	(pmc->btype == TCPLIBPORT_NNTP)
+#define is_smtp_conn(pmc)	(pmc->btype == TCPLIBPORT_SMTP)
+#define is_telnet_conn(pmc)	(pmc->btype == TCPLIBPORT_TELNET)
 
 
 static char* namedfile(char *localsuffix, char * file);
@@ -264,22 +279,27 @@ static enum t_statsix traffic_type(module_conninfo *pmc,
 
 /* prototypes for endpoint pairs */
 static void TrackEndpoints(module_conninfo *pmc);
-static hash EndpointHash(module_conninfo *pmc);
-static Bool SameEndpoint(tcp_pair_addrblock addr_pair1,
-			 tcp_pair_addrblock addr_pair2);
-static module_conninfo *MostRecentFtpControl(endpoint_pair *pep);
+static hash EndpointHash(tcp_pair_addrblock *addr_pair);
+static hash IPHash(ipaddr *paddr);
+static Bool SameEndpoints(tcp_pair_addrblock *paddr_pair1,
+			  tcp_pair_addrblock *paddr_pair2);
+static struct module_conninfo_tcb *MostRecentFtpControl(endpoint_pair *pep);
+static Bool CouldBeFtpData(tcp_pair *ptp);
 static void AddEndpointPair(endpoint_pair *hashtable[],
 			    module_conninfo *pmc);
 static endpoint_pair *FindEndpointPair(endpoint_pair *hashtable[],
-				       module_conninfo *pmc);
+				       tcp_pair_addrblock *paddr_pair);
+static Bool IsNewBurst(module_conninfo *pmc, tcb *ptcb, seqnum seq);
 
 
 /* various helper routines used by many others -- sdo */
+static Bool ActiveConn(module_conninfo *pmc);
 static void tcplib_do_GENERIC_itemsize(
-    char *filename, Bool (*f_whichport)(module_conninfo *),
+    char *filename, int btype,
     f_testinside p_tester, int bucketsize);
 static void tcplib_do_GENERIC_numitems(
-    char *filename, Bool (*f_whichport)(module_conninfo *));
+    char *filename, int btype,
+    f_testinside p_tester);
 static void StoreCounters(char *filename, char *header1, char *header2,
 		       int bucketsize, dyn_counter psizes);
 static dyn_counter ReadOldFile(char *filename, int bucketsize,
@@ -476,11 +496,11 @@ TestOutgoing(
     module_conninfo_tcb *ptcbc)
 {
     if (ptcbc == &pmc->tcb_cache_a2b)
-	return( IsInside(&pmc->tcb_cache_a2b.ipaddr) &&
-	       !IsInside(&pmc->tcb_cache_b2a.ipaddr));
+	return( IsInside(&pmc->addr_pair.a_address) &&
+	       !IsInside(&pmc->addr_pair.b_address));
     else
-	return( IsInside(&pmc->tcb_cache_b2a.ipaddr) &&
-	       !IsInside(&pmc->tcb_cache_a2b.ipaddr));
+	return( IsInside(&pmc->addr_pair.b_address) &&
+	       !IsInside(&pmc->addr_pair.a_address));
 }
 
 static Bool
@@ -489,11 +509,11 @@ TestIncoming(
     module_conninfo_tcb *ptcbc)
 {
     if (ptcbc == &pmc->tcb_cache_a2b)
-	return(!IsInside(&pmc->tcb_cache_a2b.ipaddr) &&
-	        IsInside(&pmc->tcb_cache_b2a.ipaddr));
+	return(!IsInside(&pmc->addr_pair.a_address) &&
+	        IsInside(&pmc->addr_pair.b_address));
     else
-	return(!IsInside(&pmc->tcb_cache_b2a.ipaddr) &&
-	        IsInside(&pmc->tcb_cache_a2b.ipaddr));
+	return(!IsInside(&pmc->addr_pair.b_address) &&
+	        IsInside(&pmc->addr_pair.a_address));
 }
 
 
@@ -502,8 +522,8 @@ TestLocal(
     module_conninfo *pmc,
     module_conninfo_tcb *ptcbc)
 {
-    return(IsInside(&pmc->tcb_cache_a2b.ipaddr) &&
-	   IsInside(&pmc->tcb_cache_b2a.ipaddr));
+    return(IsInside(&pmc->addr_pair.a_address) &&
+	   IsInside(&pmc->addr_pair.b_address));
 }
 
 
@@ -512,8 +532,8 @@ TestRemote(
     module_conninfo *pmc,
     module_conninfo_tcb *ptcbc)
 {
-    return(!IsInside(&pmc->tcb_cache_a2b.ipaddr) &&
-	   !IsInside(&pmc->tcb_cache_b2a.ipaddr));
+    return(!IsInside(&pmc->addr_pair.a_address) &&
+	   !IsInside(&pmc->addr_pair.b_address));
 }
 
 
@@ -726,7 +746,8 @@ void tcplib_done()
 
 
     /* do the conversation interrival time */
-    printf("tcplib: running conversation interarrival times\n");
+    if (ldebug)
+	printf("tcplib: running conversation interarrival times\n");
     do_all_conv_arrivals();
     for (i=0; i < NUM_TCB_TYPES; ++i) {
 	if (ldebug>1)
@@ -741,12 +762,14 @@ void tcplib_done()
 				global_pstats[i]->conv_duration);
 
 	if (LOCAL_ONLY)
-	    return;
+	    break;
     }
 
     /* print stats */
     printf("tcplib: total connections seen: %lu (%lu accepted, %lu bad port)\n",
 	   newconn_counter, newconn_goodport, newconn_badport);
+    printf("tcplib: %lu random connections accepted under FTP data heuristic\n",
+	   newconn_ftp_data_heuristic);
     for (i=0; i < NUM_TCB_TYPES; ++i) {
 	printf("  Flows of type %-8s %5lu (%lu duplex, %lu noplex, %lu unidir, %lu nodata)\n",
 	       ttype_names[i],
@@ -885,20 +908,23 @@ void tcplib_read(
     /* create data for traffic breakdown over time file */
     /* (sdo - only count packets with DATA) */
     if (data_len > 0) {
-	int a2b_btype = pmc->tcb_cache_a2b.btype;
-	int b2a_btype = pmc->tcb_cache_b2a.btype;
+	int a2b_btype = pmc->btype;
 
 	if (a2b_btype != TCPLIBPORT_NONE) {
 	    pstats->tcplib_breakdown_interval[a2b_btype] +=
 		ptp->a2b.data_bytes;
 	}
+    }
 
+    /* DATA Burst checking */
+    if (data_len > 0) {
+	seqnum seq = ntohl(tcp->th_seq);
 
-	else /* ?? sdo */
-
-	if (b2a_btype != TCPLIBPORT_NONE) {
-	    pstats->tcplib_breakdown_interval[b2a_btype] +=
-		ptp->b2a.data_bytes;
+	/* NNTP burst checking */
+	if (is_nntp_conn(pmc)) {
+	    if (IsNewBurst(pmc, ptcb, seq)) {
+		++ptcbc->numitems;
+	    }
 	}
     }
 
@@ -1048,6 +1074,7 @@ void *
 tcplib_newconn(
     tcp_pair *ptp)   /* This conversation */
 {
+    int btype;			/* breakdown type */
     module_conninfo *pmc;
                                   /* Pointer to a timeval structure.  The
 				   * timeval structure becomes the time of
@@ -1058,8 +1085,8 @@ tcplib_newconn(
 
     /* verify that it's a connection we're interested in! */
     ++newconn_counter;
-    if ((breakdown_type(ptp->addr_pair.a_port) == TCPLIBPORT_NONE) &&
-	(breakdown_type(ptp->addr_pair.b_port) == TCPLIBPORT_NONE)) {
+    btype = breakdown_type(ptp);
+    if (btype == TCPLIBPORT_NONE) {
 	++newconn_badport;
 	return(NULL); /* so we won't get it back in tcplib_read() */
     } else {
@@ -1072,14 +1099,11 @@ tcplib_newconn(
     pmc = NewModuleConn();
     pmc->first_time = current_time;
     pmc->ptp = ptp;
+    pmc->tcb_cache_a2b.ptcb = &ptp->a2b;
+    pmc->tcb_cache_b2a.ptcb = &ptp->b2a;
 
-    /* remember the ports */
-    pmc->tcb_cache_a2b.port = ptp->addr_pair.a_port;
-    pmc->tcb_cache_b2a.port = ptp->addr_pair.b_port;
-
-    /* remember the IP addresses */
-    pmc->tcb_cache_a2b.ipaddr = ptp->addr_pair.a_address;
-    pmc->tcb_cache_b2a.ipaddr = ptp->addr_pair.b_address;
+    /* cache the address info */
+    pmc->addr_pair = ptp->addr_pair;
 
     /* determine its "insideness" */
     pmc->tcb_cache_a2b.ttype = traffic_type(pmc, &pmc->tcb_cache_a2b);
@@ -1088,8 +1112,7 @@ tcplib_newconn(
     ++conntype_counter[pmc->tcb_cache_b2a.ttype];
 
     /* determine the breakdown type */
-    pmc->tcb_cache_a2b.btype = breakdown_type(ptp->addr_pair.a_port);
-    pmc->tcb_cache_b2a.btype = breakdown_type(ptp->addr_pair.b_port);
+    pmc->btype = btype;
 
     /* chain it in */
     pmc->prev = module_conninfo_tail;
@@ -1463,13 +1486,10 @@ static void do_final_breakdown(
 	    module_conninfo_tcb *ptcbc;
 
 	    /* check the protocol type */
-	    protocol_type = pmc->tcb_cache_a2b.btype;
+	    protocol_type = pmc->btype;
 	    if (protocol_type == TCPLIBPORT_NONE) {
-		protocol_type = pmc->tcb_cache_b2a.btype;
-		if (protocol_type == TCPLIBPORT_NONE) {
-		    ++bad_port;
-		    continue;	/* not interested, loop to next conn */
-		}
+		++bad_port;
+		continue;	/* not interested, loop to next conn */
 	    }
 
 	    /* see if we want A->B */
@@ -1501,6 +1521,9 @@ static void do_final_breakdown(
 	 * to total number of converstaions observed in the trace file
 	 */
 	for(i = 0; i < NUM_APPS; i++) {
+	    if (i == TCPLIBPORT_FTPDATA)
+		continue;	/* we don't count this one */
+	    
 	    fprintf(fil, "\t%.4f",
 		    ((float)breakdown_protocol[i])/
 		    num_tcp_pairs);
@@ -1582,30 +1605,37 @@ static void do_all_final_breakdowns(void)
  * 
  ****************************************************************************/
 static int breakdown_type(
-    portnum port)   /* What real port to examine */
+    tcp_pair *ptp)
 {
+    /* shorthand */
+    portnum porta = ptp->addr_pair.a_port;
+    portnum portb = ptp->addr_pair.b_port;
 
-    if (is_telnet_port(port))
+    if (is_telnet_port(porta) || 
+	is_telnet_port(portb))
 	return(TCPLIBPORT_TELNET);
 
-    if (is_ftp_control_port(port))
-	return(TCPLIBPORT_FTP);
+    if (is_ftp_ctrl_port(porta) ||
+	is_ftp_ctrl_port(portb))
+	return(TCPLIBPORT_FTPCTRL);
 
-/* Old Eric comment that I don't understand: */
-/* We take out FTP data port because the control connections will be the 
- * deciding factors for the FTP connections */
-    if (is_ftp_data_port(port))
-	return(TCPLIBPORT_FTP);
-
-    if (is_smtp_port(port))
+    if (is_smtp_port(porta) ||
+	is_smtp_port(portb))
 	return(TCPLIBPORT_SMTP);
 
-    if (is_nntp_port(port))
+    if (is_nntp_port(porta) ||
+	is_nntp_port(portb))
 	return(TCPLIBPORT_NNTP);
 
-    if (is_http_port(port))
+    if (is_http_port(porta) ||
+	is_http_port(portb))
 	return(TCPLIBPORT_HTTP);
     
+    if (is_ftp_data_port(porta) ||
+	is_ftp_data_port(portb) ||
+	CouldBeFtpData(ptp))
+	return(TCPLIBPORT_FTPDATA);
+
     return TCPLIBPORT_NONE;
 }
 
@@ -1652,7 +1682,7 @@ static void do_tcplib_next_converse(
     ttype = traffic_type(pmc, ptcbc);
     pstats = global_pstats[ttype];
 
-    if (ldebug>1) {
+    if (ldebug>2) {
 	printf("do_tcplib_next_converse: %s, %s\n",
 	       FormatBrief(pmc->ptp), ttype_names[ttype]);
     }
@@ -1670,7 +1700,7 @@ static void do_tcplib_next_converse(
     if (pmc_previous == NULL) {
 	/* no previous connection, this must be the FIRST in */
 	/* this direction */
-	if (ldebug>1) {
+	if (ldebug>2) {
 	    printf("    do_tcplib_next_converse: no previous\n");
 	}
 	return;
@@ -1681,7 +1711,7 @@ static void do_tcplib_next_converse(
     etime = (int)(elapsed(pmc_previous->first_time,
 			  pmc->first_time)/1000.0); /* convert us to ms */
 
-    if (ldebug>1) {
+    if (ldebug>2) {
 	printf("   prev: %s, etime: %d ms\n",
 	       FormatBrief(pmc_previous->ptp), etime);
     }
@@ -1795,7 +1825,7 @@ static void do_tcplib_next_duration(
     ttype = traffic_type(pmc, ptcbc);
     pstats = global_pstats[ttype];
 
-    if (ldebug>1) {
+    if (ldebug>2) {
 	printf("do_tcplib_next_duration: %s, %s\n",
 	       FormatBrief(pmc->ptp), ttype_names[ttype]);
     }
@@ -1860,14 +1890,6 @@ Bool is_telnet_port(
 	return FALSE;
     }
 }
-static Bool
-is_telnet_conn(
-    module_conninfo *pmc)
-{
-    return(is_telnet_port(pmc->tcb_cache_a2b.port) ||
-	   is_telnet_port(pmc->tcb_cache_b2a.port));
-}
-
 
 
 
@@ -2208,27 +2230,20 @@ void tcplib_add_telnet_packetsize(
  * Called by: tcplib_do_ftp_itemsize() in mod_tcplib.c
  * 
  ****************************************************************************/
+#ifdef OLD
 Bool is_ftp_data_port(
     portnum port)
 {
     port -= ipport_offset;
     return (port == IPPORT_FTP_DATA);
 }
-Bool is_ftp_data_conn(
-    module_conninfo *pmc)
-{
-    return (is_ftp_data_port(pmc->tcb_cache_a2b.port) ||
-	    is_ftp_data_port(pmc->tcb_cache_b2a.port));
-}
-
-
-
+#endif
 
 
 
 /***************************************************************************
  * 
- * Function Name: is_ftp_control_conn
+ * Function Name: is_ftp_ctrl_conn
  * 
  * Returns: Boolean value
  *
@@ -2237,18 +2252,19 @@ Bool is_ftp_data_conn(
  * Called by: tcplib_do_ftp_control_size() in mod_tcplib.c
  * 
  ****************************************************************************/
-Bool is_ftp_control_port(
+Bool is_ftp_ctrl_port(
     portnum port)
 {
     port -= ipport_offset;
     return (port == IPPORT_FTP_CONTROL);
 }
-Bool is_ftp_control_conn(
-    module_conninfo *pmc)
+Bool is_ftp_data_port(
+    portnum port)
 {
-    return (is_ftp_control_port(pmc->tcb_cache_a2b.port) ||
-	    is_ftp_control_port(pmc->tcb_cache_b2a.port));
+    port -= ipport_offset;
+    return (port == IPPORT_FTP_DATA);
 }
+
 	    
 
 
@@ -2270,9 +2286,9 @@ void tcplib_do_ftp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 10;	/* 10 byte buckets */
+    const int bucketsize = 256;	/* 256-byte buckets */
 
-    tcplib_do_GENERIC_itemsize(filename, is_ftp_data_conn,
+    tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_FTPDATA,
 			       p_tester, bucketsize);
 }
 
@@ -2281,7 +2297,37 @@ void tcplib_do_ftp_numitems(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    tcplib_do_GENERIC_numitems(filename, is_ftp_control_conn);
+    int bucketsize = 1;
+    module_conninfo *pmc;
+    dyn_counter psizes = NULL;
+    
+
+    /* If an old data file exists, open it, read in its contents
+     * and store them until they are integrated with the current
+     * data */
+    psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+
+
+    /* fill out the array with data from the current connections */
+    for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
+	/* We only need the stats if it's the right port */
+	if (is_ftp_ctrl_conn(pmc)) {
+	    if ((*p_tester)(pmc, &pmc->tcb_cache_a2b)) {
+		if (ldebug && (pmc->tcb_cache_a2b.numitems == 0))
+			printf("numitems: control %s has NONE\n",
+			       FormatBrief(pmc->ptp));
+		AddToCounter(&psizes, pmc->tcb_cache_a2b.numitems, 1);
+	    }
+	}
+    }
+
+
+    /* store all the data (old and new) into the file */
+    StoreCounters(filename,"Total Articles", "% Conversation",
+		  bucketsize,psizes);
+
+    /* free the dynamic memory */
+    DestroyCounters(&psizes);
 }
 
 
@@ -2291,7 +2337,7 @@ static void tcplib_do_ftp_control_size(
 {
     const int bucketsize = 10;	/* 10 byte buckets */
 
-    tcplib_do_GENERIC_itemsize(filename, is_ftp_control_conn,
+    tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_FTPCTRL,
 			       p_tester, bucketsize);
 }
 /* End of FTP Stuff */
@@ -2307,12 +2353,7 @@ is_smtp_port(
     port -= ipport_offset;
     return (port == IPPORT_SMTP);
 }
-Bool is_smtp_conn(
-    module_conninfo *pmc)
-{
-    return (is_smtp_port(pmc->tcb_cache_a2b.port) ||
-	    is_smtp_port(pmc->tcb_cache_b2a.port));
-}
+
 
 static void tcplib_do_smtp_itemsize(
     char *filename,		/* where to store the output */
@@ -2320,7 +2361,7 @@ static void tcplib_do_smtp_itemsize(
 {
     const int bucketsize = 10;	/* 10 byte buckets */
 
-    tcplib_do_GENERIC_itemsize(filename, is_smtp_conn,
+    tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_SMTP,
 			       p_tester, bucketsize);
 }
 /* Done SMTP Stuff */
@@ -2336,13 +2377,7 @@ is_nntp_port(
     port -= ipport_offset;
     return (port == IPPORT_NNTP);
 }
-static Bool
-is_nntp_conn(
-    module_conninfo *pmc)
-{
-    return (is_nntp_port(pmc->tcb_cache_a2b.port) ||
-	    is_nntp_port(pmc->tcb_cache_b2a.port));
-}
+
 
 
 static void tcplib_do_nntp_itemsize(
@@ -2351,7 +2386,7 @@ static void tcplib_do_nntp_itemsize(
 {
     const int bucketsize = 10;	/* 10 byte buckets */
 
-    tcplib_do_GENERIC_itemsize(filename, is_nntp_conn,
+    tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_NNTP,
 			       p_tester, bucketsize);
 }
 
@@ -2361,7 +2396,7 @@ tcplib_do_nntp_numitems(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    tcplib_do_GENERIC_numitems(filename, is_nntp_conn);
+    tcplib_do_GENERIC_numitems(filename, TCPLIBPORT_NNTP, p_tester);
 }
 /* Done NNTP Stuff */
 
@@ -2376,13 +2411,6 @@ is_http_port(
     return ((port == IPPORT_HTTP) ||
 	    (port == IPPORT_HTTPS));
 }
-static Bool
-is_http_conn(
-    module_conninfo *pmc)
-{
-    return (is_http_port(pmc->tcb_cache_a2b.port) ||
-	    is_http_port(pmc->tcb_cache_b2a.port));
-}
 
 
 static void tcplib_do_http_itemsize(
@@ -2391,7 +2419,7 @@ static void tcplib_do_http_itemsize(
 {
     const int bucketsize = 10;  /* 10 byte buckets */
 
-    tcplib_do_GENERIC_itemsize(filename, is_http_conn,
+    tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_HTTP,
 			       p_tester, bucketsize);
 }
 
@@ -2516,7 +2544,7 @@ ReadOldFile(
 static void
 tcplib_do_GENERIC_itemsize(
     char *filename,		/* where to store the output */
-    Bool (*f_whichport)(module_conninfo *),
+    int btype,
     f_testinside p_tester,	/* functions to test "insideness" */
     int bucketsize)		/* how much data to group together */
 {
@@ -2532,8 +2560,8 @@ tcplib_do_GENERIC_itemsize(
 
     /* fill out the array with data from the current connections */
     for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
-	/* We only need the stats if it's the right port */
-	if ((*f_whichport)(pmc)) {
+	/* We only need the stats if it's the right breakdown type */
+	if (pmc->btype == btype) {
 	    int nbytes = InsideBytes(pmc,p_tester);
 
 	    /* if there's no DATA, don't count it!  (sdo change!) */
@@ -2556,7 +2584,8 @@ tcplib_do_GENERIC_itemsize(
 static void
 tcplib_do_GENERIC_numitems(
     char *filename,		/* where to store the output */
-    Bool (*f_whichport)(module_conninfo *))
+    int btype,
+    f_testinside p_tester)
 {
     int bucketsize = 1;
     module_conninfo *pmc;
@@ -2572,8 +2601,19 @@ tcplib_do_GENERIC_numitems(
     /* fill out the array with data from the current connections */
     for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
 	/* We only need the stats if it's the right port */
-	if ((*f_whichport)(pmc)) {
-	    AddToCounter(&psizes, pmc->numitems, 1);
+	if (pmc->btype == btype) {
+	    if ((*p_tester)(pmc, &pmc->tcb_cache_a2b)) {
+		if (ldebug && (pmc->tcb_cache_a2b.numitems == 0))
+			printf("numitems: control %s has NONE\n",
+			       FormatBrief(pmc->ptp));
+		AddToCounter(&psizes, pmc->tcb_cache_a2b.numitems, 1);
+	    }
+	    if ((*p_tester)(pmc, &pmc->tcb_cache_b2a)) {
+		if (ldebug && (pmc->tcb_cache_b2a.numitems == 0))
+		    printf("numitems: control %s has NONE\n",
+			   FormatBrief(pmc->ptp));
+		AddToCounter(&psizes, pmc->tcb_cache_b2a.numitems, 1);
+	    }
 	}
     }
 
@@ -2642,21 +2682,21 @@ FormatAddrBrief(
 static endpoint_pair *
 FindEndpointPair(
     endpoint_pair *hashtable[],
-    module_conninfo *pmc)
+    tcp_pair_addrblock	*paddr_pair)
 {
     endpoint_pair **ppep_head;
     endpoint_pair *pep_search;
 
     /* find the correct hash bucket */
-    ppep_head = &hashtable[EndpointHash(pmc)];
+    ppep_head = &hashtable[EndpointHash(paddr_pair)];
 
     /* search the bucket for the correct pair */
     for (pep_search = *ppep_head; pep_search;
 	 pep_search = pep_search->pepnext) {
 
 	/* see if it's the same connection */
-	if (SameEndpoint(pep_search->addr_pair,
-			 pmc->ptp->addr_pair))
+	if (SameEndpoints(&pep_search->addr_pair,
+			  paddr_pair))
 	    return(pep_search);
     }
 
@@ -2678,8 +2718,8 @@ AddEndpointPair(
     endpoint_pair *pep_search;
 
     /* search the bucket for the correct pair */
-    ppep_head = &hashtable[EndpointHash(pmc)];
-    pep_search = FindEndpointPair(hashtable,pmc);
+    ppep_head = &hashtable[EndpointHash(&pmc->addr_pair)];
+    pep_search = FindEndpointPair(hashtable,&pmc->addr_pair);
 
     if (pep_search == NULL) {
 	/* not found, create it */
@@ -2709,8 +2749,8 @@ AddEndpointPair(
 	    /* for each connection on that pair */
 	    for (pmc = pep_search->pmchead; pmc; pmc = pmc->next_pair) {
 		printf("    %u <-> %u\n",
-		       pmc->tcb_cache_a2b.port,
-		       pmc->tcb_cache_b2a.port);
+		       pmc->addr_pair.a_port,
+		       pmc->addr_pair.b_port);
 	    }
 	}
     }
@@ -2720,28 +2760,26 @@ static void
 TrackEndpoints(
     module_conninfo *pmc)
 {
-    module_conninfo_tcb *ptcbc = &pmc->tcb_cache_a2b; /* always A2b */
-    struct tcplibstats *pstats = global_pstats[traffic_type(pmc,ptcbc)];
-
-    if (is_ftp_control_conn(pmc)) {
-	AddEndpointPair(pstats->ftp_endpoints,pmc);
+    if (is_ftp_ctrl_conn(pmc)) {
+	AddEndpointPair(ftp_endpoints,pmc);
     }
 
     /* if it's an FTP data connection, find the control conn */
     if (is_ftp_data_conn(pmc)) {
 	endpoint_pair *pep;
 
-	pep = FindEndpointPair(pstats->ftp_endpoints, pmc);
+	pep = FindEndpointPair(ftp_endpoints, &pmc->addr_pair);
 
 	if (pep) {
 	    /* "charge" this new DATA connection to the most
 	       recently-active ftp control connection */
-	    pmc = MostRecentFtpControl(pep);
-	    ++pmc->numitems;
+	    struct module_conninfo_tcb *tcbc_control;
+	    tcbc_control = MostRecentFtpControl(pep);
+	    ++tcbc_control->numitems;
 	    if (ldebug) {
 		printf("Charging ftp data to %s, count %lu\n",
-		       FormatBrief(pmc->ptp),
-		       pmc->numitems);
+		       FormatBrief(tcbc_control->ptcb->ptp),
+		       tcbc_control->numitems);
 	    }
 	} else {
 	    fprintf(stderr,"WARNING: no FTP control conn for %s???\n",
@@ -2752,41 +2790,182 @@ TrackEndpoints(
 
 }
 
-static module_conninfo *
-MostRecentFtpControl(
-    endpoint_pair *pep)
+
+/* could this connection be an FTP data connection that's NOT
+   on port 21? */
+static Bool
+CouldBeFtpData(
+    tcp_pair *ptp)
 {
-    /* NOT DONE */
-#define NOT_DONE
-#define NOT_DONE
-    return(pep->pmchead);
+    endpoint_pair *pep;
+    struct module_conninfo_tcb *ptcbc;
+
+    /* make sure NEITHER port is reserved */
+    if (ptp->addr_pair.a_port < 1024 ||
+	ptp->addr_pair.b_port < 1024)
+	return(FALSE);
+    
+    /* see if there's any active FTP control connection on
+       these endpoints... */
+    pep = FindEndpointPair(ftp_endpoints,&ptp->addr_pair);
+    if (pep == NULL)
+	return(FALSE);
+
+    /* find the most recent FTP control connection */
+    ptcbc = MostRecentFtpControl(pep);
+    if (pep == NULL)
+	return(FALSE);
+
+    /* OK, I guess it COULD be... */
+    ++newconn_ftp_data_heuristic;
+    return(TRUE);
 }
 
 
-static hash EndpointHash(
-    module_conninfo *pmc)
+/* find the TCB (client side) for the most recently-active control
+   connection on this pair of endpoints */
+static module_conninfo_tcb *
+MostRecentFtpControl(
+    endpoint_pair *pep)
+{
+    struct module_conninfo *pmc;
+    static module_conninfo_tcb *tcbc_newest = NULL;
+    tcb *tcb_newest;
+    timeval time_newest;
+
+    if (pep->pmchead == NULL) {
+	/* None at all, that's odd... */
+	fprintf(stderr,"MostRecentFtpControl: unexpected empty list \n");
+	exit(-1);
+    }
+
+
+    /* search the rest looking for something newer */
+    for (pmc = pep->pmchead; pmc; pmc = pmc->next_pair) {
+	tcb *ptcb_client = &pmc->ptp->a2b;
+
+	/* if it's not "active", we're not interested */
+	if (!ActiveConn(pmc))
+	    continue;
+
+	/* have we found anyone yet? */
+	if (tcbc_newest == NULL) {
+	    tcb_newest = &pmc->ptp->a2b;
+	    tcbc_newest = &pmc->tcb_cache_a2b;
+	    time_newest = tcb_newest->last_data_time;
+	} else if (tv_gt(ptcb_client->last_data_time, time_newest)) {
+	    /* this is "most recent" */
+	    tcb_newest = ptcb_client;
+	    tcbc_newest = &pmc->tcb_cache_a2b;
+	    time_newest = ptcb_client->last_data_time;
+	}
+    }
+
+    return(tcbc_newest);
+}
+
+
+static hash
+IPHash(
+    ipaddr *paddr)
+{
+    hash hval = 0;
+    int i;
+
+    if (ADDR_ISV4(paddr)) { /* V4 */
+	hval = paddr->un.ip4.s_addr;
+    } else if (ADDR_ISV6(paddr)) { /* V6 */
+	for (i=0; i < 16; ++i)
+	    hval += paddr->un.ip6.s6_addr[i];
+    } else {
+	/* address type unknown */
+	fprintf(stderr,"Unknown IP address type %d encountered\n",
+		ADDR_VERSION(paddr));
+	exit(-1);
+    }
+
+    return(hval);
+}
+
+
+static hash
+EndpointHash(
+    tcp_pair_addrblock *addr_pair)
 {
     hash hval;
 
-    hval = 1;
+    hval =
+	IPHash(&addr_pair->a_address) +
+	IPHash(&addr_pair->b_address);
 
     return(hval % ENDPOINT_PAIR_HASHSIZE);
 }
 
-static Bool
-SameEndpoint(
-    tcp_pair_addrblock	ap1,
-    tcp_pair_addrblock	ap2)
-{
-    if ((IPcmp(&ap1.a_address,&ap2.a_address) == 0) &&
-	(IPcmp(&ap1.b_address,&ap2.b_address) == 0))
-	return(TRUE);
 
-    if ((IPcmp(&ap1.a_address,&ap2.b_address) == 0) &&
-	(IPcmp(&ap1.b_address,&ap2.a_address) == 0))
-	return(TRUE);
+
+static Bool
+SameEndpoints(
+    tcp_pair_addrblock	*pap1,
+    tcp_pair_addrblock	*pap2)
+{
+    if (IPcmp(&pap1->a_address,&pap2->a_address) == 0) {
+	if (IPcmp(&pap1->b_address,&pap2->b_address) == 0) {
+	    return(TRUE);
+	}
+    } else if (IPcmp(&pap1->a_address,&pap2->b_address) == 0) {
+	if (IPcmp(&pap1->b_address,&pap2->a_address) == 0) {
+	    return(TRUE);
+	}
+    }
 
     return(FALSE);
+}
+
+
+/* Data is considered a NEW burst if:
+ *  1) There was intervening data in the other direction
+ *  2) All previous data was ACKed
+ */
+static Bool
+IsNewBurst(
+    module_conninfo *pmc,
+    tcb *ptcb,
+    seqnum seq)
+{
+    tcb *ptcb_otherdir = ptcb->ptwin;
+
+    /* check for intervening data */
+    if (ptcb == pmc->tcb_lastdata) {
+	/* no intervening data */
+	return(FALSE);
+    }
+    pmc->tcb_lastdata = ptcb;
+
+    /* check for old data ACKed */
+    if (SEQ_LESSTHAN(ptcb_otherdir->ack,seq)) {
+	/* not ACKed */
+	return(FALSE);
+    }
+
+    /* ... else, it's a new burst */
+
+    return(TRUE);
+}
+
+/* is this connection "active" */
+/* 1: not reset */
+/* 2: either 0 or 1 fins */
+static Bool
+ActiveConn(
+    module_conninfo *pmc)
+{
+    if (FinCount(pmc->ptp) > 1)
+	return(FALSE);
+
+    if (ConnReset(pmc->ptp))
+	return(FALSE);
+    
+    return(TRUE);
 }
 
 
