@@ -143,11 +143,21 @@
     "SIGNED char", because the compiler on my PB3400/Linux makes them
      unsigned by default.  The "-fsigned-char" could also fix it, but this
      seems easier.
-5.0.5 - Tue Jun 23, 1998 -- Thu Jul 23, 1998
+5.0.5 - Tue Jun 23, 1998 -- Fri Aug  7, 1998
   fixed mod_traffic memory allocation bug.  I wonder why nobody reported this? 
-  added "pure ack" counter for Mark
+  added "pure ack" counter (for Mark)
   added call to print modules usage for "-hargs"
   added Eric's tcplib-generating module
   added check for ASCII input
   added reading of arguments from resource file, then from envariable, and
-    then from the command line
+    then from the command line (suggestion from Jeff Semke)
+  can read from standard input if filename is "stdin"
+  extended "-z" option to allow you to lock either the X or the Y axis
+     (or both) to zero (for Brian Utterback)
+  added printing of zero-sized packets (for Brian Utterback)
+  zero-sized packets pointed out a "bug" in the zero-based time stuff from
+    version 4.1.3.  Both graphs in a pair don't have the same "zero point",
+    which is a little confusing.  They were off by 1/2 a RTT, the
+    difference between the SYN and the SYN/ACK.  I fixed this by adding a
+    green dot corresponding the the first SYN in the second graph.  Kind
+    of helpful in general, too.

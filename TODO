@@ -1,3 +1,4 @@
+fix Linux compatibility (always done, always need to be fixed :-(  )
 make printing for with the "only" flag
 add module call for non-tcp packets
 add "-Woutfile" to create tcpdump binary file
