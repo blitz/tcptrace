@@ -216,7 +216,7 @@ clean:
 		config.cache config.log config.status bin.* \
 		filt_scanner.c filt_parser.c y.tab.h y.output PF \
 		filt_parser.output filt_parser.h
-	#cd input; ${MAKE} clean
+#	cd input; ${MAKE} clean
 
 noplots:
 	rm -f *.xpl *.dat
