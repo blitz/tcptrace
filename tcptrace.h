@@ -414,6 +414,7 @@ void PrintBrief(tcp_pair *);
 void OnlyConn(int);
 void IgnoreConn(int);
 double elapsed(timeval, timeval);
+char *elapsed2str(double etime);
 int ConnReset(tcp_pair *);
 int ConnComplete(tcp_pair *);
 char *ts2ascii(timeval *);
