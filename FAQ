@@ -43,3 +43,20 @@ solution: use the middle mouse button to move the graph so that the
 lower corner all shows.  Using this, you can scroll anywhere on the
 screen, even outside the boundaries of the points being plotted.
 
+
+============================================================
+Mon Jul 27, 1998
+
+>> do you know if I'd be able to find the precompiled versions of
+>> tcpdump or a similar package for NT from somewhere?
+
+I'm sorry, I don't keep up on Microsoft software.  Lots of people have
+asked me this question and I don't know the answer.  I'm pretty sure
+that tcpdump does NOT run under NT.  The only packet-grabbing software 
+that I'm aware of for Wintel machines is etherpeek (Windows/NT/Mac):
+
+	http://www.aggroup.com/
+
+It's nice software, but it's commercial.
+
+--sdo
