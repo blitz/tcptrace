@@ -135,6 +135,7 @@ printtcp_packet(
     unsigned tcp_length;
     unsigned tcp_data_length;
     struct tcphdr *ptcp;
+    int i;
     u_char *pdata;
 
     ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
@@ -198,12 +199,31 @@ printtcp_packet(
 	    printf(" SACKREQ");
 	}
 	if (ptcpo->sack_count >= 0) {
-	    int i;
 	    printf(" SACKS(%d)", ptcpo->sack_count);
 	    for (i=0; i < ptcpo->sack_count; ++i) {
 		printf("[0x%08lx-0x%08lx]",
 		       ptcpo->sacks[i].sack_left,
 		       ptcpo->sacks[i].sack_right);
+	    }
+	}
+	if (ptcpo->echo_req != -1)
+	    printf(" ECHO(%lu)", ptcpo->echo_req);
+	if (ptcpo->echo_repl != -1)
+	    printf(" ECHOREPL(%lu)", ptcpo->echo_repl);
+	if (ptcpo->cc != -1)
+	    printf(" CC(%lu)", ptcpo->cc);
+	if (ptcpo->ccnew != -1)
+	    printf(" CCNEW(%lu)", ptcpo->ccnew);
+	if (ptcpo->ccecho != -1)
+	    printf(" CCECHO(%lu)", ptcpo->ccecho);
+	for (i=0; i < ptcpo->unknown_count; ++i) {
+	    if (i < MAX_UNKNOWN) {
+		printf(" UNKN(op:%d,len:%d)",
+		       ptcpo->unknowns[i].unkn_opt,
+		       ptcpo->unknowns[i].unkn_len);
+	    } else {
+		printf("... more unsaved unknowns\n");
+		break;
 	    }
 	}
         printf("\n");

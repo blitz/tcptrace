@@ -441,9 +441,24 @@ typedef struct sack_block {
     seqnum	sack_right;	/* right edge */
 } sack_block;
 
+#define MAX_UNKNOWN 16
+typedef struct opt_unknown {
+    u_char	unkn_opt;
+    u_char	unkn_len;
+} opt_unknown;
+
 /* RFC 1323 TCP options (not usually in tcp.h yet) */
 #define	TCPOPT_WS	3	/* window scaling */
 #define	TCPOPT_TS	8	/* timestamp */
+
+/* other options... */
+#define	TCPOPT_ECHO		6	/* echo (rfc1072) */
+#define	TCPOPT_ECHOREPLY	7	/* echo (rfc1072) */
+#define TCPOPT_TIMESTAMP	8	/* timestamps (rfc1323) */
+#define TCPOPT_CC		11	/* T/TCP CC options (rfc1644) */
+#define TCPOPT_CCNEW		12	/* T/TCP CC options (rfc1644) */
+#define TCPOPT_CCECHO		13	/* T/TCP CC options (rfc1644) */
+
 struct tcp_options {
     short	mss;		/* maximum segment size 	*/
     char	ws;		/* window scale (1323) 		*/
@@ -453,6 +468,21 @@ struct tcp_options {
     Bool	sack_req;	/* sacks requested 		*/
     char	sack_count;	/* sack count in this packet */
     sack_block	sacks[MAX_SACKS]; /* sack blocks */
+
+    /* echo request and reply */
+    /* assume that value of -1 means unused  (?) */
+    u_long	echo_req;
+    u_long	echo_repl;
+
+    /* T/TCP stuff */
+    /* assume that value of -1 means unused  (?) */
+    u_long	cc;
+    u_long	ccnew;
+    u_long	ccecho;
+
+    /* record the stuff we don't understand, too */
+    char	unknown_count;	/* number of unknown options */
+    opt_unknown	unknowns[MAX_UNKNOWN]; /* unknown options */
 };
 
 
