@@ -441,8 +441,8 @@ printtcp_packet(
 	    printf(" SACKS(%d)", ptcpo->sack_count);
 	    for (i=0; i < ptcpo->sack_count; ++i) {
 		printf("[0x%08lx-0x%08lx]",
-		       ptcpo->sacks[i].sack_left,
-		       ptcpo->sacks[i].sack_right);
+		       (u_long)ptcpo->sacks[i].sack_left,
+		       (u_long)ptcpo->sacks[i].sack_right);
 	    }
 	}
 	if (ptcpo->echo_req != -1)
