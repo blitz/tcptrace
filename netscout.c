@@ -33,6 +33,9 @@ static char const rcsid[] =
 
 /* 
  * netscout.c - NetScout 5.5.1 Ascii file decode 
+ * 
+ * This file submitted by Al.Broscius@msdw.com
+ *
  */
 
 
