@@ -220,4 +220,79 @@ pread_f *is_tcpdump(void)
 }
 
 
+/* support for writing a new pcap file */
+
+void
+PcapSavePacket(
+    char *filename,
+    struct ip *pip,
+    void *plast)
+{
+    static FILE *f_savefile = NULL;
+    struct pcap_pkthdr phdr;
+    int wlen;
+
+    if (f_savefile == NULL) {
+	struct pcap_file_header fhdr;
+
+	/* try to open the file */
+	if ((f_savefile = fopen(filename, "w")) == NULL) {
+	    perror(filename);
+	    exit(-1);
+	}
+	
+	/* make up the header info it wants */
+	/* this comes from version 2.4, no pcap routine handy :-(  */
+	fhdr.magic = TCPDUMP_MAGIC;
+	fhdr.version_major = PCAP_VERSION_MAJOR;
+	fhdr.version_minor = PCAP_VERSION_MINOR;
+
+	fhdr.thiszone = 0;	/* don't have this info, just make it up */
+	fhdr.snaplen = 1000000;	/* don't have this info, just make it up */
+	fhdr.linktype = DLT_EN10MB; /* always Ethernet (10Mb) */
+	fhdr.sigfigs = 0;
+
+	/* write the header */
+	fwrite((char *)&fhdr, sizeof(fhdr), 1, f_savefile);
+
+	if (debug)
+	    fprintf(stderr,"Created pcap save file '%s'\n", filename);
+    }
+
+    /* create the packet header */
+    phdr.ts = current_time;
+    phdr.caplen = (unsigned)plast - (unsigned)pip + 1;
+    phdr.caplen += EH_SIZE;	/* add in the ether header */
+    phdr.len = phdr.caplen;	/* we don't know */
+
+    /* write the packet header */
+    fwrite(&phdr, sizeof(phdr), 1, f_savefile);
+
+    /* write a (bogus) ethernet header */
+    memset(&eth_header,0,EH_SIZE);
+    eth_header.ether_type = htons(ETHERTYPE_IP);
+    fwrite(&eth_header, sizeof(eth_header), 1, f_savefile);
+
+    /* write the IP/TCP parts */
+    wlen = phdr.caplen - EH_SIZE;	/* remove the ether header */
+    fwrite(pip, wlen, 1, f_savefile);
+}
+    
+
+
+#else /* GROK_TCPDUMP */
+
+void
+PcapSavePacket(
+    char *filename,
+    struct ip *pip,
+    void *plast)
+{
+    fprintf(stderr,"\
+Sorry, packet writing only supported with the pcap library\n\
+compiled into the program (See GROK_TCPDUMP)\n");
+    exit(-2);
+}
+
+
 #endif /* GROK_TCPDUMP */
