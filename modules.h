@@ -37,6 +37,9 @@ static char const rcsid_modules[] =
 /* For a registered module, enter its info into the following structures */
 
 struct module {
+    /* is this module being called? */
+    Bool	module_inuse;
+
     /* The SHORT name of the module, just for debugging */
     char	*module_name;
 
@@ -54,23 +57,48 @@ struct module {
     /* structure and the IP packet itself (in				*/
     /* host byte order).						*/
     void (*module_read) (
-	struct ip *pip,	/* the packet */
-	tcp_pair *ptp,	/* info I have about this connection */
-	void *plast);	/* pointer to last byte */
+	struct ip *pip,		/* the packet */
+	tcp_pair *ptp,		/* info I have about this connection */
+	void *plast,		/* pointer to last byte */
+	void *pmodstruct);	/* module-specific structure */
 
     /* Finish up routine.  Called after tcpdump is finished printing.	*/
     void (*module_done) (void);
 
     /* Usage message additions */
     void (*module_usage)();
+
+    /* If you want to be called as each file is processed */
+    void (*module_newfile)(
+	char *filename);	/* the name of the current file */
+
+    /* If you want to be called for each new connection */
+    /* If you want to attach a module-specifi structure to this */
+    /* tcp_pair, return its address and I'll hand it back to */
+    /* you with each read, otherwise return NULL  */
+    void *(*module_newconn)(
+	tcp_pair *ptp);		/* info I have about this connection */
 };
 
 
+/* module-specific header file (needs to give prototypes for the routines below) */
 #include "mod_http.h"	/* for the HTTP package */
 
-/* install the is_GLORP() routines supported */
+
+/* declare (install) the various module routines */
 struct module modules[] = {
-	{"http", "Http measurement package",
-	 http_init, http_read, http_done, http_usage},
-	{NULL,NULL},	/* You must NOT remove this entry */
+    /* this example is for the HTTP module */
+    {TRUE,			/* make FALSE if you don't want to call it at all */
+     "http",			/* name of the module */
+     "Http analysis package",	/* description of the module */
+     http_init,			/* routine to call to init the module */
+     http_read,			/* routine to pass each TCP segment */
+     http_done,			/* routine to call at program end */
+     http_usage,		/* routine to call to print module usage */
+     http_newfile,		/* routine to call on each new file */
+     http_newconn},		/* routine to call on each new connection */
+
+    /* list other modules here ... */
+
 };
+#define NUM_MODULES (sizeof(modules) / sizeof(struct module))
