@@ -653,8 +653,8 @@ printipv6(
     struct ipv6 *pipv6,
     void *plast)
 {
-    int ver = (pipv6->ip6_ver_tc_flabel & 0xF0000000) >> 28;
-    int tc = (pipv6->ip6_ver_tc_flabel & 0x0F000000) >> 24;
+    int ver = (ntohl(pipv6->ip6_ver_tc_flabel) & 0xF0000000) >> 28;
+    int tc  = (ntohl(pipv6->ip6_ver_tc_flabel) & 0x0F000000) >> 24;
     struct ipv6_ext *pheader;
     u_char nextheader;
 
@@ -662,8 +662,8 @@ printipv6(
     printf("\tIP  Srce: %s\n", ipv6addr2str(pipv6->ip6_saddr));
     printf("\tIP  Dest: %s\n", ipv6addr2str(pipv6->ip6_daddr));
     printf("\t   Class: %d\n", tc);
-    printf("\t    Flow: %d\n", (pipv6->ip6_ver_tc_flabel & 0x00FFFFFF));
-    printf("\t    PLEN: %d\n",pipv6->ip6_lngth);
+    printf("\t    Flow: %d\n", (ntohl(pipv6->ip6_ver_tc_flabel) & 0x00FFFFFF));
+    printf("\t    PLEN: %d\n", ntohs(pipv6->ip6_lngth));
     printf("\t    NXTH: %u (%s)\n",
 	   pipv6->ip6_nheader,
 	   ipv6_header_name(pipv6->ip6_nheader));
