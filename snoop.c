@@ -251,6 +251,10 @@ pread_f *is_snoop(void)
     /* OK, it's a snoop file */
 
 
+    /* convert some stuff to host byte order */
+    buf.snoop_version = ntohl(buf.snoop_version);
+    buf.mac_type = ntohl(buf.mac_type);
+    
     /* sanity check on snoop version */
     if (debug) {
 	printf("Snoop version: %d\n", buf.snoop_version);
