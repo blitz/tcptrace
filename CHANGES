@@ -149,3 +149,5 @@
   added call to print modules usage for "-hargs"
   added Eric's tcplib-generating module
   added check for ASCII input
+  added reading of arguments from resource file, then from envariable, and
+    then from the command line
