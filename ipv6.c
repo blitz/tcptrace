@@ -102,9 +102,13 @@ gettcp(
 
 	/* check the fragment field, if it's not the first fragment,
 	   it's useless */
-	if ((pip->ip_off&0xfc) != 0) {
-	    if (debug>1)
+	if ((ntohs(pip->ip_off)&0xfc) != 0) {
+	    if (debug>1) {
 		printf("gettcp: Skipping IPv4 non-initial fragment\n");
+		if (debug > 2) {
+		    printpacket(100,100,NULL,0,pip,plast);
+		}
+	    }
 	    return(NULL);
 	}
 
@@ -251,7 +255,7 @@ int getpayloadlength (struct ip *pip, void *plast)
 	pipv6 = (struct ipv6 *) pip;  /* how about all headers */
 	return ntohs(pipv6->ip6_lngth);
     }
-    return ntohs(pip->ip_len) - ntohs(pip->ip_hl) * 4;
+    return ntohs(pip->ip_len) - (pip->ip_hl * 4);
 }
 
 
@@ -296,7 +300,7 @@ int IP_SAMEADDR (ipaddr addr1, ipaddr addr2)
 
 
 
-#ifdef IPV6NOTFOUND
+#ifndef HAVE_INET_NTOP
 /*
  * inet_ntop: makes a string address of the 16 byte ipv6 address
  */
@@ -321,7 +325,7 @@ const char *inet_ntop(int af, const char *src, char *dst, size_t size)
     dst = temp;
     return dst;
 }
-#endif
+#endif /* HAVE_INET_NTOP */
 
 
 /* given an IPv4 IP address, return a pointer to a (static) ipaddr struct */
