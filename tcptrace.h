@@ -252,6 +252,8 @@ extern u_long udp_trace_count;
 #ifdef OLD
 /* test 2 IP addresses for equality */
 #define IP_SAMEADDR(addr1,addr2) (((addr1).s_addr) == ((addr2).s_addr))
+/* test for an IP address lower than the second IP address */
+#define IP_LOWADDR(addr1,addr2) (((addr1).s_addr) < ((addr2).s_addr))
 
 /* copy IP addresses */
 #define IP_COPYADDR(toaddr,fromaddr) ((toaddr).s_addr = (fromaddr).s_addr)
@@ -541,6 +543,38 @@ typedef struct tcphdr tcphdr;
 extern int num_tcp_pairs;	/* how many pairs are in use */
 extern tcp_pair **ttp;		/* array of pointers to allocated pairs */
 
+/* Wed Aug 20, 2003 - Ramani*/
+/*  Prior to version 6.4.11, the data structure for storing the snapshots of 
+ connections was a hashtable with linked lists. But this might lead to a 
+ worst case scenario when many connections hash to the same hash table entry.
+ In such a case, searching for the connections degrades to searching a linked 
+ list with a worst case complexity of O(number of connections in list). Hence 
+ the new version implements an AVL tree in place of linked list leading to a 
+ worst case complexity of O(ln(number of connections in tree)). 
+    The modified data structure was tested with dumpfiles containing lots of 
+ connections. A comparison of the profiles suggests an improvement in the time 
+ spent in the dotrace function. Even though the AVL tree implementation 
+ involves balancing the tree, since most of the accesses involve searching the 
+ data structure, AVL tree performs MUCH better than linked list.
+     The algorithms for AVL tree implementation are based on those explained in
+ "Data Structures and Program Design in C by Robert L.Kruse, Bruce P.Leung, 
+ Clovis L.Tondo". The source code for AVL tree implementation is from the 
+ Institute of Applied Iconoclasm who put up the source code at 
+ <http://www.purists.org>. We thank Georg for the source code whose mail 
+ address has been mentioned as <georg@purists.org> */
+
+/* Data structures for AVL tree */
+
+/* Which of a given node's subtrees is higher in the AVL tree */
+enum AVLSKEW {
+   EQUAL1, LEFT, RIGHT
+};
+                                                                                
+/* Did an insertion/deletion succeed and if we need to balance the AVL tree */
+enum AVLRES {
+   OK, BALANCE
+};
+
 /* Tue Nov 17, 1998 */
 /* prior to version 5.13, we kept a hash table of all of the connections. */
 /* The most recently-accessed connections move to the front of the bucket */
@@ -552,10 +586,12 @@ extern tcp_pair **ttp;		/* array of pointers to allocated pairs */
 /* hash table.  We only retrieve the connection record if the snapshot */
 /* matches. The result is that it works MUCH better when memory is low. */
 typedef struct ptp_snap {
+    enum AVLSKEW        skew;      /* Skew of the AVL tree node */
     tcp_pair_addrblock	addr_pair; /* just a copy */
-    struct ptp_snap	*next;
+    struct ptp_snap     *left, *right;  /* Left and right trees of the AVL node */
     void		*ptp;
 } ptp_snap;
+
 
 typedef struct ptp_ptr {
   struct ptp_ptr	*next;
@@ -819,6 +855,7 @@ Bool FileIsStdin(char *filename);
 struct tcb *ptp2ptcb(tcp_pair *ptp, struct ip *pip, struct tcphdr *ptcp);
 void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr);
 int IP_SAMEADDR (ipaddr addr1, ipaddr addr2);
+int IP_LOWADDR (ipaddr addr1, ipaddr addr2);
 void PcapSavePacket(char *filename, struct ip *pip, void *plast);
 void StringToArgv(char *buf, int *pargc, char ***pargv);
 void CopyAddr(tcp_pair_addrblock *, struct ip *pip,portnum,portnum);
@@ -847,6 +884,10 @@ void FreeQuadrant(quadrant *ptr);
 ptp_ptr *MakePtpPtr(void);
 void FreePtpPtr(ptp_ptr *ptr);
 void freequad(quadrant **);
+
+/* AVL tree support routines */
+enum AVLRES SnapInsert(ptp_snap **n, ptp_snap *new_node);
+enum AVLRES SnapRemove(ptp_snap **n, tcp_pair_addrblock address);
 
 /* high-level line drawing */
 PLINE new_line(PLOTTER pl, char *label, char *color);
@@ -890,6 +931,9 @@ of bits as specified in RFC 2481 and draft-ietf-tsvwg-ecn-04.txt */
 #define A2B 1
 #define B2A -1
 
+/* If the AVL node is to left or right in the AVL tree */
+#define LOW 2
+#define HIGH 3
 
 /*macros for maintaining the seqspace used for rexmit*/
 #define QUADSIZE	(0x40000000)

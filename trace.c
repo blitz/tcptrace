@@ -104,7 +104,6 @@ static void RemoveConn(const ptp_ptr *tcp_ptr);
 static void RemoveTcpPair(const ptp_ptr *tcp_ptr);
 
 
-
 /* options */
 Bool show_zero_window = TRUE;
 Bool show_rexmit = TRUE;
@@ -266,6 +265,7 @@ CopyAddr(
 	ptpa->hash = ptpa->a_address.un.ip4.s_addr
 	    + ptpa->b_address.un.ip4.s_addr
 	    + ptpa->a_port + ptpa->b_port;
+       
     } else { /* V6 */
 	int i;
 	struct ipv6 *pip6 = (struct ipv6 *)pip;
@@ -288,51 +288,117 @@ CopyAddr(
 	       ptpa->hash);
 }
 
-
+/* 
+ * To see if the packet is in same or opposite direction
+ * Also for AVL trees to see if a node is to the left or
+ * right of the current node
+ */
 
 int
 WhichDir(
     tcp_pair_addrblock *ptpa1,
     tcp_pair_addrblock *ptpa2)
 {
+   /* same as first packet */
+   
+   if ((ptpa1->a_port == ptpa2->a_port)) {
+      if ((ptpa1->b_port == ptpa2->b_port)) {
+	 if (IP_SAMEADDR(ptpa1->a_address, ptpa2->a_address)) {
+	    if (IP_SAMEADDR(ptpa1->b_address, ptpa2->b_address)) {
+	       if (debug > 3)
+		 printf("Packet in the same direction as first packet\n");
+	       return(A2B);  /* Found connection and same as first packet */
+	    }
+	    else if (IP_LOWADDR(ptpa1->b_address, ptpa2->b_address))
+	      return(LOW);  /* Connection to left in AVL tree */
+	    else
+	      return(HIGH); /* Connection to right in AVL tree */
+	 }
+	 else if (IP_LOWADDR(ptpa1->a_address, ptpa2->a_address))
+	   return(LOW);  /* Connection to left in AVL tree */
+	 else
+	   return(HIGH); /* Connection to right in AVL tree */
+      }
+   }
+   
+   /* reverse of first packet */
+   
+    if ((ptpa1->a_port == ptpa2->b_port)) {
+       if ((ptpa1->b_port == ptpa2->a_port)) {
+	  if (IP_SAMEADDR(ptpa1->a_address, ptpa2->b_address)) {
+	     if (IP_SAMEADDR(ptpa1->b_address, ptpa2->a_address)) {
+		if (debug > 3)
+		  printf("Packet in the reverse direction of first packet\n");
+		return(B2A);  /* Found connection and same as first packet */
+	     }
+	     else if (IP_LOWADDR(ptpa1->b_address, ptpa2->a_address))
+	       return(LOW);  /* Connection to left in AVL tree */
+	     else
+	       return(HIGH); /* Connection to right in AVL tree */
+	  }
+	  else if (IP_LOWADDR(ptpa1->a_address, ptpa2->b_address))
+	    return(LOW);  /* Connection to left in AVL tree */
+	  else
+	    return(HIGH); /* Connection to right in AVL tree */
+       }
+    }
 
-#ifdef BROKEN_COMPILER
-    /* sorry for the ugly nested 'if', but a 4-way conjunction broke my	*/
-    /* Optimizer (under 'gcc version cygnus-2.0.2')			*/
-
-    /* same as first packet */
-    if (IP_SAMEADDR(ptpa1->a_address, ptpa2->a_address))
-	if (IP_SAMEADDR(ptpa1->b_address, ptpa2->b_address))
-	    if ((ptpa1->a_port == ptpa2->a_port))
-		if ((ptpa1->b_port == ptpa2->b_port))
-		    return(A2B);
-
-    /* reverse of first packet */
-    if (IP_SAMEADDR(ptpa1->a_address, ptpa2->b_address))
-	if (IP_SAMEADDR(ptpa1->b_address, ptpa2->a_address))
-	    if ((ptpa1->a_port == ptpa2->b_port))
-		if ((ptpa1->b_port == ptpa2->a_port))
-		    return(B2A);
-#else /* BROKEN_COMPILER */
-    /* same as first packet */
-    if (IP_SAMEADDR(ptpa1->a_address, ptpa2->a_address) &&
-	IP_SAMEADDR(ptpa1->b_address, ptpa2->b_address) &&
-	(ptpa1->a_port == ptpa2->a_port) &&
-	(ptpa1->b_port == ptpa2->b_port))
-	return(A2B);
-
-    /* reverse of first packet */
-    if (IP_SAMEADDR(ptpa1->a_address, ptpa2->b_address) &&
-	IP_SAMEADDR(ptpa1->b_address, ptpa2->a_address) &&
-	(ptpa1->a_port == ptpa2->b_port) &&
-	(ptpa1->b_port == ptpa2->a_port))
-	return(B2A);
-#endif /* BROKEN_COMPILER */
-
-    /* different connection */
-    return(0);
+   if (ptpa1->a_port < ptpa1->b_port)
+     if (ptpa2->a_port < ptpa2->b_port) {
+	if (IP_LOWADDR(ptpa1->a_address, ptpa2->a_address))
+	  return(LOW); /* Connection to left in AVL tree */
+	else
+	  return(HIGH); /* Connection to right in AVL tree */
+     }
+                                                                                                                                   
+   if (ptpa1->a_port < ptpa1->b_port)
+     if (ptpa2->a_port > ptpa2->b_port) {
+	if (IP_LOWADDR(ptpa1->a_address, ptpa2->b_address))
+	  return(LOW); /* Connection to left in AVL tree */
+	else
+	  return(HIGH); /* Connection to right in AVL tree */
+     }
+   
+   if (ptpa1->a_port > ptpa1->b_port)
+     if (ptpa2->a_port < ptpa2->b_port) {
+	if (IP_LOWADDR(ptpa1->b_address, ptpa2->a_address))
+	  return(LOW); /* Connection to left in AVL tree */
+	else
+	  return(HIGH); /* Connection to right in AVL tree */
+     }
+                                                                                                                                   
+   if (ptpa1->a_port > ptpa1->b_port)
+     if (ptpa2->a_port > ptpa2->b_port) {
+	if (IP_LOWADDR(ptpa1->b_address, ptpa2->b_address))
+	  return(LOW); /* Connection to left in AVL tree */
+	else 
+	  return(HIGH); /* Connection to right in AVL tree */
+     }
+   
+   if (ptpa1->a_port == ptpa1->b_port) {
+      if (ptpa2->a_port < ptpa2->b_port) {
+	 if (IP_LOWADDR(ptpa1->a_address, ptpa2->a_address))
+	   return(LOW); /* Connection to left in AVL tree */
+	 else
+	   return(HIGH); /* Connection to right in AVL tree */
+      }
+      else if (ptpa2->a_port > ptpa2->b_port) {
+	 if (IP_LOWADDR(ptpa1->a_address, ptpa2->b_address))
+	   return(LOW); /* Connection to left in AVL tree */
+	 else
+	   return(HIGH); /* Connection to right in AVL tree */
+      }
+      else {
+	 if (IP_LOWADDR(ptpa1->a_address, ptpa2->a_address))
+	   return(LOW); /* Connection to left in AVL tree */
+	 else
+	   return(HIGH); /* Connection to right in AVL tree */
+      }
+   }
+   
+   /* different connection */
+   return(0);
 }
-
 
 
 int
@@ -341,13 +407,15 @@ SameConn(
     tcp_pair_addrblock *ptpa2,
     int      *pdir)
 {
-    /* if the hash values are different, they can't be the same */
-    if (ptpa1->hash != ptpa2->hash)
-	return(0);
-
-    /* OK, they hash the same, are they REALLY the same function */
-    *pdir = WhichDir(ptpa1,ptpa2);
-    return(*pdir != 0);
+   /* Check if the hash value is lesser or greater than the other */
+   if (ptpa1->hash < ptpa2->hash)
+     return(LOW);
+   else if (ptpa1->hash > ptpa2->hash)
+     return(HIGH);
+   
+   /* If hash is the same, check the position of node in the AVL tree */
+   *pdir = WhichDir(ptpa1,ptpa2);
+   return(*pdir); 
 }
 
 
@@ -590,7 +658,6 @@ static ptp_ptr	*closed_conn_list_head = NULL;
 static ptp_ptr	*closed_conn_list_tail = NULL;
 static timeval	last_update_time = {0, 0};
 
-
 static tcp_pair *
 FindTTP(
     struct ip *pip,
@@ -600,9 +667,8 @@ FindTTP(
 {
     ptp_snap **pptph_head = NULL;
     ptp_snap *ptph;
-    ptp_snap *ptph_last;
     tcp_pair_addrblock	tp_in;
-    int dir;
+    int dir, conn_status;
     hash hval;
     *tcp_ptr = NULL;
 
@@ -615,65 +681,73 @@ FindTTP(
 
     /* grab the hash value (already computed by CopyAddr) */
     hval = tp_in.hash % HASH_TABLE_SIZE;
-    
 
-    ptph_last = NULL;
     pptph_head = &ptp_hashtable[hval];
-    for (ptph = *pptph_head; ptph; ptph=ptph->next) {
-	++search_count;
+   
+    for (ptph = *pptph_head; ptph; ) {
+       ++search_count;
 
-	if (SameConn(&tp_in,&ptph->addr_pair,&dir)) {
-	    /* OK, this looks good, suck it into memory */
-	    tcb *thisdir;
-	    tcb *otherdir;
-	    tcp_pair *ptp;
-	    if (run_continuously) {
-	      ptp_ptr *ptr = (ptp_ptr *)ptph->ptp;
-	      ptp = ptr->ptp;
-	    }
-	    else {
-	      ptp = (tcp_pair *)ptph->ptp;
-	    }
+       /* Check if connection already seen or traverse the AVL tree
+	* to see the connection node position */
+       
+       conn_status = SameConn(&tp_in,&ptph->addr_pair,&dir); 
+       
+       if (conn_status == A2B || conn_status == B2A) {
 
-	    /* figure out which direction this packet is going */
-	    if (dir == A2B) {
-		thisdir  = &ptp->a2b;
-		otherdir = &ptp->b2a;
-	    } else {
-		thisdir  = &ptp->b2a;
-		otherdir = &ptp->a2b;
-	    }
-
-	    /* check for "inactive" */
-	    /* (this shouldn't happen anymore, they aren't on the list */
-	    if (ptp->inactive) {
- 	       if (!run_continuously)
-		 continue;
-               else {
-		 *tcp_ptr = (ptp_ptr *)ptph->ptp;
-                 return ((*tcp_ptr)->ptp);
-	       }
-	    }
-
-	    /* Fri Oct 16, 1998 */
-	    /* note: original heuristic was not sufficient.  Bugs */
-	    /* were pointed out by Brian Utterback and later by */
-	    /* myself and Mark Allman */
-
-	   if (!run_continuously) { 
-	    /* check for NEW connection on these same endpoints */
-	    /* 1) At least 4 minutes idle time */
-	    /*  OR */
-	    /* 2) heuristic (we might miss some) either: */
-	    /*    this packet has a SYN */
-	    /*    last conn saw both FINs and/or RSTs */
-	    /*    SYN sequence number outside last window (rfc 1122) */
-	    /*      (or less than initial Sequence, */
-	    /*       for wrap around trouble)  - Tue Nov  3, 1998*/
-	    /*  OR */
-	    /* 3) this is a SYN, last had a SYN, seq numbers differ */
-	    /* if so, mark it INACTIVE and skip from now on */
-	    if (0 && SYN_SET(ptcp)) {
+	  /* OK, this looks good, suck it into memory */
+	  
+	  tcb *thisdir;
+	  tcb *otherdir;
+	  tcp_pair *ptp;
+	  if (run_continuously) {
+	     ptp_ptr *ptr = (ptp_ptr *)ptph->ptp;
+	     ptp = ptr->ptp;
+	  }
+	  else {
+	     ptp = (tcp_pair *)ptph->ptp;
+	  }
+	  
+	  /* figure out which direction this packet is going */
+	  if (dir == A2B) {
+	     thisdir  = &ptp->a2b;
+	     otherdir = &ptp->b2a;
+	  } else {
+	     thisdir  = &ptp->b2a;
+	     otherdir = &ptp->a2b;
+	  }
+	  
+	  /* check for "inactive" */
+	  /* (this shouldn't happen anymore, they aren't on the list */
+	  if (ptp->inactive) {
+	     
+	     if (!run_continuously)
+	       continue;
+	     else {
+		*tcp_ptr = (ptp_ptr *)ptph->ptp;
+		return ((*tcp_ptr)->ptp);
+	     }
+	  }
+	  
+	  
+	  /* Fri Oct 16, 1998 */
+	  /* note: original heuristic was not sufficient.  Bugs */
+	  /* were pointed out by Brian Utterback and later by */
+	  /* myself and Mark Allman */
+	  
+	  if (!run_continuously) { 
+	     /* check for NEW connection on these same endpoints */
+	     /* 1) At least 4 minutes idle time */
+	     /*  OR */
+	     /* 2) heuristic (we might miss some) either: */
+	     /*    this packet has a SYN */
+	     /*    last conn saw both FINs and/or RSTs */
+	     /*    SYN sequence number outside last window (rfc 1122) */
+	     /*      (or less than initial Sequence, */
+	     /*       for wrap around trouble)  - Tue Nov  3, 1998*/
+	     /*  OR */
+	     /* 3) this is a SYN, last had a SYN, seq numbers differ */
+	     /* if so, mark it INACTIVE and skip from now on */
+	     if (0 && SYN_SET(ptcp)) {
 		/* better keep this debugging around, it keeps breaking */
 		printf("elapsed: %f sec\n",
 		       elapsed(ptp->last_time,current_time)/1000000);
@@ -690,69 +764,72 @@ FindTTP(
 		       SEQ_GREATERTHAN(ntohl(ptcp->th_seq),otherdir->windowend));
 		printf("SEQ_LESSTHAN init syn: %d\n", 
 		       SEQ_LESSTHAN(ntohl(ptcp->th_seq),thisdir->syn));
-	    } 
-
-	    if (/* rule 1 */
-		(elapsed(ptp->last_time,current_time)/1000000 > nonreal_live_conn_interval)//(4*60)) - Using nonreal_live_conn_interval instead of the 4 mins heuristic
-		|| /* rule 2 */
-		((SYN_SET(ptcp)) && 
-		 (((thisdir->fin_count >= 1) ||
-		   (otherdir->fin_count >= 1)) ||
-		  ((thisdir->reset_count >= 1) ||
-		   (otherdir->reset_count >= 1))) &&
-		 (SEQ_GREATERTHAN(ntohl(ptcp->th_seq),otherdir->windowend) ||
-		  SEQ_LESSTHAN(ntohl(ptcp->th_seq),thisdir->syn)))
-		|| /* rule 3 */
-		(SYN_SET(ptcp) &&
-		 (thisdir->syn_count > 1) &&
-		 (thisdir->syn != ntohl(ptcp->th_seq)))) {
+	     } 
+	     
+	     if (/* rule 1 */
+		 (elapsed(ptp->last_time,current_time)/1000000 > nonreal_live_conn_interval)//(4*60)) - Using nonreal_live_conn_interval instead of the 4 mins heuristic
+		 || /* rule 2 */
+		 ((SYN_SET(ptcp)) && 
+		  (((thisdir->fin_count >= 1) ||
+		    (otherdir->fin_count >= 1)) ||
+		   ((thisdir->reset_count >= 1) ||
+		    (otherdir->reset_count >= 1))) &&
+		  (SEQ_GREATERTHAN(ntohl(ptcp->th_seq),otherdir->windowend) ||
+		   SEQ_LESSTHAN(ntohl(ptcp->th_seq),thisdir->syn)))
+		 || /* rule 3 */
+		 (SYN_SET(ptcp) &&
+		  (thisdir->syn_count > 1) &&
+		  (thisdir->syn != ntohl(ptcp->th_seq)))) {
 		
 		if (debug>1) {
-		    printf("%s: Marking %p %s<->%s INACTIVE (idle: %f sec)\n",
-			   ts2ascii(&current_time),
-			   ptp,
-			   ptp->a_endpoint, ptp->b_endpoint,
-			   elapsed(ptp->last_time,
-				   current_time)/1000000);
-		    if (debug > 3)
-			PrintTrace(ptp);
+		   printf("%s: Marking %p %s<->%s INACTIVE (idle: %f sec)\n",
+			  ts2ascii(&current_time),
+			  ptp,
+			  ptp->a_endpoint, ptp->b_endpoint,
+			  elapsed(ptp->last_time,
+				  current_time)/1000000);
+		   if (debug > 3)
+		     PrintTrace(ptp);
 		}
-
+		
 		/* we won't need this one anymore, remove it from the */
 		/* hash table so we won't have to skip over it */
 		ptp->inactive = TRUE;
-		if (ptph == *pptph_head) {
-		    /* head of the list */
-		    *pptph_head = ptph->next;
-		} else {
-		    /* inside the list */
-		    ptph_last->next = ptph->next;
-		}
-		continue;
-	    }
-	   }
-
-	    /* move to head of access list (unless already there) */
-	    if (ptph != *pptph_head) {
-		ptph_last->next = ptph->next; /* unlink */
-		ptph->next = *pptph_head;     /* move to head */
-		*pptph_head = ptph;
-	    }
-
-	    if (run_continuously) 
-	      (*tcp_ptr) = (ptp_ptr *)ptph->ptp;
-
-	    *pdir = dir;
-	    return (ptp);
-	}
-	ptph_last = ptph;
+		
+		if (debug > 4)
+		  printf("Removing connection from hashtable:\
+                          FindTTP() calling SnapRemove()\n");
+		
+		/* Removes connection snapshot from AVL tree */
+		SnapRemove(pptph_head, ptph->addr_pair); 
+		
+		break;
+	     }
+	  }
+	  
+	  if (run_continuously) 
+	    (*tcp_ptr) = (ptp_ptr *)ptph->ptp;
+	  
+	  *pdir = dir;
+	  return (ptp);
+       }
+       
+       /* Traverse the AVL tree based on whether its on the left or right subtree */
+       else if (conn_status == LOW)
+	 ptph = ptph->left;
+       else if (conn_status == HIGH)
+	 ptph = ptph->right;
+       else if (!conn_status)
+	 break;
     }
-
-    /* Didn't find it, make a new one, if possible */
-    if (0) {
+   
+   
+   /* Didn't find it, make a new one, if possible */
+   if (0) {
       printf("trace.c:FindTTP() calling MakePtpSnap()\n");
-    }
+   }
     ptph = MakePtpSnap();
+  
     if (run_continuously) {
       ptp_ptr *ptr = (ptp_ptr *)MakePtpPtr();
       ptr->prev = NULL;
@@ -789,20 +866,22 @@ FindTTP(
       ptph->addr_pair = tmp->addr_pair;
       ptph->ptp = tmp;
     }
-    
-    /* put at the head of the access list */
-    ptph->next = *pptph_head;
-    *pptph_head = ptph;
 
-    *pdir = A2B;
-    if (run_continuously) {
+   /* To insert the new connection snapshot into the AVL tree */
+   
+   if (debug > 4)
+     printf("Inserting connection into hashtable:\
+             FindTTP() calling SnapInsert() \n");
+   SnapInsert(pptph_head, ptph);
+   
+   *pdir = A2B;
+   if (run_continuously) {
       *tcp_ptr = (ptp_ptr *)ptph->ptp;
       return ((*tcp_ptr)->ptp);
-    }
-    else
-      return (tcp_pair *)(ptph->ptp);
+   }
+   else
+     return (tcp_pair *)(ptph->ptp);
 }
-     
 
 static void 
 UpdateConnLists(
@@ -1023,51 +1102,25 @@ static void
 RemoveConn(
 	   const ptp_ptr *tcp_ptr)
 {
-  ptp_snap	*ptph;
-  ptp_ptr	*ptr;
   hash		hval;
-
-  if (0) {
-    printf("trace.c: RemoveConn(%p %s<->%s) called\n", 
-            tcp_ptr->ptp, tcp_ptr->ptp->a_endpoint, tcp_ptr->ptp->b_endpoint);
-  }
-
-  ModulesPerOldConn(tcp_ptr->ptp);
-
-  hval = tcp_ptr->ptp->addr_pair.hash % HASH_TABLE_SIZE;
-
-  if (ptp_hashtable[hval]) {
-    /* if the needed connection is at the beginning of the list, then remove it
-       and don't go trough the list */
-    ptr = (ptp_ptr *)ptp_hashtable[hval]->ptp;
-    if (ptr->ptp == tcp_ptr->ptp) {
-      ptph = ptp_hashtable[hval];
-      ptp_hashtable[hval] = ptp_hashtable[hval]->next;
-      RemoveTcpPair(tcp_ptr);
-      if (0) {
-	printf("trace.c:RemoveConn() calling FreePtpSnap()\n");
-      }
-      FreePtpSnap(ptph);
-
-      return;
-    }
-    /* the first ptp_snap on the list is not what we need  - go through 
-       the list */
-    for (ptph = ptp_hashtable[hval]; ptph->next; ptph = ptph->next) {
-      ptr = (ptp_ptr *)ptph->next->ptp;
-      if (ptr->ptp == tcp_ptr->ptp) {
-      /* delete ptph->next */
-	ptp_snap *temp_ptph = ptph->next;
-	ptph->next = temp_ptph->next;
-	RemoveTcpPair(tcp_ptr);
-	if (0) {
-	  printf("trace.c:RemoveConn() calling FreePtpSnap()\n");
-	}
-	FreePtpSnap(temp_ptph);
-	return;
-      }  
-    }
-  }
+   
+   if (0) {
+      printf("trace.c: RemoveConn(%p %s<->%s) called\n", 
+	     tcp_ptr->ptp, tcp_ptr->ptp->a_endpoint, tcp_ptr->ptp->b_endpoint);
+   }
+   
+   ModulesPerOldConn(tcp_ptr->ptp);
+   
+   hval = tcp_ptr->ptp->addr_pair.hash % HASH_TABLE_SIZE;
+   
+   /* Remove the connection snapshot from AVL tree */
+   if (debug > 4)
+     printf("Removing connection from hashtable:\
+             RemoveConn() calling SnapRemove()\n");
+   
+   SnapRemove(&ptp_hashtable[hval], tcp_ptr->ptp->addr_pair);
+   
+   RemoveTcpPair(tcp_ptr);
 }
 
 
@@ -1925,7 +1978,7 @@ dotrace(
 	    ++thisdir->ack_pkts;
 
         if (run_continuously) {
-            UpdateConnLists(tcp_ptr, ptcp); /*Ramani: Call this even in nocontinuous mode */
+            UpdateConnLists(tcp_ptr, ptcp); 
         }
 	return(ptp_save);
     }
