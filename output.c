@@ -316,9 +316,12 @@ PrintTrace(
 
     /* do the throughput calcs */
     etime /= 1000000.0;  /* convert to seconds */
-    StatLineF("throughput","Bps","%8.0f",
-	      (double) (pab->data_bytes-pab->rexmit_bytes) / etime,
-	      (double) (pba->data_bytes-pba->rexmit_bytes) / etime);
+    if (etime == 0.0)
+	StatLineI("throughput","","%s",(int)"NA",(int)"NA");
+    else
+	StatLineF("throughput","Bps","%8.0f",
+		  (double) (pab->data_bytes-pab->rexmit_bytes) / etime,
+		  (double) (pba->data_bytes-pba->rexmit_bytes) / etime);
 
     if (print_rtt) {
 	fprintf(stdout,"\n");
