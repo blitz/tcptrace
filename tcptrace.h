@@ -131,6 +131,7 @@ typedef struct tcb {
     u_int	mss;
     Bool	f1323_ws;	/* did he request 1323 window scaling? */
     Bool	f1323_ts;	/* did he request 1323 timestamps? */
+    Bool	fsack_req;	/* did he request SACKs? */
     u_char	window_scale;
 
     /* statistics added */
@@ -144,6 +145,7 @@ typedef struct tcb {
     u_long	win_tot;
     u_long	win_zero_ct;
     u_long	min_seq;
+    u_long	max_seq;
     u_long	packets;
     u_char	syn_count;
     u_char	fin_count;
@@ -151,6 +153,7 @@ typedef struct tcb {
     u_long	min_seg_size;
     u_long	max_seg_size;
     u_long	out_order_pkts;	/* out of order packets */
+    u_long	sacks_sent;	/* sacks returned */
 
     /* RTT stats for singly-transmitted segments */
     u_long	rtt_min;
@@ -186,6 +189,7 @@ typedef struct tcb {
     double	thru_lastthru_t; /* last average throughput value */
     PLOTTER	thru_plotter;	/* throughput data dump file */
     timeval	thru_lasttime;	/* time of previous segment */
+
     
     /* Time Sequence Graph info for this one */
     PLOTTER	tsg_plotter;
@@ -385,14 +389,29 @@ struct tcp_options *ParseOptions(struct tcphdr *ptcp);
 #define	SEQ_GREATERTHAN(a, b)	(SEQCMP(a,b) > 0)
 
 
+/* SACK TCP options (not an RFC yet, mostly from draft and RFC 1072) */
+/* I'm assuming, for now, that the draft version is correct */
+/* sdo -- Tue Aug 20, 1996 */
+#define	TCPOPT_SACK_PERM 4	/* sack-permitted option */
+#define	TCPOPT_SACK      5	/* sack attached option */
+#define	MAX_SACKS       10	/* max number of sacks per segment (rfc1072) */
+typedef struct sack_block {
+    seqnum	sack_left;	/* left edge */
+    seqnum	sack_right;	/* right edge */
+} sack_block;
+
 /* RFC 1323 TCP options (not usually in tcp.h yet) */
 #define	TCPOPT_WS	3	/* window scaling */
 #define	TCPOPT_TS	8	/* timestamp */
 struct tcp_options {
-    short	mss;	/* maximum segment size 	*/
-    char	ws;	/* window scale (1323) 		*/
-    long	tsval;	/* Time Stamp Val (1323)	*/
-    long	tsecr;	/* Time Stamp Echo Reply (1323)	*/
+    short	mss;		/* maximum segment size 	*/
+    char	ws;		/* window scale (1323) 		*/
+    long	tsval;		/* Time Stamp Val (1323)	*/
+    long	tsecr;		/* Time Stamp Echo Reply (1323)	*/
+
+    Bool	sack_req;	/* sacks requested 		*/
+    char	sack_count;	/* sack count in this packet */
+    sack_block	sacks[MAX_SACKS]; /* sack blocks */
 };
 
 

@@ -164,6 +164,18 @@ printtcp_packet(
 	if (ptcpo->tsval != -1) {
 	    printf(" TS(%ld,%ld)", ptcpo->tsval, ptcpo->tsecr);
 	}
+	if (ptcpo->sack_req) {
+	    printf(" SACKREQ");
+	}
+	if (ptcpo->sack_count >= 0) {
+	    int i;
+	    printf(" SACKS(%d)", ptcpo->sack_count);
+	    for (i=0; i < ptcpo->sack_count; ++i) {
+		printf("[0x%08lx-0x%08lx]",
+		       ptcpo->sacks[i].sack_left,
+		       ptcpo->sacks[i].sack_right);
+	    }
+	}
         printf("\n");
     }
     if (tcp_data_length > 0)

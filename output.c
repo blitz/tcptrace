@@ -259,11 +259,21 @@ PrintTrace(
 		       pab->syn_count, pab->fin_count),(int)bufl),
 	      (sprintf(bufr,"%d/%d",
 		       pba->syn_count, pba->fin_count),(int)bufr));
-    StatlineI("req 1323 ws/ts","","%s",
-	      sprintf(bufl,"%c/%c",
-		      pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),
-	      sprintf(bufl,"%c/%c",
-		      pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'));
+    if (pab->f1323_ws || pba->f1323_ws || pab->f1323_ts || pba->f1323_ts) {
+	StatlineI("req 1323 ws/ts","","%s",
+		  sprintf(bufl,"%c/%c",
+			  pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),
+		  sprintf(bufl,"%c/%c",
+			  pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'));
+    }
+    if (pab->fsack_req || pba->fsack_req) {
+	StatlineI("req sack","","%c",
+		  pab->fsack_req?'Y':'N',
+		  pba->fsack_req?'Y':'N');
+	StatlineI("sacks sent","","%d",
+		  pab->sacks_sent,
+		  pba->sacks_sent);
+    }
     StatlineI("mss requested","bytes","%8lu", pab->mss, pba->mss);
     StatlineI("max segm size","bytes","%8lu",
 	      pab->max_seg_size,
