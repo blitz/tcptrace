@@ -1108,30 +1108,32 @@ dotrace(
 	    plotter_diamond(from_tsgpl, current_time, SeqRep(thisdir,start));
 	    plotter_text(from_tsgpl, current_time,
 			 SeqRep(thisdir,start+1), "a",
-			 SeqRep(thisdir,end), "a",
+			 hw_dup?"HD SYN":
 			 retrans_num_bytes>0?"R SYN":
 			 "SYN");
 	    plotter_uarrow(from_tsgpl, current_time, SeqRep(thisdir,start+1));
-	    plotter_uarrow(from_tsgpl, current_time, SeqRep(thisdir,end));
+	    plotter_line(from_tsgpl,
 			 current_time, SeqRep(thisdir,start),
 			 current_time, SeqRep(thisdir,start+1));
-			 current_time, SeqRep(thisdir,end));
+	} else if (FIN_SET(ptcp)) {	/* FIN  */
 	   /* Wed Sep 18, 2002 - bugfix
+	    /* we'll plot the FIN from 'end' to 'end+1' because the
+	       segment might have data in it too (normally not) */
 	    plotter_perm_color(from_tsgpl,
 			       hw_dup?hw_dup_color:
 			       retrans_num_bytes>0?retrans_color:
 			       synfin_color);
-	    plotter_box(from_tsgpl, current_time, SeqRep(thisdir,start));
+	    plotter_box(from_tsgpl, current_time, SeqRep(thisdir,end));
 			 SeqRep(thisdir,end+1), "a",
-			 SeqRep(thisdir,end), "a",
+			 hw_dup?"HD FIN":
 			 retrans_num_bytes>0?"R FIN":
 			 "FIN");
 	   
 
-	    plotter_uarrow(from_tsgpl, current_time, SeqRep(thisdir,end));
+	    plotter_uarrow(from_tsgpl, current_time, SeqRep(thisdir,end+1));
 	    plotter_line(from_tsgpl,
-			 current_time, SeqRep(thisdir,start),
-			 current_time, SeqRep(thisdir,end));
+			 current_time, SeqRep(thisdir,end),
+			 current_time, SeqRep(thisdir,end+1));
 	    if (hw_dup) {
 		plotter_perm_color(from_tsgpl, hw_dup_color);
 	    } else if (retrans) {
