@@ -27,7 +27,6 @@
 
 
 #include "tcptrace.h"
-#include <netinet/udp.h>
 
 /* the names of IPv6 extensions that we understand */
 char *
