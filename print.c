@@ -10,7 +10,6 @@
  */
 
 #include "tcptrace.h"
-#include <ctype.h>
 
 
 /* local routines */
@@ -80,39 +79,9 @@ printip(
 	(ntohs(pip->ip_p) == IPPROTO_EGP)?"(EGP)":
 	"");
 
+    printf("\t     TTL: %d\n", pip->ip_ttl);
+    printf("\t     LEN: %d\n", ntohs(pip->ip_len));
     printf("\t      ID: %d\n", ntohs(pip->ip_id));
-}
-
-
-static char *
-ParenServiceName(
-     long port)
-{
-    char *pname;
-    static char buf[80];
-
-    pname = ServiceName(port);
-    if (!pname || isdigit(*pname))
-	return("");
-
-    sprintf(buf,"(%s)",pname);
-    return(buf);
-}
-
-
-static char *
-ParenHostName(
-     long addr)
-{
-    char *pname;
-    static char buf[80];
-
-    pname = HostName(addr);
-    if (!pname || isdigit(*pname))
-	return("");
-
-    sprintf(buf,"(%s)",pname);
-    return(buf);
 }
 
 
@@ -184,3 +153,37 @@ printpacket(
 	return;
     printtcp(pip);
 }
+
+
+static char *
+ParenServiceName(
+     long port)
+{
+    char *pname;
+    static char buf[80];
+
+    pname = ServiceName(port);
+    if (!pname || isdigit(*pname))
+	return("");
+
+    sprintf(buf,"(%s)",pname);
+    return(buf);
+}
+
+
+static char *
+ParenHostName(
+     long addr)
+{
+    char *pname;
+    static char buf[80];
+
+    pname = HostName(addr);
+    if (!pname || isdigit(*pname))
+	return("");
+
+    sprintf(buf,"(%s)",pname);
+    return(buf);
+}
+
+

@@ -23,6 +23,7 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <netdb.h>
+#include <ctype.h>
 
 
 
