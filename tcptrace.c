@@ -462,8 +462,12 @@ Dump File Names\n\
     fprintf(stderr,"\nExtended boolean options, mostly for graphing options\n");
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
-	fprintf(stderr,"  --%-20s %s\n", pbop->bool_optname, pbop->bool_descr);
-	fprintf(stderr,"  --no%-18s DON'T %s\n", pbop->bool_optname, pbop->bool_descr);
+	fprintf(stderr,"  --%-20s %s %s\n",
+		pbop->bool_optname, pbop->bool_descr,
+		(*pbop->bool_popt == pbop->bool_default)?"(default)":"");
+	fprintf(stderr,"  --no%-18s DON'T %s %s\n",
+		pbop->bool_optname, pbop->bool_descr,
+		(*pbop->bool_popt != pbop->bool_default)?"(default)":"");
     }
 
     fprintf(stderr,"\n\
