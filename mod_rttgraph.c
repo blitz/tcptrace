@@ -81,7 +81,7 @@ static struct rttgraph_info {
 static struct rttgraph_info *MakeRttgraphRec();
 static void MakeBuckets(struct hist *phist, u_int num_buckets);
 static void AddSample(struct samples *psamp, u_short sample);
-static void PlotHist(FILE *f,struct hist *phist);
+static void PlotHist(MFILE *f,struct hist *phist);
 static void PlotOne(struct rttgraph_info *prttg);
 
 
@@ -262,7 +262,7 @@ DoHist(
 {
     int i;
     struct hist3d hist3d;
-    FILE *f;
+    MFILE *f;
     u_long sum;
     int slice;
     int base_z;
@@ -330,16 +330,16 @@ DoHist(
     }
 
 
-    if ((f = fopen("rtt.dat","w")) == NULL) {
+    if ((f = Mfopen("rtt.dat","w")) == NULL) {
 	perror("rtt.dat");
 	exit (1);
     }
     printf("Total Histogram\n");
     hist3d.rtt.z = -1;
     PlotHist(f,&hist3d.rtt);
-    fclose(f);
+    Mfclose(f);
 
-    if ((f = fopen("rtt3d.dat","w")) == NULL) {
+    if ((f = Mfopen("rtt3d.dat","w")) == NULL) {
 	perror("rtt.dat");
 	exit (1);
     }
@@ -367,14 +367,14 @@ DoHist(
     }
 #endif /* BROKEN */
 
-    fclose(f);
+    Mfclose(f);
 }
 
 
 
 static void
 PlotHist(
-    FILE *f,
+    MFILE *f,
     struct hist *phist)
 {
     int ms;
@@ -392,11 +392,11 @@ PlotHist(
 
 	printf("  %4d  %5lu  %5.2f\n", ms, count, 100 * percent);
 	if (z == -1)
-	    fprintf(f,"%4d  %.2f\n", ms, 100 * percent);
+	    Mfprintf(f,"%4d  %.2f\n", ms, 100 * percent);
 	else
-	    fprintf(f,"%4d  %d %.2f\n", ms, z, 100 * percent);
+	    Mfprintf(f,"%4d  %d %.2f\n", ms, z, 100 * percent);
     }
-    fprintf(f,"\n");
+    Mfprintf(f,"\n");
 }
 
 

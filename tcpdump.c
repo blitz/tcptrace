@@ -282,7 +282,7 @@ PcapSavePacket(
     struct ip *pip,
     void *plast)
 {
-    static FILE *f_savefile = NULL;
+    static MFILE *f_savefile = NULL;
     struct pcap_pkthdr phdr;
     int wlen;
 
@@ -290,7 +290,7 @@ PcapSavePacket(
 	struct pcap_file_header fhdr;
 
 	/* try to open the file */
-	if ((f_savefile = fopen(filename, "w")) == NULL) {
+	if ((f_savefile = Mfopen(filename, "w")) == NULL) {
 	    perror(filename);
 	    exit(-1);
 	}
@@ -307,7 +307,7 @@ PcapSavePacket(
 	fhdr.sigfigs = 0;
 
 	/* write the header */
-	fwrite((char *)&fhdr, sizeof(fhdr), 1, f_savefile);
+	Mfwrite((char *)&fhdr, sizeof(fhdr), 1, f_savefile);
 
 	if (debug)
 	    fprintf(stderr,"Created pcap save file '%s'\n", filename);
@@ -322,16 +322,16 @@ PcapSavePacket(
     phdr.len = EH_SIZE + ntohs(PIP_LEN(pip));	/* probably this */
 
     /* write the packet header */
-    fwrite(&phdr, sizeof(phdr), 1, f_savefile);
+    Mfwrite(&phdr, sizeof(phdr), 1, f_savefile);
 
     /* write a (bogus) ethernet header */
     memset(&eth_header,0,EH_SIZE);
     eth_header.ether_type = htons(ETHERTYPE_IP);
-    fwrite(&eth_header, sizeof(eth_header), 1, f_savefile);
+    Mfwrite(&eth_header, sizeof(eth_header), 1, f_savefile);
 
     /* write the IP/TCP parts */
     wlen = phdr.caplen - EH_SIZE;	/* remove the ether header */
-    fwrite(pip, wlen, 1, f_savefile);
+    Mfwrite(pip, wlen, 1, f_savefile);
 }
     
 

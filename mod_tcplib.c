@@ -233,7 +233,7 @@ static struct tcplibstats {
     int tcplib_breakdown_interval[NUM_APPS];
 
     /* histogram files */
-    FILE *hist_file;
+    MFILE *hist_file;
 
     /* for NNTP, we track: */
     /* # items per connection */
@@ -1832,7 +1832,7 @@ static void setup_breakdown(void)
 	char *prefix = dtype_names[ix];
 	char *filename = namedfile(prefix,TCPLIB_BREAKDOWN_GRAPH_FILE);
 
-	if (!(pstats->hist_file = fopen(filename, "w"))) {
+	if (!(pstats->hist_file = Mfopen(filename, "w"))) {
 	    perror(filename);
 	    exit(1);
 	}
@@ -1868,7 +1868,7 @@ static void update_breakdown(
     
     /* Displays the interval number.  A new histogram line is displayed
      * at TIMER_VALUE seconds. */
-    fprintf(pstats->hist_file, "%d\t", pstats->interval_count);
+    Mfprintf(pstats->hist_file, "%d\t", pstats->interval_count);
 
     /* Display some characters for each type of traffic */
     for(i = 0; i < NUM_APPS; i++) {
@@ -1887,13 +1887,13 @@ static void update_breakdown(
 
 	/* Print one hash char per count. */
 	while(count > 0) {
-	    fprintf(pstats->hist_file, "%c", breakdown_hash_char[i]);
+	    Mfprintf(pstats->hist_file, "%c", breakdown_hash_char[i]);
 	    count--;
 	}
     }
 
     /* After we've done all the applications, end the line */
-    fprintf(pstats->hist_file, "\n");
+    Mfprintf(pstats->hist_file, "\n");
 
     /* Zero out the counters */
     for(i = 0; i < NUM_APPS; i++) {
@@ -1983,7 +1983,7 @@ static void do_final_breakdown(
     struct tcplibstats *pstats)
 {
     module_conninfo *pmc;
-    FILE* fil;        /* File descriptor for the traffic breakdown file */
+    MFILE* fil;        /* File descriptor for the traffic breakdown file */
     long file_pos;    /* Offset within the traffic breakdown file */
     u_long num_parallel_http = 0;
 
@@ -1997,13 +1997,13 @@ static void do_final_breakdown(
     char *header = "stub             smtp\tnntp\ttelnet\tftp\thttp\n";
 #endif /* INCLUDE_PHONE_CONV */
 
-    if (!(fil = fopen(filename, "a"))) {
+    if (!(fil = Mfopen(filename, "a"))) {
 	perror("Opening Breakdown File");
 	exit(1);
     }
 
-    fseek(fil, 0, SEEK_END);
-    file_pos = ftell(fil);
+    Mfseek(fil, 0, SEEK_END);
+    file_pos = Mftell(fil);
 
     /* Basically, we're checking to see if this file has already been
      * used.  We have the capability to both start a new set of data
@@ -2012,7 +2012,7 @@ static void do_final_breakdown(
      * have the effect of creating a hybrid traffic pattern, that matches
      * neither of the sources, but shares characteristics of both. */
     if (file_pos < strlen(header)) {
-	fprintf(fil, "%s", header);
+	Mfprintf(fil, "%s", header);
     }
 
     /* We only do this next part if we actually have a file name.  In
@@ -2030,7 +2030,7 @@ static void do_final_breakdown(
 	/* The breakdown file line associated with each trace file is
 	 * prefaced with the trace file's name.  This was part of the
 	 * original TCPLib format. */
-	fprintf(fil, "%-16s ", current_file);
+	Mfprintf(fil, "%-16s ", current_file);
 
 	/* count the connections of each protocol type */
 	for (pmc = module_conninfo_tail; pmc ; pmc = pmc->prev) {
@@ -2085,32 +2085,32 @@ static void do_final_breakdown(
 
 	/* Print out each of the columns we like */
 	/* SMTP */
-	fprintf(fil, "%.4f\t",
+	Mfprintf(fil, "%.4f\t",
 		((float)breakdown_protocol[TCPLIBPORT_SMTP])/ num_tcp_pairs);
 
 	/* NNTP */
-	fprintf(fil, "%.4f\t",
+	Mfprintf(fil, "%.4f\t",
 		((float)breakdown_protocol[TCPLIBPORT_NNTP])/ num_tcp_pairs);
 
 	/* TELNET */
-	fprintf(fil, "%.4f\t",
+	Mfprintf(fil, "%.4f\t",
 		((float)breakdown_protocol[TCPLIBPORT_TELNET])/ num_tcp_pairs);
 
 	/* FTP */
-	fprintf(fil, "%.4f\t",
+	Mfprintf(fil, "%.4f\t",
 		((float)breakdown_protocol[TCPLIBPORT_FTPCTRL])/ num_tcp_pairs);
 
 	/* HTTP */
-	fprintf(fil, "%.4f\t",
+	Mfprintf(fil, "%.4f\t",
 		((float)breakdown_protocol[TCPLIBPORT_HTTP])/ num_tcp_pairs);
 
 #ifdef UNDEF
 	/* FTP Data */
-	fprintf(fil, "%.4f\t",
+	Mfprintf(fil, "%.4f\t",
 		((float)breakdown_protocol[TCPLIBPORT_FTPDATA])/ num_tcp_pairs);
 
 	/* Parallel HTTP */
-	fprintf(fil, "%.4f\t",
+	Mfprintf(fil, "%.4f\t",
 		((float)num_parallel_http)/ num_tcp_pairs);
 #endif /* UNDEF */
 
@@ -2126,14 +2126,14 @@ static void do_final_breakdown(
 	 * traffic patterns, the interval between converstaions is of
 	 * utmost importance, especially as far as the scalability of
 	 * traffic is concerned. */
-	fprintf(fil, "%.4f\t%.4f", (float)0, (float)0);
+	Mfprintf(fil, "%.4f\t%.4f", (float)0, (float)0);
 #endif /* INCLUDE_PHONE_CONV */
-	fprintf(fil, "\n");
+	Mfprintf(fil, "\n");
 
     }
 
-    fclose(fil);
-    fclose(pstats->hist_file);
+    Mfclose(fil);
+    Mfclose(pstats->hist_file);
 }
 
 static void do_all_final_breakdowns(void)
@@ -3022,7 +3022,7 @@ StoreCounters(
     int bucketsize,
     dyn_counter psizes)
 {
-    FILE *fil;
+    MFILE *fil;
     int running_total = 0;
     int lines = 0;
 
@@ -3039,12 +3039,12 @@ StoreCounters(
 	}
     }
 
-    if (!(fil = fopen(filename, "w"))) {
+    if (!(fil = Mfopen(filename, "w"))) {
 	perror(filename);
 	exit(1);
     }
 
-    fprintf(fil, "%s\t%s\tRunning Sum\tCounts\n", header1, header2);
+    Mfprintf(fil, "%s\t%s\tRunning Sum\tCounts\n", header1, header2);
 
     if (psizes == NULL) {
 	if (ldebug>1)
@@ -3068,21 +3068,21 @@ StoreCounters(
 	    if (count) {
 		if (first) {
 		    /* see comments above! */
-		    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-			    (float)(value), 0.0, 0, 0);
+		    Mfprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
+			     (float)(value), 0.0, 0, 0);
 		    first = FALSE;
 		}
-		fprintf(fil, "%.3f\t%.4f\t%d\t%lu\n",
-			(float)(value+gran),
-			(float)running_total/(float)total_counter,
-			running_total,
-			count);
+		Mfprintf(fil, "%.3f\t%.4f\t%d\t%lu\n",
+			 (float)(value+gran),
+			 (float)running_total/(float)total_counter,
+			 running_total,
+			 count);
 		++lines;
 	    }
 	}
     }
 
-    fclose(fil);
+    Mfclose(fil);
 
     if (ldebug>1)
 	printf("  Stored %d values into %d lines of '%s'\n",
