@@ -117,5 +117,9 @@
   big lint cleanup
   added support for "configure" to simplify cross-platform stuff
   added Mark's "data xmit time" code
+4.1.4
+  minor LINT fix in print.c
+  added  ECHO/ECHOREPL CC/CCNEW/CCECHO to understood options
+
 
 
