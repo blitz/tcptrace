@@ -37,7 +37,7 @@ CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 # for general Unix boxes (I hope)
 # LDLIBS = -lpcap -lm
 #
-LDLIBS = -lpcap -lnsl -lsocket -lucb -lelf -lm
+LDLIBS = -lpcap -lnsl -lsocket -lm
 
 
 
