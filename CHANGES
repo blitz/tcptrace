@@ -70,3 +70,7 @@
     Included http module for NASA
   Backed out delete of libpcap, causes too many problems
   Now using libpcap 0.4
+
+4.0.1 - Tue Jul 15, 1997
+  Ready for next public release (I hope)
+  Verified on the platforms I have access to
