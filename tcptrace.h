@@ -322,6 +322,10 @@ typedef struct tcb {
     seqnum	max_seq;	/* largest seq number seen */
     seqnum	latest_seq;	/* most recent seq number seen */
 
+    /* stats on sequence space wrap arounds */
+    u_int quad1, quad2, quad3, quad4;  /* was every quadrant visited */
+    u_int seq_wrap_count;              /* wrap count */
+    
     /* hardware duplicate detection */
 #define SEGS_TO_REMEMBER 8
     struct str_hardware_dups {
@@ -1010,6 +1014,9 @@ struct ipaddr *IPV6ADDR2ADDR(struct in6_addr *addr6);
 #ifndef IP_MAXPACKET
 #define IP_MAXPACKET 65535
 #endif /* IP_MAXPACKET */
+
+/* max 32 bit number */
+#define MAX_32 (0x100000000)
 
 #ifndef ETHERTYPE_REVARP
 #define ETHERTYPE_REVARP        0x8035

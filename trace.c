@@ -1221,6 +1221,43 @@ dotrace(
     end = start + tcp_data_length;
 
     /* seq. space wrap around stats */
+    /* If all four quadrants have been visited and the current packet
+     * is in the same quadrant as the syn, check if latest seq. num is
+     * wrapping past the syn. If it is, increment wrap_count
+     */
+    if ((thisdir->quad1 && thisdir->quad2 && thisdir->quad3 && thisdir->quad4)) {
+	if ((IN_Q1(thisdir->syn) && (IN_Q1(end))) ||  (IN_Q2(thisdir->syn) && (IN_Q2(end))) || ((IN_Q3(thisdir->syn) && (IN_Q3(end))) || ((IN_Q4(thisdir->syn) && (IN_Q4(end)))))) {
+	    if (end >= thisdir->syn) {
+		if (debug>1)
+		    fprintf(stderr, "\nWARNING : sequence space wrapped around here \n");
+		thisdir->seq_wrap_count++;
+		thisdir->quad1=0;
+		thisdir->quad2=0;
+		thisdir->quad3=0;
+		thisdir->quad4=0;
+	    }
+	}
+    } 
+
+    /* Mark the visited quadrants */
+    if (!thisdir->quad1) {
+	if (IN_Q1(start) || IN_Q1(end))
+	    thisdir->quad1=1;
+    } 
+    if (!thisdir->quad2) {
+	if (IN_Q2(start) || IN_Q2(end))
+	    thisdir->quad2=1;
+    }
+    if (!thisdir->quad3) {
+	if (IN_Q3(start) || IN_Q3(end))
+	    thisdir->quad3=1;
+    }
+    if (!thisdir->quad4) {
+	if (IN_Q4(start) || IN_Q4(end))
+	    thisdir->quad4=1;
+    }
+    
+    /* record sequence limits */
     if (SYN_SET(ptcp)) {
 	/* error checking - better not change! */
 	if ((thisdir->syn_count > 1) && (thisdir->syn != start)) {

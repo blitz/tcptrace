@@ -206,6 +206,11 @@ PrintTrace(
     char *host2 = pba->host_letter;
     char bufl[40],bufr[40];
 
+    /* counters to use for seq. space wrap around calculations
+     */
+    u_llong stream_length_pab=0, stream_length_pba=0;
+    u_long pab_last, pba_last;
+    
     fprintf(stdout,"\thost %-4s      %s\n",
 	    (sprintf(bufl,"%s:", host1),bufl), ptp->a_endpoint);
     fprintf(stdout,"\thost %-4s      %s\n",
@@ -316,41 +321,89 @@ PrintTrace(
     StatLineI("initial window","pkts",
 	      pab->initialwin_segs, pba->initialwin_segs);
 
-
     /* compare to theoretical length of the stream (not just what
        we saw) using the SYN and FIN
-       (N.B. not taking wrapped seq space into account) */
-    /* also take into account that rst segs can have data and will not
-       be accounted for by fins. so use min and max seq. number seen
-       to calculate stream length in this case*/
-    if ((pab->reset_count > 0) || (pba->reset_count > 0)) {
-	if ((pab->max_seq>0) && (pab->min_seq>0) && (pba->max_seq>0) && (pba->min_seq>0)) {
-	/* use max_seq - min_seq since FIN will not account for data in RST seg*/
-	StatLineI("ttl stream length", "bytes",
-                  pab->max_seq-pab->min_seq-1, 
-                  pba->max_seq-pba->min_seq-1);
-	StatLineI("missed data","bytes",
-		  pab->max_seq-pab->min_seq-1-pab->unique_bytes,
-		  pba->max_seq-pba->min_seq-1-pba->unique_bytes);
-    }
+     * Seq. Space wrap around calculations:
+     * Calculate stream length using last_seq_num seen, first_seq_num
+     * seen and wrap_count.
+     * first_seq_num = syn
+     * If reset_set, last_seq_num = latest_seq
+     *          else last_seq_num = fin
+     */
+    
+    pab_last = (pab->reset_count>0)?pab->latest_seq:pab->fin;
+    
+    pba_last = (pba->reset_count>0)?pba->latest_seq:pba->fin;
+    
+    /* calculating stream length for direction pab */
+    if ((pab->syn_count > 0) && (pab->fin_count > 0)) {
+	if (pab->seq_wrap_count > 0) {
+	    if (pab_last > pab->syn) {
+		stream_length_pab = pab_last + (MAX_32 * pab->seq_wrap_count) - pab->syn - 1;
+	    }
+	    else {
+		stream_length_pab = pab_last + (MAX_32 * (pab->seq_wrap_count+1)) - pab->syn - 1;
+	    }
+	}
 	else {
-	    StatLineP("ttl stream length","","%s","NA","NA");
-	    StatLineP("missed data","","%s","NA","NA");
+	    if (pab_last > pab->syn) {
+		stream_length_pab = pab_last - pab->syn - 1;
+	    }
+	    else {
+		stream_length_pab = MAX_32 + pab_last - pab->syn - 1;
+	    }
 	}
     }
-    else {
-    if ((pab->syn_count > 0) && (pab->fin_count > 0) &&
-	(pba->syn_count > 0) && (pba->fin_count > 0)) {
-	StatLineI("ttl stream length","bytes",
-		  pab->fin-pab->syn-1,
-		  pba->fin-pba->syn-1);
-	StatLineI("missed data","bytes",
-		  pab->fin-pab->syn-1-pab->unique_bytes,
-		  pba->fin-pba->syn-1-pba->unique_bytes);
-    } else {
-	StatLineP("ttl stream length","","%s","NA","NA");
-	StatLineP("missed data","","%s","NA","NA");
+
+    /* calculating stream length for direction pba */
+    if ((pba->syn_count > 0) && (pba->fin_count > 0)) {
+	if (pba->seq_wrap_count > 0) {
+	    if (pba_last > pba->syn) {
+		stream_length_pba = pba_last + (MAX_32 * pba->seq_wrap_count) - pba->syn - 1;
+	    }
+	    else {
+		stream_length_pba = pba_last + (MAX_32 * (pba->seq_wrap_count+1)) - pba->syn - 1;
+	    }
+	}
+	else {
+	    if (pba_last > pba->syn) {
+		stream_length_pba = pba_last - pba->syn - 1;
+	    }
+	    else {
+		stream_length_pba = MAX_32 + pba_last - pba->syn - 1;
+	    }
+	}
     }
+
+    /* print out values */
+    if ((pab->fin_count > 0) && (pab->syn_count > 0)) {
+	char *format = "%8" FS_ULL;
+	StatLineFieldL("ttl stream length", "bytes", format, stream_length_pab, 0);
+    }
+    else {
+	StatLineField("ttl stream length", "", "%s", (u_long)"NA", 0);
+    }
+    if ((pba->fin_count > 0) && (pba->syn_count > 0)) {
+	char *format = "%8" FS_ULL;
+	StatLineFieldL("ttl stream length", "bytes", format, stream_length_pba, 1);
+    }
+    else {
+	StatLineField("ttl stream length", "", "%s", (u_long)"NA", 1);
+    }
+
+    if ((pab->fin_count > 0) && (pab->syn_count > 0)) {
+	char *format = "%8" FS_ULL;
+	StatLineFieldL("missed data", "bytes", format, (stream_length_pab - pab->unique_bytes), 0);
+    }
+    else {
+	StatLineField("missed data", "", "%s", (u_long)"NA", 0);
+    }
+    if ((pba->fin_count > 0) && (pba->syn_count > 0)) {
+	char *format = "%8" FS_ULL;
+	StatLineFieldL("missed data", "bytes", format, (stream_length_pba - pba->unique_bytes), 1);
+    }
+    else {
+	StatLineField("missed data", "", "%s", (u_long)"NA", 1);
     }
     
     /* tell how much data was NOT captured in the files */
