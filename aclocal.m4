@@ -247,7 +247,7 @@ AC_DEFUN(AC_LBL_DEVEL,
 			    fi
 			    $1="$$1 -Wall"
 			    if test $ac_cv_lbl_gcc_vers -gt 1 ; then
-				    $1="$$1 -Wmissing-prototypes -Wstrict-prototypes"
+				    $1="$$1 -pedantic -Wmissing-prototypes -Wstrict-prototypes"
 			    fi
 		    fi
 	    else
