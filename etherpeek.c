@@ -223,7 +223,7 @@ pread_EP(
 
 		if (0)
 		    printf("hi: %u  lo: %u usecs: %lld  tv_sec: %lu  tv_usec: %06lu\n",
-			   (tt_uint32)hdrv7.timestamphi, (tt_uint32)hdrv7.timestamplo,
+			   (unsigned)hdrv7.timestamphi, (unsigned)hdrv7.timestamplo,
 			   usecs, ptime->tv_sec, ptime->tv_usec);
 	    }
 #else /* HAVE_LONG_LONG */
@@ -361,14 +361,14 @@ pread_f *is_EP(void)
       
 	printf("IS_EP says version number %d \n",file_header.version);
 	printf("IS_EP says status number %d\n",file_header.status);
-	printf("IS_EP says length number %d\n",file_header2.length);
-	printf("IS_EP says num packets number %d \n",file_header2.numPackets);
-	printf("IS_EP says time date in mac format %u \n", (tt_uint32)file_header2.timeDate);
-	printf("IS_EP says time start  %u \n",file_header2.timeStart);
-	printf("IS_EP says time stop %u \n",file_header2.timeStop);
+	printf("IS_EP says length number %ld\n",file_header2.length);
+	printf("IS_EP says num packets number %ld \n",file_header2.numPackets);
+	printf("IS_EP says time date in mac format %lu \n", (tt_uint32)file_header2.timeDate);
+	printf("IS_EP says time start  %lu \n",file_header2.timeStart);
+	printf("IS_EP says time stop %lu \n",file_header2.timeStop);
 	printf("future is: ");
 	for(i=0;i<7;i++)
-	    printf(" %d ",file_header2.futureUse[i]);
+	    printf(" %ld ",file_header2.futureUse[i]);
 	printf("\n");
 	printf("RLEN is %d \n",rlen);
     }

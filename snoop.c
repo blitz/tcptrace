@@ -325,11 +325,11 @@ pread_f *is_snoop(void)
     
     /* sanity check on snoop version */
     if (debug) {
-	printf("Snoop version: %d\n", buf.snoop_version);
+	printf("Snoop version: %ld\n", buf.snoop_version);
     }
     if (buf.snoop_version != 2) {
 	printf("\
-Warning! snoop file is version %d.\n\
+Warning! snoop file is version %ld.\n\
 Tcptrace is only known to work with version 2\n",
 	       buf.snoop_version);
     }
@@ -339,20 +339,20 @@ Tcptrace is only known to work with version 2\n",
     switch (buf.mac_type) {
       case SNOOP_DL_ETHER:
 	if (debug)
-	    printf("Snoop hw type: %d (Ethernet)\n", buf.mac_type);
+	    printf("Snoop hw type: %ld (Ethernet)\n", buf.mac_type);
 	break;
       case SNOOP_DL_FDDI:
 	if (debug)
-	    printf("Snoop hw type: %d (FDDI)\n", buf.mac_type);
+	    printf("Snoop hw type: %ld (FDDI)\n", buf.mac_type);
 	break;
       case SNOOP_DL_ATM:
 	if (debug)
-	    printf("Snoop hw type: %d (ATM)\n", buf.mac_type);
+	    printf("Snoop hw type: %ld (ATM)\n", buf.mac_type);
 	break;
       default:
 	if (debug)
-	    printf("Snoop hw type: %d (unknown)\n", buf.mac_type);
-	printf("snoop hardware type %d not understood\n", buf.mac_type);
+	    printf("Snoop hw type: %ld (unknown)\n", buf.mac_type);
+	printf("snoop hardware type %ld not understood\n", buf.mac_type);
 	exit(-1);
     }
 
