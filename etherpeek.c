@@ -1,3 +1,13 @@
+/****************************************
+**  This is the Ether Peek reading stuff.
+**  Author: Brian Wilson
+**          Ohio University
+**          Computer Science
+**  Date:   Mon, July   ,1995
+****************************************/
+  
+
+
 #ifdef GROK_EP
 
 #include <stdio.h>
@@ -60,7 +70,8 @@ unsigned long mactime;
 #define Real_Size_FP 4
 #define Real_Size_FP2 2
 #define Real_Size_FP3 20 
-#define Mac2unix 2212166000u  /* difference between Unix and Mac timestamp */
+
+#define Mac2unix 2082844800u  /* difference between Unix and Mac timestamp */
 #define VERSION_NEW 0x0600    /* Version 6 */
 #define VERSION_OLD 0x0500    /* Version 5 */ 
 
@@ -161,8 +172,7 @@ int (*is_EP())()
 	rewind(stdin);
 	return(NULL);
     }
-    /*mactime=mactime * -1;*/ 
-    mactime=nhdr2.timeDate+Mac2unix;  /*get time plus offset to unix time */
+    mactime=nhdr2.timeDate - Mac2unix;  /*get time plus offset to unix time */
     /********** File header info ********************************/
     if (debug>1) {
 	int i;
