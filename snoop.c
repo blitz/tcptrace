@@ -151,6 +151,7 @@ pread_snoop(
 		/* sanity check */
 		fprintf(stderr,
 			"pread_snoop: invalid next packet, IP len is %d, return EOF\n", len);
+
 		return(0);
 	    }
 
@@ -158,7 +159,15 @@ pread_snoop(
 	    if ((ntohs(pep->ether_type) != ETHERTYPE_IP) &&
 		(ntohs(pep->ether_type) != ETHERTYPE_IPV6)) {
 		if (debug > 2)
-		    fprintf(stderr,"pread_snoop: not an IP packet\n");
+		    fprintf(stderr,
+			    "pread_snoop: not an IP packet (ethertype 0x%x)\n",
+			    ntohs(pep->ether_type));
+		/* discard the remainder */
+		/* N.B. fseek won't work - it could be a pipe! */
+		if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+		    perror("pread_snoop: seek past non-IP");
+		}
+
 		continue;
 	    }
 
