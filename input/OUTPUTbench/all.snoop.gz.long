@@ -1502,7 +1502,7 @@ TCP connection 21:
      max win adv:            4096 bytes     max win adv:            8760 bytes
      min win adv:            4096 bytes     min win adv:            7244 bytes
      zero win adv:              0 times     zero win adv:              0 times
-     avg win adv:            4608 bytes     avg win adv:            8101 bytes
+     avg win adv:            4096 bytes     avg win adv:            8101 bytes
      max owin:               2178 bytes     max owin:                  1 bytes
      min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
      avg owin:                645 bytes     avg owin:                  1 bytes
@@ -3181,7 +3181,7 @@ TCP connection 44:
      max win adv:            4096 bytes     max win adv:            4096 bytes
      min win adv:            4096 bytes     min win adv:            4096 bytes
      zero win adv:              0 times     zero win adv:              0 times
-     avg win adv:            8192 bytes     avg win adv:            4096 bytes
+     avg win adv:            4096 bytes     avg win adv:            4096 bytes
      max owin:                  1 bytes     max owin:                  0 bytes
      min non-zero owin:         1 bytes     min non-zero owin:         0 bytes
      avg owin:                  1 bytes     avg owin:                  0 bytes

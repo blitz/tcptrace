@@ -122,7 +122,7 @@ TCP connection 2:
      max win adv:           24820 bytes     max win adv:            8760 bytes
      min win adv:           24820 bytes     min win adv:            8759 bytes
      zero win adv:              0 times     zero win adv:              0 times
-     avg win adv:           24890 bytes     avg win adv:            8759 bytes
+     avg win adv:           24820 bytes     avg win adv:            8759 bytes
      max owin:                 30 bytes     max owin:               1102 bytes
      min non-zero owin:         1 bytes     min non-zero owin:         1 bytes
      avg owin:                  1 bytes     avg owin:                 19 bytes
