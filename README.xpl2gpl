@@ -1,0 +1,48 @@
+Introduction:
+-------------
+xpl2gpl is a utility that converters tcptrace-style xplot input to gnuplot input. 
+This converter gives a nearly perfect gnuplot reproduction of the corresponding
+xplot graph.
+
+Installation:
+-------------
+Simply copy the script file xpl2gpl to a system-wide area like /bin, /usr/bin,
+/usr/local/bin or any other suitable location if you wish to make it available to
+all users.
+ 
+Usage:
+------
+xpl2gpl [-s] <file_name[.xpl]>
+
+This would produce files by the names "file_name.gpl", "file_name.datasets" and
+"file_name.labels".
+Load the file "file_name.gpl" in gnuplot and it should give you the plot. The 
+contents of the other files are as follows:
+"file_name.datasets" : contains all the plotting coordinates.
+"file_name.labels    : contains all the labels of the plot.
+
+"file_name.ps" is the postscript version of the plot that is created when the 
+file "file_name.gpl" is loaded in gnuplot.
+
+
+Options:
+--------
+-s : seperate files (for expert users)
+
+If you wish to plot only some data from the xpl file, you may use the -s (seperate
+files) option which generates a bunch of data-files filtered based on the color
+and plotting style.
+
+Look at the xplot version of the plot, and based upon the color and style, you may
+alter the corresponding lines in the ".gpl" file, for whatever data you want to
+alter in the plot.
+
+
+On behalf of Dr. Shawn Ostermann,
+
+Avinash Lakhiani 
+Email: avinash.lakhiani@ohiou.edu
+Ohio University.
+
+Jun 18, 2001
+
