@@ -1799,7 +1799,7 @@ static void do_final_breakdown(
 #ifdef INCLUDE_PHONE_CONV
     char *header = "stub\tsmtp\tnntp\ttelnet\tftp\thttp\tphone\tconv\n";
 #else /* INCLUDE_PHONE_CONV */
-    char *header = "stub            smtp\tnntp\ttelnet\tftp\thttp\n";
+    char *header = "stub             smtp\tnntp\ttelnet\tftp\thttp\n";
 #endif /* INCLUDE_PHONE_CONV */
 
     if (!(fil = fopen(filename, "a"))) {
@@ -1835,7 +1835,7 @@ static void do_final_breakdown(
 	/* The breakdown file line associated with each trace file is
 	 * prefaced with the trace file's name.  This was part of the
 	 * original TCPLib format. */
-	fprintf(fil, "%-16s", current_file);
+	fprintf(fil, "%-16s ", current_file);
 
 	/* count the connections of each protocol type */
 	for (pmc = module_conninfo_tail; pmc ; pmc = pmc->prev) {
