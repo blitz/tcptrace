@@ -99,6 +99,9 @@ DEFINES += -DGROK_NS
 # format of the various NLANL tools
 # (this doesn't work well yet, not recommended - Sat Dec 19, 1998)
 # DEFINES += -DGROK_NLANR
+# define GROK_NETSCOUT if you want tcptrace to understand ascii
+# formatted netscout output files
+DEFINES += -DGROK_NETSCOUT
 
 
 ################################################################## 
@@ -154,7 +157,7 @@ CFILES=compress.c etherpeek.c gcache.c mfiles.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c nlanr.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \
-	ns.c version.c
+	ns.c netscout.c version.c
 MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c mod_slice.c
 MODSUPPORT=dyncounter.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o} ${MODSUPPORT:.c=.o}
