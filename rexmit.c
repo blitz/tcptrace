@@ -628,9 +628,16 @@ graph_rtt_sample(
     char title[210];
 
     /* if the FILE is NULL, open file */
-    if (ptcb->rtt_plotter == (PLOTTER) NULL) {
-	sprintf(title,"%s_==>_%s (rtt samples)",
-		ptcb->ptp->a_endpoint, ptcb->ptp->b_endpoint);
+    if (ptcb->rtt_plotter == NO_PLOTTER) {
+	char *name_from, *name_to;
+	if (ptcb==&ptcb->ptp->a2b) {
+	    name_from = ptcb->ptp->a_endpoint;
+	    name_to   = ptcb->ptp->b_endpoint;
+	} else {
+	    name_from = ptcb->ptp->b_endpoint;
+	    name_to   = ptcb->ptp->a_endpoint;
+	}
+	sprintf(title,"%s_==>_%s (rtt samples)", name_from, name_to);
 	ptcb->rtt_plotter = new_plotter(ptcb,NULL,title,
 					"time","rtt (ms)",
 					RTT_GRAPH_FILE_EXTENSION);
