@@ -243,4 +243,10 @@
   Fixed bug from Brian Utterback, both RTT graphs had same title
   ... which led me to discover a rather obscure bug that caused the first RTT plot
       to get corrupted, but only if no other plots were requested
-
+5.1.2 - Mon Dec 14, 1998
+  Added extended options for 
+	  --showrttdongles   mark non-RTT-generating ACKs with special symbols
+	  --noshowrttdongles DON'T mark non-RTT-generating ACKs with special symbols
+	  --showdupack3	     mark triple dupacks on time sequence graphs
+	  --noshowdupack3    DON't mark triple dupacks on time sequence graphs
+    made the default for the RTT dongles FALSE, they're not generally useful
