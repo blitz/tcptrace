@@ -60,6 +60,7 @@ static void UsageModules(void);
 static void LoadModules(int argc, char *argv[]);
 static void CheckArguments(int *pargc, char *argv[]);
 static void ParseArgs(char *argsource, int *pargc, char *argv[]);
+static void ParseExtendedArg(char *argsource, char *arg);
 static void ProcessFile(char *filename);
 static void QuitSig(int signum);
 static void Usage(void);
@@ -120,6 +121,32 @@ char *output_filename = NULL;
 /* first and last packet timestamp */
 timeval first_packet = {0,0};
 timeval last_packet = {0,0};
+
+
+/* extended boolean options */
+static struct ext_bool_op {
+    char *bool_optname;
+    Bool *bool_popt;
+    Bool bool_default;
+    char *bool_descr;
+} extended_bools[] = {
+    {"showsacks", &show_sacks,  TRUE,
+     "show SACK blocks on time sequence graphs"},
+    {"showrexmit", &show_rexmit,  TRUE,
+     "mark retransmits on time sequence graphs"},
+    {"showoutorder", &show_out_order,  TRUE,
+     "mark out-of-order on time sequence graphs"},
+    {"showzerowindow", &show_zero_window,  TRUE,
+     "mark zero windows on time sequence graphs"},
+    {"showrttdongles", &show_rtt_dongles,  TRUE,
+     "mark non-RTT-generating ACKs with special symbols"},
+    {"showdupack3", &show_triple_dupack,  TRUE,
+     "mark triple dupacks on time sequence graphs"},
+    {"showzerolensegs", &graph_zero_len_pkts,  TRUE,
+     "show zero length packets on time sequence graphs"},
+};
+#define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
+
 
 
 static void
@@ -342,6 +369,8 @@ Stuff arguments that you always use into either the tcptrace resource file\n\
 static void
 Args(void)
 {
+    int i;
+    
     fprintf(stderr,"\n\
 Note: these options are first read from the file $HOME/%s\n\
   (if it exists), and then from the environment variable %s\n\
@@ -402,15 +431,16 @@ Dump File Names\n\
   The files can be compressed, see compress.h for configuration.\n\
   If the dump file name is 'stdin', then we read from standard input\n\
     rather than from a file\n\
-Obscure options\n\
-  --showsacks        show SACK blocks on time sequence graphs\n\
-  --noshowsacks      DON'T show SACK blocks on time sequence graphs\n\
-  --showrexmit       mark retransmits on time sequence graphs\n\
-  --noshowrexmit     DON'T mark retransmits on time sequence graphs\n\
-  --showoutorder     mark out-of-order on time sequence graphs\n\
-  --noshowoutorder   DON'T mark out-of-order on time sequence graphs\n\
-  --showzerowindow   mark zero windows on time sequence graphs\n\
-  --noshowzerowindow DON'T mark zero windows on time sequence graphs\n\
+");
+
+    fprintf(stderr,"\nObscure options\n");
+    for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
+	struct ext_bool_op *pbop = &extended_bools[i];
+	fprintf(stderr,"--%-20s %s\n", pbop->bool_optname, pbop->bool_descr);
+	fprintf(stderr,"--no%-18s DON'T %s\n", pbop->bool_optname, pbop->bool_descr);
+    }
+
+    fprintf(stderr,"\n\
 Module options\n\
   -xMODULE_SPECIFIC  (see -hxargs for details)\n\
 ");
@@ -1125,6 +1155,44 @@ CheckArguments(
 }
 
 
+
+
+/* these extended boolean options are table driven, to make it easier to add more
+   later without messing them up */
+static void
+ParseExtendedArg(
+    char *argsource,
+    char *arg)
+{
+    int i;
+
+    /* there must be at least SOME text there */
+    if (strcmp(arg,"--") == 0)
+	BadArg(argsource, "Void extended argument\n");
+
+    for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
+	struct ext_bool_op *pbop = &extended_bools[i];
+
+	/* check for the default value flag */
+	if (strcmp(arg+2,pbop->bool_optname) == 0) {
+	    *pbop->bool_popt = pbop->bool_default;
+	    return;
+	}
+
+	/* check for the INVERSE value flag */
+	if ((strncmp(arg,"--no",4) == 0) &&
+	    (strcmp(arg+4,pbop->bool_optname) == 0)) {
+	    *pbop->bool_popt = !pbop->bool_default;
+	    return;
+	}
+    }
+
+    /* never found a match, so it's an error */
+    BadArg(argsource, "Bad extended argument '%s'\n", arg);
+}
+
+
+
 static void
 ParseArgs(
     char *argsource,
@@ -1141,27 +1209,7 @@ ParseArgs(
 	    continue;
 
 	if (strncmp(argv[i],"--",2) == 0) {
-	    if (strcmp(argv[i],"--") == 0) {
-		BadArg(argsource, "Void extended argument\n");
-	    } else if (strcmp(argv[i],"--showsacks") == 0) {
-		show_sacks = TRUE;
-	    } else if (strcmp(argv[i],"--noshowsacks") == 0) {
-		show_sacks = FALSE;
-	    } else if (strcmp(argv[i],"--showrexmit") == 0) {
-		show_rexmit = TRUE;
-	    } else if (strcmp(argv[i],"--noshowrexmit") == 0) {
-		show_rexmit = FALSE;
-	    } else if (strcmp(argv[i],"--showoutorder") == 0) {
-		show_out_order = TRUE;
-	    } else if (strcmp(argv[i],"--noshowoutorder") == 0) {
-		show_out_order = FALSE;
-	    } else if (strcmp(argv[i],"--showzerowindow") == 0) {
-		show_zero_window = TRUE;
-	    } else if (strcmp(argv[i],"--noshowzerowindow") == 0) {
-		show_zero_window = FALSE;
-	    } else {
-		BadArg(argsource, "Bad extended argument '%s'\n", argv[i]);
-	    }
+	    ParseExtendedArg(argsource, argv[i]);
 	    continue;
 	}
 
@@ -1374,36 +1422,42 @@ ParseArgs(
 static void
 DumpFlags(void)
 {
-	fprintf(stderr,"printbrief:       %d\n", printbrief);
-	fprintf(stderr,"printsuppress:    %d\n", printsuppress);
-	fprintf(stderr,"warn_printtrunc:  %d\n", warn_printtrunc);
-	fprintf(stderr,"warn_printbadmbz: %d\n", warn_printbadmbz);
-	fprintf(stderr,"warn_printhwdups: %d\n", warn_printhwdups);
-	fprintf(stderr,"print_rtt:        %d\n", print_rtt);
-	fprintf(stderr,"graph tsg:        %d\n", graph_tsg);
-	fprintf(stderr,"graph rtt:        %d\n", graph_rtt);
-	fprintf(stderr,"graph tput:       %d\n", graph_tput);
-	fprintf(stderr,"plotem:           %s\n",
-	        colorplot?"(color)":"(b/w)");
-	fprintf(stderr,"hex printing:     %d\n", hex);
-	fprintf(stderr,"ignore_non_comp:  %d\n", ignore_non_comp);
-	fprintf(stderr,"printem:          %d\n", printem);
-	fprintf(stderr,"printallofem:     %d\n", printallofem);
-	fprintf(stderr,"printticks:       %d\n", printticks);
-	fprintf(stderr,"no names:         %d\n", nonames);
-	fprintf(stderr,"use_short_names:  %d\n", use_short_names);
-	fprintf(stderr,"show_rexmit:      %d\n", show_rexmit);
-	fprintf(stderr,"show_zero_window: %d\n", show_zero_window);
-	fprintf(stderr,"show_out_order:	  %d\n", show_out_order);
-	fprintf(stderr,"show_sacks:	  %d\n", show_sacks);
-	fprintf(stderr,"save_tcp_data:    %d\n", save_tcp_data);
-	fprintf(stderr,"graph_time_zero:  %d\n", graph_time_zero);
-	fprintf(stderr,"graph_seq_zero:   %d\n", graph_seq_zero);
-	fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
-	fprintf(stderr,"ending pnum:      %lu\n", endpnum);
-	fprintf(stderr,"throughput intvl: %d\n", thru_interval);
-	fprintf(stderr,"number modules:   %d\n", NUM_MODULES);
-	fprintf(stderr,"debug:            %d\n", debug);
+    int i;
+
+    fprintf(stderr,"printbrief:       %d\n", printbrief);
+    fprintf(stderr,"printsuppress:    %d\n", printsuppress);
+    fprintf(stderr,"warn_printtrunc:  %d\n", warn_printtrunc);
+    fprintf(stderr,"warn_printbadmbz: %d\n", warn_printbadmbz);
+    fprintf(stderr,"warn_printhwdups: %d\n", warn_printhwdups);
+    fprintf(stderr,"print_rtt:        %d\n", print_rtt);
+    fprintf(stderr,"graph tsg:        %d\n", graph_tsg);
+    fprintf(stderr,"graph rtt:        %d\n", graph_rtt);
+    fprintf(stderr,"graph tput:       %d\n", graph_tput);
+    fprintf(stderr,"plotem:           %s\n",
+	    colorplot?"(color)":"(b/w)");
+    fprintf(stderr,"hex printing:     %d\n", hex);
+    fprintf(stderr,"ignore_non_comp:  %d\n", ignore_non_comp);
+    fprintf(stderr,"printem:          %d\n", printem);
+    fprintf(stderr,"printallofem:     %d\n", printallofem);
+    fprintf(stderr,"printticks:       %d\n", printticks);
+    fprintf(stderr,"no names:         %d\n", nonames);
+    fprintf(stderr,"use_short_names:  %d\n", use_short_names);
+    fprintf(stderr,"save_tcp_data:    %d\n", save_tcp_data);
+    fprintf(stderr,"graph_time_zero:  %d\n", graph_time_zero);
+    fprintf(stderr,"graph_seq_zero:   %d\n", graph_seq_zero);
+    fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
+    fprintf(stderr,"ending pnum:      %lu\n", endpnum);
+    fprintf(stderr,"throughput intvl: %d\n", thru_interval);
+    fprintf(stderr,"number modules:   %d\n", NUM_MODULES);
+    fprintf(stderr,"debug:            %d\n", debug);
+
+    /* print out the stuff controlled by the extended args */
+    for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
+	struct ext_bool_op *pbop = &extended_bools[i];
+	char buf[100];
+	sprintf(buf,"%s:", pbop->bool_optname);
+	fprintf(stderr,"%-18s%s\n", buf, *pbop->bool_popt?"TRUE":"FALSE");
+    }
 }
 
 
