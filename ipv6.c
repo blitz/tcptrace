@@ -38,11 +38,11 @@ ipv6_header_name(
     u_char nextheader)
 {
     switch (nextheader) {
-      case IPV6HDR_DSTOPTS: return("Destinations options");
-      case IPV6HDR_FRAGMENT: return("Fragment header");
-      case IPV6HDR_HOPBYHOP: return("Hop by hop");
-      case IPV6HDR_NONXTHDR: return("No next header");
-      case IPV6HDR_ROUTING: return("Routing header");
+      case IPPROTO_DSTOPTS: return("Destinations options");
+      case IPPROTO_FRAGMENT: return("Fragment header");
+      case IPPROTO_HOPOPTS: return("Hop by hop");
+      case IPPROTO_NONE: return("No next header");
+      case IPPROTO_ROUTING: return("Routing header");
       case IPPROTO_ICMPV6: return("IPv6 ICMP");
       case IPPROTO_TCP: return("TCP");
       case IPPROTO_UDP: return("UDP");
@@ -63,15 +63,15 @@ ipv6_nextheader(
     switch (*pnextheader) {
 	/* nothing follows these... */
       case IPPROTO_TCP:
-      case IPV6HDR_NONXTHDR:
+      case IPPROTO_NONE:
       case IPPROTO_ICMPV6:
       case IPPROTO_UDP:
 	return(NULL);
 
 	/* somebody follows these */
-      case IPV6HDR_HOPBYHOP:
-      case IPV6HDR_ROUTING:
-      case IPV6HDR_DSTOPTS:
+      case IPPROTO_HOPOPTS:
+      case IPPROTO_ROUTING:
+      case IPPROTO_DSTOPTS:
 	*pnextheader = pheader->ip6ext_nheader;
 
 	/* sanity check, if length is 0, terminate */
@@ -181,11 +181,11 @@ findheader(
 	    return(NULL);	/* didn't find it */
 
 	    /* non-tcp protocols */
-	  case IPV6HDR_NONXTHDR:
+	  case IPPROTO_NONE:
 	  case IPPROTO_ICMPV6:
 
 	    /* fragmentation */
-	  case IPV6HDR_FRAGMENT:
+	  case IPPROTO_FRAGMENT:
 	  {
 	      struct ipv6_ext_frag *pfrag = (struct ipv6_ext_frag *)pheader;
 
@@ -206,9 +206,9 @@ findheader(
 	  }
 
 	  /* headers we just skip over */
-	  case IPV6HDR_HOPBYHOP:
-	  case IPV6HDR_ROUTING:
-	  case IPV6HDR_DSTOPTS:
+	  case IPPROTO_HOPOPTS:
+	  case IPPROTO_ROUTING:
+	  case IPPROTO_DSTOPTS:
 	      nextheader = pheader->ip6ext_nheader;
 	      pheader = (struct ipv6_ext *)
 		  ((char *)pheader + pheader->ip6ext_len);
@@ -280,20 +280,20 @@ int gethdrlength (struct ip *pip, void *plast)
 	pipv6 = (struct ipv6 *) pip;
 	while (1)
 	{
-	    if (nextheader == IPV6HDR_NONXTHDR)
+	    if (nextheader == IPPROTO_NONE)
 		return length;
 	    if (nextheader == IPPROTO_TCP)
 		return length;
 	    if (nextheader == IPPROTO_UDP)
 		return length;
-	    if (nextheader == IPV6HDR_FRAGMENT)
+	    if (nextheader == IPPROTO_FRAGMENT)
 	    {
 		nextheader = *pheader;
 		pheader += 8;
 		length += 8;
 	    }
-	    if ((nextheader == IPV6HDR_HOPBYHOP) || (nextheader == IPV6HDR_ROUTING)
-		|| (nextheader == IPV6HDR_DSTOPTS))
+	    if ((nextheader == IPPROTO_HOPOPTS) || (nextheader == IPPROTO_ROUTING)
+		|| (nextheader == IPPROTO_DSTOPTS))
 	    {
 		nextheader = *pheader;
 		pheader += *(pheader + 1);
