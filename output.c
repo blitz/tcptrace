@@ -226,7 +226,10 @@ PrintBrief(
     if (ConnComplete(ptp))
 	fprintf(stdout,"  (complete)");
     if (ConnReset(ptp))
-	fprintf(stdout,"  (reset)");
+        fprintf(stdout,"  (reset)");
+    if ((ptp->a2b.packets == 0) || (ptp->b2a.packets == 0))
+        fprintf(stdout,"  (unidirectional)");
+
     fprintf(stdout,"\n");
 
     /* warning for hardware duplicates */
