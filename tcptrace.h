@@ -79,6 +79,7 @@ typedef struct in_addr ipaddr;
 
 /* type for a timestamp */
 typedef struct timeval timeval;
+#define ZERO_TIME(ptv)(((ptv)->tv_sec == 0) && ((ptv)->tv_usec == 0))
 
 /* type for a Boolean */
 typedef u_char Bool;

@@ -57,7 +57,7 @@ ts2ascii(
 	char *now;
 	int decimal;
 
-	if ((ptime->tv_sec == 0) && (ptime->tv_usec == 0))
+	if (ZERO_TIME(ptime))
 	    return("        <the epoch>       ");
 
 	ptm = localtime(&ptime->tv_sec);
