@@ -530,7 +530,7 @@ Graphing options\n\
   -G	  create ALL graphs\n\
 Output format detail options\n\
   -D      print in decimal\n\
-  -X      print in hexidecimal\n\
+  -X      print in hexadecimal\n\
   -n      don't resolve host or service names (much faster)\n\
   -s      use short names (list \"picard.cs.ohiou.edu\" as just \"picard\")\n\
 Connection filtering options\n\

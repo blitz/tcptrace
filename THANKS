@@ -58,5 +58,9 @@ or ported the program to other architectures:
 	        Tru64 port and writing the realtime operation code
 	 Bruce Mah (bmah@CA.Sandia.GOV) for helping with bug fixes related to 
 	        'buffer overflows' and for improving the http module.
-
-	
+	 Avinash Lakhiani (alakhian@irg.cs.ohiou.edu) for developing jPlot, a Java
+	  	version of xplot, for adding the IPv6 checksum support, and for other
+		feature enhancements and bug fixes.
+         Daikichi Osuga (osuga@mml.yrp.nttdocomo.co.jp) for helping figure
+	 	out how to get ns2 trace files to work with tcptrace, and for
+		providing a useful script for the same.
