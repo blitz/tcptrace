@@ -36,9 +36,13 @@ static char const rcsid[] =
 /* name of the file that slice data is dumped into */
 #define SLICE_FILENAME "slice.dat"
 
+/* time and date formats */
+enum t_time_format {tf_long=1, tf_brief=2, tf_unix=3, tf_unix_long=4};
+
 /* argument flags */
 static float slice_interval = 15.0;  /* 15 seconds by default */
 static timeval tv_slice_interval;
+static enum t_time_format time_format = tf_brief;
 
 /* local debugging flag */
 static int debug = 0;
@@ -204,21 +208,41 @@ AgeSlice(
 
 	/* print the headers */
 	Mfprintf(pmf,"\
-time                segs    bytes  rexsegs rexbytes      new   active\n\
---------------- -------- -------- -------- -------- -------- --------\n");
+%s     segs    bytes  rexsegs rexbytes      new   active\n\
+%s -------- -------- -------- -------- -------- --------\n",
+		 (time_format == tf_long)?	"date                           ":
+		 (time_format == tf_brief)?	"date           ":
+		 (time_format == tf_unix)?	"date     ":
+		 (time_format == tf_unix_long)?	"date            ":"UNKNOWN",
+
+		 (time_format == tf_long)?	"-------------------------------":
+		 (time_format == tf_brief)?	"---------------":
+		 (time_format == tf_unix)?	"---------":
+		 (time_format == tf_unix_long)?	"----------------":"UNKNOWN"
+		 );
 	return;
     }
 
     /* format the current time */
     pch_now = ts2ascii(pnow);
-    /* remove the year */
-    pch_now[26] = '\00';
-    /* remove the month and stuff */
-    pch_now += 11;  /* strlen("Fri Jan 12 ") */
+    if (time_format == tf_brief) {
+	/* remove the year */
+	pch_now[26] = '\00';
+	/* remove the month and stuff */
+	pch_now += 11;  /* strlen("Fri Jan 12 ") */
+    }
 
     /* print the stats collected */
-    Mfprintf(pmf, "%s %8lu %8lu %8lu %8lu %8lu %8lu\n",
-	     pch_now,
+    switch(time_format) {
+      case tf_long:
+      case tf_brief:
+	Mfprintf(pmf, "%s", pch_now); break;
+      case tf_unix:
+	Mfprintf(pmf, "%8lu", pnow->tv_sec); break;
+      case tf_unix_long:
+	Mfprintf(pmf, "%8lu.%06u", pnow->tv_sec, pnow->tv_usec); break;
+    }
+    Mfprintf(pmf, " %8lu %8lu %8lu %8lu %8lu %8lu\n",
 	     info.n_segs,
 	     info.n_bytes,
 	     info.n_rexmit_segs,
@@ -268,6 +292,10 @@ slice_usage(void)
 \t   module argument format:\n\
 \t       -iS   set slice interval to S (float) seconds, default 15.0\n\
 \t       -d    enable local debugging in this module\n\
+\t       -tb   specify time and date 'briefly'\n\
+\t       -tl   specify time and date in long, 'Unix Format'\n\
+\t       -tu   specify time and date as a Unix timestamp (secs)\n\
+\t       -tU   specify time and date as a Unix timestamp (secs.usecs)\n\
 ");
 }
 
@@ -293,6 +321,17 @@ ParseArgs(char *argstring)
 	    printf("Checking argv[%d]: '%s'\n", i, argv[i]);
 	if (strcmp(argv[i],"-d") == 0) {
 	    ++debug;
+	} else if (strncmp(argv[i],"-t",2) == 0) {
+	    switch (argv[i][2]) {
+	      case 'u': time_format = tf_unix; break;
+	      case 'U': time_format = tf_unix_long; break;
+	      case 'l': time_format = tf_long; break;
+	      case 'b': time_format = tf_brief; break;
+	      default:
+		fprintf(stderr,"Bad -t option ('%s') for slice module\n", argv[i]);
+		slice_usage();
+		exit(-1);
+	    }
 	} else if (sscanf(argv[i],"-i%f", &interval) == 1) {
 	    slice_interval = interval;
 	    if (debug)
