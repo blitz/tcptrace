@@ -20,7 +20,7 @@ struct supported_formats {
     char	*format_name;	/* name of the file format		*/
 };
 
-/* for each file type GLORP you want to support, provide a boolean	*/
+/* for each file type GLORP you want to support, provide a      	*/
 /* function is_GLORP() that returns NULL if the stdin file is NOT	*/
 /* of type GLORP, and returns a pointer to a packet reading routine	*/
 /* if it is.  The packet reading routine is of the following type:	*/
@@ -51,13 +51,13 @@ struct supported_formats {
 /* install the is_GLORP() routines supported */
 struct supported_formats file_formats[] = {
 #ifdef GROK_SNOOP
-	{is_snoop, "Sun Snoop -- Distributed with Solaris"},
+	{is_snoop,	"Sun Snoop -- Distributed with Solaris"},
 #endif GROK_SNOOP
 #ifdef GROK_NETM
-	{is_netm, "Net Metrix -- Commercial program from HP"},
+	{is_netm,	"Net Metrix -- Commercial program from HP"},
 #endif GROK_NETM
 #ifdef GROK_TCPDUMP
-	{is_tcpdump, "tcpdump -- Public domain program from LBL"},
+	{is_tcpdump,	"tcpdump -- Public domain program from LBL"},
 #endif GROK_TCPDUMP
 	{NULL,NULL},	/* You must NOT remove this entry */
 };

@@ -30,7 +30,7 @@
 
 
 /* maximum number of TCP pairs to maintain */
-#define DEFAULT_MAX_TCP_PAIRS 256
+#define DEFAULT_MAX_TCP_PAIRS 1024
 extern int max_tcp_pairs;
 
 typedef int PLOTTER;
@@ -170,7 +170,7 @@ typedef struct {
 
 struct stcp_pair {
     /* are we ignoring this one?? */
-    int		ignore_pair;
+    Bool		ignore_pair;
 
     /* endpoint identification */
     tcp_pair_addrblock	addr_pair;

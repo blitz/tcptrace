@@ -110,6 +110,29 @@ PrintBrief(
 {
     tcb *pab = &ptp->a2b;
     tcb *pba = &ptp->b2a;
+    static char infobuf[100];
+
+    sprintf(infobuf,"%s - %s",
+	    ptp->a_endpoint,
+	    ptp->b_endpoint);
+    fprintf(stdout,"%-60s", infobuf);
+    fprintf(stdout," %4lu>", pab->packets);
+    fprintf(stdout," %4lu<", pba->packets);
+    if (ConnComplete(ptp))
+	fprintf(stdout,"  (complete)");
+    if (ConnReset(ptp))
+	fprintf(stdout,"  (reset)");
+    fprintf(stdout,"\n");
+}
+
+
+#ifdef OLDVERSION
+void
+PrintBrief(
+    tcp_pair *ptp)
+{
+    tcb *pab = &ptp->a2b;
+    tcb *pba = &ptp->b2a;
 
     fprintf(stdout,"%s <==> %s", ptp->a_endpoint, ptp->b_endpoint);
     fprintf(stdout,"  %s2%s:%lu",
@@ -126,6 +149,8 @@ PrintBrief(
 	fprintf(stdout,"  (reset)");
     fprintf(stdout,"\n");
 }
+#endif OLDVERSION
+
 
 
 void
