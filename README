@@ -1,4 +1,4 @@
-Wed May 13, 1998
+Mon Aug 17, 1998
 
 Shawn Ostermann
 ostermann@cs.ohiou.edu
@@ -28,17 +28,11 @@ Supported Platforms
 
 The program is developed here at OU on Sparc machines running Solaris 2.5
 It has also been tested at OU under
-  i486 NetBSD 1.1
-  sparc-sun-sunos4.1.3
+  NetBSD	used a lot
+  FreeBSD	used a little
+  Linux		just compiled and run through regression tests
 
 I've also heard that it can be compiled and run under:
-  FreeBSD 2.2.1
-	Bill Fenner has been keeping the FreeBSD "port" up to date, see:
-		http://www.freebsd.org/ports/net.html
-  Linux
-	This stuff is ugly.  I dropped some standard header files into the
-        source directory to get around the linux habit of changing
-        stuff just for fun...
   HPux
 	I'm also told that it can be compiled on HP systems, but I
 	don't have access to one for testing.
