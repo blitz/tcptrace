@@ -418,8 +418,6 @@ rtt_ackin(
 	ret = NORMAL;
     } else {
 	/* retrans, can't use it */
-	ptcb->rtt_last = 0.0;
-	etime_rtt = 0.0;
 	if ((ptcb->rtt_min_last == 0) || (ptcb->rtt_min_last > etime_rtt))
 	    ptcb->rtt_min_last = etime_rtt;
 
@@ -431,6 +429,11 @@ rtt_ackin(
 	++ptcb->rtt_count_last;
 
 	++ptcb->rtt_amback;  /* ambiguous ACK */
+
+	/* numbers not useful for plotting/dumping */
+	ptcb->rtt_last = 0.0;
+	etime_rtt = 0.0;
+
 	ret = AMBIG;
     }
 
