@@ -346,3 +346,19 @@ Note:
   the code, so this file might not get updated the way that it should.  We'll
   try to make the CVS logs visible in some fashion...
 ====
+6.0.1a3 - added format characters to several options, as an extension of a
+   suggestion by Brian Utterback:
+   
+  --output_dir="STR"     directory where all output files are placed (default: '<NULL>')
+  --output_prefix="STR"  prefix all output files with this string (default: '<NULL>')
+  --xplot_title_prefix="STR" prefix to place in the titles of all xplot files (default: '<NULL>')
+
+  These options (which are handy in .tcptracerc for example), let you include
+  the format characters:
+
+   %f	basename of the current input file
+   %d	execution date, standard unix output, spaces ==> underscores
+   %t	execution time & date, standard unix output, spaces ==> underscores
+   %D	execution date, format "1-14-1963"
+
+  others could be added, but that's the only stuff I could think of for now.
