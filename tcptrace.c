@@ -466,7 +466,7 @@ Misc options\n\
   -d      whistle while you work (enable debug, use -d -d for more output)\n\
   -e      extract contents of each TCP stream into file\n\
   -h      print help messages\n\
-  -u      print minimal UDP information too\n\
+  -u      perform (minimal) UDP analysis too\n\
   -Ofile  dump matched packets to tcpdump file 'file'\n\
   +[v]    reverse the setting of the -[v] flag (for booleans)\n\
 Dump File Names\n\
