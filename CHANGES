@@ -121,6 +121,4 @@
   minor LINT fix in print.c
   added  ECHO/ECHOREPL CC/CCNEW/CCECHO to understood options
   added support for Etherpeek version 7 save file format
-
-
-
+  fixed minor http modules bugs
