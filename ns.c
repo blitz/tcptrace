@@ -309,6 +309,7 @@ int pread_ns_fulltcp(
 			  &hdrlen,
 			  (unsigned short *)&junk);
 
+	fprintf(stderr, "\"%s\"\n", myline);
 	/* if we can't match all 18 fields, we give up on the file */
 	if (rlen != 18) {
 	    fprintf(stderr,"Bad NS packet header in line %u only [%d] arguments can be matched expected 14 or 18 \n", linenum, rlen);
@@ -326,7 +327,7 @@ int pread_ns_fulltcp(
 	
 	/* we have biger header than 40 Bytes (SACK?) */
 	if (hdrlen > sizeof(struct ip) + sizeof(struct tcphdr)){ 
-		*plen = *plen - (hdrlen - (sizeof(struct ip) - sizeof(struct tcphdr)));
+		*plen -= (hdrlen - (sizeof(struct ip) + sizeof(struct tcphdr)));
 	}
 
 	ipb->ip_len = htons(*plen);
@@ -382,8 +383,8 @@ int pread_ns_fulltcp(
 	*pphystype = PHYS_ETHER;
 
 
-/*  printf("timestamp %g, type %s, plen %d, seq %d, id %d, ack %d, 0x%x %d \n",
-  timestamp, type, *plen, seqno, ipb->ip_id,ackno,pflags,hdrlen);*/
+  printf("timestamp %g, type %s, plen %d, seq %d, id %d, ack %d, 0x%x %d \n",
+  timestamp, type, *plen, seqno, ipb->ip_id,ackno,pflags,hdrlen);
 
 
 	return(1);
