@@ -500,6 +500,7 @@ void plotter_diamond(PLOTTER, timeval, u_long);
 void plotter_darrow(PLOTTER, timeval, u_long);
 void plotter_box(PLOTTER, timeval, u_long);
 void plotter_arrow(PLOTTER, timeval, u_long, char);
+void plotter_nothing(PLOTTER pl, struct timeval t);
 void plot_init(void);
 tcp_pair *dotrace(struct ip *, struct tcphdr *ptcp, void *plast);
 void PrintRawData(char *label, void *pfirst, void *plast);
