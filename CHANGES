@@ -641,3 +641,8 @@ middle, for example). On the way, also fixed the arbitrary "buf[4096]"
 declaration to be written correctly as "buf[COMP_HDR_SIZE]" in the
 PipeFitting() function. 
 
+6.6.6: 7 Oct 2004 Mani
+-----
+
+Fixed the callback function in tcpdump.c to prevent garbage data from
+getting into the ip_buf buffer.

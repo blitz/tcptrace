@@ -117,13 +117,13 @@ static int callback(
 	switch (offset)
 	{
 		case EH_SIZE: /* straight Ethernet encapsulation */
-			memcpy((char *)ip_buf,buf+offset,iplen);
+			memcpy((char *)ip_buf,buf+offset,iplen-offset);
 			callback_plast = ip_buf+iplen-offset-1;
 			break;
 		case PPPOE_SIZE: /* PPPoE encapsulation */
 			/* we use a fake ether type here */
 			eth_header.ether_type = htons(ETHERTYPE_IP);
-			memcpy((char *)ip_buf,buf+offset,iplen);
+			memcpy((char *)ip_buf,buf+offset,iplen-offset);
 			callback_plast = ip_buf+iplen-offset-1;
 			break;
 	        case -1: /* Not an IP packet */
@@ -136,7 +136,7 @@ static int callback(
 			       (ntohs(vlanhptr->vlan_proto) == ETHERTYPE_IPV6)
 			     ) {
 			    offset=EH_SIZE+sizeof(struct vlanh);
-			    memcpy((char *)ip_buf,buf+offset,iplen);
+			    memcpy((char *)ip_buf,buf+offset,iplen-offset);
 			    callback_plast = ip_buf+iplen-offset-1;
 			    /* Set ethernet type as whatever followed the dumb
 			     * VLAN header to prevent the rest of the code
@@ -155,11 +155,11 @@ static int callback(
 	/* just pretend it's "normal" ethernet */
 	offset = 14;		/* 22 bytes of IEEE cruft */
 	memcpy(&eth_header,buf,EH_SIZE);  /* save ether header */
-	memcpy(ip_buf,buf+offset,iplen);
+	memcpy(ip_buf,buf+offset,iplen-offset);
 	callback_plast = (char *)ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_SLIP:
-	memcpy(ip_buf,buf+16,iplen);
+	memcpy(ip_buf,buf+16,iplen-16);
 	callback_plast = (char *)ip_buf+iplen-16-1;
 	break;
       case PCAP_DLT_PPP:
@@ -167,7 +167,7 @@ static int callback(
 	offset = find_ip_ppp(buf);
 	if (offset < 0) /* Not an IP packet */
 		return (-1);
-	memcpy((char *)ip_buf,buf+offset,iplen);
+	memcpy((char *)ip_buf,buf+offset,iplen-offset);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_FDDI:
@@ -175,53 +175,53 @@ static int callback(
 	      offset = find_ip_fddi(buf,iplen);
 	if (offset < 0)
 	      return(-1);
-	memcpy((char *)ip_buf,buf+offset,iplen);
+	memcpy((char *)ip_buf,buf+offset,iplen-offset);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_NULL:
 	/* no phys header attached */
 	offset = 4;
-	memcpy((char *)ip_buf,buf+offset,iplen);
+	memcpy((char *)ip_buf,buf+offset,iplen-offset);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_ATM_RFC1483:
 	/* ATM RFC1483 - LLC/SNAP ecapsulated atm */
-	memcpy((char*)ip_buf,buf+8,iplen);
+	memcpy((char*)ip_buf,buf+8,iplen-8);
 	callback_plast = ip_buf+iplen-8-1;
 	break;
       case PCAP_DLT_RAW:
 	/* raw IP */
 	offset = 0;
-	memcpy((char *)ip_buf,buf+offset,iplen);
+	memcpy((char *)ip_buf,buf+offset,iplen-offset);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_LINUX_SLL:
 	/* linux cooked socket */
 	offset = 16;
-	memcpy((char *)ip_buf, buf+offset, iplen);
+	memcpy((char *)ip_buf, buf+offset, iplen-offset);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       // Patch sent by Brandon Eisenamann to passby 802.11, LLC/SNAP
       // and Prism2 headers to get to the IP packet.
       case PCAP_DLT_IEEE802_11:
 	offset=24+8;// 802.11 header + LLC/SNAP header
-	memcpy((char *)ip_buf, buf+offset, iplen);
+	memcpy((char *)ip_buf, buf+offset, iplen-offset);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_IEEE802_11_RADIO:
 	offset=64+24;//WLAN header + 802.11 header
 	memcpy(&eth_header,buf,EH_SIZE); // save ethernet header
-	memcpy((char *)ip_buf, buf+offset, iplen);
+	memcpy((char *)ip_buf, buf+offset, iplen-offset);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_PRISM2:
 	offset=144+24+8; // PRISM2+IEEE 802.11+ LLC/SNAP headers
-	memcpy((char *)ip_buf, buf+offset, iplen);
+	memcpy((char *)ip_buf, buf+offset, iplen-offset);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_C_HDLC:
 	offset=4;
-	memcpy((char *)ip_buf, buf+offset, iplen);
+	memcpy((char *)ip_buf, buf+offset, iplen-offset);
 	callback_plast = (char *)ip_buf+iplen-offset-1;
 	break;
       default:
@@ -335,7 +335,7 @@ pread_f *is_tcpdump(char *filename)
     /* check the phys type (pretend everything is ethernet) */
     memset(&eth_header,0,EH_SIZE);
     switch (type = pcap_datalink(pcap)) {
-case 100:
+      case 100:
       case PCAP_DLT_EN10MB:
 	/* OK, we understand this one */
 	physname = "Ethernet";
