@@ -216,6 +216,11 @@ new_plotter(
 
     if (filename == NULL)
 	filename = TSGPlotName(plast,pl,suffix);
+    else if (suffix != NULL) {
+	char buf[100];
+	sprintf(buf,"%s%s", filename, suffix);
+	filename = buf;
+    }
 
     if (debug)
 	fprintf(stderr,"Plotter %d file is '%s'\n", pl, filename);
