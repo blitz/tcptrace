@@ -25,6 +25,14 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
+static char const copyright[] =
+    "@(#)Copyright (c) 1996\nOhio University.  All rights reserved.\n";
+static char const rcsid[] =
+    "@(#)$Header$";
+static char const copyright[] =
+    "@(#)Copyright (c) 1996\nOhio University.  All rights reserved.\n";
+static char const rcsid[] =
+    "@(#)$Header$";
 
 
 #define VERSION "Ostermann's tcptrace -- version 3.0 -- Fri Aug 16, 1996"

@@ -25,6 +25,10 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
+static char const copyright[] =
+    "@(#)Copyright (c) 1996\nOhio University.  All rights reserved.\n";
+static char const rcsid[] =
+    "@(#)$Header$";
 
 
 /* define GROK_SNOOP if you want tcptrace to understand the output

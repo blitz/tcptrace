@@ -25,12 +25,10 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
-#ifndef lint
-char copyright[] =
-    "@(#) Copyright (c) 1996\nOhio University.  All rights reserved.\n";
-static  char rcsid[] =
-    "@(#)$Header$ Ohio University IRG";
-#endif
+static char const copyright[] =
+    "@(#)Copyright (c) 1996\nOhio University.  All rights reserved.\n";
+static char const rcsid[] =
+    "@(#)$Header$";
 
 
 #include "tcptrace.h"
