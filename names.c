@@ -114,8 +114,8 @@ HostAddr(
 
     if (ADDR_ISV6(&ipaddress)) {
 	static char adrv6[INET6_ADDRSTRLEN];
-	inet_ntop(AF_INET6,(char *) ipaddress.un.ip6.s6_addr,
-		  adrv6, INET6_ADDRSTRLEN);
+	my_inet_ntop(AF_INET6,(char *) ipaddress.un.ip6.s6_addr,
+		     adrv6, INET6_ADDRSTRLEN);
 	adr = adrv6;
     } else {
 	adr = inet_ntoa(ipaddress.un.ip4);

@@ -697,7 +697,24 @@ ipv6addr2str(
     struct in6_addr addr)
 {
     static char adr[INET6_ADDRSTRLEN];
-    inet_ntop(AF_INET6, (char *)&addr, (char *)adr, INET6_ADDRSTRLEN);
+    my_inet_ntop(AF_INET6, (char *)&addr, (char *)adr, INET6_ADDRSTRLEN);
     sprintf(adr,"%s", adr);
     return(adr);
+}
+
+
+/* Shawn's version... */
+/* Lots of machines HAVE this, but they give slightly different formats */
+/* and it messes up my cross-platform testing.  I'll just do it the */
+/* "one true" way!  :-)  */
+char *
+ether_ntoa (struct ether_addr *e)
+{
+    unsigned char *pe;
+    static char buf[30];
+
+    pe = (unsigned char *) e;
+    sprintf(buf,"%02x:%02x:%02x:%02x:%02x:%02x",
+	    pe[0], pe[1], pe[2], pe[3], pe[4], pe[5]);
+    return(buf);
 }

@@ -116,3 +116,4 @@ int gethdrlength (struct ip *pip, void *plast);
 int getpayloadlength (struct ip *pip, void *plast);
 struct ipv6_ext *ipv6_nextheader(void *pheader0, u_char *pnextheader);
 char *ipv6_header_name(u_char nextheader);
+char *my_inet_ntop(int af, const char *src, char *dst, size_t size);
