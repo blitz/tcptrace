@@ -41,10 +41,11 @@ xp_timestamp(
     static int bufix = 0;
     unsigned secs = time.tv_sec;
     unsigned usecs = time.tv_usec;
-    unsigned decimal = (usecs + 50) / 100;
+    unsigned decimal = usecs / 100;  /* just truncate, faster */
     char *pbuf;
 
-    pbuf = bufs[(bufix++)%4];
+    bufix = (bufix+1)%4;
+    pbuf = bufs[bufix];
 
     sprintf(pbuf,"%u.%04u",secs,decimal);
     return(pbuf);
