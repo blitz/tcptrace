@@ -112,6 +112,9 @@ static struct tcplibstats {
     /* conversation interarrival times */
     dyn_counter conv_interarrival;
 
+    /* conversation duration */
+    dyn_counter conv_duration;
+
     /* for the interval breakdowns */
     int interval_count;
     timeval last_interval;
@@ -172,6 +175,10 @@ static void do_all_conv_arrivals(void);
 static void do_tcplib_final_converse(char *filename,
 				     dyn_counter psizes);
 static void do_tcplib_next_converse(module_conninfo_tcb *ptcbc,
+				    module_conninfo *pmc);
+static void do_tcplib_conv_duration(char *filename,
+				    dyn_counter psizes);
+static void do_tcplib_next_duration(module_conninfo_tcb *ptcbc,
 				    module_conninfo *pmc);
 
 /* prototypes for connection-type determination */
@@ -688,6 +695,10 @@ void tcplib_done()
 	filename = namedfile(ttype_names[i],TCPLIB_NEXT_CONVERSE_FILE);
 	do_tcplib_final_converse(filename,
 				 global_pstats[i]->conv_interarrival);
+
+	filename = namedfile(ttype_names[i],TCPLIB_CONV_DURATION_FILE);
+	do_tcplib_conv_duration(filename,
+				global_pstats[i]->conv_duration);
 
 	if (LOCAL_ONLY)
 	    return;
@@ -1712,6 +1723,51 @@ do_tcplib_final_converse(
     return;
 }
 
+static void
+do_tcplib_conv_duration(
+    char *filename,
+    dyn_counter psizes)
+{
+    const int bucketsize = 1;
+
+    psizes = ReadOldFile(filename, bucketsize, 0, psizes);
+
+    /* Now, dump out the combined data */
+    StoreCounters(filename,"Conversation Duration (ms)",
+		  "% Conversations", bucketsize, psizes);
+
+    return;
+}
+
+static void do_tcplib_next_duration(
+    module_conninfo_tcb *ptcbc,
+    module_conninfo *pmc)
+{
+    struct tcplibstats *pstats;
+    enum t_statsix ttype;
+    int etime;   /* Time difference between the first packet in this
+		  * conversation and the last packet */
+
+    /* see where to keep the stats */
+    ttype = traffic_type(pmc, ptcbc);
+    pstats = global_pstats[ttype];
+
+    if (ldebug>1) {
+	printf("do_tcplib_next_duration: %s, %s\n",
+	       FormatBrief(pmc->ptp), ttype_names[ttype]);
+    }
+
+
+    /* elapsed time since that previous connection started */
+    etime = (int)(elapsed(pmc->first_time,
+			  pmc->last_time)/1000.0); /* convert us to ms */
+
+    /* keep stats */
+    AddToCounter(&pstats->conv_duration, etime, 1);
+    
+    return;
+}
+
 /* End Next Conversation Stuff */
 
 
@@ -1865,12 +1921,16 @@ void do_all_conv_arrivals()
 	}
 
 	/* A --> B */
-	if (pmc->tcb_cache_a2b.data_bytes != 0)
+	if (pmc->tcb_cache_a2b.data_bytes != 0) {
 	    do_tcplib_next_converse(&pmc->tcb_cache_a2b, pmc);
+	    do_tcplib_next_duration(&pmc->tcb_cache_a2b, pmc);
+	}
 
 	/* B --> A */
-	if (pmc->tcb_cache_b2a.data_bytes != 0)
+	if (pmc->tcb_cache_b2a.data_bytes != 0) {
 	    do_tcplib_next_converse(&pmc->tcb_cache_b2a, pmc);
+	    do_tcplib_next_duration(&pmc->tcb_cache_b2a, pmc);
+	}
     }
 }
 

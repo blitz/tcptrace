@@ -85,3 +85,4 @@ void * tcplib_newconn(tcp_pair *ptp);
 #define TCPLIB_BREAKDOWN_FILE		"breakdown"
 #define TCPLIB_BREAKDOWN_GRAPH_FILE	"breakdown_hist"
 #define TCPLIB_NEXT_CONVERSE_FILE	"conv.conv_time"
+#define TCPLIB_CONV_DURATION_FILE	"conv.duration"
