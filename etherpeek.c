@@ -174,7 +174,12 @@ pread_EP(
 	ptime->tv_sec  = mactime + (hdr3.timestamp / 1000); /*milliseconds div 1000*/
 	ptime->tv_usec = 1000 * (hdr3.timestamp % 1000);
 	*plen          = hdr.packetLength;
-	*ptlen         = hdr.sliceLength;
+	/* hmmm... I guess 0 bytes means that they grabbed the whole */
+	/* packet.  Seems to work that way... sdo - Thu Feb 13, 1997 */
+	if (hdr.sliceLength)
+	    *ptlen = hdr.sliceLength;
+	else
+	    *ptlen = hdr.packetLength;
 
 	*ppip  = (struct ip *) pip_buf;
 	*pphys  = pep;
