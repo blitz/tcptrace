@@ -85,17 +85,17 @@ xp_timestamp(
 	    ppi->zerotime = time;
 	}
 
-	/* and subtract from the first timestamp */
-	tv_sub(&time, ppi->zerotime);
-
 	/* (in)sanity check */
-	if (time.tv_sec < 0) {
+	if (tv_lt(time,ppi->zerotime)) {
 	    fprintf(stderr,"Internal error in plotting (plot file '%s')...\n\
 ZERO-based X-axis plotting requested and elements are not plotted in\n\
 increasing time order.  Try without the '-z' flag\n",
 		    ppi->filename);
 /* 	    exit(-5); */
 	    time.tv_sec = time.tv_usec = 0;
+	} else {
+	    /* computer offset from first plotter point */
+	    tv_sub(&time, ppi->zerotime);
 	}
     }
 
@@ -553,7 +553,8 @@ plotter_nothing(
 {
     char *ret;
     ret = xp_timestamp(pl,t);
-    printf("plotter_nothing(%s) gets '%s'\n", ts2ascii(&t), ret);
+    if (debug > 10)
+	printf("plotter_nothing(%s) gets '%s'\n", ts2ascii(&t), ret);
 }
 
 
@@ -633,12 +634,22 @@ extend_line(
     /* for whom the second point is NOT 0 */
     if (!pline->labelled) {
 	if ((yval != 0) && (!ZERO_TIME(&pline->last_time))) {
+	    timeval tv_elapsed;
 	    timeval tv_avg;
 	    int avg_yval;
 
-	    /* average of last time and this time */
-	    tv_avg.tv_sec = (pline->last_time.tv_sec + xval.tv_sec)/2;
-	    tv_avg.tv_usec = (pline->last_time.tv_usec/2 + xval.tv_usec/2);
+	    /* computer elapsed time for these 2 points */
+	    tv_elapsed = xval;
+	    tv_sub(&tv_elapsed,pline->last_time);
+
+	    /* divide elapsed time by 2 */
+	    tv_elapsed.tv_sec /= 2;
+	    tv_elapsed.tv_usec /= 2;
+
+	    /* add 1/2 of the elapsed time to the oldest point */
+	    /* (giving us the average time) */
+	    tv_avg = pline->last_time;
+	    tv_add(&tv_avg, tv_elapsed);
 
 	    /* average the Y values */
 	    avg_yval = (1 + pline->last_y+yval)/2;
