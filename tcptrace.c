@@ -73,6 +73,8 @@ Bool dump_rtt = FALSE;
 Bool graph_rtt = FALSE;
 Bool graph_tput = FALSE;
 Bool graph_tsg = FALSE;
+Bool graph_segsize = FALSE;
+Bool graph_cwin = FALSE;
 Bool hex = TRUE;
 Bool ignore_non_comp = FALSE;
 Bool print_rtt = FALSE;
@@ -354,7 +356,9 @@ Graphing options\n\
   -T      create throughput graph[s], (average over 10 segments, see -A)\n\
   -R      create rtt sample graph[s]\n\
   -S      create time sequence graph[s]\n\
-  -G	  create ALL 3 graphs\n\
+  -N      create cwin graph[s] (data on _N_etwork)\n\
+  -N      create segsize graph[s] (data on _N_etwork)\n\
+  -G	  create ALL graphs\n\
 Output format detail options\n\
   -D      print in decimal\n\
   -X      print in hexidecimal\n\
@@ -1123,10 +1127,40 @@ ParseArgs(
 
 	    while (*(++argv[i]))
 		switch (*argv[i]) {
+		  case 'A':
+		    thru_interval = atoi(argv[i]+1);
+		    if (thru_interval <= 0)
+			BadArg(argsource, "-A  must be > 1\n");
+		    *(argv[i]+1) = '\00'; break;
+		  case 'B':
+		    beginpnum = atoi(argv[i]+1);
+		    *(argv[i]+1) = '\00'; break;
 		  case 'C': colorplot = TRUE; break;
 		  case 'D': hex = FALSE; break;
-		  case 'G': graph_tput = graph_tsg = graph_rtt = TRUE; break;
+		  case 'E':
+		    endpnum = atoi(argv[i]+1);
+		    *(argv[i]+1) = '\00'; break;
+		  case 'F': graph_segsize = TRUE; break;
+		  case 'G':
+		    graph_tput = TRUE;
+		    graph_tsg = TRUE;
+		    graph_rtt = TRUE;
+		    graph_cwin = TRUE;
+		    graph_segsize = TRUE;
+		    break;
 		  case 'M': colorplot = FALSE; break;
+		  case 'N': graph_cwin = TRUE; break;
+		  case 'O':
+		    if (*(argv[i]+1)) {
+			/* -Ofile */
+			output_filename = strdup(argv[i]+1);
+			*(argv[i]+1) = '\00';
+		    } else {
+			/* maybe -O file */
+			BadArg(argsource, "-Ofile requires a file name\n");
+		    }
+		    break;
+		  case 'P': printem = TRUE; break;
 		  case 'R': graph_rtt = TRUE; break;
 		  case 'S': graph_tsg = TRUE; break;
 		  case 'T': graph_tput = TRUE; break;
@@ -1135,18 +1169,40 @@ ParseArgs(
 		  case 'Z': dump_rtt = TRUE; break;
 		  case 'b': printbrief = TRUE; break;
 		  case 'c': ignore_non_comp = TRUE; break;
+		  case 'd': ++debug; break;
 		  case 'e': save_tcp_data = TRUE; break;
+		  case 'f':
+		    filter_output = TRUE;
+		    if (*(argv[i]+1)) {
+			/* -fEXPR */
+			ParseFilter(argv[i]+1);
+			*(argv[i]+1) = '\00';
+		    } else {
+			/* -f EXPR */
+			BadArg(argsource, "-f requires a filter\n");
+		    }
+		    break;
 		  case 'h': Help(argv[i]+1); *(argv[i]+1) = '\00'; break;
+		  case 'i':
+		    ++saw_i_or_o;
+		    IgnoreConn(atoi(argv[i]+1));
+		    *(argv[i]+1) = '\00'; break;
 		  case 'l': printbrief = FALSE; break;
+		  case 'm':
+		    BadArg(argsource,
+			   "-m option is obsolete (no longer necessary)\n");
+		    *(argv[i]+1) = '\00'; break;
 		  case 'n': nonames = TRUE; break;
+		  case 'o':
+		    ++saw_i_or_o;
+		    GrabOnly(argsource,argv[i]+1);
+		    *(argv[i]+1) = '\00'; break;
 		  case 'p': printallofem = TRUE; break;
-		  case 'P': printem = TRUE; break;
+		  case 'q': printsuppress = TRUE; break;
 		  case 'r': print_rtt = TRUE; break;
 		  case 's': use_short_names = TRUE; break;
 		  case 't': printticks = TRUE; break;
 		  case 'u': do_udp = TRUE; break;
-
-		  case 'd': ++debug; break;
 		  case 'v': Version(); exit(0); break;
 		  case 'w':
 		    warn_printtrunc = TRUE;
@@ -1154,8 +1210,11 @@ ParseArgs(
 		    warn_printhwdups = TRUE;
 		    warn_ooo = TRUE;
 		    break;
+		  case 'x':
+		    BadArg(argsource,
+			   "unknown module option (-x...)\n");
+		    break;
 		  case 'y': plot_tput_instant = FALSE; break;
-		  case 'q': printsuppress = TRUE; break;
 		  case 'z':
 		    if (strcmp(argv[i],"z") == 0) {
 			/* backward compat, just zero the time */
@@ -1174,55 +1233,6 @@ ParseArgs(
 		    }
 		    *(argv[i]+1) = '\00';
 		    break;
-		  case 'f':
-		    filter_output = TRUE;
-		    if (*(argv[i]+1)) {
-			/* -fEXPR */
-			ParseFilter(argv[i]+1);
-			*(argv[i]+1) = '\00';
-		    } else {
-			/* -f EXPR */
-			BadArg(argsource, "-f requires a filter\n");
-		    }
-		    break;
-		  case 'O':
-		    if (*(argv[i]+1)) {
-			/* -Ofile */
-			output_filename = strdup(argv[i]+1);
-			*(argv[i]+1) = '\00';
-		    } else {
-			/* -O file */
-			BadArg(argsource, "-Ofile requires a file name\n");
-		    }
-		    break;
-		  case 'i':
-		    ++saw_i_or_o;
-		    IgnoreConn(atoi(argv[i]+1));
-		    *(argv[i]+1) = '\00'; break;
-		  case 'o':
-		    ++saw_i_or_o;
-		    GrabOnly(argsource,argv[i]+1);
-		    *(argv[i]+1) = '\00'; break;
-		  case 'B':
-		    beginpnum = atoi(argv[i]+1);
-		    *(argv[i]+1) = '\00'; break;
-		  case 'E':
-		    endpnum = atoi(argv[i]+1);
-		    *(argv[i]+1) = '\00'; break;
-		  case 'A':
-		    thru_interval = atoi(argv[i]+1);
-		    if (thru_interval <= 0) {
-			BadArg(argsource, "-A  must be > 1\n");
-		    }
-		    *(argv[i]+1) = '\00'; break;
-		  case 'm':
-		    BadArg(argsource,
-			   "-m option is obsolete (no longer necessary)\n");
-		    *(argv[i]+1) = '\00'; break;
-		    break;
-		  case 'x':
-		    BadArg(argsource,
-			   "unknown module option (-x...)\n");
 		  default:
 		    BadArg(argsource,
 			   "option '%c' not understood\n", *argv[i]);
@@ -1236,21 +1246,23 @@ ParseArgs(
 		switch (*argv[i]) {
 		  case 'C': colorplot = !TRUE; break;
 		  case 'D': hex = !FALSE; break;
+		  case 'F': graph_segsize = !TRUE; break;
 		  case 'M': colorplot = !FALSE; break;
+		  case 'N': graph_cwin = !TRUE; break;
+		  case 'P': printem = !TRUE; break;
 		  case 'R': graph_rtt = !TRUE; break;
 		  case 'S': graph_tsg = !TRUE; break;
 		  case 'T': graph_tput = !TRUE; break;
 		  case 'W': print_cwin = !TRUE; break;
 		  case 'X': hex = !TRUE; break;
 		  case 'Z': dump_rtt = !TRUE; break;
-		  case 'y': plot_tput_instant = !plot_tput_instant; break;
 		  case 'b': printbrief = !TRUE; break;
 		  case 'c': ignore_non_comp = !TRUE; break;
 		  case 'e': save_tcp_data = FALSE; break;
 		  case 'l': printbrief = !FALSE; break;
 		  case 'n': nonames = !TRUE; break;
 		  case 'p': printallofem = !TRUE; break;
-		  case 'P': printem = !TRUE; break;
+		  case 'q': printsuppress = !TRUE; break;
 		  case 'r': print_rtt = !TRUE; break;
 		  case 's': use_short_names = !TRUE; break;
 		  case 't': printticks = !TRUE; break;
@@ -1261,7 +1273,7 @@ ParseArgs(
 		    warn_printhwdups = !TRUE;
 		    warn_ooo = !TRUE;
 		    break;
-		  case 'q': printsuppress = !TRUE; break;
+		  case 'y': plot_tput_instant = !plot_tput_instant; break;
 		  case 'z':
 		    if (strcmp(argv[i],"z") == 0) {
 			/* backward compat, just zero the time */
