@@ -55,19 +55,19 @@ static struct EPFileHeader {
 } file_header;
 
 static struct EPFileHeader2 {
-    u_long length;		/* length of file*/
-    u_long numPackets;		/* number of packets contained in the file*/
-    u_long timeDate;		/* time and date stamp of the file (MAC format)*/
-    u_long timeStart;		/* time of the first packet in the file*/
-    u_long timeStop;		/* time of the last packet in the file*/
-    u_long futureUse[7];	/*reserved for future use and irrelevent to us!*/
+    tt_uint32 length;		/* length of file*/
+    tt_uint32 numPackets;		/* number of packets contained in the file*/
+    tt_uint32 timeDate;		/* time and date stamp of the file (MAC format)*/
+    tt_uint32 timeStart;		/* time of the first packet in the file*/
+    tt_uint32 timeStop;		/* time of the last packet in the file*/
+    tt_uint32 futureUse[7];	/*reserved for future use and irrelevent to us!*/
 } file_header2;
 
 
 
 struct EPFilePacket_v5_6 {
-    u_short packetlength;	/* total packet length */
-    u_short slicelength;	/* sliced length of packet*/
+    tt_uint16 packetlength;	/* total packet length */
+    tt_uint16 slicelength;	/* sliced length of packet*/
 };
 
 struct EPFilePacket2_v5_6 {
@@ -76,24 +76,24 @@ struct EPFilePacket2_v5_6 {
 };
 
 struct EPFilePacket3_v5_6 { 
-    u_long  timestamp;		/* timestamp in milliseconds*/
-    short destNum;		/* str corresponding to ether address*/
-    short srcNum;		/* dnum is entry in table*/
-    short protoNum;		/* table number for the protocol*/
+    tt_uint32  timestamp;		/* timestamp in milliseconds*/
+    tt_uint16 destNum;		/* str corresponding to ether address*/
+    tt_uint16 srcNum;		/* dnum is entry in table*/
+    tt_uint16 protoNum;		/* table number for the protocol*/
     char protoStr[8];		/* protocol identity string (NOT null terminated!)*/
-    u_short filterNum;		/* index to filter table*/
+    tt_uint16 filterNum;		/* index to filter table*/
 };
 
 
 /* what we need for version 7 */
 typedef struct PeekPacket_v7 {
-    u_short	protospec;	/* ProtoSpec ID. */
-    u_short	packetlength;	/* Total length of packet. */
-    u_short	slicelength;	/* Sliced length of packet. */
+    tt_uint16	protospec;	/* ProtoSpec ID. */
+    tt_uint16	packetlength;	/* Total length of packet. */
+    tt_uint16	slicelength;	/* Sliced length of packet. */
     u_char	flags;		/* CRC, frame, runt, ... */
     u_char	status;		/* Slicing, ... */
-    u_long	timestamphi;	/* 64-bit timestamp in microseconds. */
-    u_long	timestamplo;
+    tt_uint32	timestamphi;	/* 64-bit timestamp in microseconds. */
+    tt_uint32	timestamplo;
 } PeekPacket_v7;
 
 /* byte swapping */
@@ -222,8 +222,8 @@ pread_EP(
 		ptime->tv_usec = usecs % 1000000;
 
 		if (0)
-		    printf("hi: %lu  lo: %lu usecs: %lld  tv_sec: %lu  tv_usec: %06lu\n",
-			   (u_long)hdrv7.timestamphi, (u_long)hdrv7.timestamplo,
+		    printf("hi: %u  lo: %u usecs: %lld  tv_sec: %lu  tv_usec: %06lu\n",
+			   (tt_uint32)hdrv7.timestamphi, (tt_uint32)hdrv7.timestamplo,
 			   usecs, ptime->tv_sec, ptime->tv_usec);
 	    }
 #else /* HAVE_LONG_LONG */
@@ -244,7 +244,7 @@ pread_EP(
 
 		if (0)
 		    printf("hi: %lu  lo: %lu usecs: %f  tv_sec: %lu  tv_usec: %06lu\n",
-			   (u_long)hdrv7.timestamphi, (u_long)hdrv7.timestamplo,
+			   (tt_uint32)hdrv7.timestamphi, (tt_uint32)hdrv7.timestamplo,
 			   usecs, ptime->tv_sec, ptime->tv_usec);
 	    }
 #endif /* HAVE_LONG_LONG */
@@ -361,14 +361,14 @@ pread_f *is_EP(void)
       
 	printf("IS_EP says version number %d \n",file_header.version);
 	printf("IS_EP says status number %d\n",file_header.status);
-	printf("IS_EP says length number %ld\n",file_header2.length);
-	printf("IS_EP says num packets number %ld \n",file_header2.numPackets);
-	printf("IS_EP says time date in mac format %lu \n", (u_long)file_header2.timeDate);
-	printf("IS_EP says time start  %lu \n",file_header2.timeStart);
-	printf("IS_EP says time stop %lu \n",file_header2.timeStop);
+	printf("IS_EP says length number %d\n",file_header2.length);
+	printf("IS_EP says num packets number %d \n",file_header2.numPackets);
+	printf("IS_EP says time date in mac format %u \n", (tt_uint32)file_header2.timeDate);
+	printf("IS_EP says time start  %u \n",file_header2.timeStart);
+	printf("IS_EP says time stop %u \n",file_header2.timeStop);
 	printf("future is: ");
 	for(i=0;i<7;i++)
-	    printf(" %ld ",file_header2.futureUse[i]);
+	    printf(" %d ",file_header2.futureUse[i]);
 	printf("\n");
 	printf("RLEN is %d \n",rlen);
     }

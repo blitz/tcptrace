@@ -92,18 +92,48 @@ extern char *ColorNames[NCOLORS];
 typedef struct pl_line *PLINE;
 
 
-/* type for a TCP sequence number, ACK, FIN, or SYN */
-/* This type MUST be a 32-bit unsigned number */
+
+/* several places in the code NEED numbers of a specific size. */
+/* since the definitions aren't standard across everything we're */
+/* trying to support, the types are gathered up here */
+/* specifically, we need:
+   tt_uint32	unsigned 32 bit 
+   tt_uint16	unsigned 16 bit 
+   tt_int32	signed 32 bit 
+   tt_int16	signed 16 bit
+*/
+/* first, do the 32 bit ones */
 #if SIZEOF_UNSIGNED_LONG_INT == 4
-typedef u_long seqnum;
+typedef unsigned long tt_uint32;
+typedef          long tt_int32;
 #else
 #if SIZEOF_UNSIGNED_INT == 4
-typedef u_int seqnum;
+typedef unsigned int tt_uint32;
+typedef          int tt_int32;
 #else
 OOPS: Please insert an appropriate 32-bit unsigned type here!
+OOPS: Please insert an appropriate 32-bit signed type here!
+#endif /* SIZEOF_UNSIGNED_INT == 4 */
+#endif /* SIZEOF_UNSIGNED_LONG_INT == 4 */
+/* first, do the 16 bit ones */
+#if SIZEOF_UNSIGNED_INT == 2
+typedef unsigned int tt_uint16;
+typedef          int tt_int16;
+#else
+#if SIZEOF_UNSIGNED_SHORT == 2
+typedef unsigned short tt_uint16;
+typedef          short tt_int16;
+#else
+OOPS: Please insert an appropriate 16-bit unsigned type here!
+OOPS: Please insert an appropriate 16-bit signed type here!
 #endif /* SIZEOF_UNSIGNED_INT == 4 */
 #endif /* SIZEOF_UNSIGNED_LONG_INT == 4 */
 
+
+
+/* type for a TCP sequence number, ACK, FIN, or SYN */
+/* This type MUST be a 32-bit unsigned number */
+typedef tt_uint32 seqnum;
 
 /* length of a segment */
 typedef u_long seglen;

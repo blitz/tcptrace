@@ -61,19 +61,19 @@ static int *pip_buf;
 
 /*  file header format */
 struct netscout_header {
-  int pagenum;
+  tt_int32 pagenum;
   char filename[255];
 };
 
 
 /* netm packet header format */
 struct netscout_packet_header {
-    int	FrameNum;
-    int	Size;
-    int	tstamp_secs;
-    int	tstamp_msecs;
-    int	tlen;
-    int	len;
+    tt_int32	FrameNum;
+    tt_int32	Size;
+    tt_int32	tstamp_secs;
+    tt_int32	tstamp_msecs;
+    tt_int32	tlen;
+    tt_int32	len;
 };
 
 

@@ -45,8 +45,8 @@ static char const rcsid[] =
 /* information necessary to understand Solaris Snoop output */
 struct snoop_file_header {
     char		format_name[8];	/* should be "snoop\0\0\0" */
-    u_int		snoop_version;	/* current version is "2" */
-    u_int		mac_type;	/* hardware type */
+    tt_uint32		snoop_version;	/* current version is "2" */
+    tt_uint32		mac_type;	/* hardware type */
 };
 /* snoop hardware types that we understand */
 /* from sys/dlpi.h */
@@ -56,12 +56,12 @@ struct snoop_file_header {
 #define	SNOOP_DL_ATM	0x12	/* from Sun's "atmsnoop" */
 
 struct snoop_packet_header {
-    unsigned int	len;
-    unsigned int	tlen;
-    unsigned int	blen;
-    unsigned int	unused3;
-    unsigned int	secs;
-    unsigned int	usecs;
+    tt_uint32	len;
+    tt_uint32	tlen;
+    tt_uint32	blen;
+    tt_uint32	unused3;
+    tt_uint32	secs;
+    tt_uint32	usecs;
 };
 
 
