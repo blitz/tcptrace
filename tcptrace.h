@@ -157,15 +157,16 @@ typedef struct tcb {
     char	*host_letter;
 } tcb;
 
+
 typedef u_short hash;
 
 typedef struct {
-	ipaddr	a_address;
-	ipaddr	b_address;
-	portnum	a_port;
-	portnum	b_port;
-	hash	hash;
-} tcp_pair_addr;
+    ipaddr	a_address;
+    ipaddr	b_address;
+    portnum	a_port;
+    portnum	b_port;
+    hash	hash;
+} tcp_pair_addrblock;
 
 
 struct stcp_pair {
@@ -173,7 +174,7 @@ struct stcp_pair {
     int		ignore_pair;
 
     /* endpoint identification */
-    tcp_pair_addr	addr_pair;
+    tcp_pair_addrblock	addr_pair;
 
     /* connection information */
     char		*a_endpoint;
