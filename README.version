@@ -20,24 +20,46 @@ convention followed for version numbers of the form x.y.z:
 Release Instructions:
 ---------------------
 
-NOTE: Stable release in this example      : 6.2.0
------ Development version that follows    : 6.3.0
+NOTE: Stable release in this example      : 6.4.0
+----- Development version that follows    : 6.5.0
 
-~/tcptrace-cvs$ cvs tag release-6_2_0          
+~/tcptrace-cvs$ cvs tag release-6_4_0          
 ~/tcptrace-cvs$ cd                                 
-~$ cvs export -d tcptrace-6.2.0 -r release-6_2_0 tcptrace      
-~$ tar cf tcptrace-6.2.0.tar tcptrace-6.2.0                      
-               
-etc. to create the build.  After that, go back to the tcptrace cvs                                    
-workspace and *immediately* change your version stuff to 6.3.0 and   
-check that in.                             
+~$ cvs export -d tcptrace-6.4.0 -r release-6_4_0 tcptrace      
+~$ tar cf tcptrace-6.4.0.tar tcptrace-6.4.0                      
 
-Version numbers then go on as 6.3.1, 6.3.2 etc until released as 6.4.0
-or 7.0.0, depending on magnitude of development.
+etc. to create the build.
+
+After that, go back to the tcptrace cvs workspace and *immediately* do the
+following:
+
+~/tcptrace-cvs$ cvs tag start-6_5
+~/tcptrace-cvs$ cvs tag -b branch-6_5
+
+Then modify the two branches appropriately:
+
+*FOR BUG FIXES*
+^^^^^^^^^^^^^^^
+~/$ cvs co -d tcptrace-stable tcptrace
+(change to *6.4.1, 6.4.2* etc. for each bug fixed and check in)
+
+*FOR NEW FEATURE DEVELOPMENT*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~/$ cvs co -d tcptrace-devel -r branch-6_5 tcptrace
+(change to *6.5.0* and check in)
+
+Now anyone checking out 'tcptrace' with no args will get the
+current *stable* branch (bug-fixes only), and anyone checking out with
+'-r branch-6_5' would get the current development version with all of its
+glorious new features, etc. 
+
+Version numbers then go on as 6.4.1, 6.4.2 bug-fixes and,
+6.5.1, 6.5.2 etc for development versions until released as 6.6.0 or 7.0.0,
+depending on magnitude of development. 
 
 --Avinash Lakhiani (alakhian@tcptrace.org)
 --Ethan Blanton    (eblanton@tcptrace.org)
-  19 Jul 2002
+  27 Jul 2002
 
 
 
