@@ -69,7 +69,7 @@ struct protocol {
   struct protocol *next;
 };
 
-const static realtime_update_interval = 60;
+const static int realtime_update_interval = 60;
 
 /* global variables */
 static rtinfo *mod_info;
@@ -117,7 +117,6 @@ realtime_init(
 {
   int		i;
   int		enable = 0;
-  struct stat	stats;
 
   /* look for "-xrealtime" */
   for (i = 1; i < argc; ++i) {
