@@ -44,8 +44,8 @@ static int CompOpenPipe(char *filename, struct comp_formats *pf);
 
 
 /* local globals */
-static struct comp_formats *pf = NULL;
 static int header_length = -1;
+static Bool is_compressed = FALSE;
 
 
 
@@ -114,30 +114,44 @@ static struct comp_formats *
 WhichFormat(
     char *filename)
 {
+    static struct comp_formats *pf_cache = NULL;
+    static char *pf_file_cache = NULL;
     int len;
     int lens;
+    int i;
 
-    /* see if we alread looked it up... */
-    if (pf != NULL)
-	return(pf);
+    /* check the "cache" :-) */
+    if (pf_file_cache && (strcmp(filename,pf_file_cache) == 0)) {
+	return(pf_cache);
+    }
 
     len = strlen(filename);
 
-    for (pf = supported_comp_formats; pf->comp_suffix; ++pf) {
+    for (i=0; i < NUM_COMP_FORMATS; ++i) {
+	struct comp_formats *pf = &supported_comp_formats[i];
+
 	if (debug>1)
-	    fprintf(stderr,"Checking for suffix match '%s' against '%s'\n",
-		    filename,pf->comp_suffix);
+	    fprintf(stderr,"Checking for suffix match '%s' against '%s' (%s)\n",
+		    filename,pf->comp_suffix,pf->comp_bin);
 	/* check for suffix match */
 	lens = strlen(pf->comp_suffix);
 	if (strcmp(filename+len-lens, pf->comp_suffix) == 0) {
 	    if (debug>1)
 		fprintf(stderr,"Suffix match!   '%s' against '%s'\n",
 			filename,pf->comp_suffix);
+	    /* stick it in the cache */
+	    pf_file_cache = strdup(filename);
+	    pf_cache = pf;
+	    is_compressed = TRUE;
+
+	    /* and tell the world */
 	    return(pf);
 	}
     }
 
-    pf = NULL;
+    pf_file_cache = strdup(filename);
+    pf_cache = NULL;
+    is_compressed = FALSE;
 
     if (debug)
 	fprintf(stderr,"WhichFormat: failed to find compression format for file '%s'\n",
@@ -150,13 +164,16 @@ WhichFormat(
 
 static FILE *
 CompReopenFile(
-    char *filename,
-    struct comp_formats *pf)
+    char *filename)
 {
     char buf[COMP_HDR_SIZE];
+    struct comp_formats *pf = WhichFormat(filename);
     int len;
     int fd;
     long pos;
+
+    if (debug)
+	fprintf(stderr,"CompReopenFile('%s') called\n", filename);
 
     /* we need to switch from the header file to a pipe connected */
     /* to a process.  Find out how far we've read from the file */
@@ -278,6 +295,9 @@ CompOpenPipe(
     int i;
     char *args[COMP_MAX_ARGS];
 
+    if (debug)
+	fprintf(stderr,"CompOpenPipe('%s') called\n", filename);
+
     abspath = FindBinary(pf->comp_bin);
     if (!abspath) {
 	fprintf(stderr,
@@ -361,8 +381,12 @@ CompOpenHeader(
     }
 
     /* open the file through compression */
-    printf("Decompressing file of type '%s' using program '%s'\n",
-	   pf->comp_descr, pf->comp_bin);
+    if (debug)
+	printf("Decompressing file of type '%s' using program '%s'\n",
+	       pf->comp_descr, pf->comp_bin);
+    else
+	printf("Decompressing file using '%s'\n", pf->comp_bin);
+
     f = CompSaveHeader(filename,pf);
 
     if (!f) {
@@ -378,8 +402,11 @@ FILE *
 CompOpenFile(
     char *filename)
 {
-    /* if we didn't find a convertor, it's not compressed */
-    if (pf == NULL)
+    if (debug)
+	fprintf(stderr,"CompOpenFile('%s') called\n", filename);
+
+    /* if it isn't compressed, just leave it at stdin */
+    if (!is_compressed)
 	return(stdin);
 
     /* if the header we already saved is the whole file, it must be */
@@ -391,8 +418,8 @@ CompOpenFile(
     }
 
     /* otherwise, there's more than we saved, we need to re-open the pipe */
-    /* re-attach it to stdin */
-    return(CompReopenFile(filename,pf));
+    /* and re-attach it to stdin */
+    return(CompReopenFile(filename));
 }
 
 
@@ -406,7 +433,6 @@ CompCloseFile(
     wait(0);
 
     /* zero out some globals */
-    pf = NULL;
     header_length = -1;
 }
 
@@ -414,26 +440,29 @@ CompCloseFile(
 int
 CompIsCompressed(void)
 {
-    return(pf != NULL);
+    return(is_compressed);
 }
 
 
 void
 CompFormats(void)
 {
-    struct comp_formats *pf;
     int i;
     
     fprintf(stderr,"Supported Compression Formats:\n");
     fprintf(stderr,"\tSuffix  Description           Uncompress Command\n");
     fprintf(stderr,"\t------  --------------------  --------------------------\n");
-    for (pf = supported_comp_formats; pf->comp_suffix; ++pf) {
+
+    for (i=0; i < NUM_COMP_FORMATS; ++i) {
+	int arg;
+	struct comp_formats *pf = &supported_comp_formats[i];
+
 	fprintf(stderr,"\t%6s  %-20s  %s",
 		pf->comp_suffix,
 		pf->comp_descr,
 		pf->comp_bin);
-	for (i=1; pf->comp_args[i]; ++i)
-	    fprintf(stderr," %s", pf->comp_args[i]);
+	for (arg=1; pf->comp_args[arg]; ++arg)
+	    fprintf(stderr," %s", pf->comp_args[arg]);
 	fprintf(stderr,"\n");
     }
 }
