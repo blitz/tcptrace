@@ -1,6 +1,6 @@
 %{
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@
     char *string;
     long signed_long;
     u_long unsigned_long;
+    ipaddr *pipaddr;
     Bool bool;
     enum optype op;
     struct filter_node *pf;
@@ -73,6 +74,7 @@
 %token <signed_long> SIGNED
 %token <unsigned_long> UNSIGNED
 %token <bool> BOOL
+%token <pipaddr> IPADDR
 %type <op> relop
 %type <pf> expr leaf number
 
@@ -129,6 +131,9 @@ leaf	: VARIABLE
 		{ $$ = MakeStringConstNode($1); }
 	| BOOL
 		{ $$ = MakeBoolConstNode($1); }
+	| IPADDR
+		/* just pretend, for now */
+		{ $$ = MakeIPaddrConstNode($1); }
 	;
 
 /* relational operators */

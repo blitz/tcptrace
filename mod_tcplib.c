@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,13 +82,6 @@ char * namedfile(char * file);
 
 
 
-/* local routines */
-
-
-/* External global varialbes */
-extern tcp_pair **ttp;
-extern int num_tcp_pairs;
-
 
 /* Local global variables */
 static struct tcplibstats {
@@ -106,6 +99,8 @@ static int this_file = 0;
 static struct tcplib_next_converse *next_converse_breakdown = NULL;
 static int size_next_converse_breakdown = 0;
 static timeval last_converse;
+
+
 static int ipport_offset = IPPORT_OFFSET;
 static char *current_file = NULL;
 static char *output_dir = DEFAULT_TCPLIB_DATADIR;
@@ -1921,6 +1916,8 @@ void tcplib_do_ftp_itemsize()
     for(i = 0; i < ((max_size/5)+ 1); i++) {
 	temp = i;
 
+	temp *= 5;  /* sdo bugfix */
+
 	curr_count += size_list[i];
 
 /* 	printf("size_list[%d]: %d, curr_count = %d\n", */
@@ -2339,7 +2336,7 @@ void tcplib_do_nntp_itemsize()
 
 	if (size_list[i]) {
 	    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
-		    (float)i,
+		    (float)(i*1024), /* sdo bugfix */
 		    (((float)curr_count)/count),
 		    curr_count,
 		    size_list[i]);

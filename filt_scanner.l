@@ -1,6 +1,6 @@
 %{
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,6 +76,18 @@
 "&"		{ return(BAND); }    /* bitwise AND */
 
 
+[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ {
+    /* an IPv4 addr */
+    yylval.pipaddr = str2ipaddr(yytext);
+    return(IPADDR);
+}
+
+[0-9a-fA-F]+:[:0-9a-fA-F]*:[0-9a-fA-F]+ {
+    /* an IPv6 addr */
+    yylval.pipaddr = str2ipaddr(yytext);
+    return(IPADDR);
+}
+
 [0-9]+	{
     /* an unsigned integer */
     yylval.unsigned_long = atoi(yytext);
@@ -87,7 +99,6 @@
     yylval.signed_long = atoi(yytext);
     return(SIGNED);
 }
-
 "FALSE"	        { yylval.unsigned_long = 0; return(UNSIGNED); }
 "TRUE"	        { yylval.unsigned_long = 1; return(UNSIGNED); }
 
