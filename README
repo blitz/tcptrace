@@ -20,7 +20,7 @@ seems to have eased portability problems a great deal.  Just say
 "./configure" and then "make" to build the program.
 
 Most of the rest of the Docs are on the web.  Check out:
-  http://jarok.cs.ohiou.edu/software/tcptrace/tcptrace.html
+  http://tcptrace.org/
 
 
 Supported Platforms
