@@ -158,10 +158,13 @@ Mfopen(
 	    prefix,
 	    fname);
 
+    // The 'b' in the file mode has no meaning in UNIX systems.
+    // It has meaning in Operating Systems like Windows that
+    // seem to treat text and binary files differently.
     if (strcmp(mode,"w") == 0)
-	Mfopen_internal(pmf,"w+");
+	Mfopen_internal(pmf,"wb+");
     else if (strcmp(mode,"a") == 0)
-	Mfopen_internal(pmf,"a+");
+	Mfopen_internal(pmf,"ab+");
     else {
 	fprintf(stderr,"Mfopen: internal file mode inconsistancy\n");
 	exit(10);
