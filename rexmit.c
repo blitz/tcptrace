@@ -774,3 +774,17 @@ graph_rtt_sample (tcb * ptcb,
 
     extend_line (ptcb->rtt_line, current_time, (int) (etime_rtt / 1000));
 }
+
+Bool IsRTO(tcb *ptcb, seqnum s) {
+  quadrant *pquad = whichquad(ptcb->ss,s);
+  segment *pseg;
+
+  for (pseg = pquad->seglist_head; pseg != NULL; pseg = pseg->next) {
+    if (s == (pseg->seq_lastbyte+1)) {
+      if (pseg->acked < 4) return TRUE;
+      else return FALSE;
+    }
+  }
+
+  return TRUE;
+}
