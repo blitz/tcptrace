@@ -85,37 +85,31 @@ plot_init(void)
 
 
 
+
+/* max number of letters in endpoint name */
+/* (8 allows 26**8 different endpoints (209,000,000,000)
+    probably plenty for now!!!!!) */
+#define MAX_HOSTLETTER_LEN 8
 char *
 HostLetter(
-     u_int ix)
+     unsigned ix)
 {
-    static char name[10];
-    char ch1;
-    char ch2;
-    char ch3;
+    static char name[MAX_HOSTLETTER_LEN+1];
+    static char *pname;
 
-    if (ix < 26) {
-        ch1 = ix % 26;
-        sprintf(name,"%c", 'a' + ch1);
-        return(name);
-    }
-    ix -= 26;
-    if (ix < 26*26) {
-        ch1 = ix % 26;
-        ch2 = (ix/26) % 26;
-        sprintf(name,"%c%c", 'a' + ch2, 'a' + ch1);
-        return(name);
-    }
-    ix -= (26*26);
-    if (ix < 26*26*26) {
-        ch1 = ix % 26;
-        ch2 = (ix/26) % 26;
-        ch3 = (ix/(26*26)) % 26;
-        sprintf(name,"%c%c%c", 'a' + ch3, 'a' + ch2, 'a' + ch1);
-        return(name);
+    /* basically, just convert to base 26 */
+    pname = &name[sizeof(name)-1];
+    *pname-- = '\00';
+    while (pname >= name) {
+	unsigned digit = (ix-1) % 26;
+	*pname-- = 'a'+digit;
+	ix = (ix-1) / 26;
+	if (ix == 0)
+	    return(pname+1);
     }
 
-    fprintf(stderr,"Fatal, too many hosts to name\n");
+    fprintf(stderr,"Fatal, too many hosts to name (max length %d)\n",
+	    MAX_HOSTLETTER_LEN);
     exit(-1);
     return(NULL);  /* NOTREACHED */
 }
