@@ -58,8 +58,10 @@ struct time_stamp {
 
 /* info kept for each connection */
 static struct http_info {
-    timeval syn_time;		/* when CLIENT sent SYN */
-    timeval fin_time;		/* when SERVER sent FIN */
+    timeval c_syn_time;		/* when CLIENT sent SYN */
+    timeval s_syn_time;		/* when SERVER sent SYN */
+    timeval c_fin_time;		/* when CLIENT sent FIN */
+    timeval s_fin_time;		/* when SERVER sent FIN */
 
     /* info about the TCP connection */
     tcp_pair *ptp;
@@ -69,6 +71,7 @@ static struct http_info {
     /* when querries (GETs) were sent by client */
     struct time_stamp get_head;
     struct time_stamp get_tail;
+
 
     /* when answers (CONTENT) were sent by server */
     struct time_stamp data_head;
@@ -111,6 +114,7 @@ static void AddTS(struct time_stamp *phead, struct time_stamp *ptail,
 		  u_long position);
 static double ts2d(timeval *pt);
 static void HttpPrintone(MFILE *pmf, struct http_info *ph);
+static void HttpDoPlot();
 static struct http_info *FindPH(tcp_pair *ptp, struct tcphdr *ptcp);
 
 
@@ -313,10 +317,6 @@ FindPH(
 	ph = MakeHttpRec();
 	ph->ptp = ptp;
 
-	/* record SYN time */
-	if (SYN_SET(ptcp) && (ph->syn_time.tv_sec == 0))
-	    ph->syn_time = current_time;
-
 	/* determine the server and client tcb's */
 	if (ptp->addr_pair.a_port == httpd_port) {
 	    ph->tcb_client = &ptp->b2a;
@@ -377,10 +377,31 @@ http_read(
     }
 
     
-    /* we also want the time that the SERVER sends his FIN */
-    if (IS_SERVER(ptcp))
-	if (FIN_SET(ptcp) && (ph->fin_time.tv_sec == 0))
-	    ph->fin_time = current_time;
+    /* we also want the time that the FINs were sent */
+    if (FIN_SET(ptcp)) {
+	if (IS_SERVER(ptcp)) {
+	    /* server */
+	    if (ZERO_TIME(&(ph->s_fin_time)))
+		ph->s_fin_time = current_time;
+	} else {
+	    /* client */
+	    if (ZERO_TIME(&ph->c_fin_time))
+		ph->c_fin_time = current_time;
+	}
+    }
+
+    /* we also want the time that the SYNs were sent */
+    if (SYN_SET(ptcp)) {
+	if (IS_SERVER(ptcp)) {
+	    /* server */
+	    if (ZERO_TIME(&ph->s_syn_time))
+		ph->s_syn_time = current_time;
+	} else {
+	    /* client */
+	    if (ZERO_TIME(&ph->c_syn_time))
+		ph->c_syn_time = current_time;
+	}
+    }
 }
 
 
@@ -606,6 +627,110 @@ FindGets(
 }
 
 
+#define NCOLORS 8
+char *ColorNames[NCOLORS] =
+{"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink" };
+
+
+static void
+HttpDoPlot()
+{
+    PLOTTER p = NO_PLOTTER;
+    struct http_info *ph;
+    struct get_info *pget;
+    int y_axis = 1000;
+    int ix_color = 0;
+    char buf[100];
+    struct time_stamp *pts;
+
+    for (ph=httphead; ph; ph=ph->next) {
+	tcp_pair *ptp = ph->ptp;
+	tcb a2b, b2a;
+
+	if (ptp == NULL)
+	    continue;
+
+	a2b = ptp->a2b;
+	b2a = ptp->b2a;
+
+	ix_color = (ix_color + 1) % NCOLORS;
+
+	if (p==NO_PLOTTER)
+	    p = new_plotter(&ptp->a2b,"HTTP","time","URL","_http.xpl");
+
+	y_axis += 2;
+
+	/* plot the TCP connection lifetime */
+	plotter_perm_color(p,ColorNames[ix_color]);
+	plotter_larrow(p, ph->ptp->first_time, y_axis);
+	plotter_rarrow(p, ph->ptp->last_time, y_axis);
+	plotter_line(p,
+		     ph->ptp->first_time, y_axis,
+		     ph->ptp->last_time, y_axis);
+
+	/* label the connection */
+	plotter_text(p,ph->ptp->first_time,y_axis,"b",
+		     (sprintf(buf,"%s ==> %s",
+			      ph->ptp->a_endpoint, ph->ptp->b_endpoint), buf));
+
+	/* mark the data packets */
+	for (pts=ph->data_head.next; pts->next; pts=pts->next) {
+	    plotter_tick(p,pts->thetime,y_axis,'d');
+	}
+		     
+
+	/* plot the SYN's */
+	if (!ZERO_TIME(&ph->c_syn_time)) {
+	    plotter_tick(p,ph->c_syn_time,y_axis,'u');
+	    plotter_text(p,ph->c_syn_time,y_axis,"a","Clnt SYN");
+	}
+	if (!ZERO_TIME(&ph->s_syn_time)) {
+	    plotter_tick(p,ph->s_syn_time,y_axis,'u');
+	    plotter_text(p,ph->s_syn_time,y_axis,"a","Serv Syn");
+	}
+
+	/* plot the FINs */
+	if (!ZERO_TIME(&ph->c_fin_time)) {
+	    plotter_tick(p,ph->c_fin_time,y_axis,'u');
+	    plotter_text(p,ph->c_fin_time,y_axis,"a","Clnt Fin");
+	}
+	if (!ZERO_TIME(&ph->s_fin_time)) {
+	    plotter_tick(p,ph->s_fin_time,y_axis,'u');
+	    plotter_text(p,ph->s_fin_time,y_axis,"a","Serv Fin");
+	}
+
+	y_axis += 4;
+
+	for (pget = ph->gets_head; pget; pget = pget->next) {
+
+	    if ((pget->send_time.tv_sec == 0) ||
+		(pget->get_time.tv_sec == 0) ||
+		(pget->ack_time.tv_sec == 0))
+		continue;
+	    
+	    plotter_temp_color(p,"white");
+	    plotter_text(p, pget->get_time, y_axis, "l", pget->get_string);
+
+	    plotter_diamond(p, pget->get_time, y_axis);
+	    plotter_larrow(p, pget->send_time, y_axis);
+	    plotter_rarrow(p, pget->ack_time, y_axis);
+	    plotter_line(p,
+			 pget->send_time, y_axis,
+			 pget->ack_time, y_axis);
+	    plotter_temp_color(p,"white");
+	    plotter_text(p, pget->ack_time, y_axis, "r",
+			 (sprintf(buf,"%d",pget->content_length),buf));
+
+
+	    y_axis += 2;
+
+	}
+
+
+    }
+}
+
+
 static void
 HttpPrintone(
     MFILE *pmf,
@@ -633,12 +758,18 @@ HttpPrintone(
 	printf("WARNING!!!!  Information may be invalid, %ld bytes were not captured\n",
 	       missing);
 
-    printf("  Syn Time:      %s (%.3f)\n",
-	   ts2ascii(&ph->syn_time),
-	   ts2d(&ph->syn_time));
-    printf("  Fin Time:      %s (%.3f)\n",
-	   ts2ascii(&ph->fin_time),
-	   ts2d(&ph->fin_time));
+    printf("  Server Syn Time:      %s (%.3f)\n",
+	   ts2ascii(&ph->s_syn_time),
+	   ts2d(&ph->s_syn_time));
+    printf("  Client Syn Time:      %s (%.3f)\n",
+	   ts2ascii(&ph->c_syn_time),
+	   ts2d(&ph->c_syn_time));
+    printf("  Server Fin Time:      %s (%.3f)\n",
+	   ts2ascii(&ph->s_fin_time),
+	   ts2d(&ph->s_fin_time));
+    printf("  Client Fin Time:      %s (%.3f)\n",
+	   ts2ascii(&ph->c_fin_time),
+	   ts2d(&ph->c_fin_time));
 
     for (pget = ph->gets_head; pget; pget = pget->next) {
 	printf("    Request for '%s'\n", pget->get_string);
@@ -694,6 +825,8 @@ http_done(void)
     for (ph=httphead; ph; ph=ph->next) {
 	HttpPrintone(pmf,ph);
     }
+
+    HttpDoPlot();
 
     Mfclose(pmf);
 }
