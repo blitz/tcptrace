@@ -19,6 +19,7 @@ Packet 1
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0ac6 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 2
 	Packet Length: 68
@@ -39,6 +40,7 @@ Packet 2
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0ac6 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 3
 	Packet Length: 68
@@ -59,6 +61,7 @@ Packet 3
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0ac5 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 4
 	Packet Length: 68
@@ -79,6 +82,7 @@ Packet 4
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0ac5 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 5
 	Packet Length: 68
@@ -99,6 +103,7 @@ Packet 5
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0ac4 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 6
 	Packet Length: 68
@@ -119,6 +124,7 @@ Packet 6
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0ac4 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 7
 	Packet Length: 68
@@ -139,6 +145,7 @@ Packet 7
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0ac3 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 8
 	Packet Length: 68
@@ -159,6 +166,7 @@ Packet 8
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0ac3 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 9
 	Packet Length: 68
@@ -179,6 +187,7 @@ Packet 9
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0ac2 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 10
 	Packet Length: 68
@@ -199,6 +208,7 @@ Packet 10
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0ac2 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 11
 	Packet Length: 68
@@ -219,6 +229,7 @@ Packet 11
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0ac1 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 12
 	Packet Length: 68
@@ -239,6 +250,7 @@ Packet 12
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0ac1 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 13
 	Packet Length: 68
@@ -259,6 +271,7 @@ Packet 13
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0ac0 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 14
 	Packet Length: 68
@@ -279,6 +292,7 @@ Packet 14
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0ac0 (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 15
 	Packet Length: 68
@@ -299,6 +313,7 @@ Packet 15
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0abf (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 16
 	Packet Length: 68
@@ -319,6 +334,7 @@ Packet 16
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0abf (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 17
 	Packet Length: 68
@@ -339,6 +355,7 @@ Packet 17
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0abe (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 18
 	Packet Length: 68
@@ -359,6 +376,7 @@ Packet 18
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0abe (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 19
 	Packet Length: 68
@@ -379,6 +397,7 @@ Packet 19
 
 	UDP SPRT: 35142 
 	    DPRT: 7 
+	  UCKSUM: 0x0abd (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 20
 	Packet Length: 68
@@ -399,6 +418,7 @@ Packet 20
 
 	UDP SPRT: 7 
 	    DPRT: 35142 
+	  UCKSUM: 0x0abd (too short to verify)
 	    DLEN: 62 (only 26 bytes in dump file)
 Packet 21
 	Packet Length: 58
