@@ -38,6 +38,7 @@ static char const rcsid_http[] =
 struct get_info {
     timeval get_time;		/* when CLIENT sent GET */
     timeval send_time;		/* when SERVER sent CONTENT */
+    timeval lastbyte_time;	/* when SERVER sent last byte of CONTENT */
     timeval ack_time;		/* when CLIENT acked CONTENT */
     unsigned content_length;	/* as reported by server */
     char *get_string;		/* content of GET string */
@@ -83,7 +84,6 @@ static struct http_info {
     struct time_stamp get_head;
     struct time_stamp get_tail;
 
-
     /* when answers (CONTENT) were sent by server */
     struct time_stamp data_head;
     struct time_stamp data_tail;
@@ -97,8 +97,7 @@ static struct http_info {
     struct get_info *gets_tail;
 
     struct http_info *next;
-    struct http_info *prev;
-} *httphead = NULL, *httptail = NULL;
+} *httphead = NULL;
 
 
 
@@ -127,7 +126,6 @@ static void AddTS(struct time_stamp *phead, struct time_stamp *ptail,
 static double ts2d(timeval *pt);
 static void HttpPrintone(MFILE *pmf, struct http_info *ph);
 static void HttpDoPlot();
-static struct http_info *FindPH(tcp_pair *ptp, struct tcphdr *ptcp);
 static struct client_info *FindClient(char *clientname);
 
 
@@ -237,15 +235,9 @@ MakeHttpRec()
     ph->ack_tail.prev = &ph->ack_head;
     ph->ack_tail.position = 0xffffffff;
 
-    /* put it at the tail of the list */
-    if (httphead == NULL) {
-	httptail = ph;
-	httphead = ph;
-    } else {
-	ph->prev = httptail;
-	httptail->next = ph;
-	httptail = ph;
-    }
+    /* chain it in */
+    ph->next = httphead;
+    httphead = ph;
 
     return(ph);
 }
@@ -336,50 +328,14 @@ FindClient(
 }
 
 
-static struct http_info *
-FindPH(
-    tcp_pair *ptp,
-    struct tcphdr *ptcp)
-{
-    struct http_info *ph;
-
-    /* find the record for this packet */
-    for (ph=httphead; ph; ph=ph->next) {
-	if (ph->ptp == ptp)
-	    break;
-    }
-
-    if (!ph) {
-	/* didn't find it, make one up */
-	ph = MakeHttpRec();
-	ph->ptp = ptp;
-
-	/* determine the server and client tcb's */
-	if (ptp->addr_pair.a_port == httpd_port) {
-	    ph->tcb_client = &ptp->b2a;
-	    ph->tcb_server = &ptp->a2b;
-	} else {
-	    ph->tcb_client = &ptp->a2b;
-	    ph->tcb_server = &ptp->b2a;
-	}
-
-	/* attach the client info */
-	ph->pclient = FindClient(HostName(ptp->addr_pair.a_address));
-    }
-
-
-    return(ph);
-}
-
-
 
 void
 http_read(
-    struct ip *pip,	/* the packet */
-    tcp_pair *ptp,	/* info I have about this connection */
-    void *plast)	/* past byte in the packet */
+    struct ip *pip,		/* the packet */
+    tcp_pair *ptp,		/* info I have about this connection */
+    void *plast,		/* past byte in the packet */
+    struct http_info *ph)	/* module specific info for this connection */
 {
-    struct http_info *ph;
     struct tcphdr *ptcp;
     unsigned tcp_length;
     unsigned tcp_data_length;
@@ -394,9 +350,6 @@ http_read(
     if ((ptcp->th_sport != httpd_port) && (ptcp->th_dport != httpd_port))
 	return;
 
-    /* find the record for this packet */
-    ph = FindPH(ptp,ptcp);
-
     /* find the data */
     pdata = (char *)ptcp + (unsigned)ptcp->th_off*4;
 
@@ -406,6 +359,7 @@ http_read(
 	    AddGetTS(ph,DataOffset(ph->tcb_client,ptcp->th_seq));
 	}
 	if (ACK_SET(ptcp)) {
+printf("Client acks %ld\n", DataOffset(ph->tcb_server,ptcp->th_ack));	    
 	    AddAckTS(ph,DataOffset(ph->tcb_server,ptcp->th_ack));
 	}
     }
@@ -414,6 +368,9 @@ http_read(
     if (IS_SERVER(ptcp)) {
 	if (tcp_data_length > 0) {
 	    AddDataTS(ph,DataOffset(ph->tcb_server,ptcp->th_seq));
+printf("Server sends %ld thru %ld\n",
+       DataOffset(ph->tcb_server,ptcp->th_seq),
+       DataOffset(ph->tcb_server,ptcp->th_seq)+tcp_data_length-1);
 	}
     }
 
@@ -481,7 +438,7 @@ MFMap(
 		 MAP_PRIVATE,	/* won't be sharing...	*/
 		 fd,		/* attach to 'fd'	*/
 		 (off_t) 0);	/* ... offset 0 in 'fd'	*/
-    if (vaddr == MAP_FAILED) {
+    if (vaddr == (void *) -1) {
 	perror("mmap");
 	exit(-1);
     }
@@ -537,7 +494,6 @@ HttpGather(
 }
 
 
-#ifdef OLD
 static void
 PrintTSChain(
     struct time_stamp *phead,
@@ -550,7 +506,6 @@ PrintTSChain(
 	       pts->position, ts2ascii(&pts->thetime));
     }
 }
-#endif
 
 
 /* when was the byte at offset "position" acked?? */
@@ -564,12 +519,12 @@ WhenAcked(
     struct time_stamp *pts;
     timeval epoch = {0,0};
 
-/*     printf("pos:%ld, Chain:\n", position); */
-/*     PrintTSChain(phead,ptail); */
+    printf("pos:%ld, Chain:\n", position);
+    PrintTSChain(phead,ptail);
 
     for (pts = phead->next; pts != NULL; pts = pts->next) {
-/* 	fprintf(stderr,"Checking pos %ld against %ld\n", */
-/* 		position, pts->position); */
+	fprintf(stderr,"Checking pos %ld against %ld\n",
+		position, pts->position);
 	if (pts->position >= position) {
 	    /* sent after this one */
 	    return(pts->thetime);
@@ -637,9 +592,17 @@ FindContent(
 	    /* remember where it started */
 	    position = pch - pdata + 1;
 
-	    /* grab the time stamps */
+	    /* when was the first byte sent? */
 	    pget->send_time = WhenSent(&ph->data_head,&ph->data_tail,position);
-	    pget->ack_time = WhenAcked(&ph->ack_head,&ph->ack_tail,position);
+
+	    /* when was the LAST byte sent? */
+	    pget->lastbyte_time = WhenSent(&ph->data_head,&ph->data_tail,
+					   position+pget->content_length-1);
+
+	    /* when was the last byte ACKed? */
+	    printf("Content length: %d\n", pget->content_length);
+	    pget->ack_time = WhenAcked(&ph->ack_head,&ph->ack_tail,
+				       position+pget->content_length-1);
 
 	    /* skip to the next request */
 	    pget = pget->next;
@@ -799,14 +762,16 @@ HttpDoPlot()
 
 	    plotter_diamond(p, pget->get_time, y_axis);
 	    plotter_larrow(p, pget->send_time, y_axis);
-	    plotter_rarrow(p, pget->ack_time, y_axis);
+	    plotter_rarrow(p, pget->lastbyte_time, y_axis);
 	    plotter_line(p,
 			 pget->send_time, y_axis,
-			 pget->ack_time, y_axis);
+			 pget->lastbyte_time, y_axis);
 	    plotter_temp_color(p,"white");
-	    plotter_text(p, pget->ack_time, y_axis, "r",
+	    plotter_text(p, pget->lastbyte_time, y_axis, "r",
 			 (sprintf(buf,"%d",pget->content_length),buf));
-
+	    plotter_diamond(p, pget->ack_time, y_axis);
+	    plotter_temp_color(p,"white");
+	    plotter_text(p, pget->ack_time, y_axis, "r", "ACK");
 
 	    y_axis += 2;
 
@@ -895,7 +860,7 @@ connection (FINs) were not found in trace file.\n");
 	printf("\tElapsed time:  %.0f ms (GET to content ACKed)\n", etime);
     }
 
-#ifdef OLD
+#ifdef DUMP_TIMES_OLD
     Mfprintf(pmf,"%.3f %.3f %.3f %.3f %d %s\n",
 	     ts2d(&ph->syn_time),
 	     ts2d(&ph->get_time),
@@ -903,7 +868,7 @@ connection (FINs) were not found in trace file.\n");
 	     ts2d(&ph->fin_time),
 	     ph->content_length,
 	     ph->path);
-#endif
+#endif /* DUMP_TIMES_OLD */
 }
 
 
@@ -911,7 +876,7 @@ connection (FINs) were not found in trace file.\n");
 void
 http_done(void)
 {
-    MFILE *pmf;
+    MFILE *pmf = NULL;
     struct http_info *ph;
 
     /* just return if we didn't grab anything */
@@ -921,7 +886,9 @@ http_done(void)
     /* gather up the information */
     HttpGather(httphead);
 
+#ifdef DUMP_TIMES_OLD
     pmf = Mfopen("http.times","w");
+#endif /* DUMP_TIMES_OLD */
 
     printf("Http module output:\n");
 
@@ -931,7 +898,9 @@ http_done(void)
 
     HttpDoPlot();
 
+#ifdef DUMP_TIMES_OLD
     Mfclose(pmf);
+#endif /* DUMP_TIMES_OLD */
 }
 
 
@@ -943,20 +912,38 @@ http_usage(void)
 }
 
 
-#ifdef OLD
-    /* look for Content_Length: */
-    if (IS_SERVER(ptcp) && (ph->content_length == 0)) {
-	for (pch = pdata; pch <= (char *)plast; ++pch) {
-	    if (strncasecmp(pch,"Content-Length:", 15) == 0) {
-		/* find the value */
-		ph->content_length = atoi(&pch[16]);
-	    }
-	}
-    }
 
-    /* at least count the bytes */
-    if (IS_SERVER(ptcp)) {
-	ph->byte_count += tcp_data_length;
-    }
+void
+http_newfile(
+    char *newfile)
+{
+    /* just an example, really */
+}
 
-#endif
+
+
+struct http_info *
+http_newconn(
+    tcp_pair *ptp)
+{
+    struct http_info *ph;
+
+    ph = MakeHttpRec();
+
+    /* attach tcptrace's info */
+    ph->ptp = ptp;
+ 
+    /* determine the server and client tcb's */
+    if (ptp->addr_pair.a_port == httpd_port) {
+	ph->tcb_client = &ptp->b2a;
+	ph->tcb_server = &ptp->a2b;
+    } else {
+	ph->tcb_client = &ptp->a2b;
+	ph->tcb_server = &ptp->b2a;
+    }
+ 
+    /* attach the client info */
+    ph->pclient = FindClient(HostName(ptp->addr_pair.a_address));
+
+    return(ph);
+}
