@@ -69,7 +69,7 @@ ts2ascii(
 
 /* 	decimal = (ptime->tv_usec + 50) / 100;*/  /* for 4 digits */
 	decimal = ptime->tv_usec;  /* for 6 digits */
-	sprintf(buf, "%s.%06d", now, decimal);
+	sprintf(buf, "%s.%06d %s", now, decimal, &now[20]);
 
 	return(buf);
 }
@@ -232,13 +232,16 @@ printtcp_packet(
     printf("\t    DPRT: %u %s\n",
 	   ntohs(ptcp->th_dport),
 	   ParenServiceName(ntohs(ptcp->th_dport)));
-    printf("\t     FLG: %c%c%c%c%c%c\n",
+    printf("\t     FLG: %c%c%c%c%c%c%c%c (0x%02x)\n",
+	   FLAG6_SET(ptcp)? '?':' ',
+	   FLAG7_SET(ptcp)? '?':' ',
 	   URGENT_SET(ptcp)?'U':'-',
 	   ACK_SET(ptcp)?   'A':'-',
 	   PUSH_SET(ptcp)?  'P':'-',
 	   RESET_SET(ptcp)? 'R':'-',
 	   SYN_SET(ptcp)?   'S':'-',
-	   FIN_SET(ptcp)?   'F':'-');
+	   FIN_SET(ptcp)?   'F':'-',
+	   ptcp->th_flags);
     printf(
 	hex?"\t     SEQ: 0x%08x\n":"\t     SEQ: %d\n",
 	ntohl(ptcp->th_seq));
@@ -247,6 +250,10 @@ printtcp_packet(
 	ntohl(ptcp->th_ack));
     printf("\t     WIN: %u\n", ntohs(ptcp->th_win));
     printf("\t    HLEN: %u\n", ptcp->th_off*4);
+    if (ptcp->th_x2 != 0) {
+	printf("\t    MBZ: 0x%01x (these are supposed to be zero!)\n",
+	       ptcp->th_x2);
+    }
     pdata = (u_char *)ptcp + ptcp->th_off*4;
     printf("\t    DLEN: %u",
 	   tcp_data_length);
@@ -317,22 +324,26 @@ printpacket(
      struct ip		*pip,
      void 		*plast)
 {
-    if (len == tlen)
+    if (len == 0)
+	/* original length unknown */
+        printf("\tSaved Length: %d\n", tlen);
+    else if (len == tlen)
         printf("\tPacket Length: %d\n", len);
     else
         printf("\tPacket Length: %d (saved length %d)\n", len,tlen);
 
     printf("\tCollected: %s\n", ts2ascii(&current_time));
 
-    switch(phystype) {
-      case PHYS_ETHER:
-	printeth_packet(phys);
-	break;
-      default:
-	printf("\tPhysical layer: %d (not understood)\n", phystype);
-	break;
+    if (phys) {
+	switch(phystype) {
+	  case PHYS_ETHER:
+	    printeth_packet(phys);
+	    break;
+	  default:
+	    printf("\tPhysical layer: %d (not understood)\n", phystype);
+	    break;
+	}
     }
-
 
     /* it's always supposed to be an IP packet */
     printip_packet(pip,plast);
