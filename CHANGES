@@ -26,7 +26,7 @@
 	Pentium box"  (also untested by me, I don't have one)
   an HP compiler picked out some places where I missed a static
     decl for some functions.  Not fatal, but I fixed it.
-3.2.8 - Mon Mar  3, 1997
+3.2.8 - Tue Mar  4, 1997
   added changes for Mark
      allow connection reuse on same pair of IP addresses and ports
      4 minutes must have passed and either new segment has a SYN
@@ -34,3 +34,7 @@
   added fix to tcptrace.c so that ^C processing is re-enabled after
      all packets read so that the output can be killed from the
      keyboard
+  fix by Bill Fenner - Endian boo boo caused PC's not to read
+     any packets.
+  changed elapsed() routine to return double to prevent overflow
+     of microsecond stored in a long int
