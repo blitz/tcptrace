@@ -403,3 +403,21 @@ the receiver.  Tcptrace flags the situation because otherwise those packets woul
 be seen as retransmissions when they really aren't.  If you're seeing a lot of
 these (well, probably any at all), then there's a bad setup on your network.
     
+============================================================
+Thu Mar  4, 1999
+
+>> I just have a question regarding the congestion window plot. I am
+>> wondering if this congestion is the cwnd on the sending side or it
+>> is the MIN (cwnd, adv_win) where adv_win is the receiving side
+>> advertised window size. Can you please explain how the congestion
+>> window is calculated (I assumed it is calculated since the tcp
+>> packet does not carry the congestion window information).
+
+The title of that plot is misleading and is titled "outstanding data"
+in the version that I'm working on now.  There's a high probability
+that what it's plotting is similar to the sender's congestion window,
+but in fact it is just a heuristic that plots the amount of non-acked
+data on the network (the different between the highest byte sent and
+the highest byte ACKed).
+
+
