@@ -193,6 +193,7 @@ typedef struct tcb {
     u_long	cwin_tot;
 
     /* RTT stats for singly-transmitted segments */
+    double	rtt_last;	/* RTT as of last good ACK (microseconds) */
     u_long	rtt_min;
     u_long	rtt_max;
     double	rtt_sum;	/* for averages */
@@ -405,6 +406,7 @@ FILE *CompOpenFile(char *filename);
 void CompCloseFile(char *filename);
 void CompFormats(void);
 int CompIsCompressed(void);
+struct tcb *ptp2ptcb(tcp_pair *ptp, struct ip *pip, struct tcphdr *ptcp);
 
 
 

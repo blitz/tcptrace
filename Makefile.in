@@ -48,9 +48,13 @@ PCAP_LDFLAGS = -L/usr/local/lib -Llib -Lpcap -L../pcap
 # 
 DEFINES += -DLOAD_MODULE_HTTP
 # 
-# Experimental averall traffic by port module
+# Experimental overall traffic by port module
 # 
 DEFINES += -DLOAD_MODULE_TRAFFIC
+# 
+# Experimental round trip time graphs
+# 
+DEFINES += -DLOAD_MODULE_RTTGRAPH
 
 
 
@@ -122,7 +126,7 @@ LDFLAGS += ${PCAP_LDFLAGS}
 CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c	\
 	tcpdump.c tcptrace.c thruput.c trace.c version.c
-MODULES=mod_http.c mod_traffic.c
+MODULES=mod_http.c mod_traffic.c mod_rttgraph.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
 
 

@@ -387,6 +387,7 @@ rtt_ackin(
     etime_rtt = elapsed(pseg->time,current_time);
 
     if (pseg->retrans == 0) {
+	ptcb->rtt_last = etime_rtt;
 	if ((ptcb->rtt_min == 0) || (ptcb->rtt_min > etime_rtt))
 	    ptcb->rtt_min = etime_rtt;
 
@@ -398,6 +399,7 @@ rtt_ackin(
 	++ptcb->rtt_count;
     } else {
 	/* retrans, can't use it */
+	ptcb->rtt_last = 0.0;
 	if ((ptcb->rtt_min_last == 0) || (ptcb->rtt_min_last > etime_rtt))
 	    ptcb->rtt_min_last = etime_rtt;
 

@@ -836,6 +836,7 @@ HttpPrintone(
 	   ts2ascii(&ph->c_fin_time),
 	   ts2d(&ph->c_fin_time));
 
+#ifdef SAFE
     /* check the SYNs */
     if ((pab->syn_count == 0) || (pba->syn_count == 0)) {
 	printf("\
@@ -851,6 +852,7 @@ No additional information available, end of\n\
 connection (FINs) were not found in trace file.\n");
 	return;
     }
+#endif /* SAFE */
 
     /* see if we got all the bytes */
     missing = pab->trunc_bytes + pba->trunc_bytes;

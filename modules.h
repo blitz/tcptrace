@@ -94,6 +94,11 @@ struct module {
 #endif /* LOAD_MODULE_TRAFFIC */
 
 
+#ifdef LOAD_MODULE_RTTGRAPH
+#include "mod_rttgraph.h"	/* for the rttgraph package */
+#endif /* LOAD_MODULE_RTTGRAPH */
+
+
 /* declare (install) the various module routines */
 struct module modules[] = {
 #ifdef LOAD_MODULE_HTTP
@@ -117,6 +122,17 @@ struct module modules[] = {
      "traffic", "traffic analysis package",
      traffic_init, traffic_read, traffic_done,		
      traffic_usage, NULL, traffic_newconn},
+#endif /* LOAD_MODULE_TRAFFIC */
+
+#ifdef LOAD_MODULE_RTTGRAPH
+    {TRUE,			/* make FALSE if you don't want to call it at all */
+     "rttgraph", "round trip time analysis graphs",
+     rttgraph_init,		/* routine to call to init the module */
+     rttgraph_read,		/* routine to pass each TCP segment */
+     rttgraph_done,		/* routine to call at program end */
+     rttgraph_usage,		/* routine to call to print module usage */
+     NULL,			/* routine to call on each new file */
+     rttgraph_newconn},		/* routine to call on each new connection */
 #endif /* LOAD_MODULE_TRAFFIC */
 };
 #define NUM_MODULES (sizeof(modules) / sizeof(struct module))
