@@ -43,8 +43,8 @@ enum vartype {
     V_LLONG	= 12,
 
     /* functions */
-    V_FUNC	=13,
-    V_UFUNC	=14,
+    V_FUNC	=13,		/* function returning unsigned */
+    V_UFUNC	=14,		/* function returning signed */
 };
 
 
@@ -132,6 +132,7 @@ struct filter_line {
     enum vartype vartype;	/* type of the variable */
     void 	*cl_addr;	/* address when in client */
     void 	*sv_addr;	/* address when in server */
+    char	*descr;		/* brief description */
 };
 
 
