@@ -1459,13 +1459,13 @@ HelpFilterVariables(void)
 
     fprintf(stderr,"Filter Variables:\n");
 
-    fprintf(stderr,"\tvariable name        type       description\n");
-    fprintf(stderr,"\t------------------   --------   -----------------------\n");
+    fprintf(stderr,"  variable name      type      description\n");
+    fprintf(stderr,"  -----------------  --------  -----------------------\n");
 
     for (i=0; i < NUM_FILTERS; ++i) {
 	struct filter_line *pf = &filters[i];
 
-	fprintf(stderr,"\t%-18s   %-8s   %s\n",
+	fprintf(stderr,"  %-17s  %-8s  %s\n",
 		pf->varname, Vartype2BStr(pf->vartype),pf->descr);
     }
 }
