@@ -34,6 +34,7 @@ static char const rcsid[] =
 #include <stdio.h>
 #include <math.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "pool.h"
 
@@ -328,11 +329,11 @@ MakeList(
 
   /* make a linked list of free memory blocks */
   do {
-    next = (struct Block *)((void *)block + pools[poolid].block_size);
+    next = (struct Block *)((char *)block + pools[poolid].block_size);
     block->next = next;
     block = next;
-  } while ((void *)next <= 
-	   ((void *)buffer + buffer_size - (pools[poolid].block_size*2)));
+  } while ((char *)next <= 
+	   ((char *)buffer + buffer_size - (pools[poolid].block_size*2)));
   block->next = NULL;
 
  return (struct Block *)buffer;
