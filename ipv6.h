@@ -53,7 +53,11 @@
 
 /* other constants we need */
 #define INET6_ADDRSTRLEN        46              /* IPv6 Address length in a string format*/
+
+/* this is SOMETIMES already defined */
+#ifndef AF_INET6
 #define AF_INET6                24              /* Internet Protocol, V6 */
+#endif /* AF_INET6 */
 
 
 
@@ -65,8 +69,10 @@ typedef struct in6_addr {
 } in6_addr;
 
 
-/* external routines that we use if found, otherwise substutite our own... */
+/* external routines that we use if found, otherwise substitute our own... */
+#ifndef HAVE_INET_NTOP
 const char *inet_ntop(int, const char *, char *, size_t);
+#endif /* HAVE_INET_NTOP */
 
 #endif /* notdef IPV6HDR_NONXTHDR */
 
