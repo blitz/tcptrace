@@ -125,3 +125,7 @@
   changed some longer fields to use "long long" if available
   added "pushed packets" counter
   added hardware duplicate detection
+5.0a
+  adding Nasseef's IPv6 support
+  added the -y flag to turn off the (yellow) instantaneous dots in the tput plot
+

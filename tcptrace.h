@@ -55,6 +55,8 @@ static char const rcsid_tcptrace[] =
 #include <stdarg.h>
 #include <stdlib.h>
 
+/* IPv6 support */
+#include "ipv6.h"
 
 /* we want LONG LONG in some places */
 #if SIZEOF_UNSIGNED_LONG_LONG_INT >= 8
@@ -87,7 +89,15 @@ typedef u_char quadnum;  /* 1,2,3,4 */
 typedef u_short portnum;
 
 /* type for an IP address */
-typedef struct in_addr ipaddr;
+/* IP address can be either IPv4 or IPv6 */
+typedef struct ipaddr {
+    u_char addr_vers;	/* 4 or 6 */
+    union {
+	struct in_addr   ip4;
+	struct in6_addr  ip6;
+    } un;
+} ipaddr;
+
 
 /* type for a timestamp */
 typedef struct timeval timeval;
@@ -102,12 +112,13 @@ typedef u_char Bool;
 typedef struct mfile MFILE;
 
 
+#ifdef OLD
 /* test 2 IP addresses for equality */
 #define IP_SAMEADDR(addr1,addr2) (((addr1).s_addr) == ((addr2).s_addr))
 
 /* copy IP addresses */
 #define IP_COPYADDR(toaddr,fromaddr) ((toaddr).s_addr = (fromaddr).s_addr)
-
+#endif
 
 typedef struct segment {
     seqnum	seq_firstbyte;	/* seqnumber of first byte */
@@ -172,6 +183,7 @@ typedef struct tcb {
     u_long	max_seg_size;
     u_llong	out_order_pkts;	/* out of order packets */
     u_llong	sacks_sent;	/* sacks returned */
+    u_long	ipv6_segments;	/* how many segments were ipv6? */
 
     /* hardware duplicate detection */
 #define SEGS_TO_REMEMBER 8
@@ -240,10 +252,11 @@ typedef struct tcb {
     MFILE	*rtt_dump_file;
 
     /* Extracted stream contents */
-    MFILE	*extracted_contents_file;
-    u_llong	trunc_bytes;	/* data bytes not see due to trace file truncation */
-    u_llong	trunc_segs;	/* segments with trunc'd bytes */
-    u_long	extr_lastseq;	/* last sequence number we stored */
+    MFILE	*extr_contents_file;
+    u_llong	extr_trunc_bytes; /* data bytes not see due to trace file truncation */
+    u_llong	extr_trunc_segs; /* segments with trunc'd bytes */
+    seqnum	extr_lastseq;	/* last sequence number we stored */
+    seqnum	extr_initseq;	/* initial sequence number (same as SYN unless we missed it) */
 
     /* RTT Graph info for this one */
     PLOTTER	rtt_plotter;
@@ -322,6 +335,7 @@ extern Bool show_zero_window;
 extern Bool use_short_names;
 extern Bool save_tcp_data;
 extern Bool graph_time_zero;
+extern Bool plot_tput_instant;
 extern int debug;
 extern int thru_interval;
 extern int pnum;
@@ -407,7 +421,8 @@ void CompCloseFile(char *filename);
 void CompFormats(void);
 int CompIsCompressed(void);
 struct tcb *ptp2ptcb(tcp_pair *ptp, struct ip *pip, struct tcphdr *ptcp);
-
+void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr);
+int IP_SAMEADDR (ipaddr addr1, ipaddr addr2);
 
 
 /* TCP flags macros */
@@ -546,6 +561,28 @@ typedef int pread_f(struct timeval *, int *, int *, void **,
    and alignment problems.  This should fix it! */
 void *MemCpy(void *p1, void *p2, size_t n); /* in tcptrace.c */
 #define memcpy(p1,p2,n) MemCpy(p1,p2,n);
+
+
+/*
+ * Macros to simplify access to IPv4/IPv6 header fields
+ */
+#define PIP_VERS(pip) (((struct ip *)(pip))->ip_v)
+#define PIP_ISV6(pip) (PIP_VERS(pip) == 6)
+#define PIP_ISV4(pip) (PIP_VERS(pip) == 4)
+#define PIP_V6(pip) ((struct ipv6 *)(pip))
+#define PIP_V4(pip) ((struct ip *)(pip))
+#define PIP_EITHERFIELD(pip,fld4,fld6) \
+   (PIP_ISV4(pip)?(PIP_V4(pip)->fld4):(PIP_V6(pip)->fld6))
+#define PIP_LEN(pip) (PIP_EITHERFIELD(pip,ip_len,ip6_lngth))
+
+/*
+ * Macros to simplify access to IPv4/IPv6 addresses
+ */
+#define ADDR_VERSION(paddr) ((paddr)->addr_vers)
+#define ADDR_ISV4(paddr) (ADDR_VERSION((paddr)) == 4)
+#define ADDR_ISV6(paddr) (ADDR_VERSION((paddr)) == 6)
+struct ipaddr *IPV4ADDR2ADDR(struct in_addr *addr4);    
+struct ipaddr *IPV6ADDR2ADDR(struct in6_addr *addr6);    
 
 
 

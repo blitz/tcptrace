@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 1995, 1996
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998
  *	Ohio University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,6 +78,7 @@ Bool printticks = FALSE;
 Bool printtrunc = FALSE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
+Bool plot_tput_instant = TRUE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
@@ -311,6 +312,7 @@ Graphing detail options\n\
   -M      produce monochrome (b/w) plot[s]\n\
   -AN     Average N segments for throughput graphs, default is 10\n\
   -z      plot time axis from 0 rather than wall clock time\n\
+  -y      omit the (yellow) instantaneous throughput points in tput graph\n\
 Misc options\n\
   -Z      dump raw rtt sample times to file[s]\n\
   -p      print individual packet contents (can be very long)\n\
@@ -540,19 +542,19 @@ ProcessFile(
 
 
 	/* quick sanity check, better be an IPv4 packet */
-	if (pip->ip_v != 4) {
+	if (!PIP_ISV4(pip) && !PIP_ISV6(pip)) {
 	    static Bool warned = FALSE;
 
 	    if (!warned) {
 		fprintf(stderr,
-			"Warning: saw at least one non-v4 IP packet (vers:%d)\n",
+			"Warning: saw at least one non-v4/v6 IP packet (vers:%d)\n",
 			pip->ip_v);
 		warned = TRUE;
 	    }
 
 	    if (debug)
 		fprintf(stderr,
-			"Skipping packet %d, not an IPv4 packet (version:%d)\n",
+			"Skipping packet %d, not an IPv4/v6 packet (version:%d)\n",
 			pnum,pip->ip_v);
 	    continue;
 	}
@@ -582,13 +584,12 @@ for other packet types, I just don't have a place to test them\n\n");
 	    printpacket(len,tlen,phys,phystype,pip,plast);
 	}
 
-	/* we must assume it's an IP packet, but */
-	/* if it's not a TCP packet, skip it */
-	if (pip->ip_p != IPPROTO_TCP)
-	    continue;
-
         /* perform packet analysis */
 	ptp = dotrace(pip,plast);
+
+	/* if it wasn't TCP, we return NULL here */
+	if (ptp == NULL)
+	    continue;
 
 	/* if it's a new connection, tell the modules */
 	if (ptp->packets == 1)
@@ -723,6 +724,7 @@ ParseArgs(
 		  case 'd': ++debug; break;
 		  case 'v': Version(); exit(0); break;
 		  case 'w': printtrunc = TRUE; break;
+		  case 'y': plot_tput_instant = FALSE; break;
 		  case 'q': printsuppress = TRUE; break;
 		  case 'z': graph_time_zero = TRUE; break;
 		  case 'i':
@@ -775,6 +777,7 @@ ParseArgs(
 		  case 'W': print_cwin = !TRUE; break;
 		  case 'X': hex = !TRUE; break;
 		  case 'Z': dump_rtt = !TRUE; break;
+		  case 'y': plot_tput_instant = !plot_tput_instant; break;
 		  case 'b': printbrief = !TRUE; break;
 		  case 'c': ignore_non_comp = !TRUE; break;
 		  case 'e': save_tcp_data = FALSE; break;
