@@ -299,8 +299,10 @@ pread_EP(
 
 	/* round to 2 bytes for V7 */
 	if (EP_V7) {
-	    if (len%2 != 0)
-		fseek(stdin,1,SEEK_CUR);
+	    if (len%2 != 0) {
+		/* can't SEEK, because this might be a pipe!! */
+		(void) getchar();
+	    }
 	}
 
 	*ppip  = (struct ip *) pip_buf;

@@ -137,4 +137,4 @@
     truncated.  Changed to unsigned.
   count/print truncated bytes/segs ALWAYS, not just when extracting data
   changed to use flex/bison for better portability
-
+  fixed bug in etherpeek for odd-sized packets from compressed files
