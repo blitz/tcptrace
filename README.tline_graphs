@@ -1,0 +1,599 @@
+README - Time Line Graphs
+
+NOTE:
+-----
+This code is lacking about a 1000 lines of intellegence that is needed
+to draw these graphs correctly. The basic problem we face is that we have
+the time values for the segments arriving/leaving on one end since the
+traffic dump is carried out on that end. The time values for the other end
+have to be estimated based on some heuristic. This requires a lot of
+intellegence and requires taking care of various conditions like
+retransmits, timeouts etc. The current heuristic is a simple one of
+adding/subtacting 1/3rd of the rtt.
+
+We started this project thinking it is easy to draw these graphs, and then
+realized that it is infact quite a complicated task. All this works with a
+-L option at command line, but may not accurately reflect the segment 
+timings.
+
+We are currently working on fixing this problem and should be able to
+provide more accurate results in the near future.
+
+For tcptrace maintainers:
+-------------------------
+
+I have left the code in here as the starting point to work on. Whoever is
+working on this project would want to clean up this file trace.c (based on
+the diffs below), and continue development as a seperate module.
+
+Don't forget to update this file when this option is fully developed.
+
+--Avinash (alakhian@tcptrace.org)
+9 July 2002
+
+-------------------
+ DIFFS - plotter.c
+-------------------
+
+68,75d67
+<     Bool header_done;           /* Flag indicating plotter header written to file */
+<     Bool axis_switched;         /* Switch x & y axis types.
+< 				 * (Needed for Time Line Charts,
+< 				 * Default = FALSE)
+< 				 */
+<     char *title;                /* Plotter title */
+<     char *xlabel;               /* Plotter x-axis label */
+<     char *ylabel;               /* Plotter y-axis label */
+91,92d82
+< static void WritePlotHeader(PLOTTER pl);
+< static void CallDoPlot(PLOTTER pl, char *plot_cmd, int plot_argc, ...);
+94a85,88
+> 
+> 
+> 
+> 
+114,119d107
+<     struct plotter_info *ppi;
+<    
+<     ppi = &pplotters[pl];
+<    
+<     /* see if we're graphing from "0" OR if the axis type is switched */
+<     if (graph_time_zero || ppi->axis_switched) {
+120a109,111
+>     /* see if we're graphing from "0" */
+>     if (graph_time_zero) {
+> 	struct plotter_info *ppi = &pplotters[pl];
+268c259
+<    
+---
+> 
+273,276d263
+<    
+<     /* Write the plotter header if not already written */
+<     if(!ppi->header_done)
+<      WritePlotHeader(pl);
+327a315,336
+>     /* graph coordinates... */
+>     /*  X coord is timeval unless graph_time_zero is true */
+>     /*  Y is signed except when it's a sequence number */
+>     /* ugly hack -- unsigned makes the graphs hard to work with and is
+>        only needed for the time sequence graphs */
+>     /* suggestion by Michele Clark at UNC - make them double instead */
+>     Mfprintf(f,"%s %s\n",
+> 	     graph_time_zero?"dtime":"timeval",
+> 	     ((strcmp(ylabel,"sequence number") == 0)&&(!graph_seq_zero))?
+> 	     "double":"signed");
+> 
+>     if (show_title) {
+> 	if (xplot_title_prefix)
+> 	    Mfprintf(f,"title\n%s %s\n",
+> 		     ExpandFormat(xplot_title_prefix),
+> 		     title);
+> 	else
+> 	    Mfprintf(f,"title\n%s\n", title);
+>     }
+>     Mfprintf(f,"xlabel\n%s\n", xlabel);
+>     Mfprintf(f,"ylabel\n%s\n", ylabel);
+> 
+331,338c340
+<     ppi->axis_switched = FALSE;
+<     ppi->header_done = FALSE;
+<    
+<     /* Save these fields to be writtn to the plotter header later in DoPlot() */
+<     ppi->title  = strdup(title);
+<     ppi->xlabel = strdup(xlabel);
+<     ppi->ylabel = strdup(ylabel);
+<  
+---
+> 
+369,373c371
+< 
+<         /* Write the plotter header if not already written */
+<         if(!ppi->header_done)
+< 	 WritePlotHeader(pl);
+<        
+---
+> 	
+424,425c422,423
+<    if (colorplot)
+< 	CallDoPlot(pl, color, 0);
+---
+>     if (colorplot)
+> 	DoPlot(pl,"%s",color);
+437c435,437
+<     CallDoPlot(pl,"line", 4, t1, x1, t2, x2);
+---
+>     DoPlot(pl,"line %s %u %s %u",
+> 	   xp_timestamp(pl,t1), x1,
+> 	   xp_timestamp(pl,t2), x2);
+449c449,451
+<     CallDoPlot(pl,"dline", 4, t1, x1, t2, x2);
+---
+>     DoPlot(pl,"dline %s %u %s %u",
+>            xp_timestamp(pl,t1), x1,
+>            xp_timestamp(pl,t2), x2);
+459c461
+<     CallDoPlot(pl,"diamond", 2, t, x);
+---
+>     DoPlot(pl,"diamond %s %u", xp_timestamp(pl,t), x);
+469c471
+<     CallDoPlot(pl,"dot", 2, t, x);
+---
+>     DoPlot(pl,"dot %s %u", xp_timestamp(pl,t), x);
+479c481
+<     CallDoPlot(pl,"plus", 2, t, x);
+---
+>     DoPlot(pl,"plus %s %u", xp_timestamp(pl,t), x);
+489c491
+<     CallDoPlot(pl,"box", 2, t, x);
+---
+>     DoPlot(pl,"box %s %u", xp_timestamp(pl,t), x);
+501,503c503
+<     char arrow_type[7];
+<     snprintf(arrow_type, sizeof(arrow_type), "%carrow", dir);
+<     CallDoPlot(pl, arrow_type, 2, t, x);      
+---
+>     DoPlot(pl,"%carrow %s %u", dir, xp_timestamp(pl,t), x);
+554,556c554
+<     char tick_type[6];
+<     snprintf(tick_type, sizeof(tick_type), "%ctick", dir);
+<     CallDoPlot(pl, tick_type, 2, t, x);      
+---
+>     DoPlot(pl,"%ctick %s %u", dir, xp_timestamp(pl,t), x);
+643,646c641
+<     char text_type[6];
+<     snprintf(text_type, sizeof(text_type), "%stext", where);
+< 
+<     CallDoPlot(pl, text_type, 2, t, x);
+---
+>     DoPlot(pl,"%stext %s %u", where, xp_timestamp(pl,t), x);
+653c648
+<     CallDoPlot(pl, str, 0);
+---
+>     DoPlot(pl,"%s", str);
+656,663d650
+< void
+< plotter_invisible(
+<     PLOTTER pl,
+<     struct timeval	t,
+<     u_long		x)
+< {
+<     CallDoPlot(pl,"invisible", 2, t, x);
+< }
+665d651
+< 
+768,925d753
+< /* This function may be called with 0, 2 or 4 arguments depending on plot command.
+<  * case 0:
+<  *   The arguments t1, x1, t2, x2 do not hold any valid values, and are not used.
+<  * case 2: 
+<  *   Arguments t2 and x2 are the same as arguments t1 and x1. Only t1 and x1 are used.
+<  * case 4:
+<  *   All arguments are valid and are used.
+<  */ 
+< static void
+< CallDoPlot(
+<     PLOTTER pl,
+<     char *plot_cmd,
+<     int plot_argc,
+<     ...)	   
+< {
+<    struct timeval t1;
+<    u_long x1;
+<    struct timeval t2;
+<    u_long x2;	   
+<    va_list ap;
+<    struct plotter_info *ppi;
+<    char fmt[200];
+<    
+<    if (pl == NO_PLOTTER)
+<      return;
+< 
+<    if (pl > plotter_ix) {
+<       fprintf(stderr,"Illegal plotter: %d\n", pl);
+<       exit(-1);
+<    }
+< 
+<    ppi = &pplotters[pl];
+< 
+<    /* Get the arguments from the variable list */
+<    va_start(ap, plot_argc);
+<    if(plot_argc > 0)
+<      {
+< 	t1 = va_arg(ap, struct timeval);
+< 	x1 = va_arg(ap, u_long);
+<      }
+<    if(plot_argc > 2)
+<      {
+< 	t2 = va_arg(ap, struct timeval);
+< 	x2 = va_arg(ap, u_long);
+<      }
+<    va_end(ap);
+<    
+<    if(ppi->axis_switched) {
+<       switch(plot_argc) {
+<        case 0:
+< 	 snprintf(fmt, sizeof(fmt), "%s%c", plot_cmd, NULL);
+< 	 DoPlot(pl, fmt);
+< 	 break;
+<        case 2:
+< 	 snprintf(fmt, sizeof(fmt), "%s %%u -%%s%c", plot_cmd, NULL);
+< 	 DoPlot(pl, fmt,
+< 		x1, xp_timestamp(pl,t1));
+< 	 break;
+<        case 4:
+< 	 snprintf(fmt, sizeof(fmt), "%s %%u -%%s %%u -%%s%c", plot_cmd, NULL);
+< 	 DoPlot(pl, fmt,
+< 		x1, xp_timestamp(pl,t1),
+< 		x2, xp_timestamp(pl,t2));
+< 	 break;
+<        default:
+< 	 fprintf(stderr, "CallDoPlot: Illegal number of arguments (%d)\n", plot_argc);
+<       }
+<    }
+<    else {
+<       switch(plot_argc) {
+<        case 0:
+< 	 snprintf(fmt, sizeof(fmt), "%s%c", plot_cmd, NULL);
+< 	 DoPlot(pl, fmt);
+< 	 break;
+<        case 2:
+< 	 snprintf(fmt, sizeof(fmt), "%s %%s %%u%c", plot_cmd, NULL);
+< 	 DoPlot(pl, fmt,
+< 		xp_timestamp(pl,t1), x1);
+< 	 break;
+<        case 4:
+< 	 snprintf(fmt, sizeof(fmt), "%s %%s %%u %%s %%u%c", plot_cmd, NULL);
+< 	 DoPlot(pl, fmt,
+< 		xp_timestamp(pl,t1), x1,
+< 		xp_timestamp(pl,t2), x2);
+< 	 break;
+<        default:
+< 	 fprintf(stderr, "CallDoPlot: Illegal number of arguments (%d)\n", plot_argc);
+<       }
+<    }
+<    
+<    return;
+< }
+< 
+< static void
+< WritePlotHeader(
+<     PLOTTER pl)
+< {
+<    MFILE *f = NULL;
+<    struct plotter_info *ppi;
+< 
+<    if (pl == NO_PLOTTER)
+<      return;
+< 
+<    if (pl > plotter_ix) {
+<       fprintf(stderr,"Illegal plotter: %d\n", pl);
+<       exit(-1);
+<    }
+< 
+<    ppi = &pplotters[pl];
+<    
+<    if ((f = ppi->fplot) == NULL)
+<      return;
+< 
+<    if(ppi->axis_switched) {   
+<       /* Header for the Time Line Charts */
+<       Mfprintf(f,"%s %s\n", "unsigned", "dtime");
+<    }
+<    else {
+<       /* Header for all other plots */
+<       /* graph coordinates... */
+<       /*  X coord is timeval unless graph_time_zero is true */
+<       /*  Y is signed except when it's a sequence number */
+<       /* ugly hack -- unsigned makes the graphs hard to work with and is
+<        only needed for the time sequence graphs */
+<       /* suggestion by Michele Clark at UNC - make them double instead */
+<       Mfprintf(f,"%s %s\n",
+< 	       graph_time_zero?"dtime":"timeval",
+< 	       ((strcmp(ppi->ylabel,"sequence number") == 0)&&(!graph_seq_zero))?
+< 	       "double":"signed");
+<    }
+<    
+<    if (show_title) {
+<       if (xplot_title_prefix)
+< 	Mfprintf(f,"title\n%s %s\n",
+< 		 ExpandFormat(xplot_title_prefix),
+< 		 ppi->title);
+<       else
+< 	Mfprintf(f,"title\n%s\n", ppi->title);
+<    }
+<    
+<    Mfprintf(f,"xlabel\n%s\n", ppi->xlabel);
+<    Mfprintf(f,"ylabel\n%s\n", ppi->ylabel);
+<    
+<    /* Indicate that the header has now been written to the plotter file */
+<    ppi->header_done = TRUE;
+<    
+<    return;
+< }
+< 
+< /* Switch the x and y axis type (Needed for Time Line Charts. Default = FLASE) */
+< void plotter_switch_axis(
+<     PLOTTER pl,
+<     Bool flag)
+< {
+<    struct plotter_info *ppi = &pplotters[pl];
+<    
+<    ppi->axis_switched = flag;
+< }
+
+--------------------
+ DIFFS - tcptrace.h
+--------------------
+
+450,452d449
+<     /* Time Line Graph */
+<     PLOTTER     tline_plotter;
+<    
+634d630
+< extern Bool graph_tline;
+744,746c740
+< void plotter_nothing(PLOTTER, timeval);
+< void plotter_invisible(PLOTTER, timeval, u_long);
+< void plotter_switch_axis(PLOTTER, Bool);
+---
+> void plotter_nothing(PLOTTER pl, struct timeval t);
+991d984
+< #define TLINE_FILE_EXTENSION		"_tline.xpl"
+
+--------------------
+ DIFFS - tcptrace.c
+--------------------
+
+107d106
+< Bool graph_tline = FALSE;
+531d529
+<   -L      create time line graph[s]\n\
+1800d1797
+< 		    graph_tline = TRUE;
+1802,1804d1798
+< 		  case 'L': graph_tline = TRUE;
+< 		    fprintf(stderr, "\nWarning: You have chosen the option '-L' to plot Time Line Graphs.\n         This option is yet under development and may not reflect accurate results.\n         Please take a look at the file README.tline_graphs for more details.\n\n");
+< 		    break;
+1927d1920
+< 		  case 'L': graph_tline = !TRUE; break;
+1998a1992
+>     fprintf(stderr,"graph tsg:        %s\n", BOOL2STR(graph_tsg));
+2001,2004d1994
+<     fprintf(stderr,"graph tsg:        %s\n", BOOL2STR(graph_tsg));
+<     fprintf(stderr,"graph segsize:    %s\n", BOOL2STR(graph_segsize));
+<     fprintf(stderr,"graph owin:       %s\n", BOOL2STR(graph_owin));
+<     fprintf(stderr,"graph tline:      %s\n", BOOL2STR(graph_tline));
+
+
+-----------------
+ DIFFS - trace.c
+-----------------
+
+74,75d73
+< static int tline_left  = 0; /* left and right time lines for the time line charts */
+< static int tline_right = 0;
+138,140d135
+< char *a2b_seg_color     = "green";     /* colors for segments on the time line chart */
+< char *b2a_seg_color     = "yellow"; 
+< 			    
+470,521d464
+<     /* init time line graphs (Avinash, 2 July 2002) */
+<     ptp->a2b.tline_plotter = ptp->b2a.tline_plotter = NO_PLOTTER;
+<     if (graph_tline && !ptp->ignore_pair) {
+< 	if (!ignore_non_comp || (SYN_SET(ptcp))) {
+< 	    /* We don't want the standard a2b type name so we will specify
+< 	     * a filename of type a_b when we call new_plotter.
+< 	     */ 
+< 	    char filename[25];
+< 	    snprintf(filename,sizeof(filename),"%s_%s",
+< 		     ptp->a2b.host_letter, ptp->a2b.ptwin->host_letter);
+< 
+< 	    snprintf(title,sizeof(title),"%s_==>_%s (time line graph)",
+< 		    ptp->a_endpoint, ptp->b_endpoint);
+< 	    /* We will keep both the plotters the same since we want all
+< 	     * segments going in either direction to be plotted on the same
+< 	     * graph
+< 	     */ 
+< 	    ptp->a2b.tline_plotter = ptp->b2a.tline_plotter =
+< 		new_plotter(&ptp->a2b,filename,title,
+< 			    "segments",
+< 			    "relative time",
+< 			    TLINE_FILE_EXTENSION);
+<              
+< 	    /* Switch the x & y axis types.
+< 	     * The default is x - timeval, y - unsigned,
+< 	     * we need x - unsigned, y - dtime.
+< 	     * Both the plotters are the same so we will
+< 	     * only call this function once.
+< 	     */
+< 	    plotter_switch_axis(ptp->a2b.tline_plotter, TRUE);
+< 	      
+< 	    /* set graph zero points */
+< 	    plotter_nothing(ptp->a2b.tline_plotter, current_time);
+< 	    plotter_nothing(ptp->b2a.tline_plotter, current_time);
+< 
+< 	    /* Some graph initializations 
+< 	     * Generating a drawing space between x=0-100.
+< 	     * The time lines will be at x=40 for source, x=60 for destination.
+< 	     * Rest of the area on either sides will be used to print segment
+< 	     * information.
+< 	     * 
+< 	     *  seg info |----->| 
+< 	     *           |<-----| seg info
+< 	     */
+< 	    tline_left  = 40;
+< 	    tline_right = 60;
+< 	    plotter_invisible(ptp->a2b.tline_plotter, current_time, 0);
+< 	    plotter_invisible(ptp->a2b.tline_plotter, current_time, 100);
+< 	}
+<     }
+<    
+<    
+1159d1101
+<     PLOTTER     tlinepl;
+1412,1414d1353
+<    
+<     /* plotter shorthand (NOTE: we are using one plotter for both directions) */
+<     tlinepl      = thisdir->tline_plotter;
+1415a1355
+> 
+1726,1861c1666
+<     }
+<    
+<    /* graph time line */
+<    /* Since the axis types have been switched specially for these graphs,
+<     * x is actually used as y and y as x
+<     * -Avinash.
+<     * 
+<     * NOTE: This code is lacking about a 1000 lines of intellegence that is needed
+<     * ----- to draw these graphs correctly. I have left it in here as the starting
+<     *       point to work on. Whoever is working on this project would want to clean
+<     *       up this file trace.c (based on the patches in the README.tline_graphs
+<     *       file), and continue development as a seperate module. We started this
+<     *       project thinking it is easy to draw these graphs, and then realized that
+<     *       it is infact quite a complicated task. All this works with a -L option at
+<     *       command line.
+<     */ 
+<    if (tlinepl != NO_PLOTTER) {
+<       char buf1[200];
+<       char buf2[50];
+<       static seqnum a2b_first_seqnum = 0;
+<       static seqnum b2a_first_seqnum = 0;
+<       /* 1/3rd rtt. Since we have the timestamps only on one side, we calculate the 
+<        * arrrival/departure time of the segments on the other side by adding/subtracting
+<        * 1/3rd rtt. We assume that it takes 1/3rd time for the segment to travel in
+<        * either direction, and 1/3rd time for processing.
+<        * We also skew the calculated times so that the acks are not seen before the 
+<        * segments actually arrive.
+<        */ 
+<       struct timeval one3rd_rtt;                  
+<       struct timeval copy_current_time;   
+<       /* Make a copy of the current time (Needed for calculations) */
+<       copy_current_time.tv_sec  = current_time.tv_sec;
+<       copy_current_time.tv_usec = current_time.tv_usec;
+<       /* Compute 1/3rd rtt */
+<       one3rd_rtt.tv_sec  = 0;
+<       one3rd_rtt.tv_usec = thisdir->rtt_last/3;
+<       /* Adjust seconds and microseconds */
+<       while(one3rd_rtt.tv_usec >= US_PER_SEC) {
+< 	 one3rd_rtt.tv_usec -= US_PER_SEC;
+< 	 one3rd_rtt.tv_sec += 1;
+<       }
+<       
+<       /* Initializations */
+<       memset(&buf1, 0, sizeof(buf1));
+<       memset(&buf2, 0, sizeof(buf2));
+<       
+<       /* Segment information */
+<       /* Check the flags */
+<       if(SYN_SET(ptcp))
+< 	strncat(buf1, "SYN ", 4);
+<       if(FIN_SET(ptcp))
+< 	strncat(buf1, "FIN ", 4);
+<       if(RESET_SET(ptcp))
+< 	strncat(buf1, "RST ", 4);
+<       if(PUSH_SET(ptcp))
+< 	strncat(buf1, "PSH ", 4);
+<       if(URGENT_SET(ptcp))
+< 	strncat(buf1, "URG ", 4);
+<       
+<       
+<       /* Write the sequence numbers */
+<       if(dir == A2B) {
+< 	 /* Use relative sequence numbers after the first segment in either direction */
+< 	 snprintf(buf2, sizeof(buf2), "%u:%u(%u) %c", (start - a2b_first_seqnum),
+< 		  (end - a2b_first_seqnum), (end-start), NULL);
+< 	 strncat(buf1, buf2, strlen(buf2));
+< 	 if(a2b_first_seqnum == 0 && !SYN_SET(ptcp)) // Don't use relative sequence numbers until handshake is complete.
+< 	   a2b_first_seqnum = thisdir->min_seq;
+<       }else if(dir == B2A) {
+< 	 /* Use relative sequence numbers after the first segment in either direction */
+< 	 snprintf(buf2, sizeof(buf2), "%u:%u(%u) %c", (start - b2a_first_seqnum),
+< 		  (end - b2a_first_seqnum), (end-start), NULL);
+< 	 strncat(buf1, buf2, strlen(buf2));
+< 	 if(b2a_first_seqnum == 0 && !SYN_SET(ptcp))
+< 	   b2a_first_seqnum = thisdir->min_seq;
+<       }
+<       
+<       /* Acknowledgements */
+<       if(ACK_SET(ptcp)) {
+< 	 memset(&buf2, 0, sizeof(buf2));
+< 	 if(dir == A2B)
+< 	   snprintf(buf2, sizeof(buf2), "ack %u %c", (th_ack - b2a_first_seqnum), NULL);
+< 	 else if(dir == B2A)
+< 	   snprintf(buf2, sizeof(buf2), "ack %u %c", (th_ack - a2b_first_seqnum), NULL);
+< 	 strncat(buf1, buf2, strlen(buf2));
+<       }
+<       
+<       /* Advertised Window */
+< 	 memset(&buf2, 0, sizeof(buf2));
+< 	 snprintf(buf2, sizeof(buf2), "win %u %c", eff_win,NULL);
+< 	 strncat(buf1, buf2, strlen(buf2));
+<       
+<       /* Retransmits */
+<       if(retrans) {
+< 	 memset(&buf2, 0, sizeof(buf2));
+< 	 snprintf(buf2, sizeof(buf2), "R %c", NULL);
+< 	 strncat(buf1, buf2, strlen(buf2));
+<       }
+<       
+<       /* Hardware Duplicates */ 
+<       if(hw_dup) {
+< 	 memset(&buf2, 0, sizeof(buf2));
+< 	 snprintf(buf2, sizeof(buf2), "HD %c", NULL);
+< 	 strncat(buf1, buf2, strlen(buf2));
+<       }
+<       
+<       /* Draw the segment ------>/<------- */
+<       if(dir == A2B) {
+< 	 tv_add(&copy_current_time, one3rd_rtt);
+< 	 plotter_line(tlinepl, ptp_save->first_time, tline_left, copy_current_time, tline_left);
+< 	 plotter_line(tlinepl, ptp_save->first_time, tline_right, copy_current_time, tline_right);
+< 	 if(SYN_SET(ptcp)|| FIN_SET(ptcp) || RESET_SET(ptcp))
+< 	   plotter_perm_color(tlinepl, synfin_color);
+< 	 else
+< 	   plotter_perm_color(tlinepl, a2b_seg_color);
+< 	 plotter_line(tlinepl, current_time, tline_left, copy_current_time, tline_right);
+< 	 plotter_rarrow(tlinepl, copy_current_time, tline_right);
+< 	 plotter_perm_color(tlinepl, default_color);
+< 	 plotter_text(tlinepl, current_time, tline_left, "l", buf1);
+<       }
+<       else if(dir == B2A) {
+< 	 tv_sub(&copy_current_time, one3rd_rtt);
+< 	 plotter_line(tlinepl, ptp_save->first_time, tline_left, copy_current_time, tline_left);
+< 	 plotter_line(tlinepl, ptp_save->first_time, tline_right, copy_current_time, tline_right);
+< 	 if(SYN_SET(ptcp)|| FIN_SET(ptcp) || RESET_SET(ptcp))
+< 	   plotter_perm_color(tlinepl, synfin_color);
+< 	 else
+< 	   plotter_perm_color(tlinepl, b2a_seg_color);
+< 	 plotter_line(tlinepl, copy_current_time, tline_right, current_time, tline_left);
+< 	 plotter_larrow(tlinepl, current_time, tline_left);
+< 	 plotter_perm_color(tlinepl, default_color);	      
+< 	 plotter_text(tlinepl, copy_current_time, tline_right, "r", buf1);
+<       }
+<       
+<    }
+<    
+---
+>      }

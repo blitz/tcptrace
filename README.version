@@ -1,0 +1,66 @@
+README.version: convention used for version numbers,
+                and release instructions
+
+Convention followed for version numbers:
+----------------------------------------
+
+Starting with release 6.2.0 of tcptrace, we will be using version
+numbers similar to those used for linux software. Following is the
+convention followed for version numbers of the form x.y.z:
+
+ - 'z' changes for small bug fixes
+
+ - 'y' changes for certain feature enhancements and reasonably large
+       modifications. Also, even numbers indicate stable release and
+       odd numbers are for development versions
+
+ - 'x' changes when a whole lot has changed since the previous release
+
+
+Release Instructions:
+---------------------
+
+NOTE: Stable release in this example      : 6.2.0
+----- Development version that follows    : 6.3.0
+
+~/tcptrace-cvs$ cvs tag release-6_2_0          
+~/tcptrace-cvs$ cd                                 
+~$ cvs export -d tcptrace-6.2.0 -r release-6_2_0 tcptrace      
+~$ tar cf tcptrace-6.2.0.tar tcptrace-6.2.0                      
+               
+etc. to create the build.  After that, go back to the tcptrace cvs                                    
+workspace and *immediately* change your version stuff to 6.3.0 and   
+check that in.                             
+
+Version numbers then go on as 6.3.1, 6.3.2 etc until released as 6.4.0
+or 7.0.0, depending on magnitude of development.
+
+--Avinash Lakhiani (alakhian@tcptrace.org)
+--Ethan Blanton    (eblanton@tcptrace.org)
+  19 Jul 2002
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+

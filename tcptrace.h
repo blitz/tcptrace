@@ -317,7 +317,7 @@ typedef struct tcb {
     u_long	win_max;
     u_long	win_min;
     u_long	win_tot;
-	u_long  win_last;  /* last advertised window size*/
+    u_long      win_last;  /* last advertised window size*/
     u_long	win_zero_ct;
     u_llong	packets;
     u_char	syn_count;
@@ -447,6 +447,9 @@ typedef struct tcb {
     PLOTTER	tsg_plotter;
     char	*tsg_plotfile;
 
+    /* Time Line Graph */
+    PLOTTER     tline_plotter;
+   
     /* Dumped RTT samples */
     MFILE	*rtt_dump_file;
 
@@ -628,6 +631,7 @@ extern Bool graph_tput;
 extern Bool graph_tsg;
 extern Bool graph_segsize;
 extern Bool graph_owin;
+extern Bool graph_tline;
 extern Bool hex;
 extern Bool ignore_non_comp;
 extern Bool resolve_ipaddresses;
@@ -738,7 +742,9 @@ void plotter_diamond(PLOTTER, timeval, u_long);
 void plotter_darrow(PLOTTER, timeval, u_long);
 void plotter_box(PLOTTER, timeval, u_long);
 void plotter_arrow(PLOTTER, timeval, u_long, char);
-void plotter_nothing(PLOTTER pl, struct timeval t);
+void plotter_nothing(PLOTTER, timeval);
+void plotter_invisible(PLOTTER, timeval, u_long);
+void plotter_switch_axis(PLOTTER, Bool);
 void plot_init(void);
 tcp_pair *dotrace(struct ip *, struct tcphdr *ptcp, void *plast);
 void PrintRawData(char *label, void *pfirst, void *plast, Bool octal);
@@ -983,6 +989,7 @@ struct tcp_options {
 #define PLOT_FILE_EXTENSION		"_tsg.xpl"
 #define SEGSIZE_FILE_EXTENSION		"_ssize.xpl"
 #define OWIN_FILE_EXTENSION		"_owin.xpl"
+#define TLINE_FILE_EXTENSION		"_tline.xpl"
 #define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"
 #define CONTENTS_FILE_EXTENSION		"_contents.dat"
 

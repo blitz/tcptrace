@@ -71,6 +71,8 @@ static Bool more_conns_ignored = FALSE;
 static double sample_elapsed_time=0; /* to keep track of owin samples */
 static double total_elapsed_time=0; /* to keep track of owin samples */ 
 static int num_removed_tcp_pairs = 0;
+static int tline_left  = 0; /* left and right time lines for the time line charts */
+static int tline_right = 0;
 
 /* provided globals  */
 int num_tcp_pairs = -1;	/* how many pairs we've allocated */
@@ -133,6 +135,9 @@ char *push_color	= "white";	/* top arrow for PUSHed segments */
 char *ecn_color		= "yellow";
 char *urg_color		= "red";
 char *probe_color       = "orange";
+char *a2b_seg_color     = "green";     /* colors for segments on the time line chart */
+char *b2a_seg_color     = "yellow"; 
+			    
 
 /* ack diamond dongle colors */
 char *ackdongle_nosample_color	= "blue";
@@ -462,6 +467,58 @@ NewTTP(
 	}
     }
 
+    /* init time line graphs (Avinash, 2 July 2002) */
+    ptp->a2b.tline_plotter = ptp->b2a.tline_plotter = NO_PLOTTER;
+    if (graph_tline && !ptp->ignore_pair) {
+	if (!ignore_non_comp || (SYN_SET(ptcp))) {
+	    /* We don't want the standard a2b type name so we will specify
+	     * a filename of type a_b when we call new_plotter.
+	     */ 
+	    char filename[25];
+	    snprintf(filename,sizeof(filename),"%s_%s",
+		     ptp->a2b.host_letter, ptp->a2b.ptwin->host_letter);
+
+	    snprintf(title,sizeof(title),"%s_==>_%s (time line graph)",
+		    ptp->a_endpoint, ptp->b_endpoint);
+	    /* We will keep both the plotters the same since we want all
+	     * segments going in either direction to be plotted on the same
+	     * graph
+	     */ 
+	    ptp->a2b.tline_plotter = ptp->b2a.tline_plotter =
+		new_plotter(&ptp->a2b,filename,title,
+			    "segments",
+			    "relative time",
+			    TLINE_FILE_EXTENSION);
+             
+	    /* Switch the x & y axis types.
+	     * The default is x - timeval, y - unsigned,
+	     * we need x - unsigned, y - dtime.
+	     * Both the plotters are the same so we will
+	     * only call this function once.
+	     */
+	    plotter_switch_axis(ptp->a2b.tline_plotter, TRUE);
+	      
+	    /* set graph zero points */
+	    plotter_nothing(ptp->a2b.tline_plotter, current_time);
+	    plotter_nothing(ptp->b2a.tline_plotter, current_time);
+
+	    /* Some graph initializations 
+	     * Generating a drawing space between x=0-100.
+	     * The time lines will be at x=40 for source, x=60 for destination.
+	     * Rest of the area on either sides will be used to print segment
+	     * information.
+	     * 
+	     *  seg info |----->| 
+	     *           |<-----| seg info
+	     */
+	    tline_left  = 40;
+	    tline_right = 60;
+	    plotter_invisible(ptp->a2b.tline_plotter, current_time, 0);
+	    plotter_invisible(ptp->a2b.tline_plotter, current_time, 100);
+	}
+    }
+   
+   
     /* init segment size graphs */
     ptp->a2b.segsize_plotter = ptp->b2a.segsize_plotter = NO_PLOTTER;
     if (graph_segsize && !ptp->ignore_pair) {
@@ -1099,6 +1156,7 @@ dotrace(
     PLOTTER	to_tsgpl;
     PLOTTER	from_tsgpl;
     PLOTTER     tlinepl;
+    int		dir;
     Bool	retrans;
     Bool 	probe;
 	Bool 	probe;
@@ -1351,6 +1409,8 @@ dotrace(
     to_tsgpl     = otherdir->tsg_plotter;
     from_tsgpl   = thisdir->tsg_plotter;
    
+    /* plotter shorthand (NOTE: we are using one plotter for both directions) */
+    tlinepl      = thisdir->tline_plotter;
 
     /* check the options */
     ptcpo = ParseOptions(ptcp,plast);
@@ -1663,7 +1723,142 @@ dotrace(
 			   "a", "U");
 	 } 
     }
-     }
+   
+   /* graph time line */
+   /* Since the axis types have been switched specially for these graphs,
+    * x is actually used as y and y as x
+    * -Avinash.
+    * 
+    * NOTE: This code is lacking about a 1000 lines of intellegence that is needed
+    * ----- to draw these graphs correctly. I have left it in here as the starting
+    *       point to work on. Whoever is working on this project would want to clean
+    *       up this file trace.c (based on the patches in the README.tline_graphs
+    *       file), and continue development as a seperate module. We started this
+    *       project thinking it is easy to draw these graphs, and then realized that
+    *       it is infact quite a complicated task. All this works with a -L option at
+    *       command line.
+    */ 
+   if (tlinepl != NO_PLOTTER) {
+      char buf1[200];
+      char buf2[50];
+      static seqnum a2b_first_seqnum = 0;
+      static seqnum b2a_first_seqnum = 0;
+      /* 1/3rd rtt. Since we have the timestamps only on one side, we calculate the 
+       * arrrival/departure time of the segments on the other side by adding/subtracting
+       * 1/3rd rtt. We assume that it takes 1/3rd time for the segment to travel in
+       * either direction, and 1/3rd time for processing.
+       * We also skew the calculated times so that the acks are not seen before the 
+       * segments actually arrive.
+       */ 
+      struct timeval one3rd_rtt;                  
+      struct timeval copy_current_time;   
+      /* Make a copy of the current time (Needed for calculations) */
+      copy_current_time.tv_sec  = current_time.tv_sec;
+      copy_current_time.tv_usec = current_time.tv_usec;
+      /* Compute 1/3rd rtt */
+      one3rd_rtt.tv_sec  = 0;
+      one3rd_rtt.tv_usec = thisdir->rtt_last/3;
+      /* Adjust seconds and microseconds */
+      while(one3rd_rtt.tv_usec >= US_PER_SEC) {
+	 one3rd_rtt.tv_usec -= US_PER_SEC;
+	 one3rd_rtt.tv_sec += 1;
+      }
+      
+      /* Initializations */
+      memset(&buf1, 0, sizeof(buf1));
+      memset(&buf2, 0, sizeof(buf2));
+      
+      /* Segment information */
+      /* Check the flags */
+      if(SYN_SET(ptcp))
+	strncat(buf1, "SYN ", 4);
+      if(FIN_SET(ptcp))
+	strncat(buf1, "FIN ", 4);
+      if(RESET_SET(ptcp))
+	strncat(buf1, "RST ", 4);
+      if(PUSH_SET(ptcp))
+	strncat(buf1, "PSH ", 4);
+      if(URGENT_SET(ptcp))
+	strncat(buf1, "URG ", 4);
+      
+      
+      /* Write the sequence numbers */
+      if(dir == A2B) {
+	 /* Use relative sequence numbers after the first segment in either direction */
+	 snprintf(buf2, sizeof(buf2), "%lu:%lu(%lu) ", (start - a2b_first_seqnum),
+		  (end - a2b_first_seqnum), (end-start));
+	 strncat(buf1, buf2, strlen(buf2));
+	 if(a2b_first_seqnum == 0 && !SYN_SET(ptcp)) // Don't use relative sequence numbers until handshake is complete.
+	   a2b_first_seqnum = thisdir->min_seq;
+      }else if(dir == B2A) {
+	 /* Use relative sequence numbers after the first segment in either direction */
+	 snprintf(buf2, sizeof(buf2), "%lu:%lu(%lu) ", (start - b2a_first_seqnum),
+		  (end - b2a_first_seqnum), (end-start));
+	 strncat(buf1, buf2, strlen(buf2));
+	 if(b2a_first_seqnum == 0 && !SYN_SET(ptcp))
+	   b2a_first_seqnum = thisdir->min_seq;
+      }
+      
+      /* Acknowledgements */
+      if(ACK_SET(ptcp)) {
+	 memset(&buf2, 0, sizeof(buf2));
+	 if(dir == A2B)
+	   snprintf(buf2, sizeof(buf2), "ack %lu ", (th_ack - b2a_first_seqnum));
+	 else if(dir == B2A)
+	   snprintf(buf2, sizeof(buf2), "ack %lu ", (th_ack - a2b_first_seqnum));
+	 strncat(buf1, buf2, strlen(buf2));
+      }
+      
+      /* Advertised Window */
+	 memset(&buf2, 0, sizeof(buf2));
+	 snprintf(buf2, sizeof(buf2), "win %lu ", eff_win);
+	 strncat(buf1, buf2, strlen(buf2));
+      
+      /* Retransmits */
+      if(retrans) {
+	 memset(&buf2, 0, sizeof(buf2));
+	 snprintf(buf2, sizeof(buf2), "R ");
+	 strncat(buf1, buf2, strlen(buf2));
+      }
+      
+      /* Hardware Duplicates */ 
+      if(hw_dup) {
+	 memset(&buf2, 0, sizeof(buf2));
+	 snprintf(buf2, sizeof(buf2), "HD ");
+	 strncat(buf1, buf2, strlen(buf2));
+      }
+      
+      /* Draw the segment ------>/<------- */
+      if(dir == A2B) {
+	 tv_add(&copy_current_time, one3rd_rtt);
+	 plotter_line(tlinepl, ptp_save->first_time, tline_left, copy_current_time, tline_left);
+	 plotter_line(tlinepl, ptp_save->first_time, tline_right, copy_current_time, tline_right);
+	 if(SYN_SET(ptcp)|| FIN_SET(ptcp) || RESET_SET(ptcp))
+	   plotter_perm_color(tlinepl, synfin_color);
+	 else
+	   plotter_perm_color(tlinepl, a2b_seg_color);
+	 plotter_line(tlinepl, current_time, tline_left, copy_current_time, tline_right);
+	 plotter_rarrow(tlinepl, copy_current_time, tline_right);
+	 plotter_perm_color(tlinepl, default_color);
+	 plotter_text(tlinepl, current_time, tline_left, "l", buf1);
+      }
+      else if(dir == B2A) {
+	 tv_sub(&copy_current_time, one3rd_rtt);
+	 plotter_line(tlinepl, ptp_save->first_time, tline_left, copy_current_time, tline_left);
+	 plotter_line(tlinepl, ptp_save->first_time, tline_right, copy_current_time, tline_right);
+	 if(SYN_SET(ptcp)|| FIN_SET(ptcp) || RESET_SET(ptcp))
+	   plotter_perm_color(tlinepl, synfin_color);
+	 else
+	   plotter_perm_color(tlinepl, b2a_seg_color);
+	 plotter_line(tlinepl, copy_current_time, tline_right, current_time, tline_left);
+	 plotter_larrow(tlinepl, current_time, tline_left);
+	 plotter_perm_color(tlinepl, default_color);	      
+	 plotter_text(tlinepl, copy_current_time, tline_right, "r", buf1);
+      }
+      
+   }
+   
+
     /* check for RESET */
     if (RESET_SET(ptcp)) {
 	u_long plot_at;

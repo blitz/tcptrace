@@ -104,6 +104,7 @@ Bool graph_tput = FALSE;
 Bool graph_tsg = FALSE;
 Bool graph_segsize = FALSE;
 Bool graph_owin = FALSE;
+Bool graph_tline = FALSE;
 Bool hex = TRUE;
 Bool ignore_non_comp = FALSE;
 Bool dump_packet_data = FALSE;
@@ -530,6 +531,7 @@ Graphing options\n\
   -S      create time sequence graph[s]\n\
   -N      create owin graph[s] (_o_utstanding data on _N_etwork)\n\
   -F      create segsize graph[s]\n\
+  -L      create time line graph[s]\n\
   -G	  create ALL graphs\n\
 Output format detail options\n\
   -D      print in decimal\n\
@@ -1798,6 +1800,10 @@ ParseArgs(
 		    graph_rtt = TRUE;
 		    graph_owin = TRUE;
 		    graph_segsize = TRUE;
+		    graph_tline = TRUE;
+		    break;
+		  case 'L': graph_tline = TRUE;
+		    fprintf(stderr, "\nWarning: You have chosen the option '-L' to plot Time Line Graphs.\n         This option is yet under development and may not reflect accurate results.\n         Please take a look at the file README.tline_graphs for more details.\n\n");
 		    break;
 		  case 'M': colorplot = FALSE; break;
 		  case 'N': graph_owin = TRUE; break;
@@ -1921,6 +1927,7 @@ ParseArgs(
 		  case 'C': colorplot = !TRUE; break;
 		  case 'D': hex = !FALSE; break;
 		  case 'F': graph_segsize = !TRUE; break;
+		  case 'L': graph_tline = !TRUE; break;
 		  case 'M': colorplot = !FALSE; break;
 		  case 'N': graph_owin = !TRUE; break;
 		  case 'P': printem = !TRUE; break;
@@ -1992,9 +1999,12 @@ DumpFlags(void)
     fprintf(stderr,"printbrief:       %s\n", BOOL2STR(printbrief));
     fprintf(stderr,"printsuppress:    %s\n", BOOL2STR(printsuppress));
     fprintf(stderr,"print_rtt:        %s\n", BOOL2STR(print_rtt));
-    fprintf(stderr,"graph tsg:        %s\n", BOOL2STR(graph_tsg));
     fprintf(stderr,"graph rtt:        %s\n", BOOL2STR(graph_rtt));
     fprintf(stderr,"graph tput:       %s\n", BOOL2STR(graph_tput));
+    fprintf(stderr,"graph tsg:        %s\n", BOOL2STR(graph_tsg));
+    fprintf(stderr,"graph segsize:    %s\n", BOOL2STR(graph_segsize));
+    fprintf(stderr,"graph owin:       %s\n", BOOL2STR(graph_owin));
+    fprintf(stderr,"graph tline:      %s\n", BOOL2STR(graph_tline));
     fprintf(stderr,"plotem:           %s\n",
 	    colorplot?"(color)":"(b/w)");
     fprintf(stderr,"hex printing:     %s\n", BOOL2STR(hex));
@@ -2009,8 +2019,8 @@ DumpFlags(void)
     fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
     fprintf(stderr,"ending pnum:      %lu\n", endpnum);
     fprintf(stderr,"throughput intvl: %d\n", thru_interval);
-    fprintf(stderr,"NS simulator hdrs:%u\n", BOOL2STR(ns_hdrs));
-	fprintf(stderr,"number modules:   %u\n", (unsigned)NUM_MODULES);
+    fprintf(stderr,"NS simulator hdrs:%s\n", BOOL2STR(ns_hdrs));
+    fprintf(stderr,"number modules:   %u\n", (unsigned)NUM_MODULES);
     fprintf(stderr,"debug:            %s\n", BOOL2STR(debug));
 	
     /* print out the stuff controlled by the extended boolean args */

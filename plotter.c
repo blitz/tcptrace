@@ -65,6 +65,14 @@ struct plotter_info {
     tcb *p2plast;		/* the TCB that this goes with (if any) */
     timeval zerotime;		/* first time stamp in this plot (see -z) */
     char *filename;		/* redundant copy of name for debugging */
+    Bool header_done;           /* Flag indicating plotter header written to file */
+    Bool axis_switched;         /* Switch x & y axis types.
+				 * (Needed for Time Line Charts,
+				 * Default = FALSE)
+				 */
+    char *title;                /* Plotter title */
+    char *xlabel;               /* Plotter x-axis label */
+    char *ylabel;               /* Plotter y-axis label */
 };
 
 
@@ -80,10 +88,8 @@ static struct plotter_info *pplotters;
 static char *xp_timestamp(PLOTTER pl, struct timeval time);
 static char *TSGPlotName(tcb *plast, PLOTTER, char *suffix);
 static void DoPlot(PLOTTER pl, char *fmt, ...);
-
-
-
-
+static void WritePlotHeader(PLOTTER pl);
+static void CallDoPlot(PLOTTER pl, char *plot_cmd, int plot_argc, ...);
 
 
 /*
@@ -105,10 +111,13 @@ xp_timestamp(
     unsigned usecs;
     unsigned decimal;
     char *pbuf;
+    struct plotter_info *ppi;
+   
+    ppi = &pplotters[pl];
+   
+    /* see if we're graphing from "0" OR if the axis type is switched */
+    if (graph_time_zero || ppi->axis_switched) {
 
-    /* see if we're graphing from "0" */
-    if (graph_time_zero) {
-	struct plotter_info *ppi = &pplotters[pl];
 
 	if (ZERO_TIME(&ppi->zerotime)) {
 	    /* set "zero point" */
@@ -256,11 +265,15 @@ DoPlot(
     }
 
     ppi = &pplotters[pl];
-
+   
     if ((f = ppi->fplot) == NULL) {
 	va_end(ap);
 	return;
     }
+   
+    /* Write the plotter header if not already written */
+    if(!ppi->header_done)
+     WritePlotHeader(pl);
 
     Mvfprintf(f,fmt,ap);
     if (temp_color) {
@@ -312,32 +325,17 @@ new_plotter(
 	return(NO_PLOTTER);
     }
 
-    /* graph coordinates... */
-    /*  X coord is timeval unless graph_time_zero is true */
-    /*  Y is signed except when it's a sequence number */
-    /* ugly hack -- unsigned makes the graphs hard to work with and is
-       only needed for the time sequence graphs */
-    /* suggestion by Michele Clark at UNC - make them double instead */
-    Mfprintf(f,"%s %s\n",
-	     graph_time_zero?"dtime":"timeval",
-	     ((strcmp(ylabel,"sequence number") == 0)&&(!graph_seq_zero))?
-	     "double":"signed");
-
-    if (show_title) {
-	if (xplot_title_prefix)
-	    Mfprintf(f,"title\n%s %s\n",
-		     ExpandFormat(xplot_title_prefix),
-		     title);
-	else
-	    Mfprintf(f,"title\n%s\n", title);
-    }
-    Mfprintf(f,"xlabel\n%s\n", xlabel);
-    Mfprintf(f,"ylabel\n%s\n", ylabel);
-
     ppi->fplot = f;
     ppi->p2plast = plast;
     ppi->filename = strdup(filename);
-
+    ppi->axis_switched = FALSE;
+    ppi->header_done = FALSE;
+   
+    /* Save these fields to be writtn to the plotter header later in DoPlot() */
+    ppi->title  = strdup(title);
+    ppi->xlabel = strdup(xlabel);
+    ppi->ylabel = strdup(ylabel);
+ 
     return(pl);
 }
 
@@ -368,7 +366,11 @@ plotter_done(void)
 
 	if ((f = ppi->fplot) == NULL)
 	    continue;
-	
+
+        /* Write the plotter header if not already written */
+        if(!ppi->header_done)
+	 WritePlotHeader(pl);
+       
 	if (!ignore_non_comp ||
 	    ((ppi->p2plast != NULL) && (ConnComplete(ppi->p2plast->ptp)))) {
 	    Mfprintf(f,"go\n");
@@ -419,8 +421,8 @@ plotter_perm_color(
     PLOTTER pl,
     char *color)
 {
-    if (colorplot)
-	DoPlot(pl,"%s",color);
+   if (colorplot)
+	CallDoPlot(pl, color, 0);
 }
 
 
@@ -432,9 +434,7 @@ plotter_line(
     struct timeval	t2,
     u_long		x2)
 {
-    DoPlot(pl,"line %s %u %s %u",
-	   xp_timestamp(pl,t1), x1,
-	   xp_timestamp(pl,t2), x2);
+    CallDoPlot(pl,"line", 4, t1, x1, t2, x2);
 }
 
 
@@ -446,9 +446,7 @@ plotter_dline(
     struct timeval	t2,
     u_long		x2)
 {
-    DoPlot(pl,"dline %s %u %s %u",
-           xp_timestamp(pl,t1), x1,
-           xp_timestamp(pl,t2), x2);
+    CallDoPlot(pl,"dline", 4, t1, x1, t2, x2);
 }
 
 
@@ -458,7 +456,7 @@ plotter_diamond(
     struct timeval	t,
     u_long		x)
 {
-    DoPlot(pl,"diamond %s %u", xp_timestamp(pl,t), x);
+    CallDoPlot(pl,"diamond", 2, t, x);
 }
 
 
@@ -468,7 +466,7 @@ plotter_dot(
     struct timeval	t,
     u_long		x)
 {
-    DoPlot(pl,"dot %s %u", xp_timestamp(pl,t), x);
+    CallDoPlot(pl,"dot", 2, t, x);
 }
 
 
@@ -478,7 +476,7 @@ plotter_plus(
     struct timeval	t,
     u_long		x)
 {
-    DoPlot(pl,"plus %s %u", xp_timestamp(pl,t), x);
+    CallDoPlot(pl,"plus", 2, t, x);
 }
 
 
@@ -488,7 +486,7 @@ plotter_box(
     struct timeval	t,
     u_long		x)
 {
-    DoPlot(pl,"box %s %u", xp_timestamp(pl,t), x);
+    CallDoPlot(pl,"box", 2, t, x);
 }
 
 
@@ -500,7 +498,9 @@ plotter_arrow(
     u_long		x,
     char	dir)
 {
-    DoPlot(pl,"%carrow %s %u", dir, xp_timestamp(pl,t), x);
+    char arrow_type[7];
+    snprintf(arrow_type, sizeof(arrow_type), "%carrow", dir);
+    CallDoPlot(pl, arrow_type, 2, t, x);      
 }
 
 
@@ -551,7 +551,9 @@ plotter_tick(
     u_long		x,
     char		dir)
 {
-    DoPlot(pl,"%ctick %s %u", dir, xp_timestamp(pl,t), x);
+    char tick_type[6];
+    snprintf(tick_type, sizeof(tick_type), "%ctick", dir);
+    CallDoPlot(pl, tick_type, 2, t, x);      
 }
 
 
@@ -638,14 +640,26 @@ plotter_text(
     char		*where,
     char		*str)
 {
-    DoPlot(pl,"%stext %s %u", where, xp_timestamp(pl,t), x);
+    char text_type[6];
+    snprintf(text_type, sizeof(text_type), "%stext", where);
+
+    CallDoPlot(pl, text_type, 2, t, x);
     /* fix by Bill Fenner - Wed Feb  5, 1997, thanks */
     /* This is a little ugly.  Text commands take 2 lines. */
     /* A temporary color could have been */
     /* inserted after that line, but would NOT be inserted after */
     /* the next line, so we'll be OK.  I can't think of a better */
     /* way right now, and this works fine (famous last words) */
-    DoPlot(pl,"%s", str);
+    CallDoPlot(pl, str, 0);
+}
+
+void
+plotter_invisible(
+    PLOTTER pl,
+    struct timeval	t,
+    u_long		x)
+{
+    CallDoPlot(pl,"invisible", 2, t, x);
 }
 
 
@@ -751,4 +765,157 @@ extend_line(
     pline->last_y = yval;
 }
 
+/* This function may be called with 0, 2 or 4 arguments depending on plot command. */
+static void
+CallDoPlot(
+    PLOTTER pl,
+    char *plot_cmd,
+    int plot_argc,
+    ...)	   
+{
+   struct timeval t1;
+   u_long x1;
+   struct timeval t2;
+   u_long x2;	   
+   va_list ap;
+   struct plotter_info *ppi;
+   char fmt[200];
+   
+   if (pl == NO_PLOTTER)
+     return;
+
+   if (pl > plotter_ix) {
+      fprintf(stderr,"Illegal plotter: %d\n", pl);
+      exit(-1);
+   }
+
+   ppi = &pplotters[pl];
+
+   /* Get the arguments from the variable list */
+   va_start(ap, plot_argc);
+   if(plot_argc > 0)
+     {
+	t1 = va_arg(ap, struct timeval);
+	x1 = va_arg(ap, u_long);
+     }
+   if(plot_argc > 2)
+     {
+	t2 = va_arg(ap, struct timeval);
+	x2 = va_arg(ap, u_long);
+     }
+   va_end(ap);
+
+   memset(fmt, 0, sizeof(fmt));
+   
+   if(ppi->axis_switched) {
+      switch(plot_argc) {
+       case 0:
+	 snprintf(fmt, sizeof(fmt), "%s", plot_cmd);
+	 DoPlot(pl, fmt);
+	 break;
+       case 2:
+	 snprintf(fmt, sizeof(fmt), "%s %%u -%%s", plot_cmd);
+	 DoPlot(pl, fmt,
+		x1, xp_timestamp(pl,t1));
+	 break;
+       case 4:
+	 snprintf(fmt, sizeof(fmt), "%s %%u -%%s %%u -%%s", plot_cmd);
+	 DoPlot(pl, fmt,
+		x1, xp_timestamp(pl,t1),
+		x2, xp_timestamp(pl,t2));
+	 break;
+       default:
+	 fprintf(stderr, "CallDoPlot: Illegal number of arguments (%d)\n", plot_argc);
+      }
+   }
+   else {
+      switch(plot_argc) {
+       case 0:
+	 snprintf(fmt, sizeof(fmt), "%s", plot_cmd);
+	 DoPlot(pl, fmt);
+	 break;
+       case 2:
+	 snprintf(fmt, sizeof(fmt), "%s %%s %%u", plot_cmd);
+	 DoPlot(pl, fmt,
+		xp_timestamp(pl,t1), x1);
+	 break;
+       case 4:
+	 snprintf(fmt, sizeof(fmt), "%s %%s %%u %%s %%u", plot_cmd);
+	 DoPlot(pl, fmt,
+		xp_timestamp(pl,t1), x1,
+		xp_timestamp(pl,t2), x2);
+	 break;
+       default:
+	 fprintf(stderr, "CallDoPlot: Illegal number of arguments (%d)\n", plot_argc);
+      }
+   }
+   
+   return;
+}
+
+static void
+WritePlotHeader(
+    PLOTTER pl)
+{
+   MFILE *f = NULL;
+   struct plotter_info *ppi;
+
+   if (pl == NO_PLOTTER)
+     return;
+
+   if (pl > plotter_ix) {
+      fprintf(stderr,"Illegal plotter: %d\n", pl);
+      exit(-1);
+   }
+
+   ppi = &pplotters[pl];
+   
+   if ((f = ppi->fplot) == NULL)
+     return;
+
+   if(ppi->axis_switched) {   
+      /* Header for the Time Line Charts */
+      Mfprintf(f,"%s %s\n", "unsigned", "dtime");
+   }
+   else {
+      /* Header for all other plots */
+      /* graph coordinates... */
+      /*  X coord is timeval unless graph_time_zero is true */
+      /*  Y is signed except when it's a sequence number */
+      /* ugly hack -- unsigned makes the graphs hard to work with and is
+       only needed for the time sequence graphs */
+      /* suggestion by Michele Clark at UNC - make them double instead */
+      Mfprintf(f,"%s %s\n",
+	       graph_time_zero?"dtime":"timeval",
+	       ((strcmp(ppi->ylabel,"sequence number") == 0)&&(!graph_seq_zero))?
+	       "double":"signed");
+   }
+   
+   if (show_title) {
+      if (xplot_title_prefix)
+	Mfprintf(f,"title\n%s %s\n",
+		 ExpandFormat(xplot_title_prefix),
+		 ppi->title);
+      else
+	Mfprintf(f,"title\n%s\n", ppi->title);
+   }
+   
+   Mfprintf(f,"xlabel\n%s\n", ppi->xlabel);
+   Mfprintf(f,"ylabel\n%s\n", ppi->ylabel);
+   
+   /* Indicate that the header has now been written to the plotter file */
+   ppi->header_done = TRUE;
+   
+   return;
+}
+
+/* Switch the x and y axis type (Needed for Time Line Charts. Default = FLASE) */
+void plotter_switch_axis(
+    PLOTTER pl,
+    Bool flag)
+{
+   struct plotter_info *ppi = &pplotters[pl];
+   
+   ppi->axis_switched = flag;
+}
 
