@@ -108,11 +108,11 @@ printeth_packet(
 
     printf(
 	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
-	pep->ether_type,
-	(pep->ether_type == ETHERTYPE_IP)?"(IP)":
-	(pep->ether_type == ETHERTYPE_IPV6)?"(IPv6)":
-	(pep->ether_type == ETHERTYPE_ARP)?"(ARP)":
-	(pep->ether_type == ETHERTYPE_REVARP)?"(RARP)":
+	ntohs(pep->ether_type),
+	(ntohs(pep->ether_type) == ETHERTYPE_IP)?"(IP)":
+	(ntohs(pep->ether_type) == ETHERTYPE_IPV6)?"(IPv6)":
+	(ntohs(pep->ether_type) == ETHERTYPE_ARP)?"(ARP)":
+	(ntohs(pep->ether_type) == ETHERTYPE_REVARP)?"(RARP)":
 	"");
 }
 
@@ -175,18 +175,19 @@ printipv4(
 
     printf(
 	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
-	ntohs(pip->ip_p), 
-	(ntohs(pip->ip_p) == IPPROTO_UDP)?"(UDP)":
-	(ntohs(pip->ip_p) == IPPROTO_TCP)?"(TCP)":
-	(ntohs(pip->ip_p) == IPPROTO_ICMP)?"(ICMP)":
-	(ntohs(pip->ip_p) == IPPROTO_IGMP)?"(IGMP)":
-	(ntohs(pip->ip_p) == IPPROTO_EGP)?"(EGP)":
+	pip->ip_p, 
+	(pip->ip_p == IPPROTO_UDP)?"(UDP)":
+	(pip->ip_p == IPPROTO_TCP)?"(TCP)":
+	(pip->ip_p == IPPROTO_ICMP)?"(ICMP)":
+	(pip->ip_p == IPPROTO_IGMP)?"(IGMP)":
+	(pip->ip_p == IPPROTO_EGP)?"(EGP)":
 	"");
 
     printf("\t    HLEN: %d\n", pip->ip_hl*4);
     printf("\t     TTL: %d\n", pip->ip_ttl);
     printf("\t     LEN: %d\n", ntohs(pip->ip_len));
     printf("\t      ID: %d\n", ntohs(pip->ip_id));
+    printf("\t  OFFSET: 0x%04x\n", ntohs(pip->ip_off));
 }
 
 
