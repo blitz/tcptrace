@@ -8,6 +8,7 @@
 # User-configurable constants
 #
 OPTIM	= -O2 -g -Wall
+OPTIM	= -pg -O2 -g -Wall
 INCS	= -I/usr/local/include
 CC	= gcc
 LDFLAGS = -L/usr/local/lib
@@ -17,7 +18,8 @@ SUPPORTED_FORMATS = -DGROK_SNOOP -DGROK_TCPDUMP -DGROK_NETM
 #
 # Standard rules
 #
-CFLAGS	= ${OPTIM} ${INCS} ${SUPPORTED_FORMATS}
+GCC_FLAGS = -finline-functions
+CFLAGS	= ${OPTIM} ${INCS} ${SUPPORTED_FORMATS} ${GCC_FLAGS}
 
 
 #

@@ -24,14 +24,20 @@ It can also keep track of packets that come out of order.
 
 
 /* local routine definitions*/
-static int boundary(u_long,u_long);
 static int notoverlap(seqspace *,quadrant *,u_long,u_long,u_int *);
 static int overlap(seqspace *,quadrant *,u_long,u_long,u_int *);
 static seg_acked *create_seg(u_long,u_long);
 static quadrant *create_quadrant();
 static quadrant *whichquad(seqspace *,u_long);
 static quadrant *return_quad(seqspace *,quadrant *,int);
-static void collapse(seqspace *,u_long);
+static void collapse_quad(quadrant *);
+
+
+/* useful macros */
+
+/* boundary: does the segment cross a quadrant boundary? */
+#define BOUNDARY(beg,fin) (QUADNUM((beg)) != QUADNUM((fin)))
+
 
 
 
@@ -47,6 +53,7 @@ int rexmit(
     u_int  *pooo) /* out of order */
 {
     quadrant *wquad;
+    int retval;
 
     /* unless told otherwise, it's IN order */
     *pooo = 0;
@@ -67,31 +74,17 @@ int rexmit(
 	return(0);
     }
 
-    /* collapse the sequence space so far */
-    collapse(sspace,seqno);
-
     /* add the new segment into the segment database */
-    if (boundary(seqno,seqno+len-1)) 
-	return(overlap(sspace,wquad,seqno,len-1,pooo));
-    else
-	return(notoverlap(sspace,wquad,seqno,len-1,pooo));
-}
+    if (BOUNDARY(seqno,seqno+len-1)) {
+	retval = overlap(sspace,wquad,seqno,len-1,pooo);
+	collapse_quad(wquad);
+	collapse_quad(wquad->next);
+    } else {
+	retval = notoverlap(sspace,wquad,seqno,len-1,pooo);
+	collapse_quad(wquad);
+    }
 
-
-/*******************************************************************/
-/* boundary: does the segment cross a quadrant boundary? */
-int boundary(
-    u_long beg,
-    u_long fin)
-{
-    if ((IN_Q1(beg))&&(fin>=0x40000000))
-	return(1);
-    else if ((IN_Q2(beg))&&(fin>=0x80000000))
-	return(1);
-    else if ((IN_Q3(beg))&&(fin>=0xc0000000))
-	return(1);
-    else
-	return(0);
+    return(retval);
 }
 
 
@@ -247,8 +240,8 @@ create_seg(
 {
     seg_acked *ptr;
 
-    ptr = (seg_acked *)malloc(sizeof(seg_acked));
-    bzero(ptr,sizeof(seg_acked));
+    ptr = (seg_acked *)MallocZ(sizeof(seg_acked));
+
     ptr->beg = seq;
     ptr->sent_end = seq+len;
     ptr->prev = NULL;
@@ -263,8 +256,7 @@ create_quadrant()
 {
     quadrant *ptr;
 
-    ptr = (quadrant *)malloc(sizeof(quadrant));
-    bzero(ptr,sizeof(quadrant));
+    ptr = (quadrant *)MallocZ(sizeof(quadrant));
 
     return(ptr);
 }
@@ -317,8 +309,10 @@ return_quad(
 	    sspace->q4->next = sspace->q1;
 	    sspace->q4->prev = NULL;
 	    ptr->quad_end = QUADSIZE;
-	    if (sspace->q3 != NULL)
+	    if (sspace->q3 != NULL) {
 		free((quadrant *)sspace->q3);
+		sspace->q3 = NULL;
+	    }
 	}
     } else if (id==2) {
 	sspace->q2 = ptr;
@@ -333,8 +327,10 @@ return_quad(
 	    ptr->prev = sspace->q1;
 	    sspace->q1->next = sspace->q2;
 	    sspace->q1->prev = NULL;
-	    if (sspace->q4 != NULL)
+	    if (sspace->q4 != NULL) {
 		free((quadrant *)sspace->q4);
+		sspace->q4 = NULL;
+	    }
 	}
     } else if (id==3) {
 	sspace->q3 = ptr;
@@ -350,8 +346,10 @@ return_quad(
 	    ptr->prev = sspace->q2;
 	    sspace->q2->next = sspace->q3;
 	    sspace->q2->prev = NULL;
-	    if (sspace->q1 != NULL)
+	    if (sspace->q1 != NULL) {
 		free((quadrant *)sspace->q1);
+		sspace->q1 = NULL;
+	    }
 	}
     } else if (id==4) {
 	sspace->q4 = ptr;
@@ -366,53 +364,62 @@ return_quad(
 	    ptr->prev = sspace->q3;
 	    sspace->q3->next = sspace->q4;
 	    sspace->q3->prev = NULL;
-	    if (sspace->q2 != NULL)
+	    if (sspace->q2 != NULL) {
 		free((quadrant *)sspace->q2);
+		sspace->q2 = NULL;
+	    }
 	}
     }
     return(ptr);
 }
 
 /*********************************************************************/
+
+
+#ifdef OLD
 void collapse(
-    seqspace *sspace,
-    u_long seq)
+    seqspace *sspace)
 {
-    int index = 1,freed;
-    quadrant * present;
-    seg_acked * seg,*tmp;
+    collapse_quad(sspace->q1);
+    collapse_quad(sspace->q2);
+    collapse_quad(sspace->q3);
+    collapse_quad(sspace->q4);
+}
+#endif OLD
 
 
-    present = whichquad(sspace,seq);
-    while(index<=4) {
-	if (present != NULL) {
-	    seg = present->f_ack;
-	    while (seg !=NULL) {
-		freed = 0;
-		if ((seg->next!=NULL)&&(seg->sent_end+1 == seg->next->beg)) {
-		    seg->sent_end = seg->next->sent_end;
-		    tmp = seg->next;
-		    seg->next = seg->next->next;
-		    if (seg->next!= NULL)
-			seg->next->prev = seg;
-		    if (tmp == present->l_ack)
-			present->l_ack = seg;
-		    free(tmp);
-		    freed = 1;
-		}
-		if (!freed)
-		    seg = seg->next;
-	    }
-	    if (present->f_ack!=NULL) {
-		if ((present->f_ack->sent_end == 0x3fffffff)||
-		    (present->f_ack->sent_end == 0x7fffffff)||
-		    (present->f_ack->sent_end == 0xbfffffff)||
-		    (present->f_ack->sent_end == 0xffffffff))
-		    present->full = 1;
-	    }
+
+/*********************************************************************/
+void collapse_quad(
+    quadrant *pquad)
+{
+    int freed;
+    seg_acked *seg;
+    seg_acked *tmp;
+
+    if ((pquad == NULL) || (pquad->f_ack == NULL))
+	return;
+
+    seg = pquad->f_ack;
+    while (seg != NULL) {
+	freed = 0;
+	if ((seg->next!=NULL)&&(seg->sent_end+1 == seg->next->beg)) {
+	    seg->sent_end = seg->next->sent_end;
+	    tmp = seg->next;
+	    seg->next = seg->next->next;
+	    if (seg->next!= NULL)
+		seg->next->prev = seg;
+	    if (tmp == pquad->l_ack)
+		pquad->l_ack = seg;
+	    free(tmp);
+	    freed = 1;
 	}
-	index++;
-	if (index<4)
-	    present = present->next;
+	if (!freed)
+	    seg = seg->next;
+    }
+
+    /* see if the quadrant is now "full" */
+    if ((pquad->f_ack->sent_end - pquad->f_ack->beg + 1) == QUADSIZE) {
+	pquad->full = 1;
     }
 }

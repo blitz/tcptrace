@@ -70,7 +70,9 @@ pread_snoop(
 	len -= sizeof(struct ether_header);
 	if ((rlen=fread(ip_buf,1,len,stdin)) != len) {
 	    if (rlen != 0)
-		fprintf(stderr,"Couldn't read %d bytes\n", len);
+		fprintf(stderr,
+			"Couldn't read %d more bytes, skipping last packet\n",
+			len);
 	    return(0);
 	}
 

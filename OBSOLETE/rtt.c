@@ -35,8 +35,8 @@ newseg()
 {
     seg_rec *pnew;
 
-    pnew = (seg_rec *) malloc(sizeof(seg_rec));
-    bzero(pnew,sizeof(seg_rec));
+    pnew = (seg_rec *) MallocZ(sizeof(seg_rec));
+
     return(pnew);
 }
 

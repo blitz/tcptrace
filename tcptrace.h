@@ -212,6 +212,7 @@ extern int show_zero_window;
 
 /* external routine decls */
 void *malloc(int);
+void *MallocZ(int);
 char *ether_ntoa();
 void bzero(void *, int);
 void bcopy(void *, void *,int);
@@ -287,11 +288,11 @@ int rexmit(seqspace *, u_long, u_long, u_int *);
 /*macros for maintaining the seqspace used for rexmit*/
 #define SEQSPACE_SIZE	0xffffffff
 #define QUADSIZE	(SEQSPACE_SIZE/4)
-#define SEQTEST(seq)	((seq>>30)+1)
-#define IN_Q1(seq)	(SEQTEST(seq)==1)
-#define IN_Q2(seq)	(SEQTEST(seq)==2)
-#define IN_Q3(seq)	(SEQTEST(seq)==3)
-#define IN_Q4(seq)	(SEQTEST(seq)==4)
+#define QUADNUM(seq)	((seq>>30)+1)
+#define IN_Q1(seq)	(QUADNUM(seq)==1)
+#define IN_Q2(seq)	(QUADNUM(seq)==2)
+#define IN_Q3(seq)	(QUADNUM(seq)==3)
+#define IN_Q4(seq)	(QUADNUM(seq)==4)
 
 
 /* physical layers currently understood					*/

@@ -58,19 +58,8 @@ plot_init()
 {
     max_plotters = 2*max_tcp_pairs;
 
-    fplot = (FILE **) malloc(max_plotters * sizeof(FILE *));
-    if (!fplot) {
-	perror("fplot malloc");
-	exit(-1);
-    }
-
-    p2plast = (tcb **) malloc(max_plotters * sizeof(tcb *));
-    if (!p2plast) {
-	perror("p2plast malloc");
-	exit(-1);
-    }
-    bzero(fplot,  max_plotters * sizeof(FILE *));
-    bzero(p2plast,max_plotters * sizeof(tcb *));
+    fplot = (FILE **) MallocZ(max_plotters * sizeof(FILE *));
+    p2plast = (tcb **) MallocZ(max_plotters * sizeof(tcb *));
 }
 
 
@@ -82,20 +71,31 @@ HostLetter(
     static char name[10];
     char ch1;
     char ch2;
+    char ch3;
 
-    ch1 = ix / 26;
-    ch2 = ix % 26;
-	
     if (ix < 26) {
-	sprintf(name,"%c",'a' + ch2);
-    } else if (ix < (26*26)) {
-	sprintf(name,"%c%c", 'a' + ch1 - 1, 'a' + ch2);
-    } else {
-	fprintf(stderr,"Fatal, too many hosts to name\n");
-	exit(-1);
+        ch1 = ix % 26;
+        sprintf(name,"%c", 'a' + ch1);
+        return(name);
+    }
+    ix -= 26;
+    if (ix < 26*26) {
+        ch1 = ix % 26;
+        ch2 = (ix/26) % 26;
+        sprintf(name,"%c%c", 'a' + ch2, 'a' + ch1);
+        return(name);
+    }
+    ix -= (26*26);
+    if (ix < 26*26*26) {
+        ch1 = ix % 26;
+        ch2 = (ix/26) % 26;
+        ch3 = (ix/(26*26)) % 26;
+        sprintf(name,"%c%c%c", 'a' + ch3, 'a' + ch2, 'a' + ch1);
+        return(name);
     }
 
-    return(name);
+    fprintf(stderr,"Fatal, too many hosts to name\n");
+    exit(-1);
 }
 
 
@@ -105,7 +105,7 @@ TSGPlotName(
     tcb *plast,
     PLOTTER pl)
 {
-    static char filename[10];
+    static char filename[15];
 
     sprintf(filename,"%s2%s.xpl",
 	    plast->host_letter, plast->ptwin->host_letter);
