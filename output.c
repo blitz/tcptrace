@@ -1,5 +1,5 @@
 /* 
- * tcptrace.c - turn NETM protocol monitor traces into xplot
+ * tcptrace.c - turn protocol monitor traces into xplot
  * 
  * Author:	Shawn Ostermann
  * 		Computer Science Department
@@ -50,10 +50,18 @@ FinCount(
 
 
 int
-Complete(
+ConnComplete(
     tcp_pair *ptp)
 {
     return(SynCount(ptp) >= 2 && FinCount(ptp) >= 2);
+}
+
+
+int
+ConnReset(
+    tcp_pair *ptp)
+{
+    return(ptp->a2b.reset_count + ptp->b2a.reset_count != 0);
 }
 
 
@@ -107,8 +115,10 @@ PrintBrief(
 	    pba->host_letter,
 	    pab->host_letter,
 	    pba->packets);
-    if (Complete(ptp))
+    if (ConnComplete(ptp))
 	fprintf(stdout,"  (complete)");
+    if (ConnReset(ptp))
+	fprintf(stdout,"  (reset)");
     fprintf(stdout,"\n");
 }
 
@@ -119,6 +129,7 @@ PrintTrace(
 {
     unsigned long etime;
     float etime_float;
+    float thru_float;
     tcb *pab = &ptp->a2b;
     tcb *pba = &ptp->b2a;
     char *host1 = pab->host_letter;
@@ -127,8 +138,9 @@ PrintTrace(
     fprintf(stdout,"\thost %s:        %s\n", host1, ptp->a_endpoint);
     fprintf(stdout,"\thost %s:        %s\n", host2, ptp->b_endpoint);
     fprintf(stdout,"\tcomplete conn: %s",
-	    Complete(ptp)?"yes":"no");
-    if (Complete(ptp))
+	    ConnReset(ptp)?"RESET":(
+		ConnComplete(ptp)?"yes":"no"));
+    if (ConnComplete(ptp))
 	fprintf(stdout,"\n");
     else
 	fprintf(stdout,"\t(SYNs: %d)  (FINs: %d)\n",
@@ -178,15 +190,15 @@ PrintTrace(
 	    pab->ack_pkts,
 	    pba->ack_pkts);
     fprintf(stdout,
-	    "\tmax window:    %8u\t\tmax window:    %8u\n",
+	    "\tmax win adv:   %8u\t\tmax win adv:   %8u\n",
 	    pab->win_max,
 	    pba->win_max);
     fprintf(stdout,
-	    "\tavg window:    %8u\t\tavg window:    %8u\n",
-	    pba->ack_pkts==0?0:pab->win_tot/pba->ack_pkts,
-	    pab->ack_pkts==0?0:pba->win_tot/pab->ack_pkts);
+	    "\tavg win adv:   %8u\t\tavg win adv:   %8u\n",
+	    pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
+	    pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
     fprintf(stdout,
-	    "\tzero windows:  %8u\t\tzero windows:  %8u\n",
+	    "\tzero win adv:  %8u\t\tzero win adv:  %8u\n",
 	    pab->win_zero_ct,
 	    pba->win_zero_ct);
 
@@ -195,12 +207,23 @@ PrintTrace(
 	    pab->packets,
 	    pba->packets);
     etime_float = (float) etime / 1000000.0;
-    fprintf(stdout,
-	    "\tthroughput:    %8.0f Bps\tthroughput:    %8.0f Bps\n",
-	    ((float) (pab->data_bytes-pab->rexmit_bytes)
-	     / etime_float),
-	    ((float) (pba->data_bytes-pba->rexmit_bytes)
-	     / etime_float));
+    if ((pab->data_bytes-pab->data_bytes == 0) || (etime_float == 0.0))
+	thru_float = 0.0;
+    else
+	thru_float = (float) (pab->data_bytes-pab->rexmit_bytes) / etime_float;
+    if (thru_float == 0)
+	fprintf(stdout, "\tthroughput:        ----    ");
+    else
+	fprintf(stdout, "\tthroughput:    %8.0f Bps", thru_float);
+
+    if ((pba->data_bytes-pab->data_bytes == 0) || (etime_float == 0.0))
+	thru_float = 0.0;
+    else
+    thru_float = (float) (pba->data_bytes-pba->rexmit_bytes) / etime_float;
+    if (thru_float == 0)
+	fprintf(stdout, "\tthroughput:        ----\n");
+    else
+	fprintf(stdout, "\tthroughput:    %8.0f Bps\n", thru_float);
 
     if (dortt) {
 	fprintf(stdout,"\n");
@@ -222,31 +245,33 @@ PrintTrace(
 		Stdev(pab->rtt_sum, pab->rtt_sum2, pab->rtt_count) / 1000.0,
 		Stdev(pba->rtt_sum, pba->rtt_sum2, pba->rtt_count) / 1000.0);
 
-	fprintf(stdout, "\
+        if (pab->rtt_amback || pba->rtt_amback) {
+	    fprintf(stdout, "\
 \t  For the following 5 RTT statistics, only ACKs for
 \t  multiply-transmitted segments (ambiguous ACKs) were
 \t  considered.  Times are taken from the last instance
 \t  of a segment.
 ");
-	fprintf(stdout,
-		"\tambiguous acks: %7u\t\tambiguous acks: %7u\n",
-		pab->rtt_amback, pba->rtt_amback);
-	fprintf(stdout,
-		"\tRTT min (last): %7.1f ms\tRTT min (last): %7.1f ms\n",
-		(double)pab->rtt_min_last/1000.0,
-		(double)pba->rtt_min_last/1000.0);
-	fprintf(stdout,
-		"\tRTT max (last): %7.1f ms\tRTT max (last): %7.1f ms\n",
-		(double)pab->rtt_max_last/1000.0,
-		(double)pba->rtt_max_last/1000.0);
-	fprintf(stdout,
-		"\tRTT avg (last): %7.1f ms\tRTT avg (last): %7.1f ms\n",
-		Average(pab->rtt_sum_last, pab->rtt_count_last) / 1000.0,
-		Average(pba->rtt_sum_last, pba->rtt_count_last) / 1000.0);
-	fprintf(stdout,
-		"\tRTT sdv (last): %7.1f ms\tRTT sdv (last): %7.1f ms\n",
-		Stdev(pab->rtt_sum_last, pab->rtt_sum2_last, pab->rtt_count_last) / 1000.0,
-		Stdev(pba->rtt_sum_last, pba->rtt_sum2_last, pba->rtt_count_last) / 1000.0);
+	    fprintf(stdout,
+		    "\tambiguous acks: %7u\t\tambiguous acks: %7u\n",
+		    pab->rtt_amback, pba->rtt_amback);
+	    fprintf(stdout,
+		    "\tRTT min (last): %7.1f ms\tRTT min (last): %7.1f ms\n",
+		    (double)pab->rtt_min_last/1000.0,
+		    (double)pba->rtt_min_last/1000.0);
+	    fprintf(stdout,
+		    "\tRTT max (last): %7.1f ms\tRTT max (last): %7.1f ms\n",
+		    (double)pab->rtt_max_last/1000.0,
+		    (double)pba->rtt_max_last/1000.0);
+	    fprintf(stdout,
+		    "\tRTT avg (last): %7.1f ms\tRTT avg (last): %7.1f ms\n",
+		    Average(pab->rtt_sum_last, pab->rtt_count_last) / 1000.0,
+		    Average(pba->rtt_sum_last, pba->rtt_count_last) / 1000.0);
+	    fprintf(stdout,
+		    "\tRTT sdv (last): %7.1f ms\tRTT sdv (last): %7.1f ms\n",
+		    Stdev(pab->rtt_sum_last, pab->rtt_sum2_last, pab->rtt_count_last) / 1000.0,
+		    Stdev(pba->rtt_sum_last, pba->rtt_sum2_last, pba->rtt_count_last) / 1000.0);
+	}
 
 	fprintf(stdout,
 		"\tsegs cum acked: %7u\t\tsegs cum acked: %7u\n",

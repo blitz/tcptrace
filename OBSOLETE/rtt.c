@@ -149,6 +149,12 @@ seg_out(
 
     /* calculate data length */
     len = ntohs(pip->ip_len) - (4 * pip->ip_hl) - (4 * ptcp->th_off);
+
+    /* if it's a SYN or FIN, add one to length (for each) */
+    if (SYN_SET(ptcp)) ++len;
+    if (FIN_SET(ptcp)) ++len;
+
+    /* ignore zero-data segments (no SYN or FIN either) */
     if (len == 0)
 	return;
 

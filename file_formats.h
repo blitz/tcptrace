@@ -16,8 +16,8 @@
 /**************************************************************/
 
 struct supported_formats {
-	int	(*(*test_func)())();
-	char	*format_name;
+    int	(*(*test_func)())();	/* pointer to the tester function	*/
+    char	*format_name;	/* name of the file format		*/
 };
 
 /* for each file type GLORP you want to support, provide a boolean	*/
@@ -27,6 +27,7 @@ struct supported_formats {
 /*	int pread_GLORP(						*/
 /*	    struct timeval	*ptime,					*/
 /*	    int		 	*plen,					*/
+/*	    int		 	*ptlen,					*/
 /*	    struct ether_header **ppep,					*/
 /*	    struct ip		**ppip)					*/
 /*   the reader function should return 0 at EOF and 1 otherwise		*/
@@ -53,4 +54,3 @@ struct supported_formats file_formats[] = {
 #endif GROK_TCPDUMP
 	{NULL,NULL},	/* You must NOT remove this entry */
 };
-

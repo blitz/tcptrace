@@ -33,7 +33,7 @@ struct netm_packet_header_old {
     int	unused2;
     int	tstamp_secs;
     int	tstamp_usecs;
-    int	unused3;
+    int	tlen;
     int	len;
 };
 struct netm_packet_header {
@@ -55,6 +55,7 @@ static int
 pread_netm(
     struct timeval	*ptime,
     int		 	*plen,
+    int		 	*ptlen,
     struct ether_header **ppep,
     struct ip		**ppip)
 {
@@ -104,10 +105,12 @@ pread_netm(
 	ptime->tv_sec  = pho->tstamp_secs;
 	ptime->tv_usec = pho->tstamp_usecs;
 	*plen          = pho->len;
+	*ptlen         = pho->tlen;
     } else {
-	ptime->tv_sec = hdr.tstamp_secs;
+	ptime->tv_sec  = hdr.tstamp_secs;
 	ptime->tv_usec = hdr.tstamp_usecs;
-	*plen = hdr.len;
+	*plen 	       = hdr.len;
+	*ptlen         = hdr.tlen;
     }
 
 
