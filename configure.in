@@ -41,7 +41,7 @@ AC_CHECK_FUNCS(inet_pton)
 
 dnl Grab standard includes under weird Linux versions
 case "$target_os" in
-  *inux*)	V_LINUX="YES";V_INCLS="$V_INCLS -Ilinux-include";;
+  *inux*)	V_INCLS="$V_INCLS -Ilinux-include";;
 esac
 
 
