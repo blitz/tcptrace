@@ -719,19 +719,27 @@ That will likely confuse the program, so be careful!\n", filename);
 		if (debug)
 		    fprintf(stderr, "%s: ", cur_filename);
 		if (is_stdin) {
-		    fprintf(stderr ,"%lu\r", fpnum);
+		    fprintf(stderr ,"%lu", fpnum);
 		} else if (CompIsCompressed()) {
 		    frac = location/(filesize/100);
 		    if (frac <= 100)
-			fprintf(stderr ,"%lu ~%u%% (compressed)\r", fpnum, frac);
+			fprintf(stderr ,"%lu ~%u%% (compressed)", fpnum, frac);
 		    else
-			fprintf(stderr ,"%lu ~100%% + %u%% (compressed)\r", fpnum, frac-100);
+			fprintf(stderr ,"%lu ~100%% + %u%% (compressed)", fpnum, frac-100);
 		} else {
 		    location = ftell(stdin);
 		    frac = location/(filesize/100);
 
-		    fprintf(stderr ,"%lu %u%%\r", fpnum, frac);
+		    fprintf(stderr ,"%lu %u%%", fpnum, frac);
 		}
+		/* print elapsed time */
+		{
+		    double etime = elapsed(first_packet,last_packet);
+		    fprintf(stderr," (%s)", elapsed2str(etime));
+		}
+
+		/* carriage return (but not newline) */
+		fprintf(stderr ,"\r");
 	    }
 	    fflush(stderr);
 	}
