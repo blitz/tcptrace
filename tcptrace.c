@@ -1470,6 +1470,7 @@ ParseArgs(
 		    warn_printbadmbz = TRUE;
 		    warn_printhwdups = TRUE;
 		    warn_printbadcsum = TRUE;
+		    warn_printbad_syn_fin_seq = TRUE;
 		    warn_ooo = TRUE;
 		    break;
 		  case 'x':
