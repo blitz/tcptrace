@@ -100,3 +100,13 @@ or ported the program to other architectures:
 		sent me Linux diffs
 	 Nasseef Abukamail (nabukama@cs.ohiou.edu) who wrote much of
 		the IPv6 code
+	 Byron Collie (byron.collie@ccs.afp.gov.au) for helping make the program more
+		useful to the security community 
+	 Brian Utterback (Brian.Utterback@East.Sun.COM) for very helpful
+		bug reports
+	 Jamshid Mahdavi (mahdavi@novell.com) for poking at the Intel/Linux side of
+		the code and sending bug reports
+	 Mark Foster (mafoster@george.arc.nasa.gov) for writing the
+		manual page
+
+	
