@@ -261,10 +261,10 @@ PrintTrace(
 		       pba->syn_count, pba->fin_count),(int)bufr));
     if (pab->f1323_ws || pba->f1323_ws || pab->f1323_ts || pba->f1323_ts) {
 	StatlineI("req 1323 ws/ts","","%s",
-		  sprintf(bufl,"%c/%c",
-			  pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),
-		  sprintf(bufl,"%c/%c",
-			  pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'));
+		  (sprintf(bufl,"%c/%c",
+		      pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),(int)bufl),
+		  (sprintf(bufl,"%c/%c",
+		      pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'),(int)bufr));
     }
     if (pab->f1323_ws || pba->f1323_ws) {
 	StatlineI("adv wind scale","","%d",
