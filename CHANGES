@@ -235,3 +235,7 @@
     rexmit counts (also fixed marking on tsg graphs)
   added another case to the connection-splicing code to fix something
     I saw with FACK/SACK
+  fixed references to the idle_max counter to give the same answer everywhere
+    (some machines were overflowing sooner than others, I changed the math)
+5.1.0 - Tue Dec  1, 1998
+  Getting ready for a new multi-platform distribution
