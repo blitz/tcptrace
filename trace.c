@@ -2095,9 +2095,10 @@ tcp_cksum(
 	/* quick sanity check, if the packet is fragmented,
 	   pretend it's valid */
 	/* Thu Jul  6, 2000 - bugfix, bad check */
-	if ((ntohs(pip->ip_off) << 2) != 0) {
+	if (((ntohs(pip->ip_off) << 2) & 0xffff) != 0) {
+	if (((ntohs(pip->ip_off) << 2) & 0xffff) != 0) {
 	    /* (we shifted off the DF bit, which might be on) */
-	    /* (but we shifted off the DF bit */
+	    return(0);
 	}
 
 	/* 2 4-byte numbers, next to each other */
