@@ -70,7 +70,8 @@ static void DoPlot(pl, fmt, va_alist)
 		exit(-1);
 	}
 
-	f = fplot[pl];
+	if ((f = fplot[pl]) == NULL)
+	    return;
 
 	vfprintf(f,fmt,ap);
 	fprintf (f,"\n");
@@ -126,7 +127,8 @@ plotter_done()
 	char *fname;
 
 	for (pl = 0; pl < plotter_ix; ++pl) {
-		f = fplot[pl];
+		if ((f = fplot[pl]) == NULL)
+		    continue;
 		if (!ignore_non_comp || Complete(p2plast[pl]->ptp)) {
 			fprintf(f,"go\n");
 			fclose(f);
