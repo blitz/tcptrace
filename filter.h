@@ -119,6 +119,7 @@ struct filter_node {
 	struct Variable variable;
 	union Constant constant;
     } un;
+    Bool conjunction;
     struct filter_node *next_var; /* for wildcard variable matches */
 };
 
