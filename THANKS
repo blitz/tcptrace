@@ -56,6 +56,7 @@ or ported the program to other architectures:
 	        general bug fixes and rewriting the owin code
 	 Marina Bykova (mbykova@irg.cs.ohiou.edu) for helping with the
 	        Tru64 port and writing the realtime operation code
-		
+	 Bruce Mah (bmah@CA.Sandia.GOV) for helping with bug fixes related to 
+	        'buffer overflows' and for improving the http module.
 
 	

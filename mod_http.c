@@ -54,6 +54,7 @@
 static char const rcsid[] =
    "$Header$";
 
+
 #ifdef LOAD_MODULE_HTTP
 
 #include "tcptrace.h"
@@ -63,14 +64,43 @@ static char const rcsid[] =
 
 #define DEFAULT_SERVER_PORT 80
 
+
+/* Revised HTTP module with a new HTTP parser provided by Bruce Mah*/
+
+/* codes for different message types */
+typedef enum {
+     MethodCodeOptions,
+     MethodCodeGet,
+     MethodCodeHead,
+     MethodCodePost,
+     MethodCodePut,
+     MethodCodeDelete,
+     MethodCodeTrace
+} MethodCode;
+
+char *MethodCodeString[] = {
+     "OPTIONS",
+     "GET",
+     "HEAD",
+     "POST",
+     "PUT",
+     "DELETE",
+     "TRACE"
+};
+
 /* info gathered for each GET */
 struct get_info {
     timeval get_time;		/* when CLIENT sent GET */
     timeval send_time;		/* when SERVER sent CONTENT */
     timeval lastbyte_time;	/* when SERVER sent last byte of CONTENT */
     timeval ack_time;		/* when CLIENT acked CONTENT */
+    unsigned request_position;  /* byte offset for this request */
+    unsigned reply_position;    /* byte offset for this reply */
+    MethodCode method;          /* HTTP method code */
+    unsigned response_code;     /* HTTP response code */
     unsigned content_length;	/* as reported by server */
     char *get_string;		/* content of GET string */
+    char *content_type;         /* MIME type */  
 
     struct get_info *next;
 };
@@ -109,6 +139,14 @@ static struct http_info {
     tcb *tcb_client;
     tcb *tcb_server;
 
+    /* aggregate statistics for HTTP requests on this connection*/
+    /* some of this info is available in *tcb_client and *tcb_server */
+    /* but we keep a copy of it here to keep all useful info in one place */
+    unsigned total_request_length;
+    unsigned total_reply_length;
+    unsigned total_request_count;
+    unsigned total_reply_count;
+   
     /* when querries (GETs) were sent by client */
     struct time_stamp get_head;
     struct time_stamp get_tail;
@@ -236,6 +274,10 @@ MakeGetRec(
     struct get_info *pg;
 
     pg = MallocZ(sizeof(struct get_info));
+   
+    /* initialize some fields */
+    pg->get_string = "- -";
+    pg->content_type = "-/-";  
 
     /* put at the end of the chain */
     if (ph->gets_head == NULL) {
@@ -400,7 +442,7 @@ http_read(
 	}
 	if (ACK_SET(ptcp)) {
 	    if (debug > 4)
-		printf("Client acks %ld\n", DataOffset(ph->tcb_server,ptcp->th_ack));	    
+		printf("Client acks %ld\n", DataOffset(ph->tcb_server,ntohl(ptcp->th_ack)));	    
 	    AddAckTS(ph,DataOffset(ph->tcb_server,ntohl(ptcp->th_ack)));
 	}
     }
@@ -623,48 +665,214 @@ FindContent(
     char *pdata;
     char *plast;
     char *pch;
+    char *pch2;
     struct get_info *pget;
+    char getbuf[1024];
     u_long position;
+    unsigned last_position;
+    int done;
+    int i;
+    typedef enum {
+       ContentStateStartHttp,
+       ContentStateFinishHttp,
+       ContentStateFindResponse,
+       ContentStateFindContentLength,
+       ContentStateFinishHeader} StateType;
+    StateType state;
 
-    /* Memory map the entire file (I hope it's short!) */
-    MFMap(mf,&pdata,&plast);
-
-    /* search for Content-Length */
     pget = ph->gets_head;
-    for (pch = pdata; pch <= (char *)plast; ++pch) {
-	if (strncasecmp(pch,"Content-Length:", 15) == 0) {
-	    /* find the value */
-	    pget->content_length = atoi(&pch[16]);
+    if ((mf) && (pget)) {
+ 
+       state = ContentStateStartHttp;
+       done = 0;
 
-	    /* remember where it started */
-	    position = pch - pdata + 1;
+       /* Memory map the entire file (I hope it's short!) */
+       MFMap(mf,&pdata,&plast);
+       pch = pdata;
+       
+       ph->total_reply_length = (unsigned) (plast - pdata);
+       ph->total_reply_count= 0;
+       
+       while ((!done) && (pch <= (char *) plast)) {
+           switch (state) {
 
-	    /* when was the first byte sent? */
-	    pget->send_time = WhenSent(&ph->data_head,&ph->data_tail,position);
+	    /* Start state: Find "HTTP/" that begins a response */
+	    case (ContentStateStartHttp): {
+	       if (strncasecmp(pch, "HTTP/", 5) == 0) {
 
-	    /* when was the LAST byte sent? */
-	    pget->lastbyte_time = WhenSent(&ph->data_head,&ph->data_tail,
-					   position+pget->content_length-1);
-
-	    /* when was the last byte ACKed? */
-	    if (debug > 4)
-		printf("Content length: %d\n", pget->content_length);
-	    pget->ack_time = WhenAcked(&ph->ack_head,&ph->ack_tail,
-				       position+pget->content_length-1);
-
-	    /* skip to the next request */
-	    pget = pget->next;
-
-	    if (!pget) {
-		/* no more questions, quit */
-		break;
+		  /* Found start of a response */
+		  state = ContentStateFinishHttp;
+		  position = pch - pdata + 1;
+		  pget->reply_position = position;
+		  pch += 5;
+	       }
+	       else {
+		  pch++;
+	       }
 	    }
-	}
+	      break;
+
+	    /* Finish off HTTP string (version number) by looking for whitespace */
+	    case (ContentStateFinishHttp): {
+	       if (*(pch) == ' ') {
+		  state = ContentStateFindResponse;
+	       }
+	       else {
+		  pch++;
+	       }
+	    }
+	      break;
+	      
+	    /* Look for response code by finding non-whitespace. */
+	    case (ContentStateFindResponse): {
+	       if (*(pch) != ' ') {
+		  pget->response_code = atoi(pch);
+		  pch += 3;
+		  state = ContentStateFindContentLength;
+	       }
+	       else {
+		  pch++;
+	       }
+	    }
+	      break;
+	      
+	    /* this state is now misnamed since we pull out other */
+	    /* headers than just content-length now. */
+	    case (ContentStateFindContentLength): {
+	       if (strncasecmp(pch, "\r\nContent-Length:", 17) == 0) {
+		  /* Got content-length field, ignore rest of header */
+		  pget->content_length = atoi(&(pch[17]));
+		  pch += 18;
+	       }
+	       else if (strncasecmp(pch, "\r\nContent-Type:", 15) == 0) {
+		  /* Get content-type field, skipping leading spaces */
+		  pch += 15;
+		  while (*pch == ' ') {
+		     pch++;
+		  }
+		  for (i=0,pch2 = pch; ; ++i, ++pch2) {
+		     if ((*pch2 == '\n') || (*pch2 == '\r') ||
+			 (i >= sizeof(getbuf)-1)) {
+			getbuf[i] = '\00';
+			pch = pch2;  /* skip forward */
+			break;
+		     }
+		     getbuf[i] = *pch2;
+		  }
+		  
+		  /* If there are any spaces in the Content-Type */
+		  /* field, we need to truncate at that point */
+		    {
+		       char *sp;
+		       sp = (char *)index(getbuf, ' ');
+		       if (sp) {
+			  *sp = '\00';
+		       }
+		    }
+		  pget->content_type = strdup(getbuf);
+		  
+	       }
+	       else if (strncmp(pch, "\r\n\r\n", 4) == 0) {
+		  /* No content-length header detected */
+		  /* No increment for pch here, effectively fall through */
+		  /* pget->content_length = 0; */
+		  state = ContentStateFinishHeader;
+	       }
+	       else {
+		  pch++;
+	       }
+	    }
+	      break;
+	      
+	    /* Skip over the rest of the header */
+	    case (ContentStateFinishHeader): {
+	       if (strncmp(pch, "\r\n\r\n", 4) == 0) {
+		  
+		  /* Found end of header */
+		  pch += 4;
+		  
+		  /*
+		   * At this point, we need to find the end of the
+		   * response body.  There's a variety of ways to
+		   * do this, but in any case, we need to make sure
+		   * that pget->content_length, pch, and last_postiion
+		   * are all set appropriately.
+		   *
+		   * See if we can ignore the body.  We can do this
+		   * for the reply to HEAD, for a 204 (no content),
+		   * 205 (reset content), or 304 (not modified).
+		   */
+		  if ((pget->method == MethodCodeHead) ||
+		      (pget->response_code == 204) ||
+		      (pget->response_code == 205) ||
+		      (pget->response_code == 304)) {
+		     pget->content_length = 0;
+		  }
+		  
+		  /*
+		   * Use content-length header if one was present.
+		   * XXX is content_length > 0 the right test?
+		   */
+		  else if (pget->content_length > 0) {
+		     pch += pget->content_length;
+		  }
+		  
+		  /*
+		   * No content-length header, so delimit response
+		   * by end of file.
+		   */
+		  else {
+		     pget->content_length = plast - pch;
+		     pch = plast + 1;
+		  }
+		  
+		  /* Set next state and do original tcptrace
+		   * processing based on what we learned above.
+		   */
+		  state = ContentStateStartHttp;
+		  last_position = pch - pdata + 1;
+		  
+		  /* when was the first byte sent? */
+		  pget->send_time = WhenSent(&ph->data_head,&ph->data_tail,position);
+		  
+		  /* when was the LAST byte sent? */
+		  pget->lastbyte_time = WhenSent(&ph->data_head,&ph->data_tail,last_position);
+		  
+		  /* when was the last byte ACKed? */
+		  if (debug > 4)
+		    printf("Content length: %d\n", pget->content_length);
+		  pget->ack_time = WhenAcked(&ph->ack_head,&ph->ack_tail,last_position);
+
+		  /* increment our counts */
+		  ph->total_reply_count++;
+
+		  /* skip to the next request */
+		  pget = pget->next;
+
+		  if (!pget) {
+		     /* no more questions, quit */
+		     done = 1;
+		     break;
+		  }
+	       }
+	       else {
+		  pch++;
+	       }
+	    }
+	      break;
+	      
+	   }
+       }
+       
+       MFUnMap(mf,pdata);
     }
-
-    MFUnMap(mf,pdata);
+   else {
+      if (debug > 4) {
+	 printf("FindContent() with null server contents");
+      }
+   }
+   
 }
-
 
 
 static void
@@ -678,41 +886,171 @@ FindGets(
     char *pch;
     char *pch2;
     struct get_info *pget;
-    char getbuf[256];
+    char getbuf[1024];
     u_long position;
     int j;
+    int methodlen;
+     unsigned long long contentLength;
 
-    /* Memory map the entire file (I hope it's short!) */
-    MFMap(mf,&pdata,&plast);
+     typedef enum {
+       GetStateStartMethod,
+       GetStateFinishMethod,
+       GetStateFindContentLength,
+       GetStateFinishHeader
+     } StateType;
+     StateType state;
 
-    /* search for GET */
-    for (pch = pdata; pch <= (char *)plast; ++pch) {
-	if (strncasecmp(pch,"get ", 4) == 0) {
-	    /* make a new record for this entry */
-	    pget = MakeGetRec(ph);
+   if (mf) {
 
-	    /* remember where it started */
-	    position = pch - pdata + 1;
-
-	    /* grab the GET string */
-	    for (j=0,pch2 = pch+4; ; ++j,++pch2) {
-		if ((*pch2 == '\n') || (*pch2 == '\r') || (j >= sizeof(getbuf))) {
-		    getbuf[j] = '\00';
-		    pch = pch2;  /* skip forward */
-		    break;
+      /* Memory map the entire file (I hope it's short!) */
+      MFMap(mf,&pdata,&plast);
+      
+      ph->total_request_length = (unsigned) (plast - pdata);
+      ph->total_request_count = 0;
+      
+      state = GetStateStartMethod;
+      
+      /* search for method string*/
+      pch = pdata;
+      while (pch <= (char *)plast) {
+	  switch (state) {
+	     
+	  /* Start state: Find access method keyword */
+	  case (GetStateStartMethod): {
+	     
+	  /* Try to find a word describing a method.  These
+	   * are all the methods defined in
+           * draft-ietf-http-v11-spec-rev-06
+	   */
+	     MethodCode method;
+	     methodlen = 0;
+	     if (strncasecmp(pch, "options ", 8) == 0) {
+		methodlen = 8;
+		method = MethodCodeOptions;
+	     }
+	     else if (strncasecmp(pch, "get ", 4) == 0) {
+		methodlen = 4;
+		method = MethodCodeGet;
+	     }
+	     else if (strncasecmp(pch, "head ", 5) == 0) {
+		methodlen = 5;
+		method = MethodCodeHead;
+	     }
+	     else if (strncasecmp(pch, "post ", 5) == 0) {
+		methodlen = 5;
+		method = MethodCodePost;
+	     }
+	     else if (strncasecmp(pch, "put ", 4) == 0) {
+		methodlen = 4;
+		method = MethodCodePut;
+	     }
+	     else if (strncasecmp(pch, "delete ", 7) == 0) {
+		methodlen = 7;
+		method = MethodCodeDelete;
+	     }
+	     else if (strncasecmp(pch, "trace ", 6) == 0) {
+		methodlen = 6;
+		method = MethodCodeTrace;
+	     }
+	     
+	     if (methodlen > 0) {
+		/* make a new record for this entry */
+		pget = MakeGetRec(ph);
+		
+		/* remember where it started */
+		position = pch - pdata + 1;
+		pget->request_position = position;
+		pget->reply_position = 0;
+		pget->method = method;
+		
+		contentLength = 0;
+		pch += methodlen;
+		state = GetStateFinishMethod;
+	     }
+	     else {
+		/* Couldn't find a valid method, so increment */
+		/* and attempt to resynchronize.  This shouldn't */
+		/* happen often. */
+		pch++;
+	     }
+	     
+	  };
+	    break;
+	    
+	  case (GetStateFinishMethod): {
+	     /* grab the GET string */
+	     for (j=0,pch2 = pch; ; ++j,++pch2) {
+		if ((*pch2 == '\n') || (*pch2 == '\r') ||
+		    (j >= sizeof(getbuf)-1)) {
+		   getbuf[j] = '\00';
+		   pch = pch2;  /* skip forward */
+		   state = GetStateFindContentLength;
+		   break;
 		}
 		getbuf[j] = *pch2;
-	    }
-	    pget->get_string = strdup(getbuf);
-
-	    /* grab the time stamps */
-	    pget->get_time = WhenSent(&ph->get_head,&ph->get_tail,position);
-	}
-    }
-
-    MFUnMap(mf,pdata);
-}
-
+	     }
+	     pget->get_string = strdup(getbuf);
+	     
+	     /* grab the time stamps */
+	     pget->get_time =
+	       WhenSent(&ph->get_head,&ph->get_tail,position);
+	     ph->total_request_count++;
+	     
+	  }
+	     break;
+	     
+	  /* Locate content-length field, if any */
+	   case (GetStateFindContentLength): {
+	      
+	      if (strncasecmp(pch, "\r\nContent-Length:", 17) == 0) {
+		 /* Get content-length field */
+		 contentLength = atoi(&pch[17]);
+		 pch += 17;
+	      }
+	      else if (strncmp(pch, "\r\n\r\n", 4) == 0) {
+		 /* No content-length header detected, assume */
+		 /* zero.  Fall through (effective). */
+		 /* contentLength = 0; */
+		 state = GetStateFinishHeader;
+	      }
+	      else {
+		 pch++;
+	      }
+	   }
+	     break;
+	     
+	  case (GetStateFinishHeader): {
+	     if (strncmp(pch, "\r\n\r\n", 4) == 0) {
+		
+		/* Found end of header */
+		pch += 4;
+		
+		/* Find end of response body. */
+		if (contentLength > 0) {
+		   pch += contentLength;
+		}
+		else {
+		   /* XXX What if a POST with no content-length? */
+		}
+		
+		state = GetStateStartMethod;
+	     }
+	     else {
+		pch++;
+	     }
+	  }
+	     break;
+	  }
+      }
+      
+      MFUnMap(mf,pdata);
+   }
+   else {
+      if (debug > 4) {
+	 printf("FindGets() with null client contents");
+      }
+   }
+}   
 
 static void
 HttpDoPlot()
@@ -743,7 +1081,7 @@ HttpDoPlot()
 	/* find the plotter for this client */
 	if (p==NO_PLOTTER) {
 	    char title[256];
-	    snprintf(title, sizeof(title),"Client %s HTTP trace\n", ph->pclient->clientname);
+	    snprintf(title, sizeof(title), "Client %s HTTP trace\n", ph->pclient->clientname); 
 	    p = ph->pclient->plotter =
 		new_plotter(&ptp->a2b,
 			    ph->pclient->clientname,	/* file name prefix */
@@ -765,7 +1103,7 @@ HttpDoPlot()
 
 	/* label the connection */
 	plotter_text(p,ph->ptp->first_time,y_axis,"b",
-		     (snprintf(buf,sizeof(buf),"%s ==> %s",
+		     (snprintf(buf, sizeof(buf), "%s ==> %s",
 			      ph->ptp->a_endpoint, ph->ptp->b_endpoint), buf));
 
 	/* mark the data packets */
@@ -814,7 +1152,7 @@ HttpDoPlot()
 			 pget->lastbyte_time, y_axis);
 	    plotter_temp_color(p,"white");
 	    plotter_text(p, pget->lastbyte_time, y_axis, "r",
-			 (snprintf(buf,sizeof(buf),"%d",pget->content_length),buf));
+			 (snprintf(buf, sizeof(buf), "%d",pget->content_length),buf));
 	    plotter_diamond(p, pget->ack_time, y_axis);
 #ifdef CLUTTERED
 	    plotter_temp_color(p,"white");
@@ -824,7 +1162,6 @@ HttpDoPlot()
 	    y_axis += 2;
 
 	}
-
 
     }
 }
@@ -862,11 +1199,11 @@ HttpPrintone(
 	   ts2ascii(&ph->c_fin_time),
 	   ts2d(&ph->c_fin_time));
 
-#ifdef SAFE
+#ifdef HTTP_SAFE
     /* check the SYNs */
     if ((pab->syn_count == 0) || (pba->syn_count == 0)) {
 	printf("\
-No additional information available, beginning of\n\
+No additional information available, beginning of \
 connection (SYNs) were not found in trace file.\n");
 	return;
     }
@@ -874,11 +1211,11 @@ connection (SYNs) were not found in trace file.\n");
     /* check the FINs */
     if ((pab->fin_count == 0) || (pba->fin_count == 0)) {
 	printf("\
-No additional information available, end of\n\
+No additional information available, end of \
 connection (FINs) were not found in trace file.\n");
 	return;
     }
-#endif /* SAFE */
+#endif /* HTTP_SAFE */
 
     /* see if we got all the bytes */
     missing = pab->trunc_bytes + pba->trunc_bytes;
@@ -889,39 +1226,95 @@ connection (FINs) were not found in trace file.\n");
 	printf("WARNING!!!!  Information may be invalid, %ld bytes were not captured\n",
 	       missing);
 
-    for (pget = ph->gets_head; pget; pget = pget->next) {
-	printf("    Request for '%s'\n", pget->get_string);
-	printf("\tContent Length:      %d\n", pget->content_length);
-	printf("\tTime GET sent:       %s (%.3f)\n",
-	       ts2ascii(&pget->get_time), ts2d(&pget->get_time));
-	printf("\tTime Answer started: %s (%.3f)\n",
-	       ts2ascii(&pget->send_time), ts2d(&pget->send_time));
-	printf("\tTime Answer ACKed:   %s (%.3f)\n",
-	       ts2ascii(&pget->ack_time), ts2d(&pget->ack_time));
+#ifdef HTTP_DUMP_TIMES
 
-	/* elapsed time, GET started to answer started */
-	etime = elapsed(pget->get_time,pget->send_time);
-	etime /= 1000;  /* us to msecs */
-	printf("\tElapsed time:  %.0f ms (GET to first byte sent)\n", etime);
+     Mfprintf(pmf, "conn %s %s %s2%s %u %u %u %u\n",
+            ptp->a_endpoint,
+            ptp->b_endpoint,
+            ptp->a2b.host_letter, ptp->b2a.host_letter,
+            ph->total_request_length,
+            ph->total_request_count,
+            ph->total_reply_length,
+            ph->total_reply_count);
 
-	/* elapsed time, GET started to answer ACKed */
-	etime = elapsed(pget->get_time,pget->ack_time);
-	etime /= 1000;  /* us to msecs */
-	printf("\tElapsed time:  %.0f ms (GET to content ACKed)\n", etime);
-    }
-
-#ifdef DUMP_TIMES_OLD
-    Mfprintf(pmf,"%.3f %.3f %.3f %.3f %d %s\n",
-	     ts2d(&ph->syn_time),
-	     ts2d(&ph->get_time),
-	     ts2d(&ph->lastack_time),
-	     ts2d(&ph->fin_time),
-	     ph->content_length,
-	     ph->path);
-#endif /* DUMP_TIMES_OLD */
+#endif /* HTTP_DUMP_TIMES */
+   
+   for (pget = ph->gets_head; pget; pget = pget->next) {
+      
+      unsigned request_length;
+      unsigned reply_length;
+      
+      /* Compute request lengths */
+      if (pget->next) {
+	 
+	 /* Retrieval following ours, use its position to compute our length */
+	 request_length = pget->next->request_position - pget->request_position;
+      }
+      else {
+	 
+	 /* Last one in this file, so use the EOF as a delimiter */
+	 request_length = ph->total_request_length - pget->request_position;
+      }
+      
+      /* Compute reply lengths */
+      if (pget->reply_position == 0) {
+	 /* No reply, so length is 0 by definition */
+	 request_length = 0;
+      }
+      else {
+	 if ((pget->next) && (pget->next->reply_position > 0)) {
+	    /* Retrieval following ours with valid position, so use that to compute length */
+	    reply_length = pget->next->reply_position - pget->reply_position;
+	 }
+	 else {
+	    /* No record following ours, or it didn't have a valid position, so use EOF as delimiter */
+	    reply_length = ph->total_reply_length - pget->reply_position;
+	 }
+      }
+      
+      printf("    %s %s\n", MethodCodeString[pget->method],
+	     pget->get_string);
+      printf("\tResponse Code:       %d\n", pget->response_code);
+      printf("\tRequest Length:      %u\n", request_length);
+      printf("\tReply Length:        %u\n", reply_length);
+      printf("\tContent Length:      %d\n", pget->content_length);
+      printf("\tContent Type  :      %s\n", pget->content_type);
+      printf("\tTime request sent:   %s (%.3f)\n",
+	     ts2ascii(&pget->get_time), ts2d(&pget->get_time));
+      printf("\tTime reply started:  %s (%.3f)\n",
+	     ts2ascii(&pget->send_time), ts2d(&pget->send_time));
+      printf("\tTime reply ACKed:    %s (%.3f)\n",
+	     ts2ascii(&pget->ack_time), ts2d(&pget->ack_time));
+      
+      /* elapsed time, request started to answer started */
+      etime = elapsed(pget->get_time,pget->send_time);
+      etime /= 1000;  /* us to msecs */
+      printf("\tElapsed time:  %.0f ms (request to first byte sent)\n", etime);
+      
+      /* elapsed time, request started to answer ACKed */
+      etime = elapsed(pget->get_time,pget->ack_time);
+      etime /= 1000;  /* us to msecs */
+      printf("\tElapsed time:  %.0f ms (request to content ACKed)\n", etime);
+      
+#ifdef HTTP_DUMP_TIMES
+      Mfprintf(pmf,"reqrep %s %s %s2%s %.3f %.3f %.3f %u %u %3d %s %s %s\n",
+	       ptp->a_endpoint,
+	       ptp->b_endpoint,
+	       ptp->a2b.host_letter, ptp->b2a.host_letter,
+	       ts2d(&pget->get_time),
+	       ts2d(&pget->send_time),
+	       ts2d(&pget->ack_time),
+	       request_length,
+	       reply_length,
+	       pget->response_code,
+	       MethodCodeString[pget->method],
+	       pget->get_string,
+	       pget->content_type);
+#endif /* HTTP_DUMP_TIMES */
+      
+   }
+   
 }
-
-
 
 void
 http_done(void)
@@ -936,9 +1329,9 @@ http_done(void)
     /* gather up the information */
     HttpGather(httphead);
 
-#ifdef DUMP_TIMES_OLD
+#ifdef HTTP_DUMP_TIMES
     pmf = Mfopen("http.times","w");
-#endif /* DUMP_TIMES_OLD */
+#endif /* HTTP_DUMP_TIMES */
 
     printf("Http module output:\n");
 
@@ -948,9 +1341,9 @@ http_done(void)
 
     HttpDoPlot();
 
-#ifdef DUMP_TIMES_OLD
+#ifdef HTTP_DUMP_TIMES
     Mfclose(pmf);
-#endif /* DUMP_TIMES_OLD */
+#endif /* HTTP_DUMP_TIMES */
 }
 
 

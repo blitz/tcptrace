@@ -48,7 +48,7 @@ PCAP_LDFLAGS = -L/usr/local/lib -Llib -Lpcap -L../pcap
 # 
 # Experimental HTTP analysis module
 # 
-DEFINES += -DLOAD_MODULE_HTTP
+DEFINES += -DLOAD_MODULE_HTTP -DHTTP_SAFE -DHTTP_DUMP_TIMES
 # 
 # Experimental overall traffic by port module
 # 
