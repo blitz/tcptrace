@@ -129,9 +129,10 @@ pread_netm(
 	len -= sizeof(struct ether_header);
 	if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
 	    if (rlen != 0)
-		fprintf(stderr,
-			"Couldn't read %d more bytes, skipping last packet\n",
-			len);
+		if (debug)
+		    fprintf(stderr,
+			    "Couldn't read %d more bytes, skipping last packet\n",
+			    len);
 	    return(0);
 	}
 
