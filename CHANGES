@@ -93,3 +93,9 @@
   Added hack by Mark Allman for http module
   Added minor changes to support Linux compilation (mostly just left
     the standard include files in a separate linux directory)
+4.1.0 - Fri Aug 22, 1997
+  Added support for reading compressed files (configurable, .gz and .Z by default)
+  Added option to save TCP stream data into files (-e)
+  Modified mod_http.c to support HTTP1.1 streams (ick)
+  Added help argument "-h" with several options for information
+    including docs for long format output
