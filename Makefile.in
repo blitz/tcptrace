@@ -55,6 +55,10 @@ DEFINES += -DLOAD_MODULE_TRAFFIC
 # Experimental round trip time graphs
 # 
 DEFINES += -DLOAD_MODULE_RTTGRAPH
+# 
+# Experimental tcplib-data generating module
+# 
+DEFINES += -DLOAD_MODULE_TCPLIB
 
 
 
@@ -128,7 +132,7 @@ CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c \
 	version.c
-MODULES=mod_http.c mod_traffic.c mod_rttgraph.c
+MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
 
 
@@ -222,6 +226,7 @@ trace.o: tcptrace.h  gcache.h
 compress.o: tcptrace.h  compress.h
 mod_http.o: tcptrace.h 
 mod_traffic.o: tcptrace.h  mod_traffic.h
+mod_tcplib.o: tcptrace.h  mod_tcplib.h
 mod_rttgraph.o: tcptrace.h  mod_rttgraph.h
 ipv6.o: tcptrace.h ipv6.h
 
