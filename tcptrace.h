@@ -199,8 +199,6 @@ typedef struct tcb {
     u_long	win_min;
     u_long	win_tot;
     u_long	win_zero_ct;
-    u_long	min_seq;
-    u_long	max_seq;
     u_llong	packets;
     u_char	syn_count;
     u_char	fin_count;
@@ -210,6 +208,11 @@ typedef struct tcb {
     u_llong	out_order_pkts;	/* out of order packets */
     u_llong	sacks_sent;	/* sacks returned */
     u_long	ipv6_segments;	/* how many segments were ipv6? */
+
+    /* stats on sequence numbers */
+    seqnum	min_seq;	/* smallest seq number seen */
+    seqnum	max_seq;	/* largest seq number seen */
+    seqnum	latest_seq;	/* most recent seq number seen */
 
     /* hardware duplicate detection */
 #define SEGS_TO_REMEMBER 8
