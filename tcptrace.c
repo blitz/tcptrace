@@ -964,17 +964,17 @@ for other packet types, I just don't have a place to test them\n\n");
 	}
 		       
 	/* find the start of the TCP header */
-	ptcp = gettcp (pip, &plast);
+	ret = gettcp (pip, &ptcp, &plast);
 
 	/* if that failed, it's not TCP */
-	if (ptcp == NULL) {
+	if (ret < 0) {
 	    udp_pair *pup;
 	    struct udphdr *pudp;
 
 	    /* look for a UDP header */
-	    pudp = getudp(pip, &plast);
+	    ret = getudp(pip, &pudp, &plast);
 
-	    if (do_udp && (pudp != NULL)) {
+	    if (do_udp && (ret == 0)) {
 		pup = udpdotrace(pip,pudp,plast);
 
 		/* verify UDP checksums, if requested */
@@ -993,12 +993,15 @@ for other packet types, I just don't have a place to test them\n\n");
 		    ModulesPerUDPConn(pup);
 		/* also, pass the packet to any modules defined */
 		ModulesPerUDPPacket(pip,pup,plast);
-	    } else if (pudp == NULL) {
+	    } else if (ret < 0) {
 		/* neither UDP not TCP */
 		ModulesPerNonTCPUDP(pip,plast);
 	    }
 	    continue;
 	}
+        else if (ret > 0) { /* not a valid TCP packet */
+	  continue;
+        }
 
 	/* verify TCP checksums, if requested */
 	if (verify_checksums) {

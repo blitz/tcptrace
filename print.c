@@ -330,9 +330,8 @@ printtcp_packet(
     struct ipv6 *pipv6;
 
     /* find the tcp header */
-    ptcp = gettcp(pip, &plast);
-    if (ptcp == NULL)
-	return;			/* not TCP */
+    if (gettcp(pip, &ptcp, &plast))
+      return;		/* not TCP or bad TCP packet */
 
     /* make sure we have enough of the packet */
     if ((char *)ptcp+sizeof(struct tcphdr)-1 > (char *)plast) {
@@ -487,9 +486,8 @@ printudp_packet(
     u_char *pdata;
 
     /* find the udp header */
-    pudp = getudp(pip, &plast);
-    if (pudp == NULL)
-	return;			/* not UDP */
+    if (getudp(pip, &pudp, &plast))
+      return;	  /* not UDP  or bad UDP packet */
 
     /* make sure we have enough of the packet */
     if ((char *)pudp+sizeof(struct udphdr)-1 > (char *)plast) {

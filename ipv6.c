@@ -91,13 +91,17 @@ ipv6_nextheader(
 
 
 /*
- * gettcp:  return a pointer to a tcp header.
+ * findheader:  find and return a pointer to a header.
  * Skips either ip or ipv6 headers
+ * return values:  0 - found header
+ *                 1 - correct protocol, invalid packet, cannot return header
+ *                -1 - different protocol, cannot return header 
  */
-static void *
+static int
 findheader(
     u_int ipproto,
     struct ip *pip,
+    void **pphdr,
     void **pplast)
 {
     struct ipv6 *pip6 = (struct ipv6 *)pip;
@@ -109,18 +113,18 @@ findheader(
     if (PIP_ISV4(pip)) {
 	/* make sure it's what we want */
 	if (pip->ip_p != ipproto)
-	    return(NULL);
+	    return (-1);
 
 	/* check the fragment field, if it's not the first fragment,
 	   it's useless (offset part of field must be 0 */
 	if ((ntohs(pip->ip_off)&0x1fff) != 0) {
 	    if (debug>1) {
-		printf("gettcp: Skipping IPv4 non-initial fragment\n");
+		printf("findheader: Skipping IPv4 non-initial fragment\n");
 		if (debug > 2) {
 		    printpacket(100,100,NULL,0,pip,*pplast);
 		}
 	    }
-	    return(NULL);
+	    return (1);
 	}
 
 	/* OK, it starts here */
@@ -137,16 +141,17 @@ findheader(
 	/* make sure the whole header is there */
 	if ((char *)ptcp + (sizeof struct tcphdr) - 1 > (char *)*pplast) {
 	    /* part of the header is missing */
-	    return(NULL);
+	    return (1);
 	}
 #endif
 
-	return (theheader);
+	*pphdr = theheader;
+	return (0);
     }
 
     /* otherwise, we only understand IPv6 */
     if (!PIP_ISV6(pip))
-	return(NULL);
+	return (-1);
 
     /* find the first header */
     nextheader = pip6->ip6_nheader;
@@ -159,7 +164,7 @@ findheader(
 	if ((char *)pheader < (char *)pip) {
 	    if (debug>1)
 		printf("findheader: bad extension header math, skipping packet\n");
-	    return(NULL);
+	    return (1);
 	}
 	
 	/* make sure we're still within the packet */
@@ -167,18 +172,20 @@ findheader(
 	if ((char *)pheader > (char *)*pplast) {
 	    if (debug>3)
 		printf("findheader: packet truncated before finding header\n");
-	    return(NULL);
+	    return (1);
 	}
 
 	/* this is what we want */
-	if (nextheader == ipproto)
-	    return(pheader);
+	if (nextheader == ipproto) {
+	   *pphdr = pheader;
+	   return (0);
+	}
 
 	switch (nextheader) {
 	  case IPPROTO_TCP:
-	    return(NULL);	/* didn't find it */
+	    return (-1);	/* didn't find it */
 	  case IPPROTO_UDP:
-	    return(NULL);	/* didn't find it */
+	    return (-1);	/* didn't find it */
 
 	    /* fragmentation */
 	  case IPPROTO_FRAGMENT:
@@ -190,8 +197,8 @@ findheader(
 	      if ((pfrag->ip6ext_fr_offset&0xfc) != 0) {
 		  /* the offset is non-zero */
 		  if (debug>1)
-		      printf("gettcp: Skipping IPv6 non-initial fragment\n");
-		  return(NULL);
+		      printf("findheader: Skipping IPv6 non-initial fragment\n");
+		  return (1);
 	      }
 
 	      /* otherwise it's either an entire segment or the first fragment */
@@ -213,7 +220,7 @@ findheader(
 	    /* non-tcp protocols, so we're finished. */
 	  case IPPROTO_NONE:
 	  case IPPROTO_ICMPV6:
-	    return(NULL);	/* didn't find it */
+	    return (-1);	/* didn't find it */
 
 	  /* I "think" that we can just skip over it, but better be careful */
 	  default:
@@ -226,7 +233,7 @@ findheader(
     }  /* end loop */
 
     /* shouldn't get here, but just in case :-) */
-    return NULL;
+    return (-1);
 }
 
 
@@ -234,14 +241,14 @@ findheader(
  * gettcp:  return a pointer to a tcp header.
  * Skips either ip or ipv6 headers
  */
-struct tcphdr *
+int
 gettcp(
     struct ip *pip,
+    struct tcphdr **pptcp,
     void **pplast)
 {
-    struct tcphdr *ptcp;
-    ptcp = (struct tcphdr *)findheader(IPPROTO_TCP,pip,pplast);
-    return(ptcp);
+    int ret_val = findheader(IPPROTO_TCP, pip, (void **)pptcp, pplast);
+    return (ret_val);
 }
 
 
@@ -249,14 +256,14 @@ gettcp(
  * getudp:  return a pointer to a udp header.
  * Skips either ip or ipv6 headers
  */
-struct udphdr *
+int
 getudp(
     struct ip *pip,
+    struct udphdr **ppudp,
     void **pplast)
 {
-    struct udphdr *pudp;
-    pudp = (struct udphdr *)findheader(IPPROTO_UDP,pip,pplast);
-    return(pudp);
+   int ret_val = findheader(IPPROTO_UDP, pip, (void **)ppudp, pplast);
+   return (ret_val);
 }
 
 
