@@ -327,3 +327,12 @@
 5.2.2 - Mon Sep 27, 1999
   bug fix from Jamshid Majdavi (and Kevin Lahey), SYN-ACKs containing window
     scaling were getting scaled (and shouldn't be).
+5.2.3 - Interal changes and enhancements
+5.2.4 - Tue Apr 11, 2000
+  bug fix by Priya - we were detecting rexmitted bytes in segments in error in
+   some cases
+  fixed bug in IPv6 header processing reported by Takayoshi Ohnishi,
+    IPPROTO_ICMPV6 was causing infinite loop
+5.2.6 - Thu Jul  6, 2000
+  fixed bug in TCP checksum code, it was always saying CORRECT
+
