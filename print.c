@@ -93,7 +93,7 @@ ts2ascii(
 	if (ZERO_TIME(ptime))
 	    return("        <the epoch>       ");
 
-	ptm = localtime(&ptime->tv_sec);
+	ptm = localtime((time_t *)&ptime->tv_sec);
 	now = asctime(ptm);
 
 	/* splice in the microseconds */
@@ -120,7 +120,7 @@ ts2ascii_date(
 	if (ZERO_TIME(ptime))
 	    return("        <the epoch>       ");
 
-	ptm = localtime(&ptime->tv_sec);
+	ptm = localtime((time_t *)&ptime->tv_sec);
 	now = asctime(ptm);
 	now[24] = '\00';
 
@@ -436,8 +436,8 @@ printtcp_packet(
     if (TH_OFF(ptcp) != 5) {
 	struct tcp_options *ptcpo;
 
-        printf("\t    OPTS: %u bytes",
-	       (TH_OFF(ptcp)*4) - sizeof(struct tcphdr));
+        printf("\t    OPTS: %lu bytes",
+	       (unsigned long)(TH_OFF(ptcp)*4) - sizeof(struct tcphdr));
 	if ((char *)ptcp + TH_OFF(ptcp)*4 - 1 > (char *)plast) {
 	    /* not all opts were stored */
 	    u_long available = 1 + (char *)plast -

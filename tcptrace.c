@@ -810,7 +810,7 @@ ProcessFile(
     /* determine which input file format it is... */
     ppread = NULL;
     if (debug>1)
-	printf("NUM_FILE_FORMATS: %d\n", NUM_FILE_FORMATS);
+	printf("NUM_FILE_FORMATS: %u\n", (unsigned)NUM_FILE_FORMATS);
     for (fix=0; fix < NUM_FILE_FORMATS; ++fix) {
 	if (debug)
 	    fprintf(stderr,"Checking for file format '%s' (%s)\n",
@@ -1994,7 +1994,7 @@ DumpFlags(void)
     fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
     fprintf(stderr,"ending pnum:      %lu\n", endpnum);
     fprintf(stderr,"throughput intvl: %d\n", thru_interval);
-    fprintf(stderr,"number modules:   %d\n", NUM_MODULES);
+    fprintf(stderr,"number modules:   %u\n", (unsigned)NUM_MODULES);
     fprintf(stderr,"debug:            %s\n", BOOL2STR(debug));
 
     /* print out the stuff controlled by the extended boolean args */
@@ -2375,7 +2375,7 @@ ExpandFormat(const char *format)
 
 	    /* get the current time, broken apart */
 	    time(&now);
-	    ptm = localtime(&wallclock_start.tv_sec);
+	    ptm = localtime((time_t *)&wallclock_start.tv_sec);
 
 	    snprintf(buf,sizeof(buf),"%d-%d-%d",
 		    ptm->tm_mon+1,
