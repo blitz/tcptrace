@@ -44,6 +44,7 @@ struct filter_line filters[] = {
     {"f1323_ts",	V_BOOL,	PTCB_C_S(f1323_ts),"1323 time stampts requested"},
     {"fsack_req",	V_BOOL,	PTCB_C_S(fsack_req),"SACKs requested"},
     {"window_scale",	V_BOOL,	PTCB_C_S(window_scale),"window scale factor"},
+    {"bad_behavior",	V_BOOL,	PTCB_C_S(bad_behavior),"bad TCP behavior"},
 
     {"data_bytes",	V_ULLONG, PTCB_C_S(data_bytes),"bytes of data"},
     {"data_segs",	V_ULLONG, PTCB_C_S(data_pkts),"segments of data"},
