@@ -29,4 +29,4 @@ static char const rcsid_version[] =
     "@(#)$Header$";
 
 
-#define VERSION "Ostermann's tcptrace -- version 4.1.1 -- Fri Sep  5, 1997"
+#define VERSION "Ostermann's tcptrace -- version 4.1.2 -- Tue Nov 11, 1997"
