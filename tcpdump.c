@@ -230,13 +230,17 @@ pread_tcpdump(
 }
 
 
-pread_f *is_tcpdump(void)
+pread_f *is_tcpdump(char *filename)
 {
     char errbuf[100];
     char *physname = "<unknown>";
     int type;
 
-    if ((pcap = pcap_open_offline("-",errbuf)) == NULL) {
+#ifdef __WIN32   
+      if ((pcap = pcap_open_offline(filename, errbuf)) == NULL) {
+#else       
+      if ((pcap = pcap_open_offline("-", errbuf)) == NULL) {
+#endif /* __WIN32 */	  
 	if (debug > 2)
 	    fprintf(stderr,"PCAP said: '%s'\n", errbuf);
 	rewind(stdin);

@@ -1001,25 +1001,25 @@ typedef int pread_f(struct timeval *, int *, int *, void **,
 
 /* give the prototypes for the is_GLORP() routines supported */
 #ifdef GROK_SNOOP
-	pread_f *is_snoop(void);
+	pread_f *is_snoop(char *);
 #endif /* GROK_SNOOP */
 #ifdef GROK_NETM
-	pread_f *is_netm(void);
+	pread_f *is_netm(char *);
 #endif /* GROK_NETM */
 #ifdef GROK_TCPDUMP
-	pread_f *is_tcpdump(void);
+	pread_f *is_tcpdump(char *);
 #endif /* GROK_TCPDUMP */
 #ifdef GROK_ETHERPEEK
-	pread_f *is_EP(void);
+	pread_f *is_EP(char *);
 #endif /* GROK_ETHERPEEK */
 #ifdef GROK_NS
- 	pread_f *is_ns(void);
+ 	pread_f *is_ns(char *);
 #endif /* GROK_NS */
 #ifdef GROK_NLANR
-	pread_f *is_nlanr(void);
+	pread_f *is_nlanr(char *);
 #endif /* GROK_NLANR */
 #ifdef GROK_NETSCOUT
-	pread_f *is_netscout(void);
+	pread_f *is_netscout(char *);
 #endif /* GROK_NETSCOUT */
 
 #ifndef __VMS

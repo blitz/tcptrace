@@ -793,10 +793,17 @@ ProcessFile(
     /* share the current file name */
     cur_filename = filename;
 
+#ifdef __WIN32
+    /* If the file is compressed, exit (Windows version does not support compressed dump files) */
+    if (CompOpenHeader(filename) == (FILE *)-1) {
+	exit(-1);
+    }
+#else   
     /* open the file header */
     if (CompOpenHeader(filename) == NULL) {
 	exit(-1);
     }
+#endif /* __WIN32 */   
 
     /* see how big the file is */
     if (FileIsStdin(filename)) {
@@ -820,7 +827,7 @@ ProcessFile(
 		    file_formats[fix].format_name,
 		    file_formats[fix].format_descr);
 	rewind(stdin);
-	ppread = (*file_formats[fix].test_func)();
+       	ppread = (*file_formats[fix].test_func)(filename);
 	if (ppread) {
 	    if (debug)
                 fprintf(stderr,"File format is '%s' (%s)\n",
@@ -867,10 +874,12 @@ rather than:\n\
 	exit(1);
     }
 
+#ifndef __WIN32   
     /* open the file for processing */
     if (CompOpenFile(filename) == NULL) {
 	exit(-1);
     }
+#endif /* __WIN32 */   
 
     /* how big is it.... (possibly compressed) */
     if (debug) {

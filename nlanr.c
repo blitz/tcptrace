@@ -98,6 +98,14 @@ static char const rcsid[] =
 
 #ifdef GROK_NLANR
 
+/* Defining SYS_STDIN which is fp for Windows and stdin for all other systems */
+#ifdef __WIN32
+static FILE *fp;
+#define SYS_STDIN fp
+#else
+#define SYS_STDIN stdin
+#endif /* __WIN32 */
+
 /* information necessary to understand NLANL Tsh output */
 #define TSH_DUMP_OFFSET 16
 struct tsh_packet_header {
@@ -139,7 +147,7 @@ pread_nlanr(
     int hlen = 44;
 
     /* read the next frames */
-    if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
+    if ((rlen=fread(&hdr,1,hlen,SYS_STDIN)) != hlen) {
 	if (debug && (rlen != 0))
 	    fprintf(stderr,"Bad tsh packet header (len:%d)\n", rlen);
 	return(0);
@@ -174,21 +182,28 @@ pread_nlanr(
 /*
  * is_nlanr()   is the input file in tsh format??
  */
-pread_f *is_nlanr(void)
+pread_f *is_nlanr(char *filename)
 {
     struct tsh_frame tf;
     int rlen;
+   
+#ifdef __WIN32
+    if((fp = fopen(filename, "r")) == NULL) {
+       perror(filename);
+       exit(-1);
+    }
+#endif /* __WIN32 */   
 
     /* tsh is a little hard because there's no magic number */
     
 
     /* read the tsh file header */
-    if ((rlen=fread(&tf,1,sizeof(tf),stdin)) != sizeof(tf)) {
+    if ((rlen=fread(&tf,1,sizeof(tf),SYS_STDIN)) != sizeof(tf)) {
 	/* not even a full frame */
-	rewind(stdin);
+	rewind(SYS_STDIN);
 	return(NULL);
     }
-    rewind(stdin);
+    rewind(SYS_STDIN);
 
     if (debug) {
 	printf("nlanr tsh ts_secs:   %d\n", tf.tph.ts_secs);

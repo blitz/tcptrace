@@ -5136,6 +5136,19 @@ fi
 rm -f core core.* *.core conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 
+case "$target" in
+  *cygwin*)	V_INCLS="$V_INCLS -I./cygwin-includes";
+esac
+
+case "$target" in
+  *cygwin*)	V_DEFINES="$V_DEFINES -D__USE_BSD -D__FAVOR_BSD -D__USE_MISC -D__WIN32";
+esac
+
+V_PCAP_LDLIBS="-lpcap";
+case "$target" in
+  *cygwin*)	V_PCAP_LDLIBS="-lwpcap";
+esac
+
 if [ -f /lib/libc-2* ]; then
  V_DEFINES="$V_DEFINES -D_BSD_SOURCE"
 fi
@@ -5250,7 +5263,7 @@ rm -f confdef2opt.sed
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:5253: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:5266: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -5417,7 +5430,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:5420: error: ambiguous option: $1
+    { { echo "$as_me:5433: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -5436,7 +5449,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:5439: error: unrecognized option: $1
+  -*) { { echo "$as_me:5452: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -5472,7 +5485,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  *) { { echo "$as_me:5475: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:5488: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -5582,6 +5595,7 @@ s,@FS_ULL@,$FS_ULL,;t t
 s,@V_CCOPT@,$V_CCOPT,;t t
 s,@V_INCLS@,$V_INCLS,;t t
 s,@V_DEFINES@,$V_DEFINES,;t t
+s,@V_PCAP_LDLIBS@,$V_PCAP_LDLIBS,;t t
 CEOF
 
 EOF
@@ -5691,7 +5705,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:5694: creating $ac_file" >&5
+    { echo "$as_me:5708: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -5709,7 +5723,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5712: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5726: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5722,7 +5736,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5725: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5739: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;

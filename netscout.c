@@ -79,6 +79,14 @@ static char const rcsid[] =
 #endif /* strncpy */
 #endif /* linux */
 
+/* Defining SYS_STDIN which is fp for Windows and stdin for all other systems */
+#ifdef __WIN32
+static FILE *fp;
+#define SYS_STDIN fp
+#else
+#define SYS_STDIN stdin
+#endif /* __WIN32 */
+
 /* static buffers for reading */
 static int *pep_buf;
 static int *pip_buf;
@@ -125,11 +133,11 @@ pread_netscout(
 
   /* Look for Frame line to signal start of packet */
 
-  if((retval = fgets (buffer_string, 255, stdin)) == NULL) {
+  if((retval = fgets (buffer_string, 255, SYS_STDIN)) == NULL) {
     return 0;
   }
   while(strstr(buffer_string, "Frame") == NULL) {
-    if((retval = fgets (buffer_string, 255, stdin)) == NULL) {
+    if((retval = fgets (buffer_string, 255, SYS_STDIN)) == NULL) {
       return 0;
     }
   }
@@ -158,11 +166,11 @@ pread_netscout(
   *pphystype = PHYS_ETHER;
 
   /* Look for 00000: line to signal first row of packet data */
-  if((retval = fgets (buffer_string, 255, stdin)) == NULL) {
+  if((retval = fgets (buffer_string, 255, SYS_STDIN)) == NULL) {
     return 0;
   }
   while(strstr(buffer_string, "00000:") == NULL) {
-    if((retval = fgets (buffer_string, 255, stdin)) == NULL) {
+    if((retval = fgets (buffer_string, 255, SYS_STDIN)) == NULL) {
       return 0;
     }
   }
@@ -178,11 +186,11 @@ pread_netscout(
   pep_buf[index++] =ntohl(byte12<<24|byte13<<16|byte14<<8|byte15);
 
   /* Look for 00016: line to signal first row of packet data */
-  if((retval = fgets (buffer_string, 255, stdin)) == NULL) {
+  if((retval = fgets (buffer_string, 255, SYS_STDIN)) == NULL) {
     return 0;
   }
   while(strstr(buffer_string, "00016:") == NULL) {
-    if((retval = fgets (buffer_string, 255, stdin)) == NULL) {
+    if((retval = fgets (buffer_string, 255, SYS_STDIN)) == NULL) {
       return 0;
     }
   }
@@ -197,11 +205,11 @@ pread_netscout(
   pep_buf[index++] =ntohl(byte12<<24|byte13<<16|byte14<<8|byte15);
 
   /* Look for 00032: line to signal first row of packet data */
-  if((retval = fgets (buffer_string, 255, stdin)) == NULL) {
+  if((retval = fgets (buffer_string, 255, SYS_STDIN)) == NULL) {
     return 0;
   }
   while(strstr(buffer_string, "00032:") == NULL) {
-    if((retval = fgets (buffer_string, 255, stdin)) == NULL) {
+    if((retval = fgets (buffer_string, 255, SYS_STDIN)) == NULL) {
       return 0;
     }
 
@@ -226,19 +234,26 @@ pread_netscout(
 
 
 /* is the input file a NetScout format file?? */
-pread_f *is_netscout(void)
+pread_f *is_netscout(char *filename)
 {    
    struct netscout_header nhdr;
    char * retval;
    char buffer_string[256];
 
+#ifdef __WIN32
+    if((fp = fopen(filename, "r")) == NULL) {
+       perror(filename);
+       exit(-1);
+    }
+#endif /* __WIN32 */   
+   
    /* read the netscout file header */
-   retval =  fgets (buffer_string, 255, stdin);
+   retval =  fgets (buffer_string, 255, SYS_STDIN);
    if(strstr(buffer_string, "Page" ) != NULL) {
-     retval =  fgets (buffer_string, 255, stdin);
+     retval =  fgets (buffer_string, 255, SYS_STDIN);
      if(strstr(buffer_string, "Protocol Decode Output") != NULL) {
        fflush(stdout);
-       retval =  fgets (buffer_string, 255, stdin);
+       retval =  fgets (buffer_string, 255, SYS_STDIN);
        if(strstr(buffer_string, "Packets from the file:") != NULL) {
 	 strncpy((char *) &(nhdr.filename[0]), buffer_string, 
 		 strlen("Packets from the file:")); 
@@ -247,7 +262,7 @@ pread_f *is_netscout(void)
    }
    else 
      {
-       rewind(stdin);
+       rewind(SYS_STDIN);
        return(NULL);
      }
    

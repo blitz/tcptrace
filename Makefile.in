@@ -31,7 +31,7 @@ DEFINES += -DBUNZIP2="\"bunzip2\""
 # list.
 # 
 ################################################################## 
-PCAP_LDLIBS = -lpcap
+PCAP_LDLIBS = @V_PCAP_LDLIBS@
 PCAP_INCS    = -I/usr/local/include -I. -I../pcap -I/usr/include/pcap
 PCAP_LDFLAGS = -L/usr/local/lib -Llib -Lpcap -L../pcap
 

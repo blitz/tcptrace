@@ -71,6 +71,13 @@ static char const rcsid[] =
 
 #ifdef GROK_NS
 
+/* Defining SYS_STDIN which is fp for Windows and stdin for all other systems */
+#ifdef __WIN32
+static FILE *fp;
+#define SYS_STDIN fp
+#else
+#define SYS_STDIN stdin
+#endif /* __WIN32 */
 
 /* static buffers for reading */
 static struct ether_header *pep;
@@ -113,7 +120,7 @@ pread_ns(
 	++linenum;
 
 	/* correct NS output line would have 14 fields: */
-	rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu\n",
+	rlen = fscanf(SYS_STDIN, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu\n",
 		      &tt,
 		      &timestamp,
 		      &junk,
@@ -239,16 +246,23 @@ pread_ns(
 /*
  * is_ns()   is the input file in ns format??
  */
-pread_f *is_ns(void)
+pread_f *is_ns(char *filename)
 {
     int rlen;
 
-    if ((rlen = getc(stdin)) == EOF) {
-	rewind(stdin);
+#ifdef __WIN32
+    if((fp = fopen(filename, "r")) == NULL) {
+       perror(filename);
+       exit(-1);
+    }
+#endif /* __WIN32 */   
+   
+    if ((rlen = getc(SYS_STDIN)) == EOF) {
+	rewind(SYS_STDIN);
 	return(NULL);
     }
 
-    rewind(stdin);
+    rewind(SYS_STDIN);
 
     switch (rlen) {
       case '+':

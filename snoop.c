@@ -68,6 +68,14 @@ static char const rcsid[] =
 
 #ifdef GROK_SNOOP
 
+/* Defining SYS_STDIN which is fp for Windows and stdin for all other systems */
+#ifdef __WIN32
+static FILE *fp;
+#define SYS_STDIN fp
+#else
+#define SYS_STDIN stdin
+#endif /* __WIN32 */
+
 /* information necessary to understand Solaris Snoop output */
 struct snoop_file_header {
     char		format_name[8];	/* should be "snoop\0\0\0" */
@@ -144,7 +152,7 @@ pread_snoop(
 	hlen = sizeof(struct snoop_packet_header);
 
 	/* read the packet header */
-	if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
+	if ((rlen=fread(&hdr,1,hlen,SYS_STDIN)) != hlen) {
 	    if (rlen != 0)
 		fprintf(stderr,"Bad snoop packet header\n");
 	    return(0);
@@ -166,7 +174,7 @@ pread_snoop(
 
 	if (snoop_mac_type == SNOOP_DL_ETHER) {
 	    /* read the ethernet header */
-	    rlen=fread(pep,1,sizeof(struct ether_header),stdin);
+	    rlen=fread(pep,1,sizeof(struct ether_header),SYS_STDIN);
 	    if (rlen != sizeof(struct ether_header)) {
 		fprintf(stderr,"Couldn't read ether header\n");
 		return(0);
@@ -191,14 +199,14 @@ pread_snoop(
 			    ntohs(pep->ether_type));
 		/* discard the remainder */
 		/* N.B. fseek won't work - it could be a pipe! */
-		if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+		if ((rlen=fread(pip_buf,1,len,SYS_STDIN)) != len) {
 		    perror("pread_snoop: seek past non-IP");
 		}
 
 		continue;
 	    }
 
-	    if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+	    if ((rlen=fread(pip_buf,1,len,SYS_STDIN)) != len) {
 		if (rlen != 0 && debug)
 		    fprintf(stderr,
 			    "Couldn't read %d more bytes, skipping last packet\n",
@@ -216,7 +224,7 @@ pread_snoop(
 
 	    /* read in the whole frame and search for IP header */
 	    /* (assumes sizeof(fddi frame) < IP_MAXPACKET, should be true) */
-	    if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+	    if ((rlen=fread(pip_buf,1,len,SYS_STDIN)) != len) {
 		if (debug && rlen != 0)
 		    fprintf(stderr,
 			    "Couldn't read %d more bytes, skipping last packet\n",
@@ -252,7 +260,7 @@ pread_snoop(
 		} atm_header;
 
 		/* grab the 12-byte header */
-		rlen=fread(&atm_header,1,sizeof(struct atm_header),stdin);
+		rlen=fread(&atm_header,1,sizeof(struct atm_header),SYS_STDIN);
 		if (rlen != sizeof(struct atm_header)) {
 			fprintf(stderr,"Couldn't read ATM header\n");
 			return(0);
@@ -282,14 +290,14 @@ pread_snoop(
 					ntohs(pep->ether_type));
 			/* discard the remainder */
 			/* N.B. fseek won't work - it could be a pipe! */
-			if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+			if ((rlen=fread(pip_buf,1,len,SYS_STDIN)) != len) {
 				perror("pread_snoop: seek past non-IP");
 			}
 
 			continue;
 		}
 
-		if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+		if ((rlen=fread(pip_buf,1,len,SYS_STDIN)) != len) {
 			if (rlen != 0 && debug)
 				fprintf(stderr,
 					"Couldn't read %d more bytes, skipping last packet\n",
@@ -327,14 +335,21 @@ pread_snoop(
 /*
  * is_snoop()   is the input file in snoop format??
  */
-pread_f *is_snoop(void)
+pread_f *is_snoop(char *filename)
 {
     struct snoop_file_header buf;
     int rlen;
 
+#ifdef __WIN32
+    if((fp = fopen(filename, "r")) == NULL) {
+       perror(filename);
+       exit(-1);
+    }
+#endif /* __WIN32 */   
+   
     /* read the snoop file header */
-    if ((rlen=fread(&buf,1,sizeof(buf),stdin)) != sizeof(buf)) {
-	rewind(stdin);
+    if ((rlen=fread(&buf,1,sizeof(buf),SYS_STDIN)) != sizeof(buf)) {
+	rewind(SYS_STDIN);
 	return(NULL);
     }
 

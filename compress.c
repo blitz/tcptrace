@@ -471,6 +471,14 @@ CompOpenHeader(
     /* see if it's a supported compression file */
     pf = WhichFormat(filename);
 
+#ifdef __WIN32
+    if(pf != NULL) {
+       fprintf(stderr, "\nError: windows version of tcptrace does not support\nreading compressed dump files. Uncompress the file\nmanually and try again. Sorry!\n");
+       return((FILE *)-1);
+    }
+    return(NULL);
+#endif /* __WIN32 */   
+   
     /* if no compression found, just open the file */
     if (pf == NULL) {
 	if (freopen(filename,"r",stdin) == NULL) {

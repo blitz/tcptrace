@@ -68,7 +68,7 @@ static char const rcsid_file_formats[] =
 /**************************************************************/
 
 struct supported_formats {
-    pread_f	*(*test_func)(void);	/* pointer to the tester function	*/
+    pread_f	*(*test_func)(char *filename);	/* pointer to the tester function	*/
     char	*format_name;	/* name of the file format		*/
     char	*format_descr;	/* description of the file format	*/
 };

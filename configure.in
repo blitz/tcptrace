@@ -28,7 +28,6 @@ AC_CHECK_SIZEOF(unsigned short)
 dnl include additional checking if developing
 AC_LBL_DEVEL(V_CCOPT)
 
-
 dnl check for needed network libraries
 AC_LBL_LIBRARY_NET()
 
@@ -72,8 +71,24 @@ AC_MSG_ERROR(can not run test program while cross compiling))
 
 dnl Grab standard includes under weird Linux versions
 dnl case "$target_os" in
-dnl  *inux*)	V_INCLS="$V_INCLS -Ilinux-include";;
+dnl  *inux*)	V_INCLS="$V_INCLS -Ilinux-include";
 dnl esac
+
+dnl Grab includes from ./cygwin-includes under Windows versions
+case "$target" in
+  *cygwin*)	V_INCLS="$V_INCLS -I./cygwin-includes";
+esac
+
+dnl define -D__USE_BSD -D__FAVOR_BSD -D__USE_MISC -D__WIN32 for windows
+case "$target" in
+  *cygwin*)	V_DEFINES="$V_DEFINES -D__USE_BSD -D__FAVOR_BSD -D__USE_MISC -D__WIN32";
+esac
+
+dnl setting the correct PCAP_LDLIBS for windows
+V_PCAP_LDLIBS="-lpcap";
+case "$target" in
+  *cygwin*)	V_PCAP_LDLIBS="-lwpcap";
+esac
 
 dnl define _BSD_SOURCE for libc-2
 if [[ -f /lib/libc-2* ]]; then
@@ -83,6 +98,6 @@ fi
 AC_SUBST(V_CCOPT)
 AC_SUBST(V_INCLS)
 AC_SUBST(V_DEFINES)
-
+AC_SUBST(V_PCAP_LDLIBS)
 
 AC_OUTPUT(Makefile)

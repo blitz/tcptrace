@@ -71,6 +71,13 @@ static char const rcsid[] =
 
 #ifdef GROK_ETHERPEEK
 
+/* Defining SYS_STDIN which is fp for Windows and stdin for all other systems */
+#ifdef __WIN32
+static FILE *fp;
+#define SYS_STDIN fp
+#else
+#define SYS_STDIN stdin
+#endif /* __WIN32 */
 
 /* NOTE:  This is for version 5 of the file.  Other file formats may not work
  correctly.*/
@@ -163,9 +170,9 @@ pread_EP(
     struct ip		**ppip,
     void		**pplast)
 {
-    int packlen;
-    int rlen;
-    int len;
+    u_int packlen;
+    u_int rlen;
+    u_int len;
 
     /* read the EP packet header */
     while(1){
@@ -174,7 +181,7 @@ pread_EP(
 	    struct EPFilePacket2_v5_6 hdr2;
 	    struct EPFilePacket3_v5_6 hdr3;
 
-	    if ((rlen=fread(&hdr,1,Real_Size_FP,stdin)) != Real_Size_FP) {
+	    if ((rlen=fread(&hdr,1,Real_Size_FP,SYS_STDIN)) != Real_Size_FP) {
 		if (rlen != 0)
 		    fprintf(stderr,"Bad EP header\n");
 		return(0);
@@ -188,13 +195,13 @@ pread_EP(
 	    }
 	    
 	
-	    if ((rlen=fread(&hdr2,1,Real_Size_FP2,stdin)) !=Real_Size_FP2) {
+	    if ((rlen=fread(&hdr2,1,Real_Size_FP2,SYS_STDIN)) !=Real_Size_FP2) {
 		if (rlen != 0)
 		    fprintf(stderr,"Bad EP header\n");
 		return(0);
 	    }
 
-	    if ((rlen=fread(&hdr3,1,Real_Size_FP3,stdin)) != Real_Size_FP3) {
+	    if ((rlen=fread(&hdr3,1,Real_Size_FP3,SYS_STDIN)) != Real_Size_FP3) {
 		if (rlen != 0)
 		    fprintf(stderr,"Bad EP header\n");
 		return(0);
@@ -220,7 +227,7 @@ pread_EP(
 	} else { /* version 7 */
 	    struct PeekPacket_v7 hdrv7;
 
-	    if ((rlen=fread(&hdrv7,sizeof(hdrv7),1,stdin)) != 1) {
+	    if ((rlen=fread(&hdrv7,sizeof(hdrv7),1,SYS_STDIN)) != 1) {
 		if (rlen != 0)
 		    fprintf(stderr,"Bad EP V7 header (rlen is %d)\n", rlen);
 		return(0);
@@ -275,7 +282,7 @@ pread_EP(
 		*ptlen = hdrv7.packetlength;
 
 	    if (debug>1) {
-		printf("File position: %ld\n", ftell(stdin));
+		printf("File position: %ld\n", ftell(SYS_STDIN));
 		printf("pread_EP (v7) next packet:\n");
 		printf("  packetlength: %d\n", hdrv7.packetlength);
 		printf("  slicelength:  %d\n", hdrv7.slicelength);
@@ -288,7 +295,7 @@ pread_EP(
 	len= packlen;
 
 	/* read the ethernet header */
-	rlen=fread(pep,1,sizeof(struct ether_header),stdin);
+	rlen=fread(pep,1,sizeof(struct ether_header),SYS_STDIN);
 	if (rlen != sizeof(struct ether_header)) {
 	    fprintf(stderr,"Couldn't read ether header\n");
 	    return(0);
@@ -307,7 +314,7 @@ pread_EP(
 		    "pread_EP: invalid next packet, IP len is %d, return EOF\n", len);
 	    return(0);
 	}
-	if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+	if ((rlen=fread(pip_buf,1,len,SYS_STDIN)) != len) {
 	    if (rlen != 0)
 		if (debug)
 		    fprintf(stderr,
@@ -323,7 +330,7 @@ pread_EP(
 	if (EP_V7) {
 	    if (len%2 != 0) {
 		/* can't SEEK, because this might be a pipe!! */
-		(void) getchar();
+		(void) fgetc(SYS_STDIN);
 	    }
 	}
 
@@ -347,19 +354,25 @@ pread_EP(
 
 
 /* is the input file a Ether Peek format file?? */
-pread_f *is_EP(void)
+pread_f *is_EP(char *filename)
 {
     int rlen;
 
+#ifdef __WIN32
+    if((fp = fopen(filename, "r")) == NULL) {
+       perror(filename);
+       exit(-1);
+    }
+#endif /* __WIN32 */   
 
     /* read the EP file header */
-    if ((rlen=fread(&file_header,1,Real_Size_FH,stdin)) != Real_Size_FH) {
-	rewind(stdin);
+    if ((rlen=fread(&file_header,1,Real_Size_FH,SYS_STDIN)) != Real_Size_FH) {
+	rewind(SYS_STDIN);
 	return(NULL);
     }
-    /*rewind(stdin);  I might need this*/
-    if ((rlen=fread(&file_header2,1,Real_Size_FH2,stdin)) != Real_Size_FH2) {
-	rewind(stdin);
+    /*rewind(SYS_STDIN);  I might need this*/
+    if ((rlen=fread(&file_header2,1,Real_Size_FH2,SYS_STDIN)) != Real_Size_FH2) {
+	rewind(SYS_STDIN);
 	return(NULL);
     }
 
@@ -375,18 +388,18 @@ pread_f *is_EP(void)
     if (debug>1) {
 	int i;
       
-	printf("IS_EP says version number %d \n",file_header.version);
-	printf("IS_EP says status number %d\n",file_header.status);
-	printf("IS_EP says length number %ld\n",file_header2.length);
-	printf("IS_EP says num packets number %ld \n",file_header2.numPackets);
-	printf("IS_EP says time date in mac format %lu \n", (tt_uint32)file_header2.timeDate);
-	printf("IS_EP says time start  %lu \n",file_header2.timeStart);
-	printf("IS_EP says time stop %lu \n",file_header2.timeStop);
-	printf("future is: ");
+	fprintf(stderr, "IS_EP says version number %d \n",file_header.version);
+	fprintf(stderr, "IS_EP says status number %d\n",file_header.status);
+	fprintf(stderr, "IS_EP says length number %ld\n",file_header2.length);
+	fprintf(stderr, "IS_EP says num packets number %ld \n",file_header2.numPackets);
+	fprintf(stderr, "IS_EP says time date in mac format %lu \n", (tt_uint32)file_header2.timeDate);
+	fprintf(stderr, "IS_EP says time start  %lu \n",file_header2.timeStart);
+	fprintf(stderr, "IS_EP says time stop %lu \n",file_header2.timeStop);
+	fprintf(stderr, "future is: ");
 	for(i=0;i<7;i++)
-	    printf(" %ld ",file_header2.futureUse[i]);
-	printf("\n");
-	printf("RLEN is %d \n",rlen);
+	    fprintf(stderr, " %ld ",file_header2.futureUse[i]);
+	fprintf(stderr, "\n");
+	fprintf(stderr, "RLEN is %d \n",rlen);
     }
 
 
@@ -398,7 +411,7 @@ pread_f *is_EP(void)
 	(file_header.status == 0) &&
 	(memcmp(file_header2.futureUse,"\000\000\000\000\000\000\000",7) == 0)) {
 	if (debug)
-	    printf("Valid Etherpeek format file (file version: %d)\n",
+	    fprintf(stderr, "Valid Etherpeek format file (file version: %d)\n",
 		   file_header.version);
 	thisfile_ep_version = file_header.version;
 

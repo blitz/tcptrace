@@ -69,6 +69,13 @@ static char const rcsid[] =
 
 #define NETM_DUMP_OFFSET 0x1000
 
+/* Defining SYS_STDIN which is fp for Windows and stdin for all other systems */
+#ifdef __WIN32
+static FILE *fp;
+#define SYS_STDIN fp
+#else
+#define SYS_STDIN stdin
+#endif /* __WIN32 */
 
 /* netm file header format */
 struct netm_header {
@@ -134,7 +141,7 @@ pread_netm(
 	    (sizeof(struct netm_packet_header));
 
 	/* read the netm packet header */
-	if ((rlen=fread(&hdr,1,hlen,stdin)) != hlen) {
+	if ((rlen=fread(&hdr,1,hlen,SYS_STDIN)) != hlen) {
 	    if (rlen != 0)
 		fprintf(stderr,"Bad netm header\n");
 	    return(0);
@@ -145,7 +152,7 @@ pread_netm(
 	len = (packlen + 3) & ~0x3;
 
 	/* read the ethernet header */
-	rlen=fread(pep,1,sizeof(struct ether_header),stdin);
+	rlen=fread(pep,1,sizeof(struct ether_header),SYS_STDIN);
 	if (rlen != sizeof(struct ether_header)) {
 	    fprintf(stderr,"Couldn't read ether header\n");
 	    return(0);
@@ -159,7 +166,7 @@ pread_netm(
 		    "pread_netm: invalid next packet, IP len is %d, return EOF\n", len);
 	    return(0);
 	}
-	if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
+	if ((rlen=fread(pip_buf,1,len,SYS_STDIN)) != len) {
 	    if (rlen != 0)
 		if (debug)
 		    fprintf(stderr,
@@ -205,17 +212,24 @@ pread_netm(
 
 
 /* is the input file a NetMetrix format file?? */
-pread_f *is_netm(void)
+pread_f *is_netm(char *filename)
 {
     struct netm_header nhdr;
     int rlen;
+   
+#ifdef __WIN32
+    if((fp = fopen(filename, "r")) == NULL) {
+       perror(filename);
+       exit(-1);
+    }
+#endif /* __WIN32 */   
 
     /* read the netm file header */
-    if ((rlen=fread(&nhdr,1,sizeof(nhdr),stdin)) != sizeof(nhdr)) {
-	rewind(stdin);
+    if ((rlen=fread(&nhdr,1,sizeof(nhdr),SYS_STDIN)) != sizeof(nhdr)) {
+	rewind(SYS_STDIN);
 	return(NULL);
     }
-    rewind(stdin);
+    rewind(SYS_STDIN);
 
     /* convert to local byte order */
     nhdr.netm_key = ntohl(nhdr.netm_key);
@@ -242,7 +256,7 @@ pread_f *is_netm(void)
 	printf("NETM file version: %d\n", nhdr.version);
 
     /* ignore the header at the top */
-    if (fseek(stdin,NETM_DUMP_OFFSET,SEEK_SET) == -1) {
+    if (fseek(SYS_STDIN,NETM_DUMP_OFFSET,SEEK_SET) == -1) {
 	perror("NETM lseek");
 	exit(-1);
     }
