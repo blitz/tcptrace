@@ -123,6 +123,8 @@ tcptrace: ${OFILES}
 # special rule for version.c
 # needs to be recompiled EVERY time
 #
+# If you have problems getting "whoami", "hostname", or "date" to run on
+# your machine, just hack in a quick string below in place of the command.
 version.o: ${CFILES} Makefile
 	${CC} ${CFLAGS} -o version.o -c version.c \
 	-DBUILT_USER="\"`whoami`\"" -DBUILT_HOST="\"`hostname`\"" -DBUILT_DATE="\"`date`\""

@@ -332,6 +332,8 @@ static void
 Version(void)
 {
     fprintf(stderr,"Version: %s\n", tcptrace_version);
+    fprintf(stderr,"  Compiled by '%s' at '%s' on machine '%s'\n",
+	    built_bywhom, built_when, built_where);
 }
 
 
