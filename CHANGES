@@ -164,3 +164,6 @@
   added Mallman's netbsd mkstemp change in compress.c
   extended the "-w" flag to make the normal case quieter
   lots of changes to mod_traffic, plus a few bugfixes, mostly for my use
+5.0.6 - Fri Aug 14, 1998
+  added UDP connection support, a lot of people have been asking for it
+  finished mod_collie

@@ -48,6 +48,7 @@ static char const rcsid_tcptrace[] =
 #include <netinet/if_ether.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
+#include <netinet/udp.h>
 #include <netdb.h>
 #include <ctype.h>
 #include <signal.h>
@@ -67,7 +68,6 @@ typedef long long int llong;
 typedef unsigned long int u_llong;
 typedef long int llong;
 #endif /* LONG LONG */
-
 
 /* plotter information */
 typedef int PLOTTER;
@@ -116,6 +116,14 @@ typedef struct mfile MFILE;
 /* file name information */
 extern char **filenames;	/* all the files on the cmd line */
 extern char *cur_filename;	/* the current file */
+
+/* first and last packet timestamp */
+extern timeval first_packet;
+extern timeval last_packet;
+
+/* counters */
+extern u_long tcp_trace_count;
+extern u_long udp_trace_count;
 
 
 #ifdef OLD
@@ -330,6 +338,61 @@ extern int num_tcp_pairs;	/* how many pairs are in use */
 extern tcp_pair **ttp;		/* array of pointers to allocated pairs */
 
 
+/* minimal support for UDP "connections" */
+typedef struct ucb {
+    /* parent pointer */
+    struct sudp_pair *pup;
+    struct ucb	*ptwin;
+
+    /* statistics added */
+    u_llong	data_bytes;
+    u_llong	packets;
+    u_long	min_dg_size;
+    u_long	max_dg_size;
+
+    /* host name letter(s) */
+    char	*host_letter;
+} ucb;
+
+
+
+typedef tcp_pair_addrblock udp_pair_addrblock;
+struct sudp_pair {
+    /* endpoint identification */
+    udp_pair_addrblock	addr_pair;
+
+    /* connection naming information */
+    char		*a_hostname;
+    char		*b_hostname;
+    char		*a_portname;
+    char		*b_portname;
+    char		*a_endpoint;
+    char		*b_endpoint;
+
+    /* connection information */
+    timeval		first_time;
+    timeval		last_time;
+    u_llong		packets;
+    ucb			a2b;
+    ucb			b2a;
+
+    /* module-specific structures, if requested */
+    void		**pmod_info;
+
+    /* which file this connection is from */
+    char		*filename;
+
+    /* linked list of usage */
+    struct sudp_pair *next;
+};
+typedef struct sudp_pair udp_pair;
+typedef struct udphdr udphdr;
+
+
+extern int num_udp_pairs;	/* how many pairs are in use */
+extern udp_pair **utp;		/* array of pointers to allocated pairs */
+
+
 /* option flags */
 extern Bool colorplot;
 extern Bool dump_rtt;
@@ -359,6 +422,7 @@ extern Bool graph_seq_zero;
 extern Bool graph_zero_len_pkts;
 extern Bool plot_tput_instant;
 extern Bool filter_output;
+extern Bool do_udp;
 extern int debug;
 extern int thru_interval;
 extern u_long pnum;
@@ -369,6 +433,8 @@ extern char *output_filename;
 
 
 #define MAX_NAME 20
+
+
 
 /* external routine decls */
 double sqrt(double x);
@@ -407,11 +473,13 @@ void plotter_darrow(PLOTTER, timeval, u_long);
 void plotter_box(PLOTTER, timeval, u_long);
 void plotter_arrow(PLOTTER, timeval, u_long, char);
 void plot_init(void);
-tcp_pair *dotrace(struct ip *, void *plast);
+tcp_pair *dotrace(struct ip *, struct tcphdr *ptcp, void *plast);
 void PrintRawData(char *label, void *pfirst, void *plast);
 void PrintRawDataHex(char *label, void *pfirst, void *plast);
 void PrintTrace(tcp_pair *);
+void UDPPrintTrace(udp_pair *);
 void PrintBrief(tcp_pair *);
+void UDPPrintBrief(udp_pair *);
 void OnlyConn(int);
 void IgnoreConn(int);
 double elapsed(timeval, timeval);
@@ -423,6 +491,7 @@ char *ts2ascii_date(timeval *);
 char *ServiceName(portnum);
 char *HostName(ipaddr);
 char *HostLetter(u_int);
+char *NextHostLetter(void);
 char *EndpointName(ipaddr,portnum);
 PLOTTER new_plotter(tcb *plast, char *filename, char *title,
 		    char *xlabel, char *ylabel, char *suffix);
@@ -451,6 +520,14 @@ void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr);
 int IP_SAMEADDR (ipaddr addr1, ipaddr addr2);
 void PcapSavePacket(char *filename, struct ip *pip, void *plast);
 void StringToArgv(char *buf, int *pargc, char ***pargv);
+void CopyAddr(tcp_pair_addrblock *, struct ip *pip,portnum,portnum);
+int WhichDir(tcp_pair_addrblock *, tcp_pair_addrblock *);
+int SameConn(tcp_pair_addrblock *, tcp_pair_addrblock *, int *);
+
+/* UDP support routines */
+void udptrace_init(void);
+void udptrace_done(void);
+udp_pair *udpdotrace(struct ip *pip, struct udphdr *pudp, void *plast);
 
 /* filter routines */
 void HelpFilter(void);

@@ -43,8 +43,11 @@ char *tcptrace_version = VERSION;
 
 /* local routines */
 static void Args(void);
+static void ModulesPerNonTCPUDP(struct ip *pip, void *plast);
 static void ModulesPerPacket(struct ip *pip, tcp_pair *ptp, void *plast);
+static void ModulesPerUDPPacket(struct ip *pip, udp_pair *pup, void *plast);
 static void ModulesPerConn(tcp_pair *ptp);
+static void ModulesPerUDPConn(udp_pair *pup);
 static void ModulesPerFile(char *filename);
 static void DumpFlags(void);
 static void ExplainOutput(void);
@@ -88,6 +91,7 @@ Bool graph_seq_zero = FALSE;
 Bool graph_zero_len_pkts = TRUE;
 Bool plot_tput_instant = TRUE;
 Bool filter_output = FALSE;
+Bool do_udp = FALSE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
@@ -104,11 +108,15 @@ char *ColorNames[NCOLORS] =
 /* locally global variables */
 static u_long filesize = -1;
 char **filenames = NULL;
+int num_files = 0;
 u_int numfiles;
 char *cur_filename;
 static char *progname;
 char *output_filename = NULL;
 
+/* first and last packet timestamp */
+timeval first_packet = {0,0};
+timeval last_packet = {0,0};
 
 
 static void
@@ -379,6 +387,7 @@ Misc options\n\
   -d      whistle while you work (enable debug, use -d -d for more output)\n\
   -e      extract contents of each TCP stream into file\n\
   -h      print help messages\n\
+  -u      print minimal UDP information too\n\
   -Ofile  dump matched packets to tcpdump file 'file'\n\
   +[v]    reverse the setting of the -[v] flag (for booleans)\n\
 Dump File Names\n\
@@ -454,6 +463,7 @@ main(
     char *argv[])
 {
     int i;
+    double etime;
 
     if (argc == 1)
 	Help(NULL);
@@ -468,8 +478,14 @@ main(
     /* parse the flags */
     CheckArguments(&argc,argv);
 
+    /* optional UDP */
+    if (do_udp)
+	udptrace_init();
+
+    num_files = argc;
     printf("%d args remaining, starting with '%s'\n",
-	   argc, filenames[0]);
+	   num_files, filenames[0]);
+    
 
 
     if (debug>1)
@@ -492,9 +508,29 @@ main(
 	ProcessFile(filenames[i]);
     }
 
+    /* clean up output */
+    if (printticks)
+	printf("\n");
+
+    /* general output */
+    fprintf(stdout,"%lu packets seen, %lu TCP packets traced",
+	    pnum, tcp_trace_count);
+    if (do_udp)
+	fprintf(stdout,", %lu UDP packets traced", udp_trace_count);
+    fprintf(stdout,"\n");
+    etime = elapsed(first_packet,last_packet);
+    fprintf(stdout,"trace %s elapsed time: %s\n",
+	    (num_files==1)?"file":"files",
+	    elapsed2str(etime));
+    if (debug) {
+	fprintf(stdout,"\tfirst packet:  %s\n", ts2ascii(&first_packet));
+	fprintf(stdout,"\tlast packet:   %s\n", ts2ascii(&last_packet));
+    }
 
     /* close files, cleanup, and etc... */
     trace_done();
+    if (do_udp)
+	udptrace_done();
     FinishModules();
     plotter_done();
 
@@ -509,6 +545,7 @@ ProcessFile(
     pread_f *ppread;
     int ret;
     struct ip *pip;
+    struct tcphdr *ptcp;
     int phystype;
     void *phys;  /* physical transport header */
     tcp_pair *ptp;
@@ -708,17 +745,47 @@ for other packet types, I just don't have a place to test them\n\n");
 	    printpacket(len,tlen,phys,phystype,pip,plast);
 	}
 
-        /* perform packet analysis */
-	ptp = dotrace(pip,plast);
+	/* keep track of global times */
+	if (ZERO_TIME(&first_packet))
+	    first_packet = current_time;
+	last_packet = current_time;
 
-	/* if it wasn't TCP, we return NULL here */
+	/* find the start of the TCP header */
+	ptcp = gettcp (pip, &plast);
+
+	/* if that failed, it's not TCP */
+	if (ptcp == NULL) {
+	    udp_pair *pup;
+	    struct udphdr *pudp;
+
+	    /* look for a UDP header */
+	    pudp = getudp(pip, &plast);
+
+	    if (do_udp && (pudp != NULL)) {
+		pup = udpdotrace(pip,pudp,plast);
+		/* if it's a new connection, tell the modules */
+		if (pup && pup->packets == 1)
+		    ModulesPerUDPConn(pup);
+		/* also, pass the packet to any modules defined */
+		ModulesPerUDPPacket(pip,pup,plast);
+	    } else if (pudp == NULL) {
+		/* neither UDP not TCP */
+		ModulesPerNonTCPUDP(pip,plast);
+	    }
+	    continue;
+	}
+		       
+        /* perform packet analysis */
+	ptp = dotrace(pip,ptcp,plast);
+
+	/* if it wasn't "interesting", we return NULL here */
 	if (ptp == NULL)
 	    continue;
 
 	/* if it's a new connection, tell the modules */
 	if (ptp->packets == 1)
 	    ModulesPerConn(ptp);
-	
+
 	/* also, pass the packet to any modules defined */
 	ModulesPerPacket(pip,ptp,plast);
 
@@ -1035,6 +1102,7 @@ ParseArgs(
 		  case 'r': print_rtt = TRUE; break;
 		  case 's': use_short_names = TRUE; break;
 		  case 't': printticks = TRUE; break;
+		  case 'u': do_udp = TRUE; break;
 
 		  case 'd': ++debug; break;
 		  case 'v': Version(); exit(0); break;
@@ -1143,6 +1211,7 @@ ParseArgs(
 		  case 'r': print_rtt = !TRUE; break;
 		  case 's': use_short_names = !TRUE; break;
 		  case 't': printticks = !TRUE; break;
+		  case 'u': do_udp = !TRUE; break;
 		  case 'w':
 		    warn_printtrunc = !TRUE;
 		    warn_printbadmbz = !TRUE;
@@ -1283,7 +1352,7 @@ ModulesPerConn(
 	    continue;  /* they might not care */
 
 	if (debug>3)
-	    fprintf(stderr,"Calling read routine for module \"%s\"\n",
+	    fprintf(stderr,"Calling newconn routine for module \"%s\"\n",
 		    modules[i].module_name);
 
 	pmodstruct = (*modules[i].module_newconn)(ptp);
@@ -1301,6 +1370,60 @@ ModulesPerConn(
 
 
 static void
+ModulesPerUDPConn(
+    udp_pair *pup)
+{
+    int i;
+    void *pmodstruct;
+
+    for (i=0; i < NUM_MODULES; ++i) {
+	if (!modules[i].module_inuse)
+	    continue;  /* might be disabled */
+
+	if (modules[i].module_udp_newconn == NULL)
+	    continue;  /* they might not care */
+
+	if (debug>3)
+	    fprintf(stderr,"Calling UDP newconn routine for module \"%s\"\n",
+		    modules[i].module_name);
+
+	pmodstruct = (*modules[i].module_udp_newconn)(pup);
+	if (pmodstruct) {
+	    /* make sure the array is there */
+	    if (!pup->pmod_info) {
+		pup->pmod_info = MallocZ(num_modules * sizeof(void *));
+	    }
+
+	    /* remember this structure */
+	    pup->pmod_info[i] = pmodstruct;
+	}
+    }
+}
+
+static void
+ModulesPerNonTCPUDP(
+    struct ip *pip,
+    void *plast)
+{
+    int i;
+
+    for (i=0; i < NUM_MODULES; ++i) {
+	if (!modules[i].module_inuse)
+	    continue;  /* might be disabled */
+
+	if (modules[i].module_nontcpudp_read == NULL)
+	    continue;  /* they might not care */
+
+	if (debug>3)
+	    fprintf(stderr,"Calling nontcp routine for module \"%s\"\n",
+		    modules[i].module_name);
+
+	(*modules[i].module_nontcpudp_read)(pip,plast);
+    }
+}
+
+
+static void
 ModulesPerPacket(
     struct ip *pip,
     tcp_pair *ptp,
@@ -1312,12 +1435,40 @@ ModulesPerPacket(
 	if (!modules[i].module_inuse)
 	    continue;  /* might be disabled */
 
+	if (modules[i].module_read == NULL)
+	    continue;  /* they might not care */
+
 	if (debug>3)
 	    fprintf(stderr,"Calling read routine for module \"%s\"\n",
 		    modules[i].module_name);
 
 	(*modules[i].module_read)(pip,ptp,plast,
 				  ptp->pmod_info?ptp->pmod_info[i]:NULL);
+    }
+}
+
+
+static void
+ModulesPerUDPPacket(
+    struct ip *pip,
+    udp_pair *pup,
+    void *plast)
+{
+    int i;
+
+    for (i=0; i < NUM_MODULES; ++i) {
+	if (!modules[i].module_inuse)
+	    continue;  /* might be disabled */
+
+	if (modules[i].module_udp_read == NULL)
+	    continue;  /* they might not care */
+
+	if (debug>3)
+	    fprintf(stderr,"Calling read routine for module \"%s\"\n",
+		    modules[i].module_name);
+
+	(*modules[i].module_udp_read)(pip,pup,plast,
+				      pup->pmod_info?pup->pmod_info[i]:NULL);
     }
 }
 
