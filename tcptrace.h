@@ -539,6 +539,7 @@ int Mfseek(MFILE *pmf, long offset, int ptrname);
 int Mfprintf(MFILE *pmf, char *format, ...);
 int Mfflush(MFILE *pmf);
 int Mfclose(MFILE *pmf);
+int Mfpipe(int pipes[2]);
 struct tcp_options *ParseOptions(struct tcphdr *ptcp, void *plast);
 FILE *CompOpenHeader(char *filename);
 FILE *CompOpenFile(char *filename);

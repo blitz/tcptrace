@@ -224,3 +224,7 @@
     grows above the machine's physical memory.  It can now continue to run
     well under these conditions (up to available swap space), before it
     just thrashed itself to a standstill.
+5.0.15 - Fri Nov 20, 1998
+    possible fix for pipe() failure with too many files open
+
+

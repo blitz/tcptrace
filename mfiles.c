@@ -59,6 +59,7 @@ static void Mcheck(MFILE *pmf);
 static void Mfopen_internal(MFILE *pmf, char *mode);
 static void Mf_totail(MFILE *pmf, MFILE *ptail);
 static void Mf_unlink(MFILE *pmf);
+static void M_closeold(void);
 
 
 /* head and tail of LRU open file list */
@@ -107,6 +108,30 @@ Mfopen(
     Mf_totail(pmf,&mf_tail);
 
     return(pmf);
+}
+
+
+/* not really an mfiles thing, but works even when we're out of fd's */
+int
+Mfpipe(
+    int pipes[2])
+{
+    int i;
+
+    for (i=0; i <= 2; ++i) {
+	if (pipe(pipes) == 0)
+	    return(0);
+
+	if (errno != EMFILE) {
+	    perror("pipe");
+	    exit(-1);
+	}
+
+	M_closeold();
+    }
+
+    fprintf(stderr,"mfpipe - internal error, couldn't get pipes?\n");
+    exit(-1);
 }
 
 
@@ -224,7 +249,6 @@ Mfopen_internal(
     char *mode)
 {
     FILE *stream;
-    MFILE *closehim;
     
     stream = fopen(pmf->fname,mode);
 
@@ -235,19 +259,7 @@ Mfopen_internal(
 	    exit(-1);
 	}
 
-	/* OK, close a file we haven't used for a while */
-	closehim = mf_head.next;
-	closehim->fptr = ftell(closehim->stream);  /* remember current position */
-	fclose(closehim->stream);
-	closehim->stream = NULL;
-
-	/* put closed file at the tail of the closed LRU list */
-	Mf_unlink(closehim);
-	Mf_totail(closehim,&mfc_tail);
-
-	if (debug > 1)
-	    fprintf(stderr,"Mfiles: too many files open, closed file '%s'\n",
-		    closehim->fname);
+	M_closeold();
 
 	/* now, try again */
 	stream = fopen(pmf->fname,mode);
@@ -268,6 +280,26 @@ Mfopen_internal(
     }
 
     return;
+}
+
+static void
+M_closeold(void)
+{
+    MFILE *closehim;
+
+    /* OK, close a file we haven't used for a while */
+    closehim = mf_head.next;
+    closehim->fptr = ftell(closehim->stream);  /* remember current position */
+    fclose(closehim->stream);
+    closehim->stream = NULL;
+
+    /* put closed file at the tail of the closed LRU list */
+    Mf_unlink(closehim);
+    Mf_totail(closehim,&mfc_tail);
+
+    if (debug > 1)
+	fprintf(stderr,"Mfiles: too many files open, closed file '%s'\n",
+		closehim->fname);
 }
 
 
