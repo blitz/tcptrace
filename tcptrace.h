@@ -55,6 +55,16 @@ static char const rcsid_tcptrace[] =
 #include <stdarg.h>
 #include <stdlib.h>
 
+
+/* we want LONG LONG in some places */
+#if SIZEOF_UNSIGNED_LONG_LONG_INT >= 8
+#define HAVE_LONG_LONG
+typedef unsigned long long int u_llong;
+#else /* LONG LONG */
+typedef unsigned long int u_llong;
+#endif /* LONG LONG */
+
+
 /* plotter information */
 typedef int PLOTTER;
 #define NO_PLOTTER -1
@@ -142,25 +152,25 @@ typedef struct tcb {
     u_char	window_scale;
 
     /* statistics added */
-    u_long	data_bytes;
-    u_long	data_pkts;
-    u_long	rexmit_bytes;
-    u_long	rexmit_pkts;
-    u_long	ack_pkts;
+    u_llong	data_bytes;
+    u_llong	data_pkts;
+    u_llong	rexmit_bytes;
+    u_llong	rexmit_pkts;
+    u_llong	ack_pkts;
     u_long	win_max;
     u_long	win_min;
     u_long	win_tot;
     u_long	win_zero_ct;
     u_long	min_seq;
     u_long	max_seq;
-    u_long	packets;
+    u_llong	packets;
     u_char	syn_count;
     u_char	fin_count;
     u_char	reset_count;  /* resets SENT */
     u_long	min_seg_size;
     u_long	max_seg_size;
-    u_long	out_order_pkts;	/* out of order packets */
-    u_long	sacks_sent;	/* sacks returned */
+    u_llong	out_order_pkts;	/* out of order packets */
+    u_llong	sacks_sent;	/* sacks returned */
 
     /* added for initial window stats (for Mallman) */
     u_long	initialwin_bytes;	/* initial window (in bytes) */
@@ -185,10 +195,10 @@ typedef struct tcb {
     double	rtt_sum2_last;	/* sum of squares, for stdev */
     u_long	rtt_count_last;	/* from last transmission, for averages */
     /* ACK Counters */
-    u_long	rtt_amback;	/* ambiguous ACK */
-    u_long	rtt_cumack;	/* segments only cumulativly ACKed */
-    u_long	rtt_unkack;	/* unknown ACKs  ??? */
-    u_long	rtt_dupack;	/* duplicate ACKs */
+    u_llong	rtt_amback;	/* ambiguous ACK */
+    u_llong	rtt_cumack;	/* segments only cumulativly ACKed */
+    u_llong	rtt_unkack;	/* unknown ACKs  ??? */
+    u_llong	rtt_dupack;	/* duplicate ACKs */
     /* retransmission information */
     seqspace    *ss;		/* the sequence space*/
     u_long	retr_max;	/* maximum retransmissions ct */
@@ -220,8 +230,8 @@ typedef struct tcb {
 
     /* Extracted stream contents */
     MFILE	*extracted_contents_file;
-    u_long	trunc_bytes;	/* data bytes not see due to trace file truncation */
-    u_long	trunc_segs;	/* segments with trunc'd bytes */
+    u_llong	trunc_bytes;	/* data bytes not see due to trace file truncation */
+    u_llong	trunc_segs;	/* segments with trunc'd bytes */
     u_long	extr_lastseq;	/* last sequence number we stored */
 
     /* RTT Graph info for this one */
@@ -260,7 +270,7 @@ struct stcp_pair {
     char		*b_endpoint;
     timeval		first_time;
     timeval		last_time;
-    u_long		packets;
+    u_llong		packets;
     tcb			a2b;
     tcb			b2a;
 
