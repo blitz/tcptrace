@@ -246,9 +246,9 @@ typedef struct tcb {
     Bool	data_acked;	/* has any non-SYN data been acked? */
 
     /* added for (estimated) congestions window stats (for Mallman) */
-    u_long	cwin_max;
-    u_long	cwin_min;
-    u_llong	cwin_tot;
+    u_long	owin_max;
+    u_long	owin_min;
+    u_llong	owin_tot;
 
     /* RTT stats for singly-transmitted segments */
     double	rtt_last;	/* RTT as of last good ACK (microseconds) */
@@ -318,9 +318,9 @@ typedef struct tcb {
     PLINE	segsize_avg_line;
 
     /* Congestion window graph */
-    PLOTTER	cwin_plotter;
-    PLINE	cwin_line;
-    PLINE	cwin_avg_line;
+    PLOTTER	owin_plotter;
+    PLINE	owin_line;
+    PLINE	owin_avg_line;
 
     /* for tracking unidirectional idle time */
     timeval	last_time;	/* last packet SENT from this side */
@@ -448,7 +448,7 @@ extern Bool graph_rtt;
 extern Bool graph_tput;
 extern Bool graph_tsg;
 extern Bool graph_segsize;
-extern Bool graph_cwin;
+extern Bool graph_owin;
 extern Bool hex;
 extern Bool ignore_non_comp;
 extern Bool resolve_ipaddresses;
@@ -456,7 +456,7 @@ extern Bool resolve_ports;
 extern Bool triple_dupack_allows_data;
 extern Bool verify_checksums;
 extern Bool print_rtt;
-extern Bool print_cwin;
+extern Bool print_owin;
 extern Bool printbrief;
 extern Bool printsuppress;
 extern Bool printem;
@@ -747,7 +747,7 @@ struct tcp_options {
 #define RTT_GRAPH_FILE_EXTENSION	"_rtt.xpl"
 #define PLOT_FILE_EXTENSION		"_tsg.xpl"
 #define SEGSIZE_FILE_EXTENSION		"_ssize.xpl"
-#define CWIN_FILE_EXTENSION		"_cwin.xpl"
+#define OWIN_FILE_EXTENSION		"_owin.xpl"
 #define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"
 #define CONTENTS_FILE_EXTENSION		"_contents.dat"
 
