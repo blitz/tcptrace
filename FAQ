@@ -17,3 +17,13 @@ connection whose home is the local machine.  I never can remember
 which end it omits, but given your output, it appears that it can't
 see packets SENT by the local host.  The easiest solution is to run
 tcpdump on a machine OTHER than the ones you're monitoring.
+
+============================================================
+Fri Jul 24, 1998
+
+>> I have been trying to find out when you place a diamond and when an
+>> arrow and why.
+
+The "diamond" means that the segment was sent with a PUSH (so most
+segments will have these except for large data transfers).  This feature
+is now documented in the on-line docs.
