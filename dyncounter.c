@@ -1,0 +1,625 @@
+/* dynamic counters/arrays */
+/* uses a 10-ary tree to manage a sparse counter space */
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include "tcptrace.h"
+#include "dyncounter.h"
+
+
+static int debug = 0;
+
+/* WIDTH of the nodes (designed for 10, caveat emptor!) */
+/* (sdo: tested at 2, 5, 10, 100) */
+#define CARDINALITY 10
+
+
+/* 10-ary tree node */
+struct node {
+    u_long depth;		/* 1, 10, 100, 1000 ... 10,000,000 */
+    union {
+	struct node *down[CARDINALITY];	/* if depth != 1 */
+	u_long value[CARDINALITY];	/* if depth == 1 */
+    } un;
+
+    struct node *nextleaf;	/* linked list of leaves, for NextCounter() */
+    u_long prefix;		/* from trees above */
+};
+
+
+/* dynamically-sized counter structure */
+struct dyn_counter {
+    u_long maxix;
+    u_long minix;
+    u_long total_count;		/* sum of the "AddToCounters" call values */
+    struct node *tree;
+
+    /* linked list of leaves */
+    struct node *firstleaf;
+    struct node *lastleaf;
+};
+
+
+/* local routines */
+static struct dyn_counter *MakeCounterStruct(void);
+static struct node *NewNode(u_long depth);
+static u_long *FindTwig(struct node *lastnode, u_long ix);
+static struct node *FindLeaf( struct dyn_counter *pdc, struct node **ptree,
+			      u_long depth, u_long value, int fcreate);
+static u_long *FindCounter(struct dyn_counter **ppdc, u_long ix, int fcreate);
+static void PrintTree(struct node *tree);
+static void PrintTreeRecurse(struct node *tree, u_long depth);
+static void FinishTree(struct dyn_counter *pdc);
+static void FinishTreeRecurse(struct dyn_counter *pdc, struct node *pnode,
+			      u_long prefix, u_long depth);
+static void PrintLeafList(struct dyn_counter *pdc);
+static struct node *NextCounterRecurse(struct node *node, u_long nextix,
+				       u_long *pix, u_long *pcount);
+static struct node *MakeDepth(struct node *node, u_long depth);
+static void DestroyTree(struct node *pnode);
+
+
+
+/* add a value to a counter */
+void
+AddToCounter(
+    struct dyn_counter **ppdc,
+    u_long ix,
+    u_long val)
+{
+    u_long *pcounter;
+
+    if (debug)
+	fprintf(stderr,"AddToCounter(%p, %lu, %lu) called\n", *ppdc, ix, val);
+
+    pcounter = FindCounter(ppdc, ix, 1);
+
+    *pcounter += val;
+
+    (*ppdc)->total_count += val;
+
+    return;
+}
+
+
+
+/* set a value in a counter */
+void
+SetCounter(
+    struct dyn_counter **ppdc,
+    u_long ix,
+    u_long val)
+{
+    u_long *pcounter;
+
+    if (debug)
+	fprintf(stderr,"SetCounter(%p, %lu, %lu) called\n", *ppdc, ix, val);
+
+    pcounter = FindCounter(ppdc, ix, 1);
+
+    *pcounter = val;
+
+    return;
+}
+
+
+/* read only, doesn't MAKE anything */
+u_long
+LookupCounter(
+    struct dyn_counter *pdc,
+    u_long ix)
+{
+    u_long *pdigit;
+
+    if (debug)
+	fprintf(stderr,"LookupCounter(p,%lu) called\n", ix);
+
+    /* try to find the counter */
+    pdigit = FindCounter(&pdc,
+			 ix,
+			 0);	/* do NOT create */
+
+    if (pdigit == NULL) {
+	/* no leaf node == no such counter */
+	if (debug)
+	    fprintf(stderr,"LookupCounter(p,%lu): no such leaf\n", ix);
+	return(0);
+    }
+
+    return(*pdigit);
+}
+
+
+int
+NextCounter(
+    struct dyn_counter **ppdc,
+    void *pvoidcookie,
+    u_long *pix,
+    u_long *pcount)
+{
+    struct dyn_counter *pdc;
+    struct node *node;
+    u_long nextix;
+
+    if (debug)
+	fprintf(stderr,"NextCounter(p,%p,%lu,%lu) called\n",
+		*((char **)pvoidcookie), *pix, *pcount);
+
+    /* if the counter tree doesn't exist yet, create it */
+    if (*ppdc == NULL) {
+	*ppdc = MakeCounterStruct();
+    }
+    pdc = *ppdc;
+
+    /* make sure the linked list of leaves is up to date */
+    if (pdc->firstleaf == NULL) {
+	FinishTree(pdc);
+	if (debug) {
+	    PrintLeafList(pdc);
+	    PrintTree(pdc->tree);
+	}
+    }
+
+    /* if cookie is NULL, start at the head */
+    if ((*((struct node **)pvoidcookie)) == NULL) {
+	node = pdc->firstleaf;
+	nextix = 0;
+    } else {
+	node = *((struct node **)pvoidcookie);
+	nextix = ((*pix) % CARDINALITY) + 1;
+    }
+
+
+    /* sanity check on cookie */
+    if (node->depth != 1) {
+	fprintf(stderr,"NextCounter: invalid cookie!\n");
+	exit(1);
+    }
+
+    /* recurse and solve */
+    node = NextCounterRecurse(node,nextix,pix,pcount);
+
+    if (node == NULL)
+	return(0);		/* no more */
+
+    /* remember cookie for next time */
+    *((struct node **)pvoidcookie) = node;
+
+    return(1);
+}
+
+
+/* access routine - return MAX index */
+u_long
+MaxCounter(
+    struct dyn_counter *pdc)
+{
+    return(pdc->maxix);
+}
+
+
+/* access routine - return MIN index */
+u_long
+MinCounter(
+    struct dyn_counter *pdc)
+{
+    return(pdc->minix);
+}
+
+
+/* access routine - total value added with AddToCounter() */
+u_long
+TotalCounter(
+    struct dyn_counter *pdc)
+{
+    return(pdc->total_count);
+}
+
+
+void
+DestroyCounters(
+    dyn_counter *phandle)
+{
+    if (!*phandle)
+	return;
+    
+    if ((*phandle)->tree)
+	DestroyTree((*phandle)->tree);
+
+    free(*phandle);
+    *phandle = NULL;
+}
+
+
+static struct dyn_counter *
+MakeCounterStruct()
+{
+    struct dyn_counter *pdc = MallocZ(sizeof(struct dyn_counter));
+
+    pdc->minix = 0xffffffff;
+
+    return(pdc);
+}
+
+
+static void
+DestroyTree(
+    struct node *pnode)
+{
+    int i;
+
+    if (pnode == NULL)
+	return;
+    
+    if (pnode->depth > 1) {
+	/* recurse and delete */
+	for (i=0; i < CARDINALITY; ++i) {
+	    DestroyTree(pnode->un.down[i]);
+	}
+    }
+
+    /* destroy ME */
+    free(pnode);
+    return;
+}
+
+
+
+
+
+/* the heart of the routines, a 10-ary recursize search */
+static struct node *
+FindLeaf(
+    struct dyn_counter *pdc,
+    struct node **ptree,
+    u_long depth,
+    u_long value,
+    int fcreate)
+{
+    u_long hidigit;
+    u_long lowdigits;
+    u_long valdepth;
+    u_long valunits;
+    u_long temp_value;
+
+    if (debug)
+	fprintf(stderr,"FindLeaf(%p(depth %lu), %lu, %s) called\n",
+		*ptree,
+		*ptree?((*ptree)->depth):0,
+		value,
+		fcreate?"CREATE":"NOCREATE");
+
+
+    /* if the tree is empty and we haven't asked to "create", then not found */
+    if ((*ptree == NULL) && (!fcreate))
+	return(NULL);
+
+    /* determine the units of the MSDigit (the depth) */
+    valdepth = 1;
+    valunits = 1;
+    temp_value = value;
+    while (temp_value >= CARDINALITY) {
+	temp_value /= CARDINALITY;
+	++valdepth;
+	valunits *= CARDINALITY;
+    }
+
+    if (debug)
+	fprintf(stderr,"FindLeaf: value:%lu  depth:%lu  units:%lu\n",
+		value, valdepth, valunits);
+
+
+    /* is the tree deep enough? */
+    if ((*ptree == NULL) || (valdepth > (*ptree)->depth)) {
+	u_long correct_depth;
+
+	/* the correct depth is the MAX of: */
+	/* - the depth of the number we're looking for */
+	/* - the value of "depth" passed down */
+	correct_depth = depth;
+	if (valdepth > correct_depth)
+	    correct_depth = valdepth;
+
+	/* if the tree isn't that deep and we haven't asked to create, then not found */
+	if (!fcreate)
+	    return(NULL);
+
+	/* increase the depth of this branch */
+	*ptree = MakeDepth((*ptree), correct_depth);
+
+	/* linked list of leaves no longer valid! */
+	pdc->firstleaf = NULL;
+
+	/* adjust */
+	depth = correct_depth;
+    }
+
+    /* if we're at the leaf depth, then we're done */
+    if ((*ptree)->depth == 1)
+	return(*ptree);
+
+    /* if the "depth" of val is less than the depth of this node,
+       recurse down the "0" branch without changing the number */
+    if (valdepth < (*ptree)->depth) {
+	return(FindLeaf(pdc,
+			&(*ptree)->un.down[0],
+			depth-1,
+			value,
+			fcreate));
+    }
+
+    /* (else), already the correct level */
+
+    /* break the number into the MSDigit and LSDigits */
+    hidigit = value / valunits;
+    lowdigits = value % valunits;
+
+    if (debug)
+	fprintf(stderr,"for value %lu,  depth:%lu  units:%lu  hidigit:%lu  lowdigits:%lu\n",
+		value, valdepth, valunits, hidigit, lowdigits);
+
+    /* recurse */
+    return(FindLeaf(pdc,
+		    &(*ptree)->un.down[hidigit],
+		    depth-1,
+		    lowdigits,
+		    fcreate));
+}
+
+static struct node *
+MakeDepth(
+    struct node *node,
+    u_long depth)
+{
+    struct node *newroot;
+
+    if ((node != NULL) && (node->depth >= depth))
+	return(node);
+
+    /* ELSE, insert a new level and recurse */
+    newroot = NewNode(depth);
+    
+    /* attach the old part of the tree */
+    if (depth > 1)
+	newroot->un.down[0] = MakeDepth(node,depth-1);
+
+    /* return the new root */
+    return(newroot);
+}
+    
+
+
+
+static struct node *
+NewNode(
+    u_long depth)
+{
+    struct node *pn;
+
+    if (debug)
+	fprintf(stderr,"NewNode(%lu) called\n", depth);
+
+    pn = MallocZ(sizeof(struct node));
+
+    pn->depth = depth;
+
+    return(pn);
+}
+
+
+static u_long *
+FindTwig(
+    struct node *lastnode,
+    u_long ix)
+{
+    unsigned digit;
+
+    if (debug)
+	fprintf(stderr,"FindTwig(%p(depth %lu), %lu) called\n",
+		lastnode, lastnode->depth, ix);
+
+    if (lastnode->depth != 1) {
+	fprintf(stderr,"FindTwig: internal error, not at a leaf node\n");
+	exit(2);
+    }
+
+    digit = ix % CARDINALITY;
+    return(&(lastnode->un.value[digit]));
+}
+
+
+static u_long *
+FindCounter(
+    struct dyn_counter **ppdc,
+    u_long ix,
+    int fcreate)
+{
+    struct dyn_counter *pdc;
+    struct node *pnode;
+    u_long *pcounter;
+
+    if (debug)
+	fprintf(stderr,"FindCounter(p, %lu) called\n", ix);
+
+    /* if the counter tree doesn't exist yet, create it */
+    if (*ppdc == NULL) {
+	*ppdc = MakeCounterStruct();
+    }
+    pdc = *ppdc;
+
+
+    /* track MAX and MIN */
+    if (ix > pdc->maxix)
+	pdc->maxix = ix;
+    if (ix < pdc->minix)
+	pdc->minix = ix;
+
+    if (debug>1)
+	PrintTree(pdc->tree);
+
+
+    /* find the leaf node */
+    pnode = FindLeaf(pdc, &pdc->tree,
+		     pdc->tree?pdc->tree->depth:1,
+		     ix, fcreate);
+    if (pnode == NULL)
+	return(NULL);
+
+    /* find the right counter */
+    pcounter = FindTwig(pnode, ix);
+
+    return(pcounter);
+}
+
+
+static void Indent(int depth)
+{
+    int i;
+
+    for (i=0; i < depth; ++i)
+	fputc(' ', stderr);
+}
+
+
+static void PrintTree(
+    struct node *tree)
+{
+    PrintTreeRecurse(tree,0);
+}
+
+
+static void
+PrintTreeRecurse(
+    struct node *tree,
+    u_long indent)
+{
+    int i;
+
+    if (tree == NULL) {
+	Indent(indent);
+	fprintf(stderr,"NULL\n");
+	return;
+    }
+
+    Indent(indent);
+    fprintf(stderr,"Node %p, depth:%lu, prefix:%lu\n", tree, tree->depth, tree->prefix);
+
+    if (tree->depth == 1) {
+	for (i=0; i < CARDINALITY; ++i) {
+	    Indent(indent);
+	    fprintf(stderr,"Leaf[%d]: %lu (value:%lu)\n",
+		    i,
+		    tree->un.value[i],
+		    tree->prefix*CARDINALITY+i);
+	}
+    } else {
+	for (i=0; i < CARDINALITY; ++i) {
+	    Indent(indent);
+	    fprintf(stderr,"Branch %d (prefix %lu, depth %lu)\n",
+		    i, tree->prefix*CARDINALITY+i, tree->depth);
+	    PrintTreeRecurse(tree->un.down[i],
+			     indent+3);
+	}
+    }
+}
+
+
+static void
+FinishTree(
+    struct dyn_counter *pdc)
+{
+    FinishTreeRecurse(pdc, pdc->tree, 0, pdc->tree->depth);
+}
+
+
+static void
+FinishTreeRecurse(
+    struct dyn_counter *pdc,
+    struct node *pnode,
+    u_long prefix,
+    u_long depth)
+{
+    int i;
+
+    /* special case, empty tree */
+    if (pnode == NULL)
+	return;
+
+    /* sanity check, verify depth */
+    if (pnode->depth != depth) {
+	fprintf(stderr,"FinishTree: bad depth at node %p (%lu should be %lu)\n",
+		pnode, pnode->depth, depth);
+	PrintTree(pdc->tree);
+	exit(-3);
+    }
+
+    /* insert prefix */
+    pnode->prefix = prefix;
+
+    /* if we're a leaf, add to end of the list */
+    if (pnode->depth == 1) {
+	if (pdc->firstleaf == NULL) {
+	    pdc->firstleaf = pdc->lastleaf = pnode;
+	    if (debug)
+		fprintf(stderr,"FinishTree: Making %p the head\n", pnode);
+	} else {
+	    pdc->lastleaf->nextleaf = pnode;
+	    pdc->lastleaf = pnode;
+	    if (debug)
+		fprintf(stderr,"FinishTree: Making %p the tail\n", pnode);
+	}
+	return;
+    }
+
+    /* recurse down all branches */
+    for (i=0; i < CARDINALITY; ++i) {
+	FinishTreeRecurse(pdc, pnode->un.down[i], prefix*CARDINALITY+i, depth-1);
+    }
+}
+
+
+static void
+PrintLeafList(
+    struct dyn_counter *ptree)
+{
+    struct node *pnode = ptree->firstleaf;
+    
+    fprintf(stderr,"Leaf Linked List...\n");
+    while(pnode) {
+	fprintf(stderr,"   pnode:%p  prefix:%lu\n", pnode, pnode->prefix);
+	pnode = pnode->nextleaf;
+    }
+}
+
+
+
+static struct node *
+NextCounterRecurse(
+    struct node *node,
+    u_long nextix,
+    u_long *pix,
+    u_long *pcount)
+{
+    int i;
+
+    if (debug)
+	fprintf(stderr,"NextCounterRecurse(%p,%lu,%lu,%lu) called\n",
+		node, nextix, *pix, *pcount);
+
+    /* base case, NULL */
+    if (node == NULL)
+	return(NULL);
+    
+
+    /* first, check the rest of THIS leaf node */
+    for (i=nextix; i < CARDINALITY; ++i) {
+	if (node->un.value[i] != 0) {
+	    *pix = node->prefix*CARDINALITY+i;
+	    *pcount = node->un.value[i];
+	    return(node);
+	}
+    }
+
+    /* check each counter in the NEXT leaf */
+    return(NextCounterRecurse(node->nextleaf, 0, pix, pcount));
+}
