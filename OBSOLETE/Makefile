@@ -42,7 +42,8 @@ LDLIBS = -lpcap -lnsl -lsocket -lucb -lelf -lm
 
 
 CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
-	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c 
+	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c \
+	missing.c
 OFILES= ${CFILES:.c=.o}
 
 
