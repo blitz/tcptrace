@@ -225,17 +225,17 @@ spotless: clean noplots initial
 #
 # for making distribution
 tarfile: versnum
-	@ VERS=`./versnum`; DIR=tcptrace_$${VERS}; \
+	@VERS=`./versnum`; DIR=tcptrace_$${VERS}; \
 	GZTAR=$$HOME/tcptrace.$${VERS}.tar.gz; \
-	make spotless
+	make spotless; \
 	cd ..; \
-	test -L $${DIR} || ln -s src $${DIR}; \
+	ln -s src $${DIR} 2>/dev/null ; \
 	/usr/sbin/tar -FFcvhf - $${DIR} | gzip > $${GZTAR}; \
 	echo ; echo "Tarfile is in $${GZTAR}"
 #
 # similar, but include RCS directory and etc
 bigtarfile:
-	cd ..; /usr/sbin/tar -cfv $$HOME/tcptrace.tar tcptrace
+	cd ..; /usr/sbin/tar -cfv $$HOME/tcptrace.tar src
 
 #
 # just a quick installation rule
