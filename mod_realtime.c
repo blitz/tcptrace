@@ -29,6 +29,7 @@ static char const rcsid[] =
 
 #ifdef LOAD_MODULE_REALTIME
 
+#include <sys/types.h>
 #include "tcptrace.h"
 #include "mod_realtime.h"
 
@@ -64,7 +65,7 @@ struct realtime_info {
 typedef struct realtime_info rtinfo;
 
 struct protocol {
-  uchar_t ip_p;
+  u_char ip_p;
   u_llong count;
   struct protocol *next;
 };
