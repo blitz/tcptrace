@@ -1,0 +1,6 @@
+1 arg remaining, starting with 'zwnd.dmp.gz'
+
+26690 packets seen, 26686 TCP packets traced
+trace file elapsed time: 0:00:32.259999
+TCP connection info:
+  1: 132.235.3.154:58213 - 132.235.3.151:5001 (a2b) 17995> 8691<  (complete)
