@@ -42,6 +42,7 @@ static char const rcsid[] =
 static void printeth_packet(struct ether_header *);
 static void printip_packet(struct ip *, void *plast);
 static void printtcp_packet(struct ip *, void *plast);
+static void printudp_packet(struct ip *, void *plast);
 static char *ParenServiceName(portnum);
 static char *ParenHostName(struct ipaddr addr);
 static void printipv4(struct ip *pip, void *plast);
@@ -337,6 +338,41 @@ printtcp_packet(
 }
 
 
+static void
+printudp_packet(
+    struct ip *pip,
+    void *plast)
+{
+    struct udphdr *pudp;
+    u_char *pdata;
+
+    /* find the udp header */
+    pudp = getudp(pip, &plast);
+    if (pudp == NULL)
+	return;			/* not UDP */
+
+    /* make sure we have enough of the packet */
+    if ((unsigned)pudp+sizeof(struct udphdr)-1 > (unsigned)plast) {
+	if (warn_printtrunc)
+	    printf("\t[packet truncated too short for UDP details]\n");
+	++ctrunc;
+	return;
+    }
+
+    printf("\tUDP SPRT: %u %s\n",
+	   ntohs(pudp->uh_sport),
+	   ParenServiceName(ntohs(pudp->uh_sport)));
+    printf("\t    DPRT: %u %s\n",
+	   ntohs(pudp->uh_dport),
+	   ParenServiceName(ntohs(pudp->uh_dport)));
+    pdata = (u_char *)pudp + sizeof(struct udphdr);
+    printf("\t    DLEN: %u", ntohs(pudp->uh_ulen));
+    if ((u_long)pdata + ntohs(pudp->uh_ulen) > ((u_long)plast+1))
+	printf(" (only %ld bytes in dump file)\n",
+	       (u_long)plast - (u_long)pdata + 1);
+}
+
+
 
 void
 printpacket(
@@ -374,6 +410,9 @@ printpacket(
 
     /* this will fail if it's not TCP */
     printtcp_packet(pip,plast);
+
+    /* this will fail if it's not UDP */
+    printudp_packet(pip,plast);
 }
 
 
