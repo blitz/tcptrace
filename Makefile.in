@@ -242,32 +242,36 @@ install-man:
 #
 # static file dependencies
 #
-filter.o: filter.h filter_vars.h
-etherpeek.o: tcptrace.h 
-gcache.o: tcptrace.h  gcache.h
-mfiles.o: tcptrace.h 
-mod_http.o: tcptrace.h  mod_http.h
-names.o: tcptrace.h  gcache.h
-netm.o: tcptrace.h 
-output.o: tcptrace.h  gcache.h
-plotter.o: tcptrace.h 
-print.o: tcptrace.h 
-rexmit.o: tcptrace.h 
-rtt.o: tcptrace.h 
-snoop.o: tcptrace.h 
-nlanr.o: tcptrace.h 
-tcpdump.o: tcptrace.h tcpdump.h 
-tcptrace.o: tcptrace.h  file_formats.h modules.h mod_http.h version.h
-thruput.o: tcptrace.h 
-trace.o: tcptrace.h  gcache.h
-udp.o: tcptrace.h  gcache.h
-compress.o: tcptrace.h  compress.h
+compress.o: tcptrace.h ipv6.h compress.h
+etherpeek.o: tcptrace.h ipv6.h
+filt_parser.o: tcptrace.h ipv6.h filter.h
+filt_scanner.o: tcptrace.h ipv6.h filter.h filt_parser.h
+filter.o: tcptrace.h ipv6.h filter.h filter_vars.h
+gcache.o: tcptrace.h ipv6.h gcache.h
+ipv6.o: tcptrace.h ipv6.h
+mfiles.o: tcptrace.h ipv6.h
+missing.o: tcptrace.h ipv6.h
+names.o: tcptrace.h ipv6.h gcache.h
+netm.o: tcptrace.h ipv6.h
+nlanr.o: tcptrace.h ipv6.h
+output.o: tcptrace.h ipv6.h gcache.h
+plotter.o: tcptrace.h ipv6.h
+print.o: tcptrace.h ipv6.h
+rexmit.o: tcptrace.h ipv6.h
+snoop.o: tcptrace.h ipv6.h
+tcpdump.o: tcptrace.h ipv6.h tcpdump.h
+tcptrace.o: tcptrace.h ipv6.h file_formats.h modules.h version.h
+tcptrace.o: mod_http.h mod_tcplib.h mod_traffic.h mod_rttgraph.h mod_collie.h
+thruput.o: tcptrace.h ipv6.h
+trace.o: tcptrace.h ipv6.h gcache.h
+udp.o: tcptrace.h ipv6.h gcache.h
+versnum.o: version.h
+dyncounter.o: dyncounter.h
+mod_tcplib.o: tcptrace.h dyncounter.h
 mod_http.o: tcptrace.h 
 mod_traffic.o: tcptrace.h  mod_traffic.h
 mod_tcplib.o: tcptrace.h  mod_tcplib.h
 mod_rttgraph.o: tcptrace.h  mod_rttgraph.h
-ipv6.o: tcptrace.h ipv6.h
-ns.o: tcptrace.h
 
 #
 # make development version
