@@ -1182,6 +1182,20 @@ CheckArguments(
 
     if (rc_buf)
 	free(rc_buf);
+
+    /* heuristic, I set "-t" in my config file, but they don't work inside */
+    /* emacs shell windows, which is a pain.  If the terminal looks like EMACS, */
+    /* then turn OFF ticks! */
+    if (printticks) {
+	char *TERM = getenv("TERM");
+	/* allow emacs and Emacs */
+	if ((TERM != NULL) && 
+	    ((strstr(TERM,"emacs") != NULL) ||
+	     (strstr(TERM,"Emacs") != NULL))) {
+	    printf("Disabling ticks for EMACS shell window\n");
+	    printticks = 0;
+	}
+    }
 }
 
 
