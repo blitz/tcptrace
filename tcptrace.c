@@ -103,7 +103,7 @@ Bool resolve_ports = TRUE;
 Bool verify_checksums = FALSE;
 int debug = 0;
 u_long beginpnum = 0;
-u_long endpnum = ~0;
+u_long endpnum = 0;
 u_long pnum = 0;
 u_long ctrunc = 0;
 u_long bad_ip_checksums = 0;
@@ -118,7 +118,7 @@ char *ColorNames[NCOLORS] =
 
 
 /* locally global variables */
-static u_long filesize = -1;
+static u_long filesize = 0;
 char **filenames = NULL;
 int num_files = 0;
 u_int numfiles;
@@ -433,7 +433,7 @@ Graphing detail options\n\
   -C      produce color plot[s]\n\
   -M      produce monochrome (b/w) plot[s]\n\
   -AN     Average N segments for throughput graphs, default is 10\n\
-  -z      zero axis options
+  -z      zero axis options\n\
     -z      plot time axis from 0 rather than wall clock time (backward compat)\n\
     -zx     plot time axis from 0 rather than wall clock time\n\
     -zy     plot sequence numbers from 0 (time sequence graphs only)\n\
@@ -707,9 +707,9 @@ ProcessFile(
 The first %d characters are all printable ASCII characters. All of the\n\
 packet grabbing formats that I understand output BINARY files that I\n\
 like to read.  Could it be that you've tried to give me the readable \n\
-output instead?  For example, with tcpdump, you need to use:
+output instead?  For example, with tcpdump, you need to use:\n\
 \t tcpdump -w outfile.dmp ; tcptrace outfile.dmp\n\
-rather than:
+rather than:\n\
 \t tcpdump > outfile ; tcptrace outfile\n\n\
 ", count);
 		exit(1);
@@ -824,7 +824,7 @@ That will likely confuse the program, so be careful!\n", filename);
 
 	/* in case only a subset analysis was requested */
 	if (pnum < beginpnum)	continue;
-	if (pnum > endpnum)	break;
+	if ((endpnum != 0) && (pnum > endpnum))	break;
 
 
 	/* quick sanity check, better be an IPv4/v6 packet */
