@@ -117,10 +117,10 @@ typedef struct ipaddr {
 
 /* some machines (TRUE64 for one) handle the 4-bit TCP/IP fields
    differently, so this macro simplifies life */
-#define IP_HL(pip)   (pip->ip_hl)
-#define IP_OFF(pip)  (pip->ip_off)
-#define TH_OFF(ptcp) (ptcp->th_off)
-#define TH_X2(ptcp)  (ptcp->th_x2)
+#define IP_HL(pip)   ((pip)->ip_hl)
+#define IP_V(pip)    ((pip)->ip_v)
+#define TH_X2(ptcp)  ((ptcp)->th_x2)
+#define TH_OFF(ptcp) ((ptcp)->th_off)
 
 
 
@@ -828,7 +828,7 @@ void *MemCpy(void *p1, void *p2, size_t n); /* in tcptrace.c */
 /*
  * Macros to simplify access to IPv4/IPv6 header fields
  */
-#define PIP_VERS(pip) (((struct ip *)(pip))->ip_v)
+#define PIP_VERS(pip) (IP_V((struct ip *)(pip)))
 #define PIP_ISV6(pip) (PIP_VERS(pip) == 6)
 #define PIP_ISV4(pip) (PIP_VERS(pip) == 4)
 #define PIP_V6(pip) ((struct ipv6 *)(pip))

@@ -154,7 +154,7 @@ printip_packet(
     }
 
     /* unknown type */
-    printf("Unknown IP version %d\n", pip->ip_v);
+    printf("Unknown IP version %d\n", PIP_VERS(pip));
 }
 
 
@@ -175,7 +175,7 @@ printipv4(
 	return;
     }
 
-    printf("\tIP  VERS: %d\n", pip->ip_v);
+    printf("\tIP  VERS: %d\n", IP_V(pip));
     printf("\tIP  Srce: %s %s\n",
 	   inet_ntoa(pip->ip_src),
 	   ParenHostName(*IPV4ADDR2ADDR(&pip->ip_src)));
@@ -203,18 +203,18 @@ printipv4(
     printf("\n");
 
     /* fragmentation stuff */
-    offset = ntohs(IP_OFF(pip)) << 3;
-    mf = (ntohs(IP_OFF(pip)) & IP_MF) != 0;
+    offset = ntohs(pip->ip_off) << 3;
+    mf = (ntohs(pip->ip_off) & IP_MF) != 0;
     if ((offset == 0) && (!mf)) {
-	printf("\t  OFFSET: 0x%04x", ntohs(IP_OFF(pip)));
+	printf("\t  OFFSET: 0x%04x", ntohs(pip->ip_off));
     } else {
 	printf("\t  OFFSET: 0x%04x (frag: %d bytes at offset %u - %s)",
-	       ntohs(IP_OFF(pip)),
+	       ntohs(pip->ip_off),
 	       ntohs(pip->ip_len)-IP_HL(pip)*4,
 	       offset,
 	       mf?"More Frags":"Last Frag");
     }
-    if ((ntohs(IP_OFF(pip)) & IP_DF) != 0)
+    if ((ntohs(pip->ip_off) & IP_DF) != 0)
 	printf("  Don't Fragment\n");	/* don't fragment */
 
     /* print IP options if there are any */

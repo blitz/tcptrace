@@ -2131,7 +2131,7 @@ tcp_cksum(
 	   pretend it's valid */
 	/* Thu Jul  6, 2000 - bugfix, bad check */
 	if (((ntohs(pip->ip_off) << 2) & 0xffff) != 0) {
-	if (((ntohs(IP_OFF(pip)) << 2) & 0xffff) != 0) {
+	    /* both the offset AND the MF bit must be 0 */
 	    /* (we shifted off the DF bit, which might be on) */
 	    return(0);
 	}

@@ -919,7 +919,7 @@ That will likely confuse the program, so be careful!\n", filename);
 	    if (debug)
 		fprintf(stderr,
 			"Skipping packet %lu, not an IPv4/v6 packet (version:%d)\n",
-			pnum,pip->ip_v);
+			pnum,IP_V(pip));
 	    continue;
 	}
 
