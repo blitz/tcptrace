@@ -4,15 +4,6 @@ Known Bugs/Problems/Things to fix
 
 Mon Jun  1, 1998
 
-Given the number of people who try to pass ASCII files through
-tcptrace and then get confused, I should probably add a bit
-of code to check for "printable" input files and then print
-a helpful message...  
-
-------------------------------------------------------------
-
-Mon Jun  1, 1998
-
 (from Igor Schein)
 
 >> 2) Filtering with -f or -o doesn't have any effect if -p
