@@ -74,11 +74,6 @@ typedef struct in6_addr {
 } in6_addr;
 
 
-/* external routines that we use if found, otherwise substitute our own... */
-#ifndef HAVE_INET_NTOP
-const char *inet_ntop(int, const char *, char *, size_t);
-#endif /* HAVE_INET_NTOP */
-
 #endif /* notdef IPPROTO_NONE */
 
 
