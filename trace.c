@@ -2267,7 +2267,7 @@ trace_done(void)
 
 	    if (!ptp->ignore_pair) {
 		if ((printbrief) && (!ignore_non_comp || ConnComplete(ptp))) {
-		if (printbrief) {
+		    fprintf(stdout,"%3d: ", ix+1);
 		    PrintBrief(ptp);
 		} else if (!ignore_non_comp || ConnComplete(ptp)) {
 		    if(csv || tsv || (sv != NULL)) {

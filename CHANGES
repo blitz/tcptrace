@@ -429,17 +429,20 @@ names after y, z ... jumping to ba, bb, ... instead of aa, ab ...
 6.2.0 - Stable - Fri Jul 26, 2002
 This is the version we'll release
 
-6.2.1 - Fri Aug 30, 2002
+6.2.1 - Fri Aug 09, 2002
+enhance fulltcp file reading from r.schramp@kpn.com
+
+6.2.2 - Fri Aug 30, 2002
 added vlan support to snoop for Tysko.  Need to add support in other
 formats too, but I don't have a packet dump to test against yet - sdo
 
-6.2.2 - Wed Sep 18, 2002
-Bugfix: For FIN segments with data only FIN was getting plotted and not the
+6.2.3 - Wed Sep 18, 2002
+bugfix: For FIN segments with data only FIN was getting plotted and not the
 	data. Now data gets plotted with the default color and then one byte
 	is plotted with the synfin color. For no data, only one byte of FIN
 	is plotted with the synfin color.
 
-6.2.3 - Wed Sep 18, 2002
+6.2.4 - Wed Sep 18, 2002
 bugfix: RST_IN relative offset was being calculated using the incorrect
         sequence space.
 	
@@ -455,3 +458,12 @@ bugfix: RST_IN relative offset was being calculated using the incorrect
         plotter_text(to_tsgpl,
 	             current_time, SeqRep(otherdir,plot_at),
 	             "a", "RST_IN");
+
+6.2.5 - Mon Nov 11, 2002
+bugfix: Negative sequence numbers were being printed by function
+	PrintSeqRep() for the packet print '-p' / '-P' switches. Changed the
+	print format from %d to %u. 
+
+6.2.6 - Thu Nov 14, 2002
+bugfix: '-c' option - ignore non-complete connections was working only for
+	long output. Fixed it to work for brief output too.

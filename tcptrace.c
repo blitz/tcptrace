@@ -541,7 +541,7 @@ Output format detail options\n\
 Connection filtering options\n\
   -iN     ignore connection N (can use multiple times)\n\
   -oN[-M] only connection N (or N through M).  Arg can be used many times.\n\
-          In N is a file rather than a number, read list from file instead.\n\
+          If N is a file rather than a number, read list from file instead.\n\
   -c      ignore non-complete connections (didn't see syn's and fin's)\n\
   -BN     first segment number to analyze (default 1)\n\
   -EN     last segment number to analyze (default last in file)\n\
