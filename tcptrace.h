@@ -1126,3 +1126,11 @@ struct ipaddr *IPV6ADDR2ADDR(struct in6_addr *addr6);
 #define ETHERTYPE_VLAN		0x8100
 #endif	/* 802.1Q Virtual LAN */
 
+/* support for PPPoE encapsulation added by Yann Samama (ysamama@nortelnetworks.com)*/
+#ifndef ETHERTYPE_PPPOE_SESSION
+#define ETHERTYPE_PPPOE_SESSION	0x8864
+#endif /* PPPoE ether type */
+#ifndef PPPOE_SIZE
+#define PPPOE_SIZE		22
+#endif /* PPPOE header size */
+

@@ -531,3 +531,9 @@ the -C option.
 
 Included the code to recognize Endace ERF (Extensible Record Format), sent
 by Jesper Peterson.
+
+6.4.10: 14 Aug 2003 Jitesh
+------
+
+Included the code to recognize the PPP (Point-to-Point) input file format,
+sent by Yann Samama.

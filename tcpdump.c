@@ -106,9 +106,25 @@ static int callback(
 	/* for some reason, the windows version of tcpdump is using */
 	/* this.  It looks just like ethernet to me */
       case PCAP_DLT_EN10MB:
-	memcpy(&eth_header,buf,EH_SIZE);  /* save ether header */
-	memcpy(ip_buf,buf+EH_SIZE,iplen);
-	callback_plast = (char *)ip_buf+iplen-EH_SIZE-1;
+	offset = find_ip_eth(buf); /* Here we check if we are dealing with Straight Ethernet encapsulation or PPPoE */
+	memcpy(&eth_header, buf, EH_SIZE); /* save ether header */
+	switch (offset)
+	{
+		case -1: /* Not an IP packet */
+			return (-1);
+		case EH_SIZE: /* straight Ethernet encapsulation */
+			memcpy((char *)ip_buf,buf+offset,iplen);
+			callback_plast = ip_buf+iplen-offset-1;
+			break;
+		case PPPOE_SIZE: /* PPPoE encapsulation */
+			/* we use a fake ether type here */
+			eth_header.ether_type = htons(ETHERTYPE_IP);
+			memcpy((char *)ip_buf,buf+offset,iplen);
+			callback_plast = ip_buf+iplen-offset-1;
+			break;
+		default: /* should not be used, but we never know ... */
+			return (-1);
+	}
 	break;
       case PCAP_DLT_IEEE802:
 	/* just pretend it's "normal" ethernet */
@@ -120,6 +136,14 @@ static int callback(
       case PCAP_DLT_SLIP:
 	memcpy(ip_buf,buf+16,iplen);
 	callback_plast = (char *)ip_buf+iplen-16-1;
+	break;
+      case PCAP_DLT_PPP:
+	/* deals with raw PPP and also with HDLC PPP frames */
+	offset = find_ip_ppp(buf);
+	if (offset < 0) /* Not an IP packet */
+		return (-1);
+	memcpy((char *)ip_buf,buf+offset,iplen);
+	callback_plast = ip_buf+iplen-offset-1;
 	break;
       case PCAP_DLT_FDDI:
 	if (offset < 0)
@@ -298,6 +322,10 @@ case 100:
       case PCAP_DLT_SLIP:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "Slip";
+	break;
+      case PCAP_DLT_PPP:
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "PPP or HDLC PPP";
 	break;
       case PCAP_DLT_FDDI:
 	eth_header.ether_type = htons(ETHERTYPE_IP);

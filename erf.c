@@ -231,7 +231,14 @@ pread_erf(
             *ptlen = HDLC_SLEN(record);
             *plen = HDLC_WLEN(record);
             *pphys = &eth_header;
-            ether_type = ntohs(((unsigned short *)&record->rec.pos.hdlc)[1]);
+            /* Detect PPP and convert the Ethertype value */
+            if (ntohs(((unsigned short *)&record->rec.pos.hdlc)[0]) == 0xff03) {
+              if (ntohs(((unsigned short *)&record->rec.pos.hdlc)[1]) == 0x0021) {
+                ether_type = ETHERTYPE_IP;
+              }
+            } else {
+              ether_type = ntohs(((unsigned short *)&record->rec.pos.hdlc)[1]);
+            }
             *ppip = (struct ip *)&record->rec.pos.pload[0];
             *pplast = ((char *)*ppip)+*ptlen-4-1;
             break;
@@ -328,7 +335,7 @@ is_erf(
         ts[0] = pletohl(&record->ts[0]); /* frac */
         ts[1] = pletohl(&record->ts[1]); /* sec */
 
-        if ((ts[1] < prevts[1]) || (ts[1] >= prevts[1] && ts[0] < prevts[0])) {
+        if ((ts[1] < prevts[1]) || (ts[1] == prevts[1] && ts[0] < prevts[0])) {
             rewind(SYS_STDIN);
             return(NULL);
         }

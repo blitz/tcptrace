@@ -79,6 +79,7 @@ static char const rcsid_tcpdump[] =
 #define PCAP_DLT_EN10MB		1	/* Ethernet (10Mb) */
 #define PCAP_DLT_IEEE802	6	/* IEEE 802 Networks */
 #define PCAP_DLT_SLIP		8	/* Serial Line IP */
+#define PCAP_DLT_PPP            9       /* Point-to-Point Protocol */
 #define PCAP_DLT_FDDI		10	/* FDDI */
 #define PCAP_DLT_ATM_RFC1483	11	/* LLC/SNAP encapsulated atm */
 #define PCAP_DLT_RAW		12	/* raw IP */
@@ -95,7 +96,6 @@ static char const rcsid_tcpdump[] =
 #define PCAP_DLT_PRONET		4	/* Proteon ProNET Token Ring */
 #define PCAP_DLT_CHAOS		5	/* Chaos */
 #define PCAP_DLT_ARCNET		7	/* ARCNET */
-#define PCAP_DLT_PPP		9	/* Point-to-point Protocol */
 #define PCAP_DLT_SLIP_BSDOS	13	/* BSD/OS Serial Line IP */
 #define PCAP_DLT_PPP_BSDOS	14	/* BSD/OS Point-to-point Protocol */
 
@@ -175,4 +175,78 @@ static int find_ip_fddi(char* buf, int iplen) {
       }
       return (ptr2 - buf + 1);
       
+}
+
+/* This function determine the offset for the IP packet in an Ethernet frame */
+/* We handle two cases : straight Ethernet encapsulation or PPPoE encapsulation */
+/* Written by Yann Samama (ysamama@nortelnetworks.com) on july 18th, 2003 */
+static int find_ip_eth(char* buf)
+{
+	unsigned short ppp_proto_type; /* the protocol type field of the PPP header */
+	unsigned short eth_proto_type; /* the protocol type field of the Ethernet header */
+	int offset = -1;               /* the calculated offset that this function will return */
+
+	memcpy(&eth_proto_type, buf+12, 2);
+	eth_proto_type = ntohs(eth_proto_type);
+	switch (eth_proto_type)
+	{
+		case ETHERTYPE_IPV6: /* it's pure IPv6 over ethernet */
+			offset = 14;
+			break;
+		case ETHERTYPE_IP: /* it's pure IPv4 over ethernet */
+			offset = 14;
+			break;
+		case ETHERTYPE_PPPOE_SESSION: /* it's a PPPoE session */
+			memcpy(&ppp_proto_type, buf+20, 2);
+			ppp_proto_type = ntohs(ppp_proto_type);
+			if (ppp_proto_type == 0x0021) /* it's IP over PPPoE */
+				offset = PPPOE_SIZE;
+			break;
+		default: /* well, this is not an IP packet */
+			offset = -1;
+			break;			
+	}
+	return offset;
+}
+
+
+
+/* This function determine the offset for the IP packet in a PPP or HDLC PPP frame */
+/* Written by Yann Samama (ysamama@nortelnetworks.com) on june 19th, 2003 */
+static int find_ip_ppp(char* buf)
+{
+	unsigned char ppp_byte0;       /* the first byte of the PPP frame */
+	unsigned short ppp_proto_type; /* the protocol type field of the PPP header */
+	int offset = -1;               /* the calculated offset that this function will return */
+
+	memcpy(&ppp_byte0, buf, 1);
+	switch (ppp_byte0)
+	{
+		case 0xff:    /* It is HDLC PPP encapsulation (2 bytes for HDLC and 2 bytes for PPP) */
+			memcpy(&ppp_proto_type, buf+2, 2);
+			ppp_proto_type = ntohs(ppp_proto_type);
+			if (ppp_proto_type == 0x21)    /* That means HDLC PPP is encapsulating IP */
+				offset = 4;
+			else  /* That means PPP is *NOT* encapsulating IP */
+				offset = -1;
+			break;
+
+		case 0x21:   /* It is raw PPP encapsulation of IP with compressed (1 byte) protocol field */
+			offset = 1;
+			break;
+
+		case 0x00:   /* It is raw PPP encapsulation */
+			memcpy(&ppp_proto_type, buf, 2);
+			ppp_proto_type = ntohs(ppp_proto_type);
+			if (ppp_proto_type == 0x21)    /* It is raw PPP encapsulation of IP with uncompressed (2 bytes) protocol field */
+				offset = 2;
+			else  /* That means PPP is *NOT* encapsulating IP */
+				offset = -1;
+			break;
+
+		default: /* There is certainly not an IP packet there ...*/
+			offset = -1;
+			break;
+	}
+	return offset;
 }
