@@ -59,6 +59,15 @@ TCP connection 1:
      RTT max:                 1.1 ms        RTT max:                 0.0 ms   
      RTT avg:                 1.1 ms        RTT avg:                 0.0 ms   
      RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           1.1 ms        RTT from 3WHS:           0.0 ms   
+
+     RTT full_sz smpls:         1           RTT full_sz smpls:         0      
+     RTT full_sz min:         1.1 ms        RTT full_sz min:         0.0 ms   
+     RTT full_sz max:         1.1 ms        RTT full_sz max:         0.0 ms   
+     RTT full_sz avg:         1.1 ms        RTT full_sz avg:         0.0 ms   
+     RTT full_sz stdev:       0.0 ms        RTT full_sz stdev:       0.0 ms   
+
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
      duplicate acks:            0           duplicate acks:            0      
@@ -124,6 +133,15 @@ TCP connection 2:
      RTT max:                 4.7 ms        RTT max:                 0.0 ms   
      RTT avg:                 4.7 ms        RTT avg:                 0.0 ms   
      RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           4.7 ms        RTT from 3WHS:           0.0 ms   
+
+     RTT full_sz smpls:         1           RTT full_sz smpls:         0      
+     RTT full_sz min:         4.7 ms        RTT full_sz min:         0.0 ms   
+     RTT full_sz max:         4.7 ms        RTT full_sz max:         0.0 ms   
+     RTT full_sz avg:         4.7 ms        RTT full_sz avg:         0.0 ms   
+     RTT full_sz stdev:       0.0 ms        RTT full_sz stdev:       0.0 ms   
+
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:            0           segs cum acked:            0      
      duplicate acks:            0           duplicate acks:            0      
@@ -188,6 +206,15 @@ TCP connection 3:
      RTT max:                85.0 ms        RTT max:                50.6 ms   
      RTT avg:                 1.9 ms        RTT avg:                25.6 ms   
      RTT stdev:               4.7 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           1.3 ms        RTT from 3WHS:          50.6 ms   
+
+     RTT full_sz smpls:       273           RTT full_sz smpls:         1      
+     RTT full_sz min:         1.2 ms        RTT full_sz min:         0.6 ms   
+     RTT full_sz max:        85.0 ms        RTT full_sz max:         0.6 ms   
+     RTT full_sz avg:         1.9 ms        RTT full_sz avg:         0.6 ms   
+     RTT full_sz stdev:       5.1 ms        RTT full_sz stdev:       0.0 ms   
+
      post-loss acks:            2           post-loss acks:            0      
      segs cum acked:          289           segs cum acked:            0      
      duplicate acks:          123           duplicate acks:          601      
@@ -252,6 +279,15 @@ TCP connection 4:
      RTT max:                11.9 ms        RTT max:                47.5 ms   
      RTT avg:                 7.1 ms        RTT avg:                24.0 ms   
      RTT stdev:               2.7 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           1.0 ms        RTT from 3WHS:          47.5 ms   
+
+     RTT full_sz smpls:       231           RTT full_sz smpls:         1      
+     RTT full_sz min:         1.7 ms        RTT full_sz min:         0.5 ms   
+     RTT full_sz max:        11.9 ms        RTT full_sz max:         0.5 ms   
+     RTT full_sz avg:         7.2 ms        RTT full_sz avg:         0.5 ms   
+     RTT full_sz stdev:       2.7 ms        RTT full_sz stdev:       0.0 ms   
+
      post-loss acks:           54           post-loss acks:            0      
 	  For the following 5 RTT statistics, only ACKs for
 	  multiply-transmitted segments (ambiguous ACKs) were
@@ -327,6 +363,15 @@ TCP connection 5:
      RTT max:                 0.0 ms        RTT max:                43.7 ms   
      RTT avg:                 0.0 ms        RTT avg:                43.7 ms   
      RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           0.0 ms        RTT from 3WHS:          43.7 ms   
+
+     RTT full_sz smpls:         0           RTT full_sz smpls:         1      
+     RTT full_sz min:         0.0 ms        RTT full_sz min:        43.7 ms   
+     RTT full_sz max:         0.0 ms        RTT full_sz max:        43.7 ms   
+     RTT full_sz avg:         0.0 ms        RTT full_sz avg:        43.7 ms   
+     RTT full_sz stdev:       0.0 ms        RTT full_sz stdev:       0.0 ms   
+
      post-loss acks:            1           post-loss acks:            0      
 	  For the following 5 RTT statistics, only ACKs for
 	  multiply-transmitted segments (ambiguous ACKs) were

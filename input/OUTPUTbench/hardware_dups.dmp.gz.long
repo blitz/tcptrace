@@ -60,6 +60,15 @@ TCP connection 1:
      RTT max:                 1.4 ms        RTT max:                 0.0 ms   
      RTT avg:                 1.2 ms        RTT avg:                 0.0 ms   
      RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           1.4 ms        RTT from 3WHS:           0.0 ms   
+
+     RTT full_sz smpls:         1           RTT full_sz smpls:         0      
+     RTT full_sz min:         0.9 ms        RTT full_sz min:         0.0 ms   
+     RTT full_sz max:         0.9 ms        RTT full_sz max:         0.0 ms   
+     RTT full_sz avg:         0.9 ms        RTT full_sz avg:         0.0 ms   
+     RTT full_sz stdev:       0.0 ms        RTT full_sz stdev:       0.0 ms   
+
      post-loss acks:            0           post-loss acks:           10      
 	  For the following 5 RTT statistics, only ACKs for
 	  multiply-transmitted segments (ambiguous ACKs) were

@@ -60,6 +60,15 @@ TCP connection 1:
      RTT max:                80.0 ms        RTT max:                 0.0 ms   
      RTT avg:                 0.0 ms        RTT avg:                 0.0 ms   
      RTT stdev:               1.1 ms        RTT stdev:               0.0 ms   
+
+     RTT from 3WHS:           0.0 ms        RTT from 3WHS:           0.0 ms   
+
+     RTT full_sz smpls:      5826           RTT full_sz smpls:         1      
+     RTT full_sz min:        10.0 ms        RTT full_sz min:         0.0 ms   
+     RTT full_sz max:        30.0 ms        RTT full_sz max:         0.0 ms   
+     RTT full_sz avg:         0.0 ms        RTT full_sz avg:         0.0 ms   
+     RTT full_sz stdev:       0.7 ms        RTT full_sz stdev:       0.0 ms   
+
      post-loss acks:            0           post-loss acks:            0      
      segs cum acked:         9308           segs cum acked:            0      
      duplicate acks:            9           duplicate acks:        17992      
