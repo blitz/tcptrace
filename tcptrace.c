@@ -1349,19 +1349,24 @@ ParseExtendedArg(
     struct ext_bool_op *pbop_found = NULL;
     struct ext_bool_op *pbop_prefix = NULL;
     Bool prefix_ambig = FALSE;
+    Bool negative_arg_prefix;
     char *argtext;
     int arglen;
 
     /* there must be at least SOME text there */
-    if (strcmp(arg,"--") == 0)
+    if ((strcmp(arg,"--") == 0) || (strcmp(arg,"--no") == 0))
 	BadArg(argsource, "Void extended argument\n");
 
     /* find just the arg text */
-    if (strncmp(arg,"--no",4) == 0)
+    if (strncmp(arg,"--no",4) == 0) {
 	argtext = arg+4;
-    else
+	negative_arg_prefix = TRUE;
+    } else {
 	argtext = arg+2;
+	negative_arg_prefix = FALSE;
+    }
     arglen = strlen(argtext);
+
 
     /* search for a match on each extended arg */
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
@@ -1389,21 +1394,16 @@ ParseExtendedArg(
 	return;
     }
 
-    /* if exact match, do it */
+    /* if the prefix is UNambiguous, that's good enough */
+    if ((pbop_prefix != NULL) && (!prefix_ambig))
+	pbop_found = pbop_prefix;
+
+    /* either exact match or good prefix, do it */
     if (pbop_found != NULL) {
-	if (strncmp(arg,"--no",4) == 0)
+	if (negative_arg_prefix)
 	    *pbop_found->bool_popt = !pbop_found->bool_default;
 	else
 	    *pbop_found->bool_popt = pbop_found->bool_default;
-	return;
-    }
-
-    /* if unambig prefix match, do THAT */
-    if ((pbop_prefix != NULL) && (!prefix_ambig)) {
-	if (strncmp(arg,"--no",4) == 0)
-	    *pbop_prefix->bool_popt = !pbop_prefix->bool_default;
-	else
-	    *pbop_prefix->bool_popt = pbop_prefix->bool_default;
 	return;
     }
 
@@ -1412,8 +1412,11 @@ ParseExtendedArg(
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
 	if (strncmp(argtext,pbop->bool_optname,arglen) == 0)
-	    fprintf(stderr,"  %s - %s\n",
-		pbop->bool_optname, pbop->bool_descr);
+	    fprintf(stderr,"  %s%s - %s%s\n",
+		    negative_arg_prefix?"no":"",
+		    pbop->bool_optname,
+		    negative_arg_prefix?"DON'T ":"",
+		    pbop->bool_descr);
     }
     BadArg(argsource, "Ambiguous extended argument '%s'\n", arg);
     
