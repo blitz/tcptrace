@@ -25,8 +25,8 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
-static char const rcsid_http[] =
-   "$Id$";
+static char const rcsid[] =
+   "$Header$";
 
 #ifdef LOAD_MODULE_HTTP
 

@@ -25,8 +25,8 @@
  * 		Athens, OH
  *		ostermann@cs.ohiou.edu
  */
-static char const rcsid_traffic[] =
-   "$Id$";
+static char const rcsid[] =
+   "$Header$";
 
 #ifdef LOAD_MODULE_TRAFFIC
 

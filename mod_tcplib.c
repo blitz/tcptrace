@@ -27,7 +27,7 @@
  * Modified:    Shawn Ostermann
  */
 static char const rcsid[] =
-   "$Id$";
+   "$Header$";
 
 #ifdef LOAD_MODULE_TCPLIB
 
