@@ -106,7 +106,7 @@ Connection filtering options\n\
   -BN     first segment number to analyze (default 1)\n\
   -EN     last segment number to analyze (default last in file)\n\
 Graphing detail options\n\
-  -C      produce color plot[s] (modified xplot needed)\n\
+  -C      produce color plot[s]\n\
   -M      produce monochrome (b/w) plot[s]\n\
   -AN     Average N segments for throughput graphs, default is 10\n\
 Misc options\n\
