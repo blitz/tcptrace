@@ -869,12 +869,16 @@ for other packet types, I just don't have a place to test them\n\n");
 	if (ptp == NULL)
 	    continue;
 
-	/* if it's a new connection, tell the modules */
-	if (ptp->packets == 1)
-	    ModulesPerConn(ptp);
+	/* unless this connection is being ignored, tell the modules */
+	/* about it */
+	if (!ptp->ignore_pair) {
+	    /* if it's a new connection, tell the modules */
+	    if (ptp->packets == 1)
+		ModulesPerConn(ptp);
 
-	/* also, pass the packet to any modules defined */
-	ModulesPerPacket(pip,ptp,plast);
+	    /* also, pass the packet to any modules defined */
+	    ModulesPerPacket(pip,ptp,plast);
+	}
 
 	/* for efficiency, only allow a signal every 1000 packets	*/
 	/* (otherwise the system call overhead will kill us)		*/
