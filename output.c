@@ -235,9 +235,9 @@ PrintTrace(
        /* Print the start and end times. In other words,
 	* print the time of the first and the last packet
 	*/ 
-       fprintf(stdout,"%lu.%lu %s %lu.%lu %s",
-	       ptp->first_time.tv_sec, ptp->first_time.tv_usec, sp,
-	       ptp->last_time.tv_sec,  ptp->last_time.tv_usec,  sp);
+       fprintf(stdout,"%ld.%ld %s %ld.%ld %s",
+	       (long)ptp->first_time.tv_sec, (long)ptp->first_time.tv_usec, sp,
+	       (long)ptp->last_time.tv_sec, (long)ptp->last_time.tv_usec, sp);
        sv_print_count += 2;      
     }
     else {
@@ -1139,11 +1139,11 @@ PrintSVHeader(
      sv_expected_count += SV_OWIN_HEADER_COLUMN_COUNT;
 
    if (debug>3) {
-     fprintf(stderr,"SV_HEADER_COUNT : -l alone = %d\n", \
+     fprintf(stderr,"SV_HEADER_COUNT : -l alone = %lu\n", \
             (SV_HEADER1_COLUMN_COUNT + SV_HEADER2_COLUMN_COUNT));
-     fprintf(stderr,"                : -W alone = %d\n", \
+     fprintf(stderr,"                : -W alone = %lu\n", \
             SV_OWIN_HEADER_COLUMN_COUNT);
-     fprintf(stderr,"                : -r alone = %d\n", \
+     fprintf(stderr,"                : -r alone = %lu\n", \
             SV_RTT_HEADER_COLUMN_COUNT);
     
      fprintf(stderr,"sv_expected_count=%u\n",sv_expected_count);

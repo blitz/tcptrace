@@ -534,6 +534,14 @@ NewTTP(
 		new_line(ptp->a2b.owin_plotter, "owin", "red");
 	    ptp->b2a.owin_line =
 		new_line(ptp->b2a.owin_plotter, "owin", "red");
+
+	    if (show_rwinline) {
+	      ptp->a2b.rwin_line =
+	        new_line(ptp->a2b.owin_plotter, "rwin", "yellow");
+	      ptp->b2a.rwin_line =
+	        new_line(ptp->b2a.owin_plotter, "rwin", "yellow");
+	    }
+	  
 	    ptp->a2b.owin_avg_line =
 		new_line(ptp->a2b.owin_plotter, "avg owin", "blue");
 	    ptp->b2a.owin_avg_line =
@@ -1150,6 +1158,13 @@ RemoveTcpPair(
   if (ptp->a2b.owin_line) {
     free(ptp->a2b.owin_line);
   }
+  
+  if (show_rwinline) {
+    if (ptp->a2b.rwin_line) {
+      free(ptp->a2b.rwin_line);
+    }
+  }
+    
   if (ptp->a2b.owin_avg_line) {
     free(ptp->a2b.owin_avg_line);
   }
@@ -1159,6 +1174,13 @@ RemoveTcpPair(
   if (ptp->b2a.owin_line) {
     free(ptp->b2a.owin_line);
   }
+  
+  if (show_rwinline) {
+    if (ptp->b2a.rwin_line) {
+      free(ptp->b2a.rwin_line);
+    }
+  }
+  
   if (ptp->b2a.owin_avg_line) {
     free(ptp->b2a.owin_avg_line);
   }
@@ -2282,6 +2304,10 @@ dotrace(
 	/* graph owin */
 	if (thisdir->owin_plotter != NO_PLOTTER) {
 	    extend_line(thisdir->owin_line, current_time, owin);
+	    if (show_rwinline) {
+	      extend_line(thisdir->rwin_line, current_time, 
+			  otherdir->win_last);
+	    }
 	    extend_line(thisdir->owin_avg_line, current_time,
 			(thisdir->owin_count?(thisdir->owin_tot/thisdir->owin_count):0)); 
 	}

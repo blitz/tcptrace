@@ -575,3 +575,13 @@ ipv6.h for the in6_addr structure definition.
 Patching in changes to mod_http.c making it more robust to print
 information in cases where connections get closed with RST instead of
 FINs and other trivia based on Yufei Wang's patch.
+
+6.4.16: 31 OCT 2003 Mani
+------
+
+Applying the patch courtesy John Heffner that displays a yellow rwnd line
+in owin plots. Also adding --showrwinline option to control the yellow
+rwnd line, in case it gets annoying.
+
+Also fixing trivia (type conversions for certain uint to int, etc.) in 
+output.c to keep gcc3.3 from warning on MacOSX 10.3.

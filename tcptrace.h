@@ -471,6 +471,7 @@ typedef struct tcb {
     /* Congestion window graph */
     PLOTTER	owin_plotter;
     PLINE	owin_line;
+    PLINE       rwin_line;
     PLINE	owin_avg_line;
     PLINE 	owin_wavg_line;
 
@@ -711,6 +712,7 @@ extern Bool plot_tput_instant;
 extern Bool filter_output;
 extern Bool do_udp;
 extern Bool show_title;
+extern Bool show_rwinline;
 extern Bool docheck_hw_dups;
 /* constants for real-time (continuous) mode */
 extern Bool run_continuously;
