@@ -346,10 +346,24 @@ plotter_done(void)
     PLOTTER pl;
     MFILE *f;
     char *fname;
+	static struct dstring *xplot_cmd_buff=NULL;
+
+	if(plotter_ix>0) {
+		if(xplot_all_files) {
+			xplot_cmd_buff=DSNew();
+			DSAppendString(xplot_cmd_buff,"xplot");
+			DSAppendString(xplot_cmd_buff," ");
+			if(xplot_args!=NULL) {
+				DSAppendString(xplot_cmd_buff,xplot_args);
+				DSAppendString(xplot_cmd_buff," ");
+			}
+		}
+	}
 
     for (pl = 0; pl < plotter_ix; ++pl) {
 	struct plotter_info *ppi = &pplotters[pl];
 	
+
 	if ((f = ppi->fplot) == NULL)
 	    continue;
 	
@@ -366,7 +380,21 @@ plotter_done(void)
 	    if (unlink(fname) != 0)
 		perror(fname);
 	}
+
+	if(xplot_all_files){
+		DSAppendString(xplot_cmd_buff,ppi->filename);
+		DSAppendString(xplot_cmd_buff," ");	
+	}
     }
+
+	if(plotter_ix>0) {
+		if(xplot_all_files) {
+			if(debug)
+				fprintf(stderr,"%s\n",DSVal(xplot_cmd_buff));
+			system(DSVal(xplot_cmd_buff));
+			DSDestroy(&xplot_cmd_buff);
+		}
+	}
 }
 
 
