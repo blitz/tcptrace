@@ -610,11 +610,31 @@ extend_line(
 
     p = pline->plotter;
 
+#ifdef OLD
     /* attach a label to the first non-zero point */
     if (!pline->labelled) {
 	if (yval != 0) {
 	    plotter_temp_color(p, pline->color);
 	    plotter_text(p, xval, yval, "l", pline->label);
+	    pline->labelled = 1;
+	}
+    }
+#endif
+
+    /* attach a label midway between the first and second point */
+    if (!pline->labelled) {
+	if (pline->last_y != 0) {
+	    timeval tv_avg;
+	    plotter_temp_color(p, pline->color);
+
+	    /* average of last time and this time */
+	    tv_avg.tv_sec = (pline->last_time.tv_sec + xval.tv_sec)/2;
+	    tv_avg.tv_usec = (pline->last_time.tv_usec + xval.tv_usec)/2;
+
+	    plotter_text(p,
+			 tv_avg,
+			 (pline->last_y+yval)/2,
+			 "l", pline->label);
 	    pline->labelled = 1;
 	}
     }
