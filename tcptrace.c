@@ -949,7 +949,6 @@ StringToArgv(
 {
     char **argv;
     int nargs = 0;
-    int debug = 20;
 
     /* (very pessimistically) make the argv array */
     argv = malloc(sizeof(char *) * ((strlen(buf)/2)+1));
