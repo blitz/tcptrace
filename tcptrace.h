@@ -526,6 +526,7 @@ double elapsed(timeval, timeval);
 void tv_sub(struct timeval *plhs, struct timeval rhs);
 void tv_add(struct timeval *plhs, struct timeval rhs);
 int tv_cmp(struct timeval lhs, struct timeval rhs);
+Bool tv_same(struct timeval lhs, struct timeval rhs);
 char *elapsed2str(double etime);
 int ConnReset(tcp_pair *);
 int ConnComplete(tcp_pair *);
