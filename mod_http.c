@@ -915,7 +915,9 @@ http_usage(void)
 
 void
 http_newfile(
-    char *newfile)
+    char *newfile,
+    u_long filesize,
+    Bool fcompressed)
 {
     /* just an example, really */
 }

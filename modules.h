@@ -70,7 +70,9 @@ struct module {
 
     /* If you want to be called as each file is processed */
     void (*module_newfile)(
-	char *filename);	/* the name of the current file */
+	char *filename,		/* the name of the current file */
+	u_long filesize,	/* number of bytes in file (might be compressed) */
+	Bool fcompressed);	/* is the file compressed? */
 
     /* If you want to be called for each new connection */
     /* If you want to attach a module-specifi structure to this */
