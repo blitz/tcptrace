@@ -1,4 +1,4 @@
-There are currently four mailing lists which pertain to tcptrace.  The
+There are currently four mailing lists that pertain to tcptrace.  The
 two intended for normal users are the "tcptrace" and "tcptrace-announce"
 mailing lists.
 
@@ -7,13 +7,13 @@ one or two messages a year.  Everyone who uses tcptrace is encouraged to
 subscribe to this list, as it is used to spread the word when significant
 new versions of the program come out and major bugs are found and fixed.
 You can subscribe to the tcptrace-announce list by sending an email to
-majordomo@tcptrace.org which contains the text "subscribe tcptrace-announce".
+majordomo@tcptrace.org that contains the text "subscribe tcptrace-announce".
 Should you wish to be removed from the list, all you need to do is send
 an email to majordomo@tcptrace.org with the text "unsubscribe tcptrace-announce"
 in the body.  No one except the list owner at tcptrace.org may post to this
 list.
 
-The list which serves as a forum for most tcptrace related discussion can
+The list that serves as a forum for most tcptrace related discussion can
 be subscribed to by sending email to majordomo@tcptrace.org with the text
 "subscribe tcptrace" contained in the body.  Unsubscribing is as easy as
 sending majordomo@tcptrace.org a message containing "unsubscribe tcptrace" in
@@ -39,11 +39,11 @@ the list which you can use to contact all the people responsible for keeping
 up the tcptrace mailing lists, website, and CVS tree.  Problems compiling
 tcptrace and questions about how to use the software or interpreting the
 output it produces should be addressed to the tcptrace-maintainers list.
-You will generally recieve an answer fairly promptly.
+You will generally receive an answer fairly promptly.
 
-tcptrace was written by Shawn Ostermann at Ohio University, who can be reached
-at ostermann@cs.ohiou.edu to give personal thanks or ask questions about the
-licensing of the software.
+tcptrace was written by Shawn Ostermann at Ohio University, who can be
+reached at ostermann@cs.ohiou.edu to ask questions about the licensing
+of the software.
 
 HTML archives of the "tcptrace" and "tcptrace-bugs" lists can be found on
 the tcptrace website at http://www.tcptrace.org.
