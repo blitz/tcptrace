@@ -252,4 +252,4 @@ int (*is_EP(void))()
     return(pread_EP);
 }
 
-#endif GROK_ETHERPEEK
+#endif /* GROK_ETHERPEEK */

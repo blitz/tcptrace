@@ -66,31 +66,31 @@ struct supported_formats {
 /* give the prototypes for the is_GLORP() routines supported */
 #ifdef GROK_SNOOP
 	int (*is_snoop(void))();
-#endif GROK_SNOOP
+#endif /* GROK_SNOOP */
 #ifdef GROK_NETM
 	int (*is_netm(void))();
-#endif GROK_NETM
+#endif /* GROK_NETM */
 #ifdef GROK_TCPDUMP
 	int (*is_tcpdump(void))();
-#endif GROK_TCPDUMP
+#endif /* GROK_TCPDUMP */
 #ifdef GROK_ETHERPEEK
 	int (*is_EP(void))();
-#endif GROK_ETHERPEEK
+#endif /* GROK_ETHERPEEK */
 
 
 /* install the is_GLORP() routines supported */
 struct supported_formats file_formats[] = {
 #ifdef GROK_TCPDUMP
 	{is_tcpdump,	"tcpdump","tcpdump -- Public domain program from LBL"},
-#endif GROK_TCPDUMP
+#endif /* GROK_TCPDUMP */
 #ifdef GROK_SNOOP
 	{is_snoop,	"snoop","Sun Snoop -- Distributed with Solaris"},
-#endif GROK_SNOOP
+#endif /* GROK_SNOOP */
 #ifdef GROK_ETHERPEEK
 	{is_EP,		"etherpeek", "etherpeek -- Mac sniffer program"},
-#endif GROK_ETHERPEEK
+#endif /* GROK_ETHERPEEK */
 #ifdef GROK_NETM
 	{is_netm,	"netmetrix","Net Metrix -- Commercial program from HP"},
-#endif GROK_NETM
+#endif /* GROK_NETM */
 	{NULL,NULL},	/* You must NOT remove this entry */
 };

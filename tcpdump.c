@@ -188,4 +188,4 @@ int (*is_tcpdump(void))()
     return(pread_tcpdump);
 }
 
-#endif GROK_TCPDUMP
+#endif /* GROK_TCPDUMP */

@@ -331,7 +331,7 @@ for other packet types, I just don't have a place to test them\n\n");
         /* perform packet analysis */
 	plast = (void *)((unsigned)pip + tlen - 1);
 	if (phystype == PHYS_ETHER)
-	    plast -= sizeof(struct ether_header);
+	    plast = (void *)((u_int)plast - sizeof(struct ether_header));
 	dotrace(pip,plast);
 
 	/* for efficiency, only allow a signal every 1000 packets	*/
@@ -359,7 +359,6 @@ for other packet types, I just don't have a place to test them\n\n");
 	sigprocmask(SIG_UNBLOCK, &mask, NULL);
 	signal(SIGINT,SIG_DFL);
     }
-
 }
 
 

@@ -428,3 +428,16 @@ struct tcp_options {
 #define RTT_GRAPH_FILE_EXTENSION	"_rtt.xpl"
 #define PLOT_FILE_EXTENSION		"_tsg.xpl"
 #define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"
+
+
+/*
+ * fixes for various systems that aren't exactly like Solaris
+ */
+#ifndef IP_MAXPACKET
+#define IP_MAXPACKET 65535
+#endif /* IP_MAXPACKET */
+
+#ifndef ETHERTYPE_REVARP
+#define ETHERTYPE_REVARP        0x8035
+#endif /* ETHERTYPE_REVARP */
+

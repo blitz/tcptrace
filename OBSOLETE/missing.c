@@ -9,6 +9,15 @@
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 
+/*
+ * According to Rich Jones at HP, there is no ether_ntoa under HPUX.
+ */
+#ifdef __hpux
+#define NEED_ETHER_NTOA
+#endif /* __hpux */
+
+
+
 #ifdef NEED_ETHER_NTOA
 /* ether_ntoa doesn't exist on at least some HP machines. */
 /* how about: */

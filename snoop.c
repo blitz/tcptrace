@@ -160,7 +160,4 @@ int (*is_snoop(void))()
 
     return(pread_snoop);
 }
-#endif GROK_SNOOP
-
-
-
+#endif /* GROK_SNOOP */

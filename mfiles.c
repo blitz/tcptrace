@@ -243,7 +243,7 @@ M_printlru(void)
 	fprintf(stderr,"%s ==> ", pmf->fname);
     fprintf(stderr,"NULL \n");
 }
-#endif OLD
+#endif /* OLD */
 
 
 static void

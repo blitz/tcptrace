@@ -212,5 +212,5 @@ int (*is_netm(void))()
     return(pread_netm);
 }
 
-#endif GROK_NETM
+#endif /* GROK_NETM */
 
