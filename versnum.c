@@ -55,6 +55,7 @@ static char const rcsid_versnum[] =
     "@(#)$Header$";
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "version.h"
 
 int

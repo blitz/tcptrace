@@ -61,6 +61,7 @@ static char const rcsid[] =
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "pool.h"
 
