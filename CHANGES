@@ -559,3 +559,9 @@ zero window advertisements from the opposite direction *not* be treated
 as window probes. Also fixed a compilation problem due to the previous
 patch by Jitesh (moved the "static int count=0" line to the beginning of
 trace_done() function in trace.c).
+
+6.4.14: 12 OCT 2003 Mani
+------
+
+Fixed bunch of gcc3.3.1 warnings in erf.c (unused variable warning), netm.c,
+ns.c (dereferencing type-punned pointer warnings).

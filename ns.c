@@ -268,6 +268,7 @@ int pread_ns_fulltcp(
 	char tt;
 	double timestamp;
 	int junk;
+        unsigned short junkshort;
 	char type[16];
 	char flags[16];
 	int iteration;
@@ -307,7 +308,7 @@ int pread_ns_fulltcp(
 			  &ackno,
 			  &pflags,
 			  &hdrlen,
-			  (unsigned short *)&junk);
+			  &junkshort);
 
 	/* if we can't match all 18 fields, we give up on the file */
 	if (rlen != 18) {
@@ -403,6 +404,7 @@ pread_f *is_ns(char *filename)
     int junk;
     double junkd;
     char junks[20];
+    unsigned short junkshort;
     int hdrlen = 0;
     int pflags = 0;
     char myline[128];  // read into this line and then parse for values
@@ -415,7 +417,12 @@ pread_f *is_ns(char *filename)
 #endif /* __WIN32 */   
 
     fgets(myline, 128, SYS_STDIN);
-    rlen = sscanf(myline, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu %d 0x%x %u %hu", &tt, &junkd, &junk, &junk, (char *)&junks, &junk, (char *)&junks, &junk, &junk, (short *)&junk, &junk, (short *)&junk, &junk, (short *)&junk, &junk, &pflags, &hdrlen, (short *)&junk);
+    rlen = sscanf(myline, 
+		  "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu %d 0x%x %u %hu", 
+		  &tt, &junkd, &junk, &junk, (char *)&junks, &junk, 
+		  (char *)&junks, &junk, &junk, &junkshort, &junk, 
+		  &junkshort, &junk, &junkshort, &junk, &pflags, &hdrlen, 
+		  &junkshort);
 
     if ((rlen = getc(SYS_STDIN)) == EOF) {
 	return(NULL);

@@ -174,7 +174,6 @@ pread_erf(
     void		**pplast)
 {
     int rlen, psize;
-    unsigned long long ts;
     unsigned short ether_type = 0;
 
     /* read the next frames */

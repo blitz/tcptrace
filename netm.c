@@ -176,8 +176,11 @@ pread_netm(
 	}
 
 	if (netm_oldversion) {
+	    void *ptr;
 	    struct netm_packet_header_old *pho;
-	    pho = (struct netm_packet_header_old *) &hdr;
+	  
+	    ptr=&hdr;
+	    pho = (struct netm_packet_header_old *) ptr;
 
 	    ptime->tv_sec  = ntohl(pho->tstamp_secs);
 	    ptime->tv_usec = ntohl(pho->tstamp_usecs);
