@@ -396,32 +396,62 @@ inet_pton(int af, const char *src, void *dst)
 
 
 
-#ifndef HAVE_INET_NTOP
 /*
- * inet_ntop: makes a string address of the 16 byte ipv6 address
+ * my_inet_ntop: makes a string address of the 16 byte ipv6 address
+ * We use our own because various machines print them differently
+ * and I wanted them to all be the same
  */
-const char *inet_ntop(int af, const char *src, char *dst, size_t size)
+char *
+my_inet_ntop(int af, const char *src, char *dst, size_t size)
 {
     int i;
-    u_short s;
-    char *temp;
+    u_short *src_shorts = (u_short *)src;
+    char *ret = dst;
+    Bool did_shorthand = FALSE;
+    Bool doing_shorthand = FALSE;
 
-    temp = dst;
-    for (i = 0; i < 16; i++)
-    {
-	s = (u_short)  src[i];
-	sprintf(dst, "%02x",(s & 0x00ff));  /* make the hi order byte 0 */
-	s = (u_short) src[++i];
-	dst += 2;
-	sprintf(dst, "%02x", (s & 0x00ff));
-	dst += 3;
-	*(dst - 1) = ':';
+    /* sanity check, this isn't general, but doesn't need to be */
+    if (size != INET6_ADDRSTRLEN) {
+	fprintf(stderr,"my_inet_ntop: invalid size argument\n");
+	exit(-1);
     }
+
+
+    /* address is 128 bits == 16 bytes == 8 shorts */
+    for (i = 0; i < 8; i++) {
+	u_short twobytes = src_shorts[i];
+
+	/* handle shorthand notation */
+	if (twobytes == 0) {
+	    if (doing_shorthand) {
+		/* just eat it and continue (except last 2 bytes) */
+		if (i != 7)
+		    continue;
+	    } else if (!did_shorthand) {
+		/* start shorthand */
+		doing_shorthand = TRUE;
+		continue;
+	    }
+	}
+
+	/* terminate shorthand (on non-zero or last 2 bytes) */
+	if (doing_shorthand) {
+	    doing_shorthand = FALSE;
+	    did_shorthand = TRUE;
+	    sprintf(dst, ":");
+	    dst += 1;
+	}
+
+	sprintf(dst, "%04x:", twobytes);
+	dst += 5;
+    }
+
+    /* nuke the trailing ':' */
     *(dst-1) = '\0';
-    dst = temp;
-    return dst;
+
+    return(ret);
 }
-#endif /* HAVE_INET_NTOP */
+
 
 
 /* given an IPv4 IP address, return a pointer to a (static) ipaddr struct */
