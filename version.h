@@ -29,4 +29,12 @@ static char const rcsid_version[] =
     "@(#)$Header$";
 
 
+/* source code version information */
 #define VERSION "Ostermann's tcptrace -- version 4.1.3 -- Tue Dec  9, 1997"
+
+/* build information */
+/* constants filled in when version.c is compiled */
+extern char *built_bywhom;
+extern char *built_when;
+extern char *built_where;
+

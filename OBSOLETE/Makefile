@@ -111,13 +111,21 @@ MODULES= mod_http.c mod_traffic.c
 # Standard files
 CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
 	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c \
-	missing.c compress.c
+	missing.c compress.c version.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
 
 
 
 tcptrace: ${OFILES}
 	${CC} ${LDFLAGS} ${CFLAGS} ${OFILES} -o tcptrace ${LDLIBS}
+
+#
+# special rule for version.c
+# needs to be recompiled EVERY time
+#
+version.o: ${CFILES} Makefile
+	${CC} ${CFLAGS} -o version.o -c version.c \
+	-DBUILT_USER="\"`whoami`\"" -DBUILT_HOST="\"`hostname`\"" -DBUILT_DATE="\"`date`\""
 
 
 #
