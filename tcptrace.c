@@ -263,14 +263,12 @@ ProcessFile(void)
 
 	/* progress counters */
 	if (!printem && printticks) {
-	    if (((pnum <    100) && (pnum %   10 == 0)) ||
-		((pnum <   1000) && (pnum %  100 == 0)) ||
-		((pnum <  10000) && (pnum % 1000 == 0)) ||
-		((pnum >= 10000) && (pnum % 1000 == 0))) {
-		off_t cur_pos;
-		cur_pos = lseek(fileno(stdin),0,SEEK_CUR);
+	    if (((pnum <    100) && (pnum %    10 == 0)) ||
+		((pnum <   1000) && (pnum %   100 == 0)) ||
+		((pnum <  10000) && (pnum %  1000 == 0)) ||
+		((pnum >= 10000) && (pnum % 10000 == 0))) {
 		fprintf(stderr ,"%d %lu%%\r",
-			pnum, (100*cur_pos)/filesize);
+			pnum, (100*ftell(stdin))/filesize);
 	    }
 	    fflush(stderr);
 	}
