@@ -1,0 +1,16 @@
+Fri May 25, 2001
+
+The version 6 beta version mostly compiles fine on Tru64/Alpha
+machines with the following exceptions:
+
+1) You need to modify tcptrace.h to find the unusual definitions that
+   Tru64 uses for the bit-field level TCP and IP fields
+
+#define IP_HL(pip)   ((pip)->ip_vhl&0xf)
+#define IP_V(pip)    ((pip)->ip_vhl>>4)
+#define TH_X2(ptcp)  ((ptcp)->th_xoff&0xf)
+#define TH_OFF(ptcp) ((ptcp)->th_xoff>>4)
+
+2) the NS module can't handle those, so you'll need to remove
+   "-DGROK_NS" from the Makefile (which will remove NS input file support)
+
