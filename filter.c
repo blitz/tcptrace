@@ -1791,6 +1791,6 @@ u_llong
 VFuncServTput(
     tcp_pair *ptp)
 {
-    return(VFuncTput(&ptp->a2b));
+    return(VFuncTput(&ptp->b2a));
 }
 
