@@ -34,7 +34,7 @@ for FILE in *.*; do
   ../tcptrace +t -pn -E100 --checksum ${FILE} | bin/cleanup > ${OUTDIR}/$FILE.packets
   # ALL PLOTS for first 1000 packets
   echo -n " plots"
-  ../tcptrace +t -n -G -E1000 ${FILE} > /dev/null 2>&1
+  ../tcptrace +t -n -G -E1000  --output_dir=. ${FILE} > /dev/null 2>&1
   cksum *.xpl 2>/dev/null | sed 's/[ 	][ 	]*/	/g' > ${OUTDIR}/$FILE.xplots.cksum
 #  tar cf ${OUTDIR}/$FILE.xplots.tar *.xpl 2>/dev/null
   # cleanup
