@@ -519,14 +519,20 @@ typedef struct opt_unknown {
 #define TCPOPT_CCNEW		12	/* T/TCP CC options (rfc1644) */
 #define TCPOPT_CCECHO		13	/* T/TCP CC options (rfc1644) */
 
+/* some compilers seem to want to make "char" unsigned by default, */
+/* which is breaking stuff.  Rather than introduce (more) ugly */
+/* machine dependencies, I'm going to FORCE some chars to be */
+/* signed... */
+typedef signed char s_char;
+
 struct tcp_options {
     short	mss;		/* maximum segment size 	*/
-    char	ws;		/* window scale (1323) 		*/
+    s_char	ws;		/* window scale (1323) 		*/
     long	tsval;		/* Time Stamp Val (1323)	*/
     long	tsecr;		/* Time Stamp Echo Reply (1323)	*/
 
     Bool	sack_req;	/* sacks requested 		*/
-    char	sack_count;	/* sack count in this packet */
+    s_char	sack_count;	/* sack count in this packet */
     sack_block	sacks[MAX_SACKS]; /* sack blocks */
 
     /* echo request and reply */
