@@ -1005,15 +1005,15 @@ TCP connection 13:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 14:
-	host ba:       132.235.67.36:3330
-	host bb:       132.235.67.21:9080
+	host aa:       132.235.67.36:3330
+	host ab:       132.235.67.21:9080
 	complete conn: yes
 	first packet:  Fri Oct  9 18:30:00.720599 1998
 	last packet:   Fri Oct  9 18:30:01.951556 1998
 	elapsed time:  0:00:01.230957
 	total packets: 10
 	filename:      fast_reuse.dmp.gz
-   ba->bb:			      bb->ba:
+   aa->ab:			      ab->aa:
      total packets:             5           total packets:             5      
      ack pkts sent:             4           ack pkts sent:             5      
      pure acks sent:            2           pure acks sent:            3      
@@ -1082,15 +1082,15 @@ TCP connection 14:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 15:
-	host bc:       132.235.67.36:3330
-	host bd:       132.235.67.21:9080
+	host ac:       132.235.67.36:3330
+	host ad:       132.235.67.21:9080
 	complete conn: yes
 	first packet:  Fri Oct  9 18:33:16.117368 1998
 	last packet:   Fri Oct  9 18:33:18.319094 1998
 	elapsed time:  0:00:02.201725
 	total packets: 10
 	filename:      fast_reuse.dmp.gz
-   bc->bd:			      bd->bc:
+   ac->ad:			      ad->ac:
      total packets:             5           total packets:             5      
      ack pkts sent:             4           ack pkts sent:             5      
      pure acks sent:            2           pure acks sent:            3      
@@ -1159,15 +1159,15 @@ TCP connection 15:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 16:
-	host be:       132.235.67.36:3330
-	host bf:       132.235.67.21:9080
+	host ae:       132.235.67.36:3330
+	host af:       132.235.67.21:9080
 	complete conn: yes
 	first packet:  Fri Oct  9 18:36:32.236466 1998
 	last packet:   Fri Oct  9 18:36:33.660158 1998
 	elapsed time:  0:00:01.423691
 	total packets: 10
 	filename:      fast_reuse.dmp.gz
-   be->bf:			      bf->be:
+   ae->af:			      af->ae:
      total packets:             5           total packets:             5      
      ack pkts sent:             4           ack pkts sent:             5      
      pure acks sent:            2           pure acks sent:            3      
@@ -1236,15 +1236,15 @@ TCP connection 16:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 17:
-	host bg:       132.235.67.36:3330
-	host bh:       132.235.67.21:9080
+	host ag:       132.235.67.36:3330
+	host ah:       132.235.67.21:9080
 	complete conn: yes
 	first packet:  Fri Oct  9 18:39:57.584832 1998
 	last packet:   Fri Oct  9 18:40:08.509360 1998
 	elapsed time:  0:00:10.924528
 	total packets: 50
 	filename:      fast_reuse.dmp.gz
-   bg->bh:			      bh->bg:
+   ag->ah:			      ah->ag:
      total packets:            27           total packets:            23      
      ack pkts sent:            26           ack pkts sent:            23      
      pure acks sent:            2           pure acks sent:           21      
@@ -1313,15 +1313,15 @@ TCP connection 17:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 18:
-	host bi:       132.235.67.36:3330
-	host bj:       132.235.67.21:9080
+	host ai:       132.235.67.36:3330
+	host aj:       132.235.67.21:9080
 	complete conn: yes
 	first packet:  Fri Oct  9 18:43:09.051644 1998
 	last packet:   Fri Oct  9 18:43:10.284004 1998
 	elapsed time:  0:00:01.232359
 	total packets: 10
 	filename:      fast_reuse.dmp.gz
-   bi->bj:			      bj->bi:
+   ai->aj:			      aj->ai:
      total packets:             5           total packets:             5      
      ack pkts sent:             4           ack pkts sent:             5      
      pure acks sent:            2           pure acks sent:            3      

@@ -954,15 +954,15 @@ TCP connection 13:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 14:
-	host ba:       132.235.3.128:47496
-	host bb:       132.235.1.2:80
+	host aa:       132.235.3.128:47496
+	host ab:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:30.674875 1997
 	last packet:   Mon Jul 14 13:10:30.912124 1997
 	elapsed time:  0:00:00.237249
 	total packets: 19
 	filename:      http.dmp.gz
-   ba->bb:			      bb->ba:
+   aa->ab:			      ab->aa:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1027,15 +1027,15 @@ TCP connection 14:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 15:
-	host bc:       132.235.3.128:47497
-	host bd:       132.235.1.2:80
+	host ac:       132.235.3.128:47497
+	host ad:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:30.724811 1997
 	last packet:   Mon Jul 14 13:10:30.986332 1997
 	elapsed time:  0:00:00.261521
 	total packets: 19
 	filename:      http.dmp.gz
-   bc->bd:			      bd->bc:
+   ac->ad:			      ad->ac:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1100,15 +1100,15 @@ TCP connection 15:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 16:
-	host be:       132.235.3.128:47498
-	host bf:       132.235.1.2:80
+	host ae:       132.235.3.128:47498
+	host af:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:30.735098 1997
 	last packet:   Mon Jul 14 13:10:31.027841 1997
 	elapsed time:  0:00:00.292743
 	total packets: 19
 	filename:      http.dmp.gz
-   be->bf:			      bf->be:
+   ae->af:			      af->ae:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1173,15 +1173,15 @@ TCP connection 16:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 17:
-	host bg:       132.235.3.128:47499
-	host bh:       132.235.1.2:80
+	host ag:       132.235.3.128:47499
+	host ah:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:30.759000 1997
 	last packet:   Mon Jul 14 13:10:31.024318 1997
 	elapsed time:  0:00:00.265318
 	total packets: 19
 	filename:      http.dmp.gz
-   bg->bh:			      bh->bg:
+   ag->ah:			      ah->ag:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1246,15 +1246,15 @@ TCP connection 17:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 18:
-	host bi:       132.235.3.128:47500
-	host bj:       132.235.1.2:80
+	host ai:       132.235.3.128:47500
+	host aj:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:30.780007 1997
 	last packet:   Mon Jul 14 13:10:31.136908 1997
 	elapsed time:  0:00:00.356901
 	total packets: 19
 	filename:      http.dmp.gz
-   bi->bj:			      bj->bi:
+   ai->aj:			      aj->ai:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1319,15 +1319,15 @@ TCP connection 18:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 19:
-	host bk:       132.235.3.128:47501
-	host bl:       132.235.1.2:80
+	host ak:       132.235.3.128:47501
+	host al:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:30.812276 1997
 	last packet:   Mon Jul 14 13:10:31.163308 1997
 	elapsed time:  0:00:00.351032
 	total packets: 19
 	filename:      http.dmp.gz
-   bk->bl:			      bl->bk:
+   ak->al:			      al->ak:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1392,15 +1392,15 @@ TCP connection 19:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 20:
-	host bm:       132.235.3.128:47502
-	host bn:       132.235.1.2:80
+	host am:       132.235.3.128:47502
+	host an:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:30.885182 1997
 	last packet:   Mon Jul 14 13:10:31.162516 1997
 	elapsed time:  0:00:00.277334
 	total packets: 19
 	filename:      http.dmp.gz
-   bm->bn:			      bn->bm:
+   am->an:			      an->am:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1465,15 +1465,15 @@ TCP connection 20:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 21:
-	host bo:       132.235.3.128:47503
-	host bp:       132.235.1.2:80
+	host ao:       132.235.3.128:47503
+	host ap:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:30.991604 1997
 	last packet:   Mon Jul 14 13:10:31.262822 1997
 	elapsed time:  0:00:00.271218
 	total packets: 19
 	filename:      http.dmp.gz
-   bo->bp:			      bp->bo:
+   ao->ap:			      ap->ao:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1538,15 +1538,15 @@ TCP connection 21:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 22:
-	host bq:       132.235.3.128:47504
-	host br:       132.235.1.2:80
+	host aq:       132.235.3.128:47504
+	host ar:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Mon Jul 14 13:10:31.022537 1997
 	last packet:   Mon Jul 14 13:10:31.292521 1997
 	elapsed time:  0:00:00.269984
 	total packets: 19
 	filename:      http.dmp.gz
-   bq->br:			      br->bq:
+   aq->ar:			      ar->aq:
      total packets:             8           total packets:            11      
      ack pkts sent:             7           ack pkts sent:            11      
      pure acks sent:            5           pure acks sent:            2      
@@ -1611,15 +1611,15 @@ TCP connection 22:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 23:
-	host bs:       132.235.3.132:33654
-	host bt:       4.17.168.6:80
+	host as:       132.235.3.132:33654
+	host at:       4.17.168.6:80
 	complete conn: no	(SYNs: 0)  (FINs: 2)
 	first packet:  Tue Aug 14 13:47:01.638680 2001
 	last packet:   Tue Aug 14 13:47:01.639298 2001
 	elapsed time:  0:00:00.000618
 	total packets: 3
 	filename:      http.dmp.gz
-   bs->bt:			      bt->bs:
+   as->at:			      at->as:
      total packets:             2           total packets:             1      
      ack pkts sent:             2           ack pkts sent:             1      
      pure acks sent:            1           pure acks sent:            0      
@@ -1684,15 +1684,15 @@ TCP connection 23:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 24:
-	host bu:       132.235.3.132:33666
-	host bv:       216.52.45.129:80
+	host au:       132.235.3.132:33666
+	host av:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:01.714483 2001
 	last packet:   Tue Aug 14 13:47:01.806006 2001
 	elapsed time:  0:00:00.091523
 	total packets: 9
 	filename:      http.dmp.gz
-   bu->bv:			      bv->bu:
+   au->av:			      av->au:
      total packets:             6           total packets:             3      
      ack pkts sent:             5           ack pkts sent:             3      
      pure acks sent:            3           pure acks sent:            0      
@@ -1759,15 +1759,15 @@ TCP connection 24:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 25:
-	host bw:       132.235.3.132:33667
-	host bx:       216.52.45.129:80
+	host aw:       132.235.3.132:33667
+	host ax:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:01.805113 2001
 	last packet:   Tue Aug 14 13:47:02.328048 2001
 	elapsed time:  0:00:00.522935
 	total packets: 48
 	filename:      http.dmp.gz
-   bw->bx:			      bx->bw:
+   aw->ax:			      ax->aw:
      total packets:            21           total packets:            27      
      ack pkts sent:            20           ack pkts sent:            27      
      pure acks sent:           17           pure acks sent:            0      
@@ -1834,15 +1834,15 @@ TCP connection 25:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 26:
-	host by:       132.235.3.132:33655
-	host bz:       4.17.168.6:80
+	host ay:       132.235.3.132:33655
+	host az:       4.17.168.6:80
 	complete conn: no	(SYNs: 0)  (FINs: 2)
 	first packet:  Tue Aug 14 13:47:01.900681 2001
 	last packet:   Tue Aug 14 13:47:01.901408 2001
 	elapsed time:  0:00:00.000727
 	total packets: 3
 	filename:      http.dmp.gz
-   by->bz:			      bz->by:
+   ay->az:			      az->ay:
      total packets:             2           total packets:             1      
      ack pkts sent:             2           ack pkts sent:             1      
      pure acks sent:            1           pure acks sent:            0      
@@ -1907,15 +1907,15 @@ TCP connection 26:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 27:
-	host ca:       132.235.3.132:33668
-	host cb:       216.52.45.129:80
+	host ba:       132.235.3.132:33668
+	host bb:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:01.901684 2001
 	last packet:   Tue Aug 14 13:47:02.315161 2001
 	elapsed time:  0:00:00.413477
 	total packets: 11
 	filename:      http.dmp.gz
-   ca->cb:			      cb->ca:
+   ba->bb:			      bb->ba:
      total packets:             7           total packets:             4      
      ack pkts sent:             6           ack pkts sent:             4      
      pure acks sent:            4           pure acks sent:            0      
@@ -1982,15 +1982,15 @@ TCP connection 27:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 28:
-	host cc:       132.235.3.132:33656
-	host cd:       4.17.168.6:80
+	host bc:       132.235.3.132:33656
+	host bd:       4.17.168.6:80
 	complete conn: no	(SYNs: 0)  (FINs: 2)
 	first packet:  Tue Aug 14 13:47:02.282984 2001
 	last packet:   Tue Aug 14 13:47:02.283849 2001
 	elapsed time:  0:00:00.000865
 	total packets: 3
 	filename:      http.dmp.gz
-   cc->cd:			      cd->cc:
+   bc->bd:			      bd->bc:
      total packets:             2           total packets:             1      
      ack pkts sent:             2           ack pkts sent:             1      
      pure acks sent:            1           pure acks sent:            0      
@@ -2055,15 +2055,15 @@ TCP connection 28:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 29:
-	host ce:       132.235.3.132:33657
-	host cf:       4.17.168.6:80
+	host be:       132.235.3.132:33657
+	host bf:       4.17.168.6:80
 	complete conn: no	(SYNs: 0)  (FINs: 2)
 	first packet:  Tue Aug 14 13:47:02.299881 2001
 	last packet:   Tue Aug 14 13:47:02.300479 2001
 	elapsed time:  0:00:00.000598
 	total packets: 3
 	filename:      http.dmp.gz
-   ce->cf:			      cf->ce:
+   be->bf:			      bf->be:
      total packets:             2           total packets:             1      
      ack pkts sent:             2           ack pkts sent:             1      
      pure acks sent:            1           pure acks sent:            0      
@@ -2128,15 +2128,15 @@ TCP connection 29:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 30:
-	host cg:       132.235.3.132:33669
-	host ch:       216.52.153.132:80
+	host bg:       132.235.3.132:33669
+	host bh:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:02.495416 2001
 	last packet:   Tue Aug 14 13:47:10.097222 2001
 	elapsed time:  0:00:07.601805
 	total packets: 45
 	filename:      http.dmp.gz
-   cg->ch:			      ch->cg:
+   bg->bh:			      bh->bg:
      total packets:            26           total packets:            19      
      ack pkts sent:            25           ack pkts sent:            19      
      pure acks sent:           15           pure acks sent:            0      
@@ -2203,15 +2203,15 @@ TCP connection 30:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 31:
-	host ci:       132.235.3.132:33670
-	host cj:       216.52.153.132:80
+	host bi:       132.235.3.132:33670
+	host bj:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:02.501946 2001
 	last packet:   Tue Aug 14 13:47:08.970136 2001
 	elapsed time:  0:00:06.468189
 	total packets: 45
 	filename:      http.dmp.gz
-   ci->cj:			      cj->ci:
+   bi->bj:			      bj->bi:
      total packets:            27           total packets:            18      
      ack pkts sent:            26           ack pkts sent:            18      
      pure acks sent:           15           pure acks sent:            0      
@@ -2278,15 +2278,15 @@ TCP connection 31:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 32:
-	host ck:       132.235.3.132:33671
-	host cl:       216.52.153.132:80
+	host bk:       132.235.3.132:33671
+	host bl:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:02.508393 2001
 	last packet:   Tue Aug 14 13:47:08.446447 2001
 	elapsed time:  0:00:05.938054
 	total packets: 37
 	filename:      http.dmp.gz
-   ck->cl:			      cl->ck:
+   bk->bl:			      bl->bk:
      total packets:            22           total packets:            15      
      ack pkts sent:            21           ack pkts sent:            15      
      pure acks sent:           12           pure acks sent:            0      
@@ -2353,15 +2353,15 @@ TCP connection 32:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 33:
-	host cm:       132.235.3.132:33672
-	host cn:       216.52.153.132:80
+	host bm:       132.235.3.132:33672
+	host bn:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:02.513788 2001
 	last packet:   Tue Aug 14 13:47:08.235833 2001
 	elapsed time:  0:00:05.722044
 	total packets: 35
 	filename:      http.dmp.gz
-   cm->cn:			      cn->cm:
+   bm->bn:			      bn->bm:
      total packets:            22           total packets:            13      
      ack pkts sent:            21           ack pkts sent:            13      
      pure acks sent:           12           pure acks sent:            0      
@@ -2428,15 +2428,15 @@ TCP connection 33:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 34:
-	host co:       132.235.3.132:33673
-	host cp:       216.52.45.129:80
+	host bo:       132.235.3.132:33673
+	host bp:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:08.236126 2001
 	last packet:   Tue Aug 14 13:47:08.355371 2001
 	elapsed time:  0:00:00.119245
 	total packets: 9
 	filename:      http.dmp.gz
-   co->cp:			      cp->co:
+   bo->bp:			      bp->bo:
      total packets:             6           total packets:             3      
      ack pkts sent:             5           ack pkts sent:             3      
      pure acks sent:            3           pure acks sent:            0      
@@ -2503,15 +2503,15 @@ TCP connection 34:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 35:
-	host cq:       132.235.3.132:33674
-	host cr:       216.52.45.129:80
+	host bq:       132.235.3.132:33674
+	host br:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:08.355705 2001
 	last packet:   Tue Aug 14 13:47:10.373069 2001
 	elapsed time:  0:00:02.017364
 	total packets: 54
 	filename:      http.dmp.gz
-   cq->cr:			      cr->cq:
+   bq->br:			      br->bq:
      total packets:            24           total packets:            30      
      ack pkts sent:            23           ack pkts sent:            30      
      pure acks sent:           17           pure acks sent:            0      
@@ -2578,15 +2578,15 @@ TCP connection 35:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 36:
-	host cs:       132.235.3.132:33675
-	host ct:       216.52.45.129:80
+	host bs:       132.235.3.132:33675
+	host bt:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:08.446893 2001
 	last packet:   Tue Aug 14 13:47:10.441274 2001
 	elapsed time:  0:00:01.994381
 	total packets: 18
 	filename:      http.dmp.gz
-   cs->ct:			      ct->cs:
+   bs->bt:			      bt->bs:
      total packets:            12           total packets:             6      
      ack pkts sent:            11           ack pkts sent:             6      
      pure acks sent:            6           pure acks sent:            0      
@@ -2653,15 +2653,15 @@ TCP connection 36:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 37:
-	host cu:       132.235.3.132:33676
-	host cv:       216.52.45.129:80
+	host bu:       132.235.3.132:33676
+	host bv:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:08.975116 2001
 	last packet:   Tue Aug 14 13:47:10.253586 2001
 	elapsed time:  0:00:01.278470
 	total packets: 9
 	filename:      http.dmp.gz
-   cu->cv:			      cv->cu:
+   bu->bv:			      bv->bu:
      total packets:             6           total packets:             3      
      ack pkts sent:             5           ack pkts sent:             3      
      pure acks sent:            3           pure acks sent:            0      
@@ -2728,15 +2728,15 @@ TCP connection 37:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 38:
-	host cw:       132.235.3.132:33677
-	host cx:       216.52.45.129:80
+	host bw:       132.235.3.132:33677
+	host bx:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:10.097234 2001
 	last packet:   Tue Aug 14 13:47:11.982730 2001
 	elapsed time:  0:00:01.885496
 	total packets: 11
 	filename:      http.dmp.gz
-   cw->cx:			      cx->cw:
+   bw->bx:			      bx->bw:
      total packets:             7           total packets:             4      
      ack pkts sent:             6           ack pkts sent:             4      
      pure acks sent:            4           pure acks sent:            0      
@@ -2803,15 +2803,15 @@ TCP connection 38:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 39:
-	host cy:       132.235.3.132:33678
-	host cz:       216.52.153.132:80
+	host by:       132.235.3.132:33678
+	host bz:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:10.253799 2001
 	last packet:   Tue Aug 14 13:47:15.726716 2001
 	elapsed time:  0:00:05.472916
 	total packets: 47
 	filename:      http.dmp.gz
-   cy->cz:			      cz->cy:
+   by->bz:			      bz->by:
      total packets:            21           total packets:            26      
      ack pkts sent:            20           ack pkts sent:            26      
      pure acks sent:           13           pure acks sent:            1      
@@ -2878,15 +2878,15 @@ TCP connection 39:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 40:
-	host da:       132.235.3.132:33679
-	host db:       216.52.153.132:80
+	host ca:       132.235.3.132:33679
+	host cb:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:10.373321 2001
 	last packet:   Tue Aug 14 13:47:12.139617 2001
 	elapsed time:  0:00:01.766296
 	total packets: 9
 	filename:      http.dmp.gz
-   da->db:			      db->da:
+   ca->cb:			      cb->ca:
      total packets:             6           total packets:             3      
      ack pkts sent:             5           ack pkts sent:             3      
      pure acks sent:            3           pure acks sent:            0      
@@ -2953,15 +2953,15 @@ TCP connection 40:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 41:
-	host dc:       132.235.3.132:33680
-	host dd:       216.52.153.132:80
+	host cc:       132.235.3.132:33680
+	host cd:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:10.440600 2001
 	last packet:   Tue Aug 14 13:47:12.212005 2001
 	elapsed time:  0:00:01.771404
 	total packets: 14
 	filename:      http.dmp.gz
-   dc->dd:			      dd->dc:
+   cc->cd:			      cd->cc:
      total packets:             8           total packets:             6      
      ack pkts sent:             7           ack pkts sent:             6      
      pure acks sent:            5           pure acks sent:            0      
@@ -3028,15 +3028,15 @@ TCP connection 41:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 42:
-	host de:       132.235.3.132:33681
-	host df:       216.52.153.132:80
+	host ce:       132.235.3.132:33681
+	host cf:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:11.982966 2001
 	last packet:   Tue Aug 14 13:47:24.748599 2001
 	elapsed time:  0:00:12.765632
 	total packets: 9
 	filename:      http.dmp.gz
-   de->df:			      df->de:
+   ce->cf:			      cf->ce:
      total packets:             5           total packets:             4      
      ack pkts sent:             4           ack pkts sent:             4      
      pure acks sent:            2           pure acks sent:            1      
@@ -3103,15 +3103,15 @@ TCP connection 42:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 43:
-	host dg:       132.235.3.132:33682
-	host dh:       216.52.45.129:80
+	host cg:       132.235.3.132:33682
+	host ch:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:12.114478 2001
 	last packet:   Tue Aug 14 13:47:12.301451 2001
 	elapsed time:  0:00:00.186973
 	total packets: 11
 	filename:      http.dmp.gz
-   dg->dh:			      dh->dg:
+   cg->ch:			      ch->cg:
      total packets:             7           total packets:             4      
      ack pkts sent:             6           ack pkts sent:             4      
      pure acks sent:            4           pure acks sent:            0      
@@ -3178,15 +3178,15 @@ TCP connection 43:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 44:
-	host di:       132.235.3.132:33683
-	host dj:       216.52.45.129:80
+	host ci:       132.235.3.132:33683
+	host cj:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:12.212208 2001
 	last packet:   Tue Aug 14 13:47:12.421304 2001
 	elapsed time:  0:00:00.209096
 	total packets: 11
 	filename:      http.dmp.gz
-   di->dj:			      dj->di:
+   ci->cj:			      cj->ci:
      total packets:             7           total packets:             4      
      ack pkts sent:             6           ack pkts sent:             4      
      pure acks sent:            4           pure acks sent:            0      
@@ -3253,15 +3253,15 @@ TCP connection 44:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 45:
-	host dk:       132.235.3.132:33684
-	host dl:       216.52.153.132:80
+	host ck:       132.235.3.132:33684
+	host cl:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:12.301593 2001
 	last packet:   Tue Aug 14 13:47:31.786299 2001
 	elapsed time:  0:00:19.484705
 	total packets: 10
 	filename:      http.dmp.gz
-   dk->dl:			      dl->dk:
+   ck->cl:			      cl->ck:
      total packets:             6           total packets:             4      
      ack pkts sent:             5           ack pkts sent:             4      
      pure acks sent:            3           pure acks sent:            1      
@@ -3328,15 +3328,15 @@ TCP connection 45:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 46:
-	host dm:       132.235.3.132:33685
-	host dn:       216.52.153.132:80
+	host cm:       132.235.3.132:33685
+	host cn:       216.52.153.132:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:12.420440 2001
 	last packet:   Tue Aug 14 13:47:12.910627 2001
 	elapsed time:  0:00:00.490187
 	total packets: 15
 	filename:      http.dmp.gz
-   dm->dn:			      dn->dm:
+   cm->cn:			      cn->cm:
      total packets:             8           total packets:             7      
      ack pkts sent:             7           ack pkts sent:             7      
      pure acks sent:            4           pure acks sent:            1      
@@ -3403,15 +3403,15 @@ TCP connection 46:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 47:
-	host do:       132.235.3.132:33686
-	host dp:       216.52.45.129:80
+	host co:       132.235.3.132:33686
+	host cp:       216.52.45.129:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:12.910869 2001
 	last packet:   Tue Aug 14 13:47:35.682433 2001
 	elapsed time:  0:00:22.771564
 	total packets: 11
 	filename:      http.dmp.gz
-   do->dp:			      dp->do:
+   co->cp:			      cp->co:
      total packets:             7           total packets:             4      
      ack pkts sent:             6           ack pkts sent:             4      
      pure acks sent:            4           pure acks sent:            0      
@@ -3478,15 +3478,15 @@ TCP connection 47:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 48:
-	host dq:       132.235.3.132:33687
-	host dr:       132.235.3.154:80
+	host cq:       132.235.3.132:33687
+	host cr:       132.235.3.154:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:24.638389 2001
 	last packet:   Tue Aug 14 13:47:24.755783 2001
 	elapsed time:  0:00:00.117394
 	total packets: 11
 	filename:      http.dmp.gz
-   dq->dr:			      dr->dq:
+   cq->cr:			      cr->cq:
      total packets:             6           total packets:             5      
      ack pkts sent:             5           ack pkts sent:             5      
      pure acks sent:            3           pure acks sent:            2      
@@ -3553,15 +3553,15 @@ TCP connection 48:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 49:
-	host ds:       132.235.3.132:33688
-	host dt:       132.235.3.154:80
+	host cs:       132.235.3.132:33688
+	host ct:       132.235.3.154:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:24.749737 2001
 	last packet:   Tue Aug 14 13:47:26.979580 2001
 	elapsed time:  0:00:02.229842
 	total packets: 83
 	filename:      http.dmp.gz
-   ds->dt:			      dt->ds:
+   cs->ct:			      ct->cs:
      total packets:            19           total packets:            64      
      ack pkts sent:            18           ack pkts sent:            64      
      pure acks sent:           15           pure acks sent:            2      
@@ -3628,15 +3628,15 @@ TCP connection 49:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 50:
-	host du:       132.235.3.132:33689
-	host dv:       132.235.3.154:80
+	host cu:       132.235.3.132:33689
+	host cv:       132.235.3.154:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:27.007529 2001
 	last packet:   Tue Aug 14 13:47:27.376993 2001
 	elapsed time:  0:00:00.369464
 	total packets: 20
 	filename:      http.dmp.gz
-   du->dv:			      dv->du:
+   cu->cv:			      cv->cu:
      total packets:             8           total packets:            12      
      ack pkts sent:             7           ack pkts sent:            12      
      pure acks sent:            5           pure acks sent:            2      
@@ -3703,15 +3703,15 @@ TCP connection 50:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 51:
-	host dw:       132.235.3.132:33690
-	host dx:       132.235.3.154:80
+	host cw:       132.235.3.132:33690
+	host cx:       132.235.3.154:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:27.147720 2001
 	last packet:   Tue Aug 14 13:47:33.633026 2001
 	elapsed time:  0:00:06.485305
 	total packets: 97
 	filename:      http.dmp.gz
-   dw->dx:			      dx->dw:
+   cw->cx:			      cx->cw:
      total packets:            21           total packets:            76      
      ack pkts sent:            20           ack pkts sent:            76      
      pure acks sent:           17           pure acks sent:            2      
@@ -3778,15 +3778,15 @@ TCP connection 51:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 52:
-	host dy:       132.235.3.132:33691
-	host dz:       132.235.3.154:80
+	host cy:       132.235.3.132:33691
+	host cz:       132.235.3.154:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:31.661391 2001
 	last packet:   Tue Aug 14 13:47:31.797533 2001
 	elapsed time:  0:00:00.136142
 	total packets: 14
 	filename:      http.dmp.gz
-   dy->dz:			      dz->dy:
+   cy->cz:			      cz->cy:
      total packets:             7           total packets:             7      
      ack pkts sent:             6           ack pkts sent:             7      
      pure acks sent:            4           pure acks sent:            2      
@@ -3853,15 +3853,15 @@ TCP connection 52:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 53:
-	host ea:       132.235.3.132:33692
-	host eb:       132.235.3.154:80
+	host da:       132.235.3.132:33692
+	host db:       132.235.3.154:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:31.786618 2001
 	last packet:   Tue Aug 14 13:47:35.683021 2001
 	elapsed time:  0:00:03.896402
 	total packets: 11
 	filename:      http.dmp.gz
-   ea->eb:			      eb->ea:
+   da->db:			      db->da:
      total packets:             6           total packets:             5      
      ack pkts sent:             5           ack pkts sent:             5      
      pure acks sent:            3           pure acks sent:            2      
@@ -3928,15 +3928,15 @@ TCP connection 53:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 54:
-	host ec:       132.235.3.132:33693
-	host ed:       132.235.3.154:80
+	host dc:       132.235.3.132:33693
+	host dd:       132.235.3.154:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:33.627769 2001
 	last packet:   Tue Aug 14 13:47:35.686762 2001
 	elapsed time:  0:00:02.058993
 	total packets: 27
 	filename:      http.dmp.gz
-   ec->ed:			      ed->ec:
+   dc->dd:			      dd->dc:
      total packets:            11           total packets:            16      
      ack pkts sent:            10           ack pkts sent:            16      
      pure acks sent:            8           pure acks sent:            2      
@@ -4003,15 +4003,15 @@ TCP connection 54:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 55:
-	host ee:       132.235.3.132:33694
-	host ef:       132.235.1.2:80
+	host de:       132.235.3.132:33694
+	host df:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:35.412174 2001
 	last packet:   Tue Aug 14 13:47:35.483587 2001
 	elapsed time:  0:00:00.071413
 	total packets: 11
 	filename:      http.dmp.gz
-   ee->ef:			      ef->ee:
+   de->df:			      df->de:
      total packets:             6           total packets:             5      
      ack pkts sent:             5           ack pkts sent:             5      
      pure acks sent:            3           pure acks sent:            2      
@@ -4078,15 +4078,15 @@ TCP connection 55:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 56:
-	host eg:       132.235.3.132:33695
-	host eh:       132.235.1.2:80
+	host dg:       132.235.3.132:33695
+	host dh:       132.235.1.2:80
 	complete conn: no	(SYNs: 2)  (FINs: 0)
 	first packet:  Tue Aug 14 13:47:35.508921 2001
 	last packet:   Tue Aug 14 13:47:36.099485 2001
 	elapsed time:  0:00:00.590564
 	total packets: 17
 	filename:      http.dmp.gz
-   eg->eh:			      eh->eg:
+   dg->dh:			      dh->dg:
      total packets:             9           total packets:             8      
      ack pkts sent:             8           ack pkts sent:             8      
      pure acks sent:            5           pure acks sent:            1      
@@ -4153,15 +4153,15 @@ TCP connection 56:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 57:
-	host ei:       132.235.3.132:33696
-	host ej:       132.235.1.2:80
+	host di:       132.235.3.132:33696
+	host dj:       132.235.1.2:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:35.681775 2001
 	last packet:   Tue Aug 14 13:47:41.262222 2001
 	elapsed time:  0:00:05.580447
 	total packets: 29
 	filename:      http.dmp.gz
-   ei->ej:			      ej->ei:
+   di->dj:			      dj->di:
      total packets:            11           total packets:            18      
      ack pkts sent:            10           ack pkts sent:            18      
      pure acks sent:            8           pure acks sent:            2      
@@ -4228,15 +4228,15 @@ TCP connection 57:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 58:
-	host ek:       132.235.3.132:33697
-	host el:       132.235.1.2:80
+	host dk:       132.235.3.132:33697
+	host dl:       132.235.1.2:80
 	complete conn: no	(SYNs: 2)  (FINs: 0)
 	first packet:  Tue Aug 14 13:47:35.683480 2001
 	last packet:   Tue Aug 14 13:47:35.989806 2001
 	elapsed time:  0:00:00.306326
 	total packets: 16
 	filename:      http.dmp.gz
-   ek->el:			      el->ek:
+   dk->dl:			      dl->dk:
      total packets:             7           total packets:             9      
      ack pkts sent:             6           ack pkts sent:             9      
      pure acks sent:            5           pure acks sent:            1      
@@ -4303,15 +4303,15 @@ TCP connection 58:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 59:
-	host em:       132.235.3.132:33698
-	host en:       132.235.1.2:80
+	host dm:       132.235.3.132:33698
+	host dn:       132.235.1.2:80
 	complete conn: no	(SYNs: 2)  (FINs: 0)
 	first packet:  Tue Aug 14 13:47:35.687100 2001
 	last packet:   Tue Aug 14 13:47:35.989820 2001
 	elapsed time:  0:00:00.302720
 	total packets: 11
 	filename:      http.dmp.gz
-   em->en:			      en->em:
+   dm->dn:			      dn->dm:
      total packets:             6           total packets:             5      
      ack pkts sent:             5           ack pkts sent:             5      
      pure acks sent:            4           pure acks sent:            1      
@@ -4378,15 +4378,15 @@ TCP connection 59:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 60:
-	host eo:       132.235.3.132:33699
-	host ep:       132.235.3.154:80
+	host do:       132.235.3.132:33699
+	host dp:       132.235.3.154:80
 	complete conn: yes
 	first packet:  Tue Aug 14 13:47:41.260867 2001
 	last packet:   Tue Aug 14 13:47:41.346894 2001
 	elapsed time:  0:00:00.086027
 	total packets: 14
 	filename:      http.dmp.gz
-   eo->ep:			      ep->eo:
+   do->dp:			      dp->do:
      total packets:             7           total packets:             7      
      ack pkts sent:             6           ack pkts sent:             7      
      pure acks sent:            4           pure acks sent:            2      
@@ -4453,15 +4453,15 @@ TCP connection 60:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 61:
-	host eq:       132.235.3.132:33700
-	host er:       132.235.3.154:80
+	host dq:       132.235.3.132:33700
+	host dr:       132.235.3.154:80
 	complete conn: no	(SYNs: 2)  (FINs: 0)
 	first packet:  Tue Aug 14 13:47:41.407897 2001
 	last packet:   Tue Aug 14 13:47:41.530013 2001
 	elapsed time:  0:00:00.122116
 	total packets: 12
 	filename:      http.dmp.gz
-   eq->er:			      er->eq:
+   dq->dr:			      dr->dq:
      total packets:             6           total packets:             6      
      ack pkts sent:             5           ack pkts sent:             6      
      pure acks sent:            4           pure acks sent:            1      

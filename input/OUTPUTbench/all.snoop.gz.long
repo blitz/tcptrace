@@ -958,15 +958,15 @@ TCP connection 13:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 14:
-	host ba:       147.205.85.10:3054
-	host bb:       132.235.1.100:5000
+	host aa:       147.205.85.10:3054
+	host ab:       132.235.1.100:5000
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.220433 1994
 	last packet:   Tue Mar  8 21:42:56.014661 1994
 	elapsed time:  0:00:03.794227
 	total packets: 10
 	filename:      all.snoop.gz
-   ba->bb:			      bb->ba:
+   aa->ab:			      ab->aa:
      total packets:             4           total packets:             6      
      ack pkts sent:             4           ack pkts sent:             6      
      pure acks sent:            2           pure acks sent:            2      
@@ -1031,15 +1031,15 @@ TCP connection 14:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 15:
-	host bc:       132.235.1.64:11049
-	host bd:       132.235.2.1:23
+	host ac:       132.235.1.64:11049
+	host ad:       132.235.2.1:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.258052 1994
 	last packet:   Tue Mar  8 21:42:55.852370 1994
 	elapsed time:  0:00:03.594317
 	total packets: 50
 	filename:      all.snoop.gz
-   bc->bd:			      bd->bc:
+   ac->ad:			      ad->ac:
      total packets:            28           total packets:            22      
      ack pkts sent:            28           ack pkts sent:            22      
      pure acks sent:           14           pure acks sent:            5      
@@ -1104,15 +1104,15 @@ TCP connection 15:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 16:
-	host be:       132.235.1.100:5000
-	host bf:       134.241.10.5:1783
+	host ae:       132.235.1.100:5000
+	host af:       134.241.10.5:1783
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.259342 1994
 	last packet:   Tue Mar  8 21:42:52.373971 1994
 	elapsed time:  0:00:00.114629
 	total packets: 2
 	filename:      all.snoop.gz
-   be->bf:			      bf->be:
+   ae->af:			      af->ae:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
@@ -1177,15 +1177,15 @@ TCP connection 16:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 17:
-	host bg:       132.235.17.161:28930
-	host bh:       132.235.1.6:23
+	host ag:       132.235.17.161:28930
+	host ah:       132.235.1.6:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.290607 1994
 	last packet:   Tue Mar  8 21:42:56.047586 1994
 	elapsed time:  0:00:03.756978
 	total packets: 32
 	filename:      all.snoop.gz
-   bg->bh:			      bh->bg:
+   ag->ah:			      ah->ag:
      total packets:            16           total packets:            16      
      ack pkts sent:            16           ack pkts sent:            16      
      pure acks sent:            8           pure acks sent:            8      
@@ -1250,15 +1250,15 @@ TCP connection 17:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 18:
-	host bi:       132.235.200.5:2065
-	host bj:       132.235.2.30:23
+	host ai:       132.235.200.5:2065
+	host aj:       132.235.2.30:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.330993 1994
 	last packet:   Tue Mar  8 21:42:55.999623 1994
 	elapsed time:  0:00:03.668629
 	total packets: 16
 	filename:      all.snoop.gz
-   bi->bj:			      bj->bi:
+   ai->aj:			      aj->ai:
      total packets:             9           total packets:             7      
      ack pkts sent:             9           ack pkts sent:             7      
      pure acks sent:            5           pure acks sent:            1      
@@ -1323,15 +1323,15 @@ TCP connection 18:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 19:
-	host bk:       132.235.1.64:32301
-	host bl:       132.235.1.2:23
+	host ak:       132.235.1.64:32301
+	host al:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.358858 1994
 	last packet:   Tue Mar  8 21:42:55.480405 1994
 	elapsed time:  0:00:03.121547
 	total packets: 24
 	filename:      all.snoop.gz
-   bk->bl:			      bl->bk:
+   ak->al:			      al->ak:
      total packets:            16           total packets:             8      
      ack pkts sent:            16           ack pkts sent:             8      
      pure acks sent:            8           pure acks sent:            0      
@@ -1396,15 +1396,15 @@ TCP connection 19:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 20:
-	host bm:       132.235.1.100:5000
-	host bn:       144.32.128.6:4427
+	host am:       132.235.1.100:5000
+	host an:       144.32.128.6:4427
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.414407 1994
 	last packet:   Tue Mar  8 21:42:52.671748 1994
 	elapsed time:  0:00:00.257341
 	total packets: 2
 	filename:      all.snoop.gz
-   bm->bn:			      bn->bm:
+   am->an:			      an->am:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
@@ -1469,15 +1469,15 @@ TCP connection 20:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 21:
-	host bo:       132.235.1.2:3141
-	host bp:       132.235.1.147:9100
+	host ao:       132.235.1.2:3141
+	host ap:       132.235.1.147:9100
 	complete conn: no	(SYNs: 2)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.585542 1994
 	last packet:   Tue Mar  8 21:42:53.888845 1994
 	elapsed time:  0:00:01.303303
 	total packets: 16
 	filename:      all.snoop.gz
-   bo->bp:			      bp->bo:
+   ao->ap:			      ap->ao:
      total packets:             9           total packets:             7      
      ack pkts sent:             8           ack pkts sent:             7      
      pure acks sent:            1           pure acks sent:            6      
@@ -1542,15 +1542,15 @@ TCP connection 21:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 22:
-	host bq:       130.236.254.159:2000
-	host br:       132.235.1.2:1459
+	host aq:       130.236.254.159:2000
+	host ar:       132.235.1.2:1459
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.593311 1994
 	last packet:   Tue Mar  8 21:42:52.621670 1994
 	elapsed time:  0:00:00.028359
 	total packets: 2
 	filename:      all.snoop.gz
-   bq->br:			      br->bq:
+   aq->ar:			      ar->aq:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
@@ -1615,15 +1615,15 @@ TCP connection 22:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 23:
-	host bs:       132.235.1.2:23
-	host bt:       132.235.1.64:22058
+	host as:       132.235.1.2:23
+	host at:       132.235.1.64:22058
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.603979 1994
 	last packet:   Tue Mar  8 21:42:52.647744 1994
 	elapsed time:  0:00:00.043765
 	total packets: 6
 	filename:      all.snoop.gz
-   bs->bt:			      bt->bs:
+   as->at:			      at->as:
      total packets:             4           total packets:             2      
      ack pkts sent:             4           ack pkts sent:             2      
      pure acks sent:            0           pure acks sent:            2      
@@ -1688,15 +1688,15 @@ TCP connection 23:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 24:
-	host bu:       132.235.1.64:6917
-	host bv:       132.235.1.2:23
+	host au:       132.235.1.64:6917
+	host av:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.607895 1994
 	last packet:   Tue Mar  8 21:42:55.733841 1994
 	elapsed time:  0:00:03.125945
 	total packets: 42
 	filename:      all.snoop.gz
-   bu->bv:			      bv->bu:
+   au->av:			      av->au:
      total packets:            25           total packets:            17      
      ack pkts sent:            25           ack pkts sent:            17      
      pure acks sent:           12           pure acks sent:            5      
@@ -1761,15 +1761,15 @@ TCP connection 24:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 25:
-	host bw:       132.235.1.64:272
-	host bx:       132.235.1.2:23
+	host aw:       132.235.1.64:272
+	host ax:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.697360 1994
 	last packet:   Tue Mar  8 21:42:54.881238 1994
 	elapsed time:  0:00:02.183878
 	total packets: 19
 	filename:      all.snoop.gz
-   bw->bx:			      bx->bw:
+   aw->ax:			      ax->aw:
      total packets:            12           total packets:             7      
      ack pkts sent:            12           ack pkts sent:             7      
      pure acks sent:            6           pure acks sent:            1      
@@ -1834,15 +1834,15 @@ TCP connection 25:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 26:
-	host by:       132.235.17.13:1569
-	host bz:       132.235.1.2:23
+	host ay:       132.235.17.13:1569
+	host az:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.897830 1994
 	last packet:   Tue Mar  8 21:42:56.062954 1994
 	elapsed time:  0:00:03.165124
 	total packets: 19
 	filename:      all.snoop.gz
-   by->bz:			      bz->by:
+   ay->az:			      az->ay:
      total packets:            12           total packets:             7      
      ack pkts sent:            12           ack pkts sent:             7      
      pure acks sent:            6           pure acks sent:            1      
@@ -1907,15 +1907,15 @@ TCP connection 26:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 27:
-	host ca:       128.8.11.201:5000
-	host cb:       132.235.1.2:2865
+	host ba:       128.8.11.201:5000
+	host bb:       132.235.1.2:2865
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.904102 1994
 	last packet:   Tue Mar  8 21:42:53.021472 1994
 	elapsed time:  0:00:00.117370
 	total packets: 2
 	filename:      all.snoop.gz
-   ca->cb:			      cb->ca:
+   ba->bb:			      bb->ba:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
@@ -1980,15 +1980,15 @@ TCP connection 27:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 28:
-	host cc:       132.235.1.2:23
-	host cd:       132.235.1.64:26129
+	host bc:       132.235.1.2:23
+	host bd:       132.235.1.64:26129
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:52.914649 1994
 	last packet:   Tue Mar  8 21:42:52.931796 1994
 	elapsed time:  0:00:00.017147
 	total packets: 2
 	filename:      all.snoop.gz
-   cc->cd:			      cd->cc:
+   bc->bd:			      bd->bc:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
@@ -2053,15 +2053,15 @@ TCP connection 28:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 29:
-	host ce:       132.235.1.64:23326
-	host cf:       132.235.1.2:23
+	host be:       132.235.1.64:23326
+	host bf:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.041195 1994
 	last packet:   Tue Mar  8 21:42:54.303985 1994
 	elapsed time:  0:00:01.262790
 	total packets: 17
 	filename:      all.snoop.gz
-   ce->cf:			      cf->ce:
+   be->bf:			      bf->be:
      total packets:            11           total packets:             6      
      ack pkts sent:            11           ack pkts sent:             6      
      pure acks sent:            6           pure acks sent:            0      
@@ -2126,15 +2126,15 @@ TCP connection 29:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 30:
-	host cg:       132.235.1.129:14458
-	host ch:       132.235.2.1:23
+	host bg:       132.235.1.129:14458
+	host bh:       132.235.2.1:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.052803 1994
 	last packet:   Tue Mar  8 21:42:56.111077 1994
 	elapsed time:  0:00:03.058273
 	total packets: 66
 	filename:      all.snoop.gz
-   cg->ch:			      ch->cg:
+   bg->bh:			      bh->bg:
      total packets:            42           total packets:            24      
      ack pkts sent:            42           ack pkts sent:            24      
      pure acks sent:           24           pure acks sent:            0      
@@ -2199,15 +2199,15 @@ TCP connection 30:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 31:
-	host ci:       132.235.24.250:6381
-	host cj:       132.235.1.2:23
+	host bi:       132.235.24.250:6381
+	host bj:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.099697 1994
 	last packet:   Tue Mar  8 21:42:54.661395 1994
 	elapsed time:  0:00:01.561698
 	total packets: 38
 	filename:      all.snoop.gz
-   ci->cj:			      cj->ci:
+   bi->bj:			      bj->bi:
      total packets:            20           total packets:            18      
      ack pkts sent:            20           ack pkts sent:            18      
      pure acks sent:           18           pure acks sent:            0      
@@ -2272,15 +2272,15 @@ TCP connection 31:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 32:
-	host ck:       132.235.200.5:32260
-	host cl:       132.235.2.30:23
+	host bk:       132.235.200.5:32260
+	host bl:       132.235.2.30:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.212625 1994
 	last packet:   Tue Mar  8 21:42:53.659849 1994
 	elapsed time:  0:00:00.447224
 	total packets: 6
 	filename:      all.snoop.gz
-   ck->cl:			      cl->ck:
+   bk->bl:			      bl->bk:
      total packets:             3           total packets:             3      
      ack pkts sent:             3           ack pkts sent:             3      
      pure acks sent:            2           pure acks sent:            1      
@@ -2345,15 +2345,15 @@ TCP connection 32:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 33:
-	host cm:       132.235.17.195:17802
-	host cn:       132.235.1.2:23
+	host bm:       132.235.17.195:17802
+	host bn:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.406767 1994
 	last packet:   Tue Mar  8 21:42:54.904013 1994
 	elapsed time:  0:00:01.497246
 	total packets: 13
 	filename:      all.snoop.gz
-   cm->cn:			      cn->cm:
+   bm->bn:			      bn->bm:
      total packets:             8           total packets:             5      
      ack pkts sent:             8           ack pkts sent:             5      
      pure acks sent:            6           pure acks sent:            1      
@@ -2418,15 +2418,15 @@ TCP connection 33:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 34:
-	host co:       132.235.4.216:10388
-	host cp:       132.235.1.2:23
+	host bo:       132.235.4.216:10388
+	host bp:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.436676 1994
 	last packet:   Tue Mar  8 21:42:53.692947 1994
 	elapsed time:  0:00:00.256271
 	total packets: 4
 	filename:      all.snoop.gz
-   co->cp:			      cp->co:
+   bo->bp:			      bp->bo:
      total packets:             2           total packets:             2      
      ack pkts sent:             2           ack pkts sent:             2      
      pure acks sent:            1           pure acks sent:            1      
@@ -2491,15 +2491,15 @@ TCP connection 34:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 35:
-	host cq:       132.235.1.2:2635
-	host cr:       162.148.13.44:4000
+	host bq:       132.235.1.2:2635
+	host br:       162.148.13.44:4000
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.623190 1994
 	last packet:   Tue Mar  8 21:42:55.021229 1994
 	elapsed time:  0:00:01.398039
 	total packets: 6
 	filename:      all.snoop.gz
-   cq->cr:			      cr->cq:
+   bq->br:			      br->bq:
      total packets:             3           total packets:             3      
      ack pkts sent:             3           ack pkts sent:             3      
      pure acks sent:            2           pure acks sent:            1      
@@ -2564,15 +2564,15 @@ TCP connection 35:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 36:
-	host cs:       192.216.54.2:8888
-	host ct:       132.235.1.2:1527
+	host bs:       192.216.54.2:8888
+	host bt:       132.235.1.2:1527
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.961778 1994
 	last packet:   Tue Mar  8 21:42:55.421124 1994
 	elapsed time:  0:00:01.459346
 	total packets: 10
 	filename:      all.snoop.gz
-   cs->ct:			      ct->cs:
+   bs->bt:			      bt->bs:
      total packets:             5           total packets:             5      
      ack pkts sent:             5           ack pkts sent:             5      
      pure acks sent:            0           pure acks sent:            5      
@@ -2637,15 +2637,15 @@ TCP connection 36:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 37:
-	host cu:       192.216.54.2:8888
-	host cv:       132.235.1.2:4548
+	host bu:       192.216.54.2:8888
+	host bv:       132.235.1.2:4548
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.962408 1994
 	last packet:   Tue Mar  8 21:42:56.056105 1994
 	elapsed time:  0:00:02.093697
 	total packets: 5
 	filename:      all.snoop.gz
-   cu->cv:			      cv->cu:
+   bu->bv:			      bv->bu:
      total packets:             3           total packets:             2      
      ack pkts sent:             3           ack pkts sent:             2      
      pure acks sent:            0           pure acks sent:            2      
@@ -2710,15 +2710,15 @@ TCP connection 37:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 38:
-	host cw:       132.235.1.2:23
-	host cx:       132.235.1.64:19211
+	host bw:       132.235.1.2:23
+	host bx:       132.235.1.64:19211
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.976717 1994
 	last packet:   Tue Mar  8 21:42:56.074308 1994
 	elapsed time:  0:00:02.097590
 	total packets: 6
 	filename:      all.snoop.gz
-   cw->cx:			      cx->cw:
+   bw->bx:			      bx->bw:
      total packets:             3           total packets:             3      
      ack pkts sent:             3           ack pkts sent:             3      
      pure acks sent:            0           pure acks sent:            3      
@@ -2783,15 +2783,15 @@ TCP connection 38:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 39:
-	host cy:       144.32.128.6:3207
-	host cz:       132.235.1.100:5000
+	host by:       144.32.128.6:3207
+	host bz:       132.235.1.100:5000
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.985870 1994
 	last packet:   Tue Mar  8 21:42:55.469003 1994
 	elapsed time:  0:00:01.483133
 	total packets: 7
 	filename:      all.snoop.gz
-   cy->cz:			      cz->cy:
+   by->bz:			      bz->by:
      total packets:             3           total packets:             4      
      ack pkts sent:             3           ack pkts sent:             4      
      pure acks sent:            2           pure acks sent:            1      
@@ -2856,15 +2856,15 @@ TCP connection 39:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 40:
-	host da:       132.235.1.64:18461
-	host db:       132.235.1.2:23
+	host ca:       132.235.1.64:18461
+	host cb:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:53.985977 1994
 	last packet:   Tue Mar  8 21:42:53.985977 1994
 	elapsed time:  0:00:00.000000
 	total packets: 1
 	filename:      all.snoop.gz
-   da->db:			      db->da:
+   ca->cb:			      cb->ca:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            1           pure acks sent:            0      
@@ -2929,15 +2929,15 @@ TCP connection 40:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 41:
-	host dc:       132.235.1.64:17416
-	host dd:       132.235.1.2:23
+	host cc:       132.235.1.64:17416
+	host cd:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.080341 1994
 	last packet:   Tue Mar  8 21:42:54.080341 1994
 	elapsed time:  0:00:00.000000
 	total packets: 1
 	filename:      all.snoop.gz
-   dc->dd:			      dd->dc:
+   cc->cd:			      cd->cc:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            1           pure acks sent:            0      
@@ -3002,15 +3002,15 @@ TCP connection 41:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 42:
-	host de:       132.235.4.217:7581
-	host df:       132.235.1.6:23
+	host ce:       132.235.4.217:7581
+	host cf:       132.235.1.6:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.147527 1994
 	last packet:   Tue Mar  8 21:42:54.196709 1994
 	elapsed time:  0:00:00.049182
 	total packets: 4
 	filename:      all.snoop.gz
-   de->df:			      df->de:
+   ce->cf:			      cf->ce:
      total packets:             2           total packets:             2      
      ack pkts sent:             2           ack pkts sent:             2      
      pure acks sent:            1           pure acks sent:            1      
@@ -3075,15 +3075,15 @@ TCP connection 42:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 43:
-	host dg:       132.235.1.100:5000
-	host dh:       144.32.128.6:3379
+	host cg:       132.235.1.100:5000
+	host ch:       144.32.128.6:3379
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.156057 1994
 	last packet:   Tue Mar  8 21:42:55.468574 1994
 	elapsed time:  0:00:01.312516
 	total packets: 5
 	filename:      all.snoop.gz
-   dg->dh:			      dh->dg:
+   cg->ch:			      ch->cg:
      total packets:             3           total packets:             2      
      ack pkts sent:             3           ack pkts sent:             2      
      pure acks sent:            0           pure acks sent:            2      
@@ -3148,15 +3148,15 @@ TCP connection 43:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 44:
-	host di:       132.235.1.2:3143
-	host dj:       129.174.1.3:25
+	host ci:       132.235.1.2:3143
+	host cj:       129.174.1.3:25
 	complete conn: no	(SYNs: 2)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.265149 1994
 	last packet:   Tue Mar  8 21:42:54.400563 1994
 	elapsed time:  0:00:00.135414
 	total packets: 3
 	filename:      all.snoop.gz
-   di->dj:			      dj->di:
+   ci->cj:			      cj->ci:
      total packets:             2           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            1           pure acks sent:            0      
@@ -3221,15 +3221,15 @@ TCP connection 44:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 45:
-	host dk:       132.235.1.64:21809
-	host dl:       132.235.1.2:23
+	host ck:       132.235.1.64:21809
+	host cl:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.318874 1994
 	last packet:   Tue Mar  8 21:42:54.864610 1994
 	elapsed time:  0:00:00.545736
 	total packets: 8
 	filename:      all.snoop.gz
-   dk->dl:			      dl->dk:
+   ck->cl:			      cl->ck:
      total packets:             4           total packets:             4      
      ack pkts sent:             4           ack pkts sent:             4      
      pure acks sent:            3           pure acks sent:            0      
@@ -3294,15 +3294,15 @@ TCP connection 45:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 46:
-	host dm:       132.235.1.2:3122
-	host dn:       134.53.14.115:4000
+	host cm:       132.235.1.2:3122
+	host cn:       134.53.14.115:4000
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.344409 1994
 	last packet:   Tue Mar  8 21:42:54.821050 1994
 	elapsed time:  0:00:00.476641
 	total packets: 4
 	filename:      all.snoop.gz
-   dm->dn:			      dn->dm:
+   cm->cn:			      cn->cm:
      total packets:             2           total packets:             2      
      ack pkts sent:             2           ack pkts sent:             2      
      pure acks sent:            1           pure acks sent:            1      
@@ -3367,15 +3367,15 @@ TCP connection 46:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 47:
-	host do:       132.235.24.50:1906
-	host dp:       132.235.1.2:119
+	host co:       132.235.24.50:1906
+	host cp:       132.235.1.2:119
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.365071 1994
 	last packet:   Tue Mar  8 21:42:54.793855 1994
 	elapsed time:  0:00:00.428784
 	total packets: 7
 	filename:      all.snoop.gz
-   do->dp:			      dp->do:
+   co->cp:			      cp->co:
      total packets:             4           total packets:             3      
      ack pkts sent:             4           ack pkts sent:             3      
      pure acks sent:            2           pure acks sent:            0      
@@ -3440,15 +3440,15 @@ TCP connection 47:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 48:
-	host dq:       130.236.253.6:113
-	host dr:       132.235.1.2:3138
+	host cq:       130.236.253.6:113
+	host cr:       132.235.1.2:3138
 	complete conn: no	(SYNs: 0)  (FINs: 2)
 	first packet:  Tue Mar  8 21:42:54.549107 1994
 	last packet:   Tue Mar  8 21:42:54.733576 1994
 	elapsed time:  0:00:00.184469
 	total packets: 5
 	filename:      all.snoop.gz
-   dq->dr:			      dr->dq:
+   cq->cr:			      cr->cq:
      total packets:             3           total packets:             2      
      ack pkts sent:             3           ack pkts sent:             2      
      pure acks sent:            1           pure acks sent:            1      
@@ -3513,15 +3513,15 @@ TCP connection 48:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 49:
-	host ds:       132.235.1.2:25
-	host dt:       130.236.253.6:4234
+	host cs:       132.235.1.2:25
+	host ct:       130.236.253.6:4234
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.558445 1994
 	last packet:   Tue Mar  8 21:42:55.945957 1994
 	elapsed time:  0:00:01.387512
 	total packets: 13
 	filename:      all.snoop.gz
-   ds->dt:			      dt->ds:
+   cs->ct:			      ct->cs:
      total packets:             8           total packets:             5      
      ack pkts sent:             8           ack pkts sent:             5      
      pure acks sent:            2           pure acks sent:            0      
@@ -3586,15 +3586,15 @@ TCP connection 49:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 50:
-	host du:       132.235.1.64:1816
-	host dv:       132.235.1.2:23
+	host cu:       132.235.1.64:1816
+	host cv:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:54.824975 1994
 	last packet:   Tue Mar  8 21:42:56.122100 1994
 	elapsed time:  0:00:01.297125
 	total packets: 2
 	filename:      all.snoop.gz
-   du->dv:			      dv->du:
+   cu->cv:			      cv->cu:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            1           pure acks sent:            0      
@@ -3659,15 +3659,15 @@ TCP connection 50:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 51:
-	host dw:       132.235.1.64:2598
-	host dx:       132.235.1.2:23
+	host cw:       132.235.1.64:2598
+	host cx:       132.235.1.2:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:55.376363 1994
 	last packet:   Tue Mar  8 21:42:55.376363 1994
 	elapsed time:  0:00:00.000000
 	total packets: 1
 	filename:      all.snoop.gz
-   dw->dx:			      dx->dw:
+   cw->cx:			      cx->cw:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            1           pure acks sent:            0      
@@ -3732,15 +3732,15 @@ TCP connection 51:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 52:
-	host dy:       132.235.8.7:2033
-	host dz:       132.235.1.100:5000
+	host cy:       132.235.8.7:2033
+	host cz:       132.235.1.100:5000
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:55.998438 1994
 	last packet:   Tue Mar  8 21:42:56.057449 1994
 	elapsed time:  0:00:00.059011
 	total packets: 2
 	filename:      all.snoop.gz
-   dy->dz:			      dz->dy:
+   cy->cz:			      cz->cy:
      total packets:             1           total packets:             1      
      ack pkts sent:             1           ack pkts sent:             1      
      pure acks sent:            0           pure acks sent:            1      
@@ -3805,15 +3805,15 @@ TCP connection 52:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 53:
-	host ea:       130.215.24.1:20
-	host eb:       132.235.17.163:3129
+	host da:       130.215.24.1:20
+	host db:       132.235.17.163:3129
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:56.016189 1994
 	last packet:   Tue Mar  8 21:42:56.016189 1994
 	elapsed time:  0:00:00.000000
 	total packets: 1
 	filename:      all.snoop.gz
-   ea->eb:			      eb->ea:
+   da->db:			      db->da:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            0           pure acks sent:            0      
@@ -3878,15 +3878,15 @@ TCP connection 53:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 54:
-	host ec:       132.235.1.64:17922
-	host ed:       132.235.24.50:23
+	host dc:       132.235.1.64:17922
+	host dd:       132.235.24.50:23
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:56.024915 1994
 	last packet:   Tue Mar  8 21:42:56.024915 1994
 	elapsed time:  0:00:00.000000
 	total packets: 1
 	filename:      all.snoop.gz
-   ec->ed:			      ed->ec:
+   dc->dd:			      dd->dc:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            1           pure acks sent:            0      
@@ -3951,15 +3951,15 @@ TCP connection 54:
      sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
 ================================
 TCP connection 55:
-	host ee:       192.216.54.2:8888
-	host ef:       132.235.1.2:2892
+	host de:       192.216.54.2:8888
+	host df:       132.235.1.2:2892
 	complete conn: no	(SYNs: 0)  (FINs: 0)
 	first packet:  Tue Mar  8 21:42:56.107132 1994
 	last packet:   Tue Mar  8 21:42:56.107132 1994
 	elapsed time:  0:00:00.000000
 	total packets: 1
 	filename:      all.snoop.gz
-   ee->ef:			      ef->ee:
+   de->df:			      df->de:
      total packets:             1           total packets:             0      
      ack pkts sent:             1           ack pkts sent:             0      
      pure acks sent:            0           pure acks sent:            0      
