@@ -574,6 +574,7 @@ Bool ip_cksum_valid(struct ip *pip, void *plast);
 Bool tcp_cksum_valid(struct ip *pip, struct tcphdr *ptcp, void *plast);
 Bool udp_cksum_valid(struct ip *pip, struct udphdr *pudp, void *plast);
 ipaddr *str2ipaddr(char *str);
+int IPcmp(ipaddr *pipA, ipaddr *pipB);
 
 /* high-level line drawing */
 PLINE new_line(PLOTTER pl, char *label, char *color);
