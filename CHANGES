@@ -162,3 +162,5 @@
     green dot corresponding the the first SYN in the second graph.  Kind
     of helpful in general, too.
   added Mallman's netbsd mkstemp change in compress.c
+  extended the "-w" flag to make the normal case quieter
+  lots of changes to mod_traffic, plus a few bugfixes, mostly for my use
