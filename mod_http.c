@@ -29,32 +29,94 @@ static char const rcsid_http[] =
    "$Id$";
 
 #include "tcptrace.h"
+#include <sys/mman.h>
 
 
 #define DEFAULT_SERVER_PORT 80
 
-
-
-static
-struct http_info {
-    timeval syn_time;		/* when CLIENT sent SYN */
+/* info gathered for each GET */
+struct get_info {
     timeval get_time;		/* when CLIENT sent GET */
-    timeval lastack_time;	/* when CLIENT acked last byte of server data */
-    timeval fin_time;		/* when SERVER sent FIN */
+    timeval send_time;		/* when SERVER sent CONTENT */
+    timeval ack_time;		/* when CLIENT acked CONTENT */
     unsigned content_length;	/* as reported by server */
-    unsigned byte_count;	/* as counted by tcptrace */
-    char path[1024];		/* content of GET string */
+    char *get_string;		/* content of GET string */
 
-    seqnum highest_data;	/* highest data byte from server */
+    struct get_info *next;
+};
 
+
+
+/* linked list of times */
+struct time_stamp {
+    timeval 	       thetime;
+    u_long 	       position;
+    struct time_stamp *next;
+    struct time_stamp *prev;
+};
+
+
+/* info kept for each connection */
+static struct http_info {
+    timeval syn_time;		/* when CLIENT sent SYN */
+    timeval fin_time;		/* when SERVER sent FIN */
+
+    /* info about the TCP connection */
     tcp_pair *ptp;
+    tcb *tcb_client;
+    tcb *tcb_server;
 
-    int persist_count;		/* how many times this connection used? */
+    /* when querries (GETs) were sent by client */
+    struct time_stamp get_head;
+    struct time_stamp get_tail;
 
-    struct http_info *pnext;
-} *httphead = NULL;
+    /* when answers (CONTENT) were sent by server */
+    struct time_stamp data_head;
+    struct time_stamp data_tail;
 
+    /* when answers (CONTENT) were acked by client */
+    struct time_stamp ack_head;
+    struct time_stamp ack_tail;
+
+    /* linked list of requests */
+    struct get_info *gets_head;
+    struct get_info *gets_tail;
+
+    struct http_info *next;
+    struct http_info *prev;
+} *httphead = NULL, *httptail = NULL;
+
+
+
+/* which port are we monitoring?? */
 static unsigned httpd_port;
+
+
+/* local routines */
+static timeval WhenSent(struct time_stamp *phead, struct time_stamp *ptail,
+			u_long position);
+static timeval WhenAcked(struct time_stamp *phead, struct time_stamp *ptail,
+			 u_long position);
+static void MFMap(MFILE *mf, char **firstbyte, char **lastbyte);
+static void FindGets(struct http_info *ph);
+static void FindContent(struct http_info *ph);
+static void HttpGather(struct http_info *ph);
+static struct http_info *MakeHttpRec(void);
+static struct get_info *MakeGetRec(struct http_info *ph);
+static u_long DataOffset(tcb *tcb, seqnum seq);
+static void AddGetTS(struct http_info *ph, u_long position);
+static void AddDataTS(struct http_info *ph, u_long position);
+static void AddAckTS(struct http_info *ph, u_long position);
+static void AddTS(struct time_stamp *phead, struct time_stamp *ptail,
+		  u_long position);
+static double ts2d(timeval *pt);
+static void HttpPrintone(MFILE *pmf, struct http_info *ph);
+static struct http_info *FindPH(tcp_pair *ptp, struct tcphdr *ptcp);
+
+
+/* useful macros */
+#define IS_CLIENT(ptcp) ((ptcp)->th_dport == httpd_port)
+#define IS_SERVER(ptcp) ((ptcp)->th_dport != httpd_port)
 
 
 /* Mostly as a module example, here's a plug in that records HTTP info */
@@ -75,8 +137,7 @@ http_init(
 	    } else {
 		httpd_port = DEFAULT_SERVER_PORT;
 	    }
-	    fprintf(stderr,"Capturing HTTP traffic (port %d)\n",
-		    httpd_port);
+	    printf("Capturing HTTP traffic (port %d)\n", httpd_port);
 	    argv[i] = NULL;
 	}
     }
@@ -86,10 +147,59 @@ http_init(
 
 
     /* init stuff */
-    
+
+    /* We need to save the contents for accurate reconstruction of questions */
+    /* and answers */
+    save_tcp_data = TRUE;
+
 
     return(1);	/* TRUE means call http_read and http_done later */
 }
+
+
+/* N.B.  first byte is position _1_ */
+static u_long
+DataOffset(
+    tcb *tcb,
+    seqnum seq)
+{
+    u_long off;
+    
+    /* we're going to be a little lazy and assume that a http connection */
+    /* can't be longer than 2**32  */
+    if (seq > tcb->syn)
+	off = seq-tcb->syn;
+    else
+	off = tcb->syn-seq;
+
+    if (debug)
+	fprintf(stderr,"DataOffset: seq is %ld, syn is %ld, offset is %ld\n",
+		seq, tcb->syn, off);
+
+    return(off);
+}
+
+
+static struct get_info *
+MakeGetRec(
+    struct http_info *ph)
+{
+    struct get_info *pg;
+
+    pg = MallocZ(sizeof(struct get_info));
+
+    /* put at the end of the chain */
+    if (ph->gets_head == NULL) {
+	ph->gets_head = pg;
+	ph->gets_tail = pg;
+    } else {
+	ph->gets_tail->next = pg;
+	ph->gets_tail = pg;
+    }
+
+    return(pg);
+}
+
 
 static struct http_info *
 MakeHttpRec()
@@ -97,11 +207,129 @@ MakeHttpRec()
     struct http_info *ph;
 
     ph = MallocZ(sizeof(struct http_info));
-    ph->pnext = httphead;
-    httphead = ph;
+
+    ph->get_head.next = &ph->get_tail;
+    ph->get_tail.prev = &ph->get_head;
+    ph->get_tail.position = 0xffffffff;
+
+    ph->data_head.next = &ph->data_tail;
+    ph->data_tail.prev = &ph->data_head;
+    ph->data_tail.position = 0xffffffff;
+
+    ph->ack_head.next = &ph->ack_tail;
+    ph->ack_tail.prev = &ph->ack_head;
+    ph->ack_tail.position = 0xffffffff;
+
+    /* put it at the tail of the list */
+    if (httphead == NULL) {
+	httptail = ph;
+	httphead = ph;
+    } else {
+	ph->prev = httptail;
+	httptail->next = ph;
+	httptail = ph;
+    }
 
     return(ph);
 }
+
+
+static void
+AddGetTS(
+    struct http_info *ph,
+    u_long position)
+{
+    AddTS(&ph->get_head,&ph->get_tail,position);
+}
+
+
+
+static void
+AddDataTS(
+    struct http_info *ph,
+    u_long position)
+{
+    AddTS(&ph->data_head,&ph->data_tail,position);
+}
+
+
+static void
+AddAckTS(
+    struct http_info *ph,
+    u_long position)
+{
+    AddTS(&ph->ack_head,&ph->ack_tail,position);
+}
+
+
+/* add a timestamp to the record */
+/* HEAD points to the smallest position numbers */
+/* TAIL points to the largest position numbers */
+static void
+AddTS(
+    struct time_stamp *phead,
+    struct time_stamp *ptail,
+    u_long position)
+{
+    struct time_stamp *pts;
+    struct time_stamp *pts_new;
+
+    pts_new = MallocZ(sizeof(struct time_stamp));
+    pts_new->thetime = current_time;
+    pts_new->position = position;
+
+    for (pts = ptail->prev; pts != NULL; pts = pts->prev) {
+	if (position == pts->position)
+	    return; /* ignore duplicates */
+
+	if (position > pts->position) {
+	    /* it goes AFTER this one (pts) */
+	    pts_new->next = pts->next;
+	    pts_new->prev = pts;
+	    pts->next = pts_new;
+	    pts_new->next->prev = pts_new;
+	    return;
+	}
+    }
+
+    /* can't fail, the tail has timestamp 0 */
+}
+
+static struct http_info *
+FindPH(
+    tcp_pair *ptp,
+    struct tcphdr *ptcp)
+{
+    struct http_info *ph;
+
+    /* find the record for this packet */
+    for (ph=httphead; ph; ph=ph->next) {
+	if (ph->ptp == ptp)
+	    break;
+    }
+
+    if (!ph) {
+	/* didn't find it, make one up */
+	ph = MakeHttpRec();
+	ph->ptp = ptp;
+
+	/* record SYN time */
+	if (SYN_SET(ptcp) && (ph->syn_time.tv_sec == 0))
+	    ph->syn_time = current_time;
+
+	/* determine the server and client tcb's */
+	if (ptp->addr_pair.a_port == httpd_port) {
+	    ph->tcb_client = &ptp->b2a;
+	    ph->tcb_server = &ptp->a2b;
+	} else {
+	    ph->tcb_client = &ptp->a2b;
+	    ph->tcb_server = &ptp->b2a;
+	}
+    }
+
+    return(ph);
+}
+
 
 
 void
@@ -114,11 +342,7 @@ http_read(
     struct tcphdr *ptcp;
     unsigned tcp_length;
     unsigned tcp_data_length;
-    char *pget;
-    char *pch;
     char *pdata;
-    Bool client;
-    int j;
 
     /* find the start of the TCP header */
     ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
@@ -130,106 +354,33 @@ http_read(
 	return;
 
     /* find the record for this packet */
-    for (ph=httphead; ph; ph=ph->pnext) {
-	if (ph->ptp == ptp)
-	    break;
-    }
-
-    if (!ph) {
-	/* didn't find it, make one up */
-	ph = MakeHttpRec();
-	ph->ptp = ptp;
-	ph->persist_count = 1;
-
-	/* record SYN time */
-	if (SYN_SET(ptcp) && (ph->syn_time.tv_sec == 0))
-	    ph->syn_time = current_time;
-    }
-
-    /* Is this packet from the client or not? */
-    client = (ptcp->th_dport == httpd_port);
+    ph = FindPH(ptp,ptcp);
 
     /* find the data */
     pdata = (char *)ptcp + (unsigned)ptcp->th_off*4;
 
-    /* print out the raw TCP data */
-    PrintRawData("TCP Data",pdata,plast);
-
-    /* look for GET */
-    if (client) {
-	for (pch = pdata; pch <= (char *)plast; ++pch) {
-	    if (strncasecmp(pch,"get ", 4) == 0) {
-		/* if this is a persistant connection, make a new one
-		   database entry */
-		if (ph->get_time.tv_sec != 0) {
-		    int count = ph->persist_count;
-/* 		    fprintf(stderr,"FOUND PERSISTANT CONNECTION\n"); */
-		    ph = MakeHttpRec();
-		    ph->ptp = ptp;
-		    ph->persist_count = count+1;
-		}
-
-		for (j=0,pget = pch+4; ; ++j,++pget) {
-		    if ((*pget == '\n') || (j >= sizeof(ph->path))) {
-			ph->path[j+1] = '\00';
-			pch = plast;  /* break out, ugly */
-			break;
-		    }
-		    ph->path[j] = *pget;
-		}
-		ph->get_time = current_time;
-	    }
+    /* for client, record both ACKs and DATA time stamps */
+    if (IS_CLIENT(ptcp)) {
+	if (tcp_data_length > 0) {
+	    AddGetTS(ph,DataOffset(ph->tcb_client,ptcp->th_seq));
+	}
+	if (ACK_SET(ptcp)) {
+	    AddAckTS(ph,DataOffset(ph->tcb_server,ptcp->th_ack));
 	}
     }
+
+    /* for server, record DATA time stamps */
+    if (IS_SERVER(ptcp)) {
+	if (tcp_data_length > 0) {
+	    AddDataTS(ph,DataOffset(ph->tcb_server,ptcp->th_seq));
+	}
+    }
+
     
-    /* we want the time that the SERVER sends his FIN */
-    if (!client)
+    /* we also want the time that the SERVER sends his FIN */
+    if (IS_SERVER(ptcp))
 	if (FIN_SET(ptcp) && (ph->fin_time.tv_sec == 0))
 	    ph->fin_time = current_time;
-
-    /* we want the time that the Client ACKS the last data byte
-       from the server (ICK!) */
-    if (!client && (tcp_data_length > 0)) { /* server data */
-	seqnum lastbyte = ptcp->th_seq + tcp_data_length - 1;
-	if (lastbyte > ph->highest_data)
-	    ph->highest_data = lastbyte;
-    }
-#ifdef OLD
-    if (client && ACK_SET(ptcp)) {
-	/* does this ACK "highest_data"? */
-	if (SEQ_GREATERTHAN(ptcp->th_ack,ph->highest_data)) {
-	    ph->lastack_time = current_time;
-	}
-    }
-#else /* OLD */
-    /* Allman's hack */
-    if (client && ACK_SET(ptcp)
-	&& !ph->fin_time.tv_sec && !ph->fin_time.tv_usec) {
-	/* does this ACK "highest_data"? */
-	if ((!FIN_SET (ptcp) && 
-	     SEQ_GREATERTHAN(ptcp->th_ack,ph->highest_data)) ||
-	    (FIN_SET (ptcp) &&
-	     SEQ_GREATERTHAN(ptcp->th_ack,ph->highest_data + 1))) {
-	    ph->lastack_time = current_time;
-	}
-    }
-
-#endif /* OLD */
-
-    /* look for Content_Length: */
-    if (!client && (ph->content_length == 0)) {
-	for (pch = pdata; pch <= (char *)plast; ++pch) {
-	    if (strncasecmp(pch,"Content-Length:", 15) == 0) {
-		/* find the value */
-		ph->content_length = atoi(&pch[16]);
-	    }
-	}
-    }
-
-    /* at least count the bytes */
-    if (!client) {
-	ph->byte_count += tcp_data_length;
-    }
 }
 
 
@@ -244,11 +395,227 @@ ts2d(timeval *pt)
 
 
 static void
-http_printone(
+MFMap(
+    MFILE *mf,
+    char **firstbyte,
+    char **lastbyte)
+{
+    int fd;
+    char *vaddr;
+    int len;
+    
+    /* find length of file */
+    if (Mfseek(mf,0,SEEK_END) != 0) {
+	perror("fseek");
+	exit(-1);
+    }
+    len = Mftell(mf);
+
+    /* Memory map the entire file */
+    fd = Mfileno(mf);
+    vaddr = mmap((caddr_t) 0,	/* put it anywhere	*/
+		 len,		/* fixed size		*/
+		 PROT_READ,	/* read only		*/
+		 MAP_PRIVATE,	/* won't be sharing...	*/
+		 fd,		/* attach to 'fd'	*/
+		 (off_t) 0);	/* ... offset 0 in 'fd'	*/
+    if (vaddr == MAP_FAILED) {
+	perror("mmap");
+	exit(-1);
+    }
+
+    *firstbyte = vaddr;
+    *lastbyte = vaddr+len-1;
+
+    return;
+}
+
+
+static void
+HttpGather(
+    struct http_info *ph)
+{
+    while (ph) {
+	FindGets(ph);
+	FindContent(ph);
+
+	ph = ph->next;
+    }
+}
+
+
+#ifdef OLD
+static void
+PrintTSChain(
+    struct time_stamp *phead,
+    struct time_stamp *ptail)
+{
+    struct time_stamp *pts;
+
+    for (pts = phead->next; pts != ptail; pts = pts->next) {
+	printf("Pos: %ld  time: %s\n",
+	       pts->position, ts2ascii(&pts->thetime));
+    }
+}
+#endif
+
+
+/* when was the byte at offset "position" acked?? */
+/* return the timeval for the record of the smallest position >= "position" */
+static timeval
+WhenAcked(
+    struct time_stamp *phead,
+    struct time_stamp *ptail,
+    u_long position)
+{
+    struct time_stamp *pts;
+    timeval epoch = {0,0};
+
+/*     printf("pos:%ld, Chain:\n", position); */
+/*     PrintTSChain(phead,ptail); */
+
+    for (pts = phead->next; pts != NULL; pts = pts->next) {
+/* 	fprintf(stderr,"Checking pos %ld against %ld\n", */
+/* 		position, pts->position); */
+	if (pts->position >= position) {
+	    /* sent after this one */
+	    return(pts->thetime);
+	}
+    }
+
+    /* fails if we can't find it */
+    return(epoch);
+}
+
+
+
+/* when was the byte at offset "position" sent?? */
+/* return the timeval for the record of the largest position <= "position" */
+static timeval
+WhenSent(
+    struct time_stamp *phead,
+    struct time_stamp *ptail,
+    u_long position)
+{
+    struct time_stamp *pts;
+    timeval epoch = {0,0};
+
+/*     printf("pos:%ld, Chain:\n", position); */
+/*     PrintTSChain(phead,ptail); */
+
+    for (pts = ptail->prev; pts != phead; pts = pts->prev) {
+/* 	fprintf(stderr,"Checking pos %ld against %ld\n", */
+/* 		position, pts->position); */
+	if (pts->position <= position) {
+	    /* sent after this one */
+	    return(pts->thetime);
+	}
+    }
+
+    /* fails if we can't find it */
+    return(epoch);
+}
+
+
+
+
+static void
+FindContent(
+    struct http_info *ph)
+{
+    tcb *tcb = ph->tcb_server;
+    MFILE *mf = tcb->extracted_contents_file;
+    char *pdata;
+    char *plast;
+    char *pch;
+    struct get_info *pget;
+    u_long position;
+
+    /* Memory map the entire file (I hope it's short!) */
+    MFMap(mf,&pdata,&plast);
+
+    /* search for Content-Length */
+    pget = ph->gets_head;
+    for (pch = pdata; pch <= (char *)plast; ++pch) {
+	if (strncasecmp(pch,"Content-Length:", 15) == 0) {
+	    /* find the value */
+	    pget->content_length = atoi(&pch[16]);
+
+	    /* remember where it started */
+	    position = pch - pdata + 1;
+
+	    /* grab the time stamps */
+	    pget->send_time = WhenSent(&ph->data_head,&ph->data_tail,position);
+	    pget->ack_time = WhenAcked(&ph->ack_head,&ph->ack_tail,position);
+
+	    /* skip to the next request */
+	    pget = pget->next;
+
+	    if (!pget) {
+		/* no more questions, quit */
+		return;
+	    }
+	}
+    }
+}
+
+
+
+static void
+FindGets(
+    struct http_info *ph)
+{
+    tcb *tcb = ph->tcb_client;
+    MFILE *mf = tcb->extracted_contents_file;
+    char *pdata;
+    char *plast;
+    char *pch;
+    char *pch2;
+    struct get_info *pget;
+    char getbuf[256];
+    u_long position;
+    int j;
+
+    /* Memory map the entire file (I hope it's short!) */
+    MFMap(mf,&pdata,&plast);
+
+    /* search for GET */
+    for (pch = pdata; pch <= (char *)plast; ++pch) {
+	if (strncasecmp(pch,"get ", 4) == 0) {
+	    /* make a new record for this entry */
+	    pget = MakeGetRec(ph);
+
+	    /* remember where it started */
+	    position = pch - pdata + 1;
+
+	    /* grab the GET string */
+	    for (j=0,pch2 = pch+4; ; ++j,++pch2) {
+		if ((*pch2 == '\n') || (*pch2 == '\r') || (j >= sizeof(getbuf))) {
+		    getbuf[j] = '\00';
+		    pch = pch2;  /* skip forward */
+		    break;
+		}
+		getbuf[j] = *pch2;
+	    }
+	    pget->get_string = strdup(getbuf);
+
+	    /* grab the time stamps */
+	    pget->get_time = WhenSent(&ph->get_head,&ph->get_tail,position);
+	}
+    }
+}
+
+
+static void
+HttpPrintone(
     MFILE *pmf,
     struct http_info *ph)
 {
     tcp_pair *ptp = ph->ptp;
+    tcb *pab = &ptp->a2b;
+    tcb *pba = &ptp->b2a;
+    struct get_info *pget;
+    u_long missing;
     double etime;
 
     if (!ptp)
@@ -258,26 +625,43 @@ http_printone(
 	   ptp->a_endpoint, ptp->b_endpoint,
 	   ptp->a2b.host_letter, ptp->b2a.host_letter);
 
-    printf("\tSyn Time:      %s (%.3f)\n",
+    /* see if we got all the bytes */
+    missing = pab->trunc_bytes + pba->trunc_bytes;
+    missing += pab->fin-pab->syn-1-(pab->data_bytes-pab->rexmit_bytes);
+    missing += pba->fin-pba->syn-1-(pba->data_bytes-pba->rexmit_bytes);
+    if (missing != 0)
+	printf("WARNING!!!!  Information may be invalid, %ld bytes were not captured\n",
+	       missing);
+
+    printf("  Syn Time:      %s (%.3f)\n",
 	   ts2ascii(&ph->syn_time),
 	   ts2d(&ph->syn_time));
-    printf("\tGet Time:      %s (%.3f)\n",
-	   ts2ascii(&ph->get_time),
-	   ts2d(&ph->get_time));
-    printf("\tLastack Time:  %s (%.3f)\n",
-	   ts2ascii(&ph->lastack_time),
-	   ts2d(&ph->lastack_time));
-    printf("\tFin Time:      %s (%.3f)\n",
+    printf("  Fin Time:      %s (%.3f)\n",
 	   ts2ascii(&ph->fin_time),
 	   ts2d(&ph->fin_time));
-    printf("\tGet string:    %s\n", ph->path);
-    printf("\tContent len:   %d bytes (server string)\n", ph->content_length);
-    printf("\tByte count:    %d bytes (by count)\n", ph->byte_count);
-    etime = elapsed(ph->get_time,ph->lastack_time);
-    etime /= 1000000;  /* us to secs */
-    printf("\tElapsed time:  %.3f seconds (GET to LASTACK)\n", etime);
-    printf("\tPersist count: %d\n", ph->persist_count);
 
+    for (pget = ph->gets_head; pget; pget = pget->next) {
+	printf("    Request for '%s'\n", pget->get_string);
+	printf("\tContent Length:      %d\n", pget->content_length);
+	printf("\tTime GET sent:       %s (%.3f)\n",
+	       ts2ascii(&pget->get_time), ts2d(&pget->get_time));
+	printf("\tTime Answer started: %s (%.3f)\n",
+	       ts2ascii(&pget->send_time), ts2d(&pget->send_time));
+	printf("\tTime Answer ACKed:   %s (%.3f)\n",
+	       ts2ascii(&pget->ack_time), ts2d(&pget->ack_time));
+
+	/* elapsed time, GET started to answer started */
+	etime = elapsed(pget->get_time,pget->send_time);
+	etime /= 1000;  /* us to msecs */
+	printf("\tElapsed time:  %.0f ms (GET to first byte sent)\n", etime);
+
+	/* elapsed time, GET started to answer ACKed */
+	etime = elapsed(pget->get_time,pget->ack_time);
+	etime /= 1000;  /* us to msecs */
+	printf("\tElapsed time:  %.0f ms (GET to content ACKed)\n", etime);
+    }
+
+#ifdef OLD
     Mfprintf(pmf,"%.3f %.3f %.3f %.3f %d %s\n",
 	     ts2d(&ph->syn_time),
 	     ts2d(&ph->get_time),
@@ -285,21 +669,7 @@ http_printone(
 	     ts2d(&ph->fin_time),
 	     ph->content_length,
 	     ph->path);
-}
-
-
-/* print the linked list, recursively, in reverse order (for Mark) */
-static void
-http_print(
-    MFILE *pmf,
-    struct http_info *ph)
-{
-    if (ph == NULL)
-	return;
-
-    http_print(pmf,ph->pnext);
-
-    http_printone(pmf,ph);
+#endif
 }
 
 
@@ -308,16 +678,22 @@ void
 http_done(void)
 {
     MFILE *pmf;
+    struct http_info *ph;
 
     /* just return if we didn't grab anything */
     if (!httphead)
 	return;
 
+    /* gather up the information */
+    HttpGather(httphead);
+
     pmf = Mfopen("http.times","w");
 
     printf("Http module output:\n");
 
-    http_print(pmf,httphead);
+    for (ph=httphead; ph; ph=ph->next) {
+	HttpPrintone(pmf,ph);
+    }
 
     Mfclose(pmf);
 }
@@ -329,3 +705,22 @@ http_usage(void)
     printf("\t\t-H[P]\tprint info about http traffic (on port P, default %d)\n",
 	   DEFAULT_SERVER_PORT);
 }
+
+
+#ifdef OLD
+    /* look for Content_Length: */
+    if (IS_SERVER(ptcp) && (ph->content_length == 0)) {
+	for (pch = pdata; pch <= (char *)plast; ++pch) {
+	    if (strncasecmp(pch,"Content-Length:", 15) == 0) {
+		/* find the value */
+		ph->content_length = atoi(&pch[16]);
+	    }
+	}
+    }
+
+    /* at least count the bytes */
+    if (IS_SERVER(ptcp)) {
+	ph->byte_count += tcp_data_length;
+    }
+
+#endif
