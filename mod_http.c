@@ -921,7 +921,7 @@ http_done(void)
 void
 http_usage(void)
 {
-    printf("\t\t-xHTTP[P]\tprint info about http traffic (on port P, default %d)\n",
+    printf("\t-xHTTP[P]\tprint info about http traffic (on port P, default %d)\n",
 	   DEFAULT_SERVER_PORT);
 }
 

@@ -357,10 +357,10 @@ ListModules(void)
 
     fprintf(stderr,"Included Modules:\n");
     for (i=0; i < NUM_MODULES; ++i) {
-	fprintf(stderr,"\t%-15s  %s\n",
+	fprintf(stderr,"  %-15s  %s\n",
 		modules[i].module_name, modules[i].module_descr);
 	if (modules[i].module_usage) {
-	    fprintf(stderr,"\tusage:\n");
+	    fprintf(stderr,"    usage:\n");
 	    (*modules[i].module_usage)();
 	}
     }

@@ -513,21 +513,21 @@ traffic_done(void)
 void
 traffic_usage(void)
 {
-    printf("\t\t-xtraffic[PORTSPEC]\tprint info about overall traffic\n");
+    printf("\t-xtraffic[PORTSPEC]\tprint info about overall traffic\n");
     printf("\
-\t\t\t PORTSPEC format:\n\
-\t\t\t     =S    	set statistics interval to S (float) seconds, default 15.0\n\
-\t\t\t     PNUM    	include information on port PNUM\n\
-\t\t\t     PNUM1-PNUM2	include information on ports in the range [PNUM1-PNUM2]\n\
-\t\t\t     -PNUM    	exclude information on port PNUM\n\
-\t\t\t     -PNUM1-PNUM2	exclude information on ports in the range [PNUM1-PNUM2]\n\
-\t\t\t     SPEC,SPEC	commas chain together specs\n\
-\t\t\t   Examples\n\
-\t\t\t     -xtraffic23		only port 23\n\
-\t\t\t     -xtraffic1-1023	only ports 1-1023\n\
-\t\t\t     -xtraffic1-1023,-10-20	only ports 1-1023, but exclude ports 10-20\n\
-\t\t\t   With no ports specification, all ports are gathered.  With ANY spec, all ports\n\
-\t\t\t   are initially EXCLUDED\n\
+\t   PORTSPEC format:\n\
+\t       =S         set statistics interval to S (float) seconds, default 15.0\n\
+\t       P          include information on port P\n\
+\t       P1-P2      include information on ports in the range [P1-P2]\n\
+\t       -P         exclude information on port P\n\
+\t       -P1-P2     exclude information on ports in the range [P1-P2]\n\
+\t       SPEC,SPEC  commas chain together specs\n\
+\t     Examples\n\
+\t       -xtraffic23            only port 23\n\
+\t       -xtraffic1-1023        only ports 1-1023\n\
+\t       -xtraffic1-1023,-10-20 only ports 1-1023, but exclude ports 10-20\n\
+\t     With no ports specification, all ports are gathered.  With ANY\n\
+\t     spec, all ports are initially EXCLUDED\n\
 ");
 }
 
