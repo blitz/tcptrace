@@ -44,6 +44,11 @@ extern YYSTYPE yylval;
 
 [ \t]+		{ }  /* Just ignore white space */
 
+"\n" 	        { return(EOS); } 
+"+" 	        { return(PLUS); } 
+"-" 	        { return(MINUS); } 
+"*" 	        { return(TIMES); } 
+"/" 	        { return(DIVIDE); } 
 "(" 	        { return(LPAREN); } 
 ")" 	        { return(RPAREN); } 
 "<" 	        { return(LESS); } 
@@ -57,8 +62,10 @@ extern YYSTYPE yylval;
 [nN][oO][tT]	{ return(NOT); }   /* same as "!" */
 [aA][nN][dD]	{ return(AND); } 
 -[aA]		{ return(AND); }    /* same as "AND" */
+"&&"		{ return(AND); }    /* same as "AND" */
 [oO][rR]	{ return(OR); } 
 -[oO]		{ return(OR); }     /* same as "OR" */
+"||"		{ return(OR); }     /* same as "OR" */
 
 
 [0-9]+	{

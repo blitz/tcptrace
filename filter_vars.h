@@ -26,12 +26,6 @@
  *		ostermann@cs.ohiou.edu
  */
 
-#ifndef HAVE_LONG_LONG
-#define V_ULLONG V_ULONG
-#define V_LLONG V_LONG
-#endif /* HAVE_LONG_LONG */
-
-
 
 /* just a big table of things that we can filter on */
 static tcp_pair ptp_dummy;
@@ -67,5 +61,10 @@ struct filter_line filters[] = {
     {"out_order_pkts",	V_ULLONG,	PTCB_C_S(out_order_pkts)},
     {"sacks_sent",	V_ULLONG,	PTCB_C_S(sacks_sent)},
     {"ipv6_segments",	V_ULONG,	PTCB_C_S(ipv6_segments)},
+
+    /* computed functions */
+
+    /* throughput in bytes/second - 0 for infinite or none */
+    {"thruput",		V_UFUNC,	&VFuncClntTput, &VFuncServTput},
 };
 #define NUM_FILTERS (sizeof(filters)/sizeof(struct filter_line))

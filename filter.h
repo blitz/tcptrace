@@ -39,15 +39,13 @@ enum vartype {
     V_CHAR	= 8,
     V_BOOL	= 9,
     V_STRING	= 10,
-#ifdef HAVE_LONG_LONG
     V_ULLONG	= 11,
     V_LLONG	= 12,
-#endif /* HAVE_LONG_LONG */
+
+    /* functions */
+    V_FUNC	=13,
+    V_UFUNC	=14,
 };
-#ifndef HAVE_LONG_LONG
-#define V_ULLONG V_ULONG
-#define V_LLONG	 V_LONG
-#endif /* HAVE_LONG_LONG */
 
 
 
@@ -71,6 +69,13 @@ enum optype {
 
     /* Unary OPs */
     OP_NOT	  = 111,
+    OP_SIGNED	  = 112,	/* convert unsigned to signed */
+
+    /* binary arithmetic */
+    OP_PLUS	  = 113,
+    OP_MINUS	  = 114,
+    OP_TIMES	  = 115,
+    OP_DIVIDE	  = 116,
 };
 
 
@@ -86,6 +91,8 @@ union Constant {
 struct Variable {
     char 	*name;
     u_int	offset;
+    Bool	fclient;	/* from the client or server side? */
+    enum vartype realtype;
 };
 
 /* Binary - binary operation */
@@ -139,6 +146,7 @@ int yyfparse(void);
 void InstallFilter(struct filter_node *root);
 int filter_getc(void *in_junk);
 void PrintFilter(struct filter_node *pn);
+char *Filter2Str(struct filter_node *pn);
 
 struct filter_node *MakeUnaryNode(enum optype op, struct filter_node *pf);
 struct filter_node *MakeBinaryNode(enum optype op, struct filter_node *pf_left, struct filter_node *pf_right);
@@ -147,4 +155,10 @@ struct filter_node *MakeStringConstNode(char *val);
 struct filter_node *MakeBoolConstNode(Bool val);
 struct filter_node *MakeSignedConstNode(llong val);
 struct filter_node *MakeUnsignedConstNode(u_llong val);
+
+/* functions for calculated values */
+u_llong VFuncClntTput(tcp_pair *ptp);
+u_llong VFuncServTput(tcp_pair *ptp);
+
+
 

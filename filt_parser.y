@@ -46,142 +46,102 @@
     long signed_long;
     u_long unsigned_long;
     Bool bool;
-    float floating;
-    int op;
+    enum optype op;
     struct filter_node *pf;
-    struct var_node *pv;
 }
 
 
 
+%token EOS
 %token LPAREN RPAREN
 %token GREATER GREATER_EQ LESS LESS_EQ EQUAL NEQUAL
-%token AND OR NOT
-%token <string> VARIABLE
-%token <string> STRING
+%token NOT
+
+/* AND or OR group left to right, NOT is highest precednece, then OR */
+%left NOT
+%left AND
+%left OR
+
+/* PLUS and MINUS group left to right, lower prec then TIMES and DIVIDE */
+%left PLUS MINUS
+%left TIMES DIVIDE
+
+
+%token <string> VARIABLE STRING
 %token <signed_long> SIGNED
 %token <unsigned_long> UNSIGNED
 %token <bool> BOOL
-%token <floating> FLOAT
-%type <pf> bigbool term expr
 %type <op> relop
-%type <pv> ref variable
+%type <pf> expr leaf number term
+
 
 
 %% 	/* beginning of the parsing rules	*/
-line	: bigbool
+line	: expr EOS
 		{InstallFilter($1);}
 	;
 
-bigbool	: term
+/* top-level booleans and etc */
+expr	: expr AND expr
+		{ $$ = MakeBinaryNode(OP_AND,$1,$3);}
+	| expr OR expr
+		{ $$ = MakeBinaryNode(OP_OR,$1,$3);}
+	| NOT expr
+		{ $$ = MakeUnaryNode(OP_NOT,$2); }
+	| term
 		{ $$ = $1; }
-	| NOT bigbool
-		{ $$ = MakeFilterNode(NOT);
-		  $$->un.bool.left = $2;
-		  $$->un.bool.right = NULL;
-		}
-	| term AND bigbool
-		{ $$ = MakeFilterNode(AND);
-		  $$->un.bool.left = $1;
-		  $$->un.bool.right = $3;
-		}
-	| term OR bigbool
-		{ $$ = MakeFilterNode(OR);
-		  $$->un.bool.left = $1;
-		  $$->un.bool.right = $3;
-		}
 	;
 
-term	: LPAREN bigbool RPAREN
+/* relational operators and function of constants and variables */
+term	: number relop number
+		{ $$ = MakeBinaryNode($2,$1,$3);}
+	| number
+		{ $$ = $1; }
+	;
+
+
+/* numbers are leaves or math operations thereon */
+number	: number PLUS number
+		{ $$ = MakeBinaryNode(OP_PLUS,$1,$3);}
+	| number MINUS number
+		{ $$ = MakeBinaryNode(OP_MINUS,$1,$3);}
+	| number TIMES number
+		{ $$ = MakeBinaryNode(OP_TIMES,$1,$3);}
+	| number DIVIDE number
+		{ $$ = MakeBinaryNode(OP_DIVIDE,$1,$3);}
+	| LPAREN expr RPAREN
 		{ $$ = $2; }
-	| expr
+	| leaf
 		{ $$ = $1; }
 	;
 
-expr	: ref relop ref
-		{
-		    $$ = MakeFilterNode($2);
-		    $$->un.leaf.pvarl = $1;
-		    $$->un.leaf.pvarr = $3;
-
-		    /* quick check, left side MUST be variable */
-		    if ($1->isconstant) {
-			fprintf(stderr, "\
-Left hand side of relational op must be a constant.\n\
-You asked for:\n\t");
-			PrintFilter($$);
-			printf("\n");
-			exit(-1);
-		    }
-
-		    /* boolean sanity check, only equality and
-		       inequality are legal */
-		    if ($1->vartype == V_BOOL) {
-			if (($2 != EQUAL) && ($2 != NEQUAL)) {
-			    fprintf(stderr, "\
-Only equality and inequality testing allowed against boolean type '%s'\n",
-				    $1->unIsConst.vardet.name);
-			    exit(-1);
-			}
-		    }
-		}
-	;
-
-ref	: variable
-		{ $$ = $1; }
+/* leaves are constants or variables */
+leaf	: VARIABLE
+		{ $$ = MakeVarNode($1); }
 	| SIGNED
-		{ $$ = MakeVarNode(V_LONG,1);
-		  $$->unIsConst.unType.longint = $1;}
+		{ $$ = MakeSignedConstNode($1); }
 	| UNSIGNED
-		{ $$ = MakeVarNode(V_ULONG,1);
-		  $$->unIsConst.unType.u_longint = $1;}
+		{ $$ = MakeUnsignedConstNode($1); }
 	| STRING
-		{ $$ = MakeVarNode(V_STRING,1);
-		  $$->unIsConst.unType.string = $1;}
+		{ $$ = MakeStringConstNode($1); }
 	| BOOL
-		{ $$ = MakeVarNode(V_BOOL,1);
-		  $$->unIsConst.unType.bool = $1;}
-	| FLOAT
-		{ $$ = MakeVarNode(V_ULONG,1);
-		  $$->unIsConst.unType.floating = $1;}
+		{ $$ = MakeBoolConstNode($1); }
 	;
 
-variable: VARIABLE
-		{
-		    char vname[100];
-		    
-		    if (strncasecmp($1,"c_",2) == 0) {
-			/* they just asked for the client side */
-			$$ = LookupVar($1+2,TRUE);
-		    } else if (strncasecmp($1,"s_",2) == 0) {
-			/* they just asked for the client side */
-			$$ = LookupVar($1+2,FALSE);
-		    } else {
-			fprintf(stderr,
-				"wildcard on '%s' not implemented\n",
-				$1);
-			exit(-1);
-		    }
-		}
-	;
-
-
+/* relational operators */
 relop	: GREATER
-		{ $$ = GREATER;}
+		{ $$ = OP_GREATER;}
 	| GREATER_EQ
-		{ $$ = GREATER_EQ;}
+		{ $$ = OP_GREATER_EQ;}
 	| LESS
-		{ $$ = LESS;}
+		{ $$ = OP_LESS;}
 	| LESS_EQ
-		{ $$ = LESS_EQ;}
+		{ $$ = OP_LESS_EQ;}
 	| EQUAL
-		{ $$ = EQUAL;}
+		{ $$ = OP_EQUAL;}
 	| NEQUAL
-		{ $$ = NEQUAL;}
-	| NOT
-		{ $$ = NOT;}
-    	;
-
+		{ $$ = OP_NEQUAL;}
+	;
 %%
 
 void
