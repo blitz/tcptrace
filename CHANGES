@@ -24,3 +24,5 @@
     added FDDI support (untested by me, don't have FDDI)
     added Makefile flags so that it will compile on a "NetBSD 1.2 on a
 	Pentium box"  (also untested by me, I don't have one)
+  an HP compiler picked out some places where I missed a static
+    decl for some functions.  Not fatal, but I fixed it.
