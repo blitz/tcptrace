@@ -196,6 +196,9 @@
     This was originally pointed out by Brian Utterback and later by Mark
     Allman.  New heuristic is more in line with RFC1122 (SYN is out of
      the sequence space for the previous connection).
+5.0.11 - Mon Oct 19, 1998
+  Brian Utterback found another case where I was splicing connections
+    together.  Bad unsigned match caused it...  fixed (knock, knock)
 
 	
 
