@@ -62,8 +62,10 @@ static char const rcsid_tcptrace[] =
 #if SIZEOF_UNSIGNED_LONG_LONG_INT >= 8
 #define HAVE_LONG_LONG
 typedef unsigned long long int u_llong;
+typedef long long int llong;
 #else /* LONG LONG */
 typedef unsigned long int u_llong;
+typedef long int llong;
 #endif /* LONG LONG */
 
 
@@ -290,9 +292,15 @@ struct stcp_pair {
     /* endpoint identification */
     tcp_pair_addrblock	addr_pair;
 
-    /* connection information */
+    /* connection naming information */
+    char		*a_hostname;
+    char		*b_hostname;
+    char		*a_portname;
+    char		*b_portname;
     char		*a_endpoint;
     char		*b_endpoint;
+
+    /* connection information */
     timeval		first_time;
     timeval		last_time;
     u_llong		packets;
