@@ -368,7 +368,7 @@ http_read(
     pdata = (char *)ptcp + (unsigned)ptcp->th_off*4;
 
     /* for client, record both ACKs and DATA time stamps */
-    if (IS_CLIENT(ptcp)) {
+    if (ph && IS_CLIENT(ptcp)) {
 	if (tcp_data_length > 0) {
 	    AddGetTS(ph,DataOffset(ph->tcb_client,ptcp->th_seq));
 	}
@@ -380,7 +380,7 @@ http_read(
     }
 
     /* for server, record DATA time stamps */
-    if (IS_SERVER(ptcp)) {
+    if (ph && IS_SERVER(ptcp)) {
 	if (tcp_data_length > 0) {
 	    AddDataTS(ph,DataOffset(ph->tcb_server,ptcp->th_seq));
 	    if (debug > 5) {
@@ -393,7 +393,7 @@ http_read(
 
     
     /* we also want the time that the FINs were sent */
-    if (FIN_SET(ptcp)) {
+    if (ph && FIN_SET(ptcp)) {
 	if (IS_SERVER(ptcp)) {
 	    /* server */
 	    if (ZERO_TIME(&(ph->s_fin_time)))
@@ -406,7 +406,7 @@ http_read(
     }
 
     /* we also want the time that the SYNs were sent */
-    if (SYN_SET(ptcp)) {
+    if (ph && SYN_SET(ptcp)) {
 	if (IS_SERVER(ptcp)) {
 	    /* server */
 	    if (ZERO_TIME(&ph->s_syn_time))
