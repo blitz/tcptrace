@@ -405,15 +405,17 @@ int getpayloadlength (struct ip *pip, void *plast)
 
 /* 
  * ipcopyaddr: copy an IPv4 or IPv6 address  
+ * (note - this is obsolete in favor of the inline-able
+ *  IP_COPYADDR in tcptrace.h)
  */
-void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr)
+void ip_copyaddr (ipaddr *ptoaddr, ipaddr *pfromaddr)
 {
-    if (ADDR_ISV6(&fromaddr)) {
-	memcpy(toaddr->un.ip6.s6_addr, fromaddr.un.ip6.s6_addr, 16);
-	toaddr->addr_vers = 6;
+    if (ADDR_ISV6(pfromaddr)) {
+	memcpy(ptoaddr->un.ip6.s6_addr, pfromaddr->un.ip6.s6_addr, 16);
+	ptoaddr->addr_vers = 6;
     } else {
-	toaddr->un.ip4.s_addr = fromaddr.un.ip4.s_addr;
-	toaddr->addr_vers = 4;
+	ptoaddr->un.ip4.s_addr = pfromaddr->un.ip4.s_addr;
+	ptoaddr->addr_vers = 4;
     }
 }
 
@@ -421,47 +423,51 @@ void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr)
 
 /*
  * ipsameaddr: test for equality of two IPv4 or IPv6 addresses
+ * (note - this is obsolete in favor of the inline-able
+ *  IP_SAMEADDR in tcptrace.h)
  */
-int IP_SAMEADDR (ipaddr *addr1, ipaddr *addr2)
+int ip_sameaddr (ipaddr *paddr1, ipaddr *paddr2)
 {
     int ret = 0;
-    if (ADDR_ISV6(addr1)) {
-	if (ADDR_ISV6(addr2))
-	    ret = (memcmp(addr1->un.ip6.s6_addr,
-			  addr2->un.ip6.s6_addr,16) == 0);
+    if (ADDR_ISV6(paddr1)) {
+	if (ADDR_ISV6(paddr2))
+	    ret = (memcmp(paddr1->un.ip6.s6_addr,
+			  paddr2->un.ip6.s6_addr,16) == 0);
     } else {
-	if (ADDR_ISV4(addr2))
-	    ret = (addr1->un.ip4.s_addr == addr2->un.ip4.s_addr);
+	if (ADDR_ISV4(paddr2))
+	    ret = (paddr1->un.ip4.s_addr == paddr2->un.ip4.s_addr);
     }
-   if (debug > 3)
+    if (debug > 3)
 	printf("SameAddr(%s(%d),%s(%d)) returns %d\n",
-	       HostName(*addr1), ADDR_VERSION(addr1),
-	       HostName(*addr2), ADDR_VERSION(addr2),
+	       HostName(*paddr1), ADDR_VERSION(paddr1),
+	       HostName(*paddr2), ADDR_VERSION(paddr2),
 	       ret);
     return ret;
 }
 
 /*  
  *  iplowaddr: test if one IPv4 or IPv6 address is lower than the second one
+ * (note - this is obsolete in favor of the inline-able
+ *  IP_LOWADDR in tcptrace.h)
  */
-int IP_LOWADDR (ipaddr *addr1, ipaddr *addr2)
+int ip_lowaddr (ipaddr *paddr1, ipaddr *paddr2)
 {
-   int ret = 0;
-   if (ADDR_ISV6(addr1)) {
-      if (ADDR_ISV6(addr2))
-	ret = (memcmp(addr1->un.ip6.s6_addr,
-		      addr2->un.ip6.s6_addr,16) < 0);
-   } else {
-      if (ADDR_ISV4(addr2))
-	ret = (addr1->un.ip4.s_addr < addr2->un.ip4.s_addr);
-   }
-   
-   if (debug > 3)
-     printf("LowAddr(%s(%d),%s(%d)) returns %d\n",
-	    HostName(*addr1), ADDR_VERSION(addr1),
-	    HostName(*addr2), ADDR_VERSION(addr2),
-	    ret);
-   return ret;
+    int ret = 0;
+    if (ADDR_ISV6(paddr1)) {
+	if (ADDR_ISV6(paddr2))
+	    ret = (memcmp(paddr1->un.ip6.s6_addr,
+			  paddr2->un.ip6.s6_addr,16) < 0);
+    } else {
+	/* already know ADDR_ISV4(paddr1) */
+	if (ADDR_ISV4(paddr2))
+	    ret = (paddr1->un.ip4.s_addr < paddr2->un.ip4.s_addr);
+    }
+    if (debug > 3)
+	printf("LowAddr(%s(%d),%s(%d)) returns %d\n",
+	       HostName(*paddr1), ADDR_VERSION(paddr1),
+	       HostName(*paddr2), ADDR_VERSION(paddr2),
+	       ret);
+    return ret;
 }
 
 
