@@ -621,20 +621,26 @@ extend_line(
     }
 #endif
 
-    /* attach a label midway between the first and second point */
+    /* attach a label midway on the first line segment above 0 */
+    /* for whom the second point is NOT 0 */
     if (!pline->labelled) {
-	if (pline->last_y != 0) {
+	if ((yval != 0) && (!ZERO_TIME(&pline->last_time))) {
 	    timeval tv_avg;
-	    plotter_temp_color(p, pline->color);
+	    int avg_yval;
 
 	    /* average of last time and this time */
 	    tv_avg.tv_sec = (pline->last_time.tv_sec + xval.tv_sec)/2;
-	    tv_avg.tv_usec = (pline->last_time.tv_usec + xval.tv_usec)/2;
+	    tv_avg.tv_usec = (pline->last_time.tv_usec/2 + xval.tv_usec/2);
 
-	    plotter_text(p,
-			 tv_avg,
-			 (pline->last_y+yval)/2,
-			 "l", pline->label);
+	    /* average the Y values */
+	    avg_yval = (1 + pline->last_y+yval)/2;
+	    /* (rounding UP, please) */
+
+	    /* draw the label */
+	    plotter_temp_color(p, pline->color);
+	    plotter_text(p, tv_avg, avg_yval, "l", pline->label);
+
+	    /* remember that it's been done */
 	    pline->labelled = 1;
 	}
     }
