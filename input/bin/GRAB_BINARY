@@ -10,7 +10,7 @@ mkdir ${BINDIR}
 #
 # Grab docs...
 #
-cp ../BUGS ../FAQ ../CHANGES ../COPYRIGHT ../INSTALL ../README* ../WWW ${BINDIR}
+cp ../FAQ ../CHANGES ../COPYRIGHT ../COPYING ../INSTALL ../README* ../WWW ${BINDIR}
 #
 # Grab binary
 #
