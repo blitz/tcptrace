@@ -337,6 +337,7 @@ extern Bool use_short_names;
 extern Bool save_tcp_data;
 extern Bool graph_time_zero;
 extern Bool plot_tput_instant;
+extern Bool filter_output;
 extern int debug;
 extern int thru_interval;
 extern u_long pnum;
@@ -425,6 +426,10 @@ struct tcb *ptp2ptcb(tcp_pair *ptp, struct ip *pip, struct tcphdr *ptcp);
 void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr);
 int IP_SAMEADDR (ipaddr addr1, ipaddr addr2);
 
+/* filter routines */
+void HelpFilter(void);
+void ParseFilter(char *expr);
+Bool PassesFilter(tcp_pair *ptp);
 
 /* TCP flags macros */
 #define SYN_SET(ptcp)((ptcp)->th_flags & TH_SYN)

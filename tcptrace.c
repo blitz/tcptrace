@@ -79,6 +79,7 @@ Bool printtrunc = FALSE;
 Bool save_tcp_data = FALSE;
 Bool graph_time_zero = FALSE;
 Bool plot_tput_instant = TRUE;
+Bool filter_output = FALSE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
@@ -104,6 +105,8 @@ Help(
 {
     if (harg && *harg && strncmp(harg,"arg",3) == 0) {
 	Args();
+    } else if (harg && *harg && strncmp(harg,"filt",4) == 0) {
+	HelpFilter();
     } else if (harg && *harg && strncmp(harg,"conf",4) == 0) {
 	Formats();
 	CompFormats();
@@ -119,6 +122,7 @@ For help on specific topics, try:  \n\
   -hargs    tell me about the program's arguments  \n\
   -hconfig  tell me about the configuration of this binary  \n\
   -houtput  explain what the output means  \n\
+  -hfilter  output filtering help  \n\
   -hhints   usage hints  \n");
     }
 
@@ -317,6 +321,7 @@ Misc options\n\
   -Z      dump raw rtt sample times to file[s]\n\
   -p      print individual packet contents (can be very long)\n\
   -t      'tick' off the packet numbers as a progress indication\n\
+  -f EXPR output filtering (see -hfilter)\n\
   -v      print version information and exit\n\
   -w      print warning message when packets are too short to process\n\
   -d      whistle while you work (enable debug, use -d -d for more output)\n\
@@ -726,6 +731,19 @@ ParseArgs(
 		  case 'y': plot_tput_instant = FALSE; break;
 		  case 'q': printsuppress = TRUE; break;
 		  case 'z': graph_time_zero = TRUE; break;
+		  case 'f':
+		    filter_output = TRUE;
+		    if (*(argv[i]+1)) {
+			/* -fEXPR */
+			ParseFilter(argv[i]+1);
+			*(argv[i]+1) = '\00';
+		    } else {
+			/* -f EXPR */
+			fprintf(stderr,
+				"-f requires a filter\n");
+			Usage(argv[0]);
+		    }
+		    break;
 		  case 'i':
 		    ++saw_i_or_o;
 		    IgnoreConn(atoi(argv[i]+1));
