@@ -492,3 +492,8 @@ printed with the long output - Avinash
 6.4.1 : 26 APR 2003 Mani
 -----
 Fixed a bug in the processing of IPv6 extension headers in ipv6.c:findheader()
+
+6.4.2 :  3 MAY 2003 Jitesh
+-----
+Fixed the processing of duplicate ACKs as in the BSD stack to count towards
+the 3 dupacks required for fast-retransmit. 
