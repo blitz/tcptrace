@@ -105,7 +105,8 @@
 
 .		{
     /* if we haven't matched anything yet, then it's illegal */
-    fprintf(stderr, "filter scanner: Bad character '%c'\n", *yytext);
+    fprintf(stderr, "filter scanner: Bad character '%c' (%d decimal)\n",
+	    *yytext, *yytext);
     exit(-1);
 }
 
