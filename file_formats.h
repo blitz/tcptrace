@@ -84,6 +84,9 @@ struct supported_formats file_formats[] = {
 #ifdef GROK_NLANR
 	{is_nlanr,	"tsh","NLANL Tsh Format"},
 #endif /* GROK_NLANR */
+#ifdef GROK_NETSCOUT
+	{is_netscout,	"netscout","NetScout Manager format"},
+#endif /* GROK_NETSCOUT */
 };
 
 #define NUM_FILE_FORMATS (sizeof(file_formats) / sizeof(struct supported_formats))
