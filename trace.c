@@ -1691,6 +1691,7 @@ dotrace(
 	   
 	     ( thisdir->f1323_ws && otherdir->f1323_ws && !SYN_SET(ptcp) &&
 		!thisdir->window_stats_updated_for_scaling  
+		   (thisdir->window_scale > 0) &&
 		   !thisdir->window_stats_updated_for_scaling  
 	     ) ) {
 			thisdir->window_stats_updated_for_scaling=TRUE;
