@@ -351,11 +351,11 @@ For the first run through a file, just use \"tcptrace file\" to see\n\
 For large files, use \"-t\" and I'll give you progress feedback as I go\n\
 If there's a lot of hosts, particularly if they're non-local, use \"-n\"\n\
    to disable address to name mapping which can be very slow\n\
-If you're graphing results and only want the information for a few hosts,\n\
-   from a large file, use the -o flag, as in \"tcptrace -o3,4,5 -o8,11\" to only\n\
-   process connections 3,4,5,8 and 11.  Writing the graphics files can be slow\n\
-   Alternately, the '-oFILE' option is OK if you want to write the connection\n\
-   list into a file using some other program\n\
+If you're graphing results and only want the information for a few conns,\n\
+   from a large file, use the -o flag, as in \"tcptrace -o3,4,5 -o8-11\" to\n\
+   only process connections 3,4,5, and 8 through 11.\n\
+   Alternately, the '-oFILE' option allows you to write the connection\n\
+   list into a file using some other program (or the file PF from -f)\n\
 Make sure the snap length in the packet grabber is big enough.\n\
      Ethernet headers are 14 bytes, as are several others\n\
      IPv4 headers are at least 20 bytes, but can be as large as 64 bytes\n\
@@ -366,8 +366,9 @@ Make sure the snap length in the packet grabber is big enough.\n\
    options (TCP usually has some), you still need at least 54 bytes.\n\
 Compress trace files using gzip, I can uncompress them on the fly\n\
 Stuff arguments that you always use into either the tcptrace resource file\n\
-   ($HOME/%s) or the envariable %s.  If you need to turn them off again\n\
-   from the command line, you can use the \"+\" option flag.\n\
+   ($HOME/%s) or the envariable %s.  If you need to turn\n\
+   them off again from the command line, you can use\n\
+   the \"+\" option flag.\n\
 ", TCPTRACE_RC_FILE, TCPTRACE_ENVARIABLE);
 }
 
@@ -403,8 +404,8 @@ Output format detail options\n\
   -s      use short names (list \"picard.cs.ohiou.edu\" as just \"picard\")\n\
 Connection filtering options\n\
   -iN     ignore connection N (can use multiple times)\n\
-  -oN     only connection N (can use multiple times)\n\
-          (if N is not a number but a file, read list from file instead)\n\
+  -oN[-M] only connection N (or N through M).  Arg can be used many times.\n\
+          In N is a file rather than a number, read list from file instead.\n\
   -c      ignore non-complete connections (didn't see syn's and fin's)\n\
   -BN     first segment number to analyze (default 1)\n\
   -EN     last segment number to analyze (default last in file)\n\
@@ -1019,16 +1020,33 @@ GrabOnly(
 
     /* wherever we got it, o_arg is a connection list */
     while (o_arg && *o_arg) {
-	int num;
+	int num1,num2;
 	
-	if (sscanf(o_arg,"%d",&num) != 1) {
+	if (sscanf(o_arg,"%d-%d",&num1,&num2) == 2) {
+	    /* process range */
+	    if (num2 <= num1) {
+		BadArg(argsource,
+		       "-oX-Y, must have X<Y, '%s'\n", o_arg);
+	    }
+	    if (debug)
+		printf("setting OnlyConn(%d-%d)\n", num1, num2);
+
+	    while (num1<=num2) {
+		if (debug > 1)
+		    printf("setting OnlyConn(%d)\n", num1);
+		OnlyConn(num1++);
+	    }
+	} else if (sscanf(o_arg,"%d",&num1) == 1) {
+	    /* single argument */
+	    if (debug)
+		printf("setting OnlyConn(%d)\n", num1);
+	    OnlyConn(num1);
+	} else {
+	    /* error */
 	    BadArg(argsource,
 		   "Don't understand conn number starting at '%s'\n", o_arg);
 	}
-	if (debug)
-	    printf("setting OnlyConn(%d)\n", num);
-	OnlyConn(num);
-
+		   
 	/* look for the next comma */
 	o_arg = strchr(o_arg,',');
 	if (o_arg)
