@@ -90,6 +90,12 @@ static int callback(
 	memcpy((char *)ip_buf,buf+offset,iplen);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
+      case DLT_NULL:
+	/* no phys header attached */
+	offset = 4;
+	memcpy((char *)ip_buf,buf+offset,iplen);
+	callback_plast = ip_buf+iplen-offset-1;
+	break;
       default:
 	fprintf(stderr,"Don't understand packet format (%d)\n", type);
 	exit(1);
@@ -185,6 +191,10 @@ int (*is_tcpdump(void))()
       case DLT_FDDI:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "FDDI";
+	break;
+      case DLT_NULL:
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "NULL";
 	break;
       default:
 	if (debug)
