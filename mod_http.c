@@ -97,7 +97,7 @@ static struct http_info {
     struct get_info *gets_tail;
 
     struct http_info *next;
-} *httphead = NULL;
+} *httphead = NULL, *httptail = NULL;
 
 
 
@@ -240,9 +240,14 @@ MakeHttpRec()
     ph->ack_tail.prev = &ph->ack_head;
     ph->ack_tail.position = 0xffffffff;
 
-    /* chain it in */
-    ph->next = httphead;
-    httphead = ph;
+    /* chain it in (at the tail of the list) */
+    if (httphead == NULL) {
+	httphead = ph;
+	httptail = ph;
+    } else {
+	httptail->next = ph;
+	httptail = ph;
+    }
 
     return(ph);
 }
@@ -684,6 +689,9 @@ HttpDoPlot()
     int ix_color = 0;
     char buf[100];
     struct time_stamp *pts;
+
+    /* sort by increasing order of TCP connection startup */
+    /* (makes the graphs look better) */
 
     for (ph=httphead; ph; ph=ph->next) {
 	PLOTTER p = ph->pclient->plotter;
