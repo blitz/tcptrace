@@ -168,16 +168,16 @@ MakeUDPConnRec(void)
 	printf("%s%s\n",\
 	       LABEL("Destination Fully Qualified domain name: "),\
 	       collie_name((ptr)->addr_pair.b_address));\
-	printf("%s%llu\n",\
+	printf("%s%" U_LONG_LONG_TYPE "\n",\
 	       LABEL("Bytes Transferred Source to Destination: "),\
 	       (ptr)->a2b.data_bytes);\
-	printf("%s%llu\n",\
+	printf("%s%" U_LONG_LONG_TYPE "\n",\
 	       LABEL("Bytes Transferred Destination to Source: "),\
 	       (ptr)->b2a.data_bytes);\
-	printf("%s%llu\n",\
+	printf("%s%" U_LONG_LONG_TYPE "\n",\
 	       LABEL("Packets Transferred Source to Destination: "),\
 	       (ptr)->a2b.packets);\
-	printf("%s%llu\n",\
+	printf("%s%" U_LONG_LONG_TYPE "\n",\
 	       LABEL("Packets Transferred Destination to Source: "),\
 	       (ptr)->b2a.packets);
 

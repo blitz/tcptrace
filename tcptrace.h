@@ -70,6 +70,15 @@ typedef unsigned long int u_llong;
 typedef long int llong;
 #endif /* LONG LONG */
 
+/* Thanks to MacOSX, they use %qu to print unsigned long long ints */
+/* There is a test to see if we need to use %qu or %llu to print these variables */
+/* The test is located in configure.in */
+#ifdef USE_LLU
+#define U_LONG_LONG_TYPE "llu" /* For most systems use llu */
+#else
+#define U_LONG_LONG_TYPE "qu"  /* MacOSX use qu */
+#endif
+
 /* plotter information */
 typedef int PLOTTER;
 #define NO_PLOTTER -1

@@ -202,7 +202,7 @@ PrintTrace(
     fprintf(stdout,"\telapsed time:  %s\n", elapsed2str(etime));
 
 #ifdef HAVE_LONG_LONG
-    fprintf(stdout,"\ttotal packets: %llu\n", ptp->packets);
+    fprintf(stdout,"\ttotal packets: %" U_LONG_LONG_TYPE "\n", ptp->packets);
 #else  /* HAVE_LONG_LONG */
     fprintf(stdout,"\ttotal packets: %lu\n", ptp->packets);
 #endif  /* HAVE_LONG_LONG */
@@ -436,8 +436,8 @@ PrintBrief(
 	/* new version */
 	fprintf(stdout,"%*s", -max_width, FormatBrief(ptp));
 #ifdef HAVE_LONG_LONG
-	fprintf(stdout," %4llu>", pab->packets);
-	fprintf(stdout," %4llu<", pba->packets);
+	fprintf(stdout," %4" U_LONG_LONG_TYPE ">", pab->packets);
+	fprintf(stdout," %4" U_LONG_LONG_TYPE "<", pba->packets);
 #else /* HAVE_LONG_LONG */
 	fprintf(stdout," %4lu>", pab->packets);
 	fprintf(stdout," %4lu<", pba->packets);
@@ -448,7 +448,7 @@ PrintBrief(
 		ptp->a_endpoint,
 		ptp->b_endpoint);
 #ifdef HAVE_LONG_LONG
-	fprintf(stdout,"  %s2%s:%llu",
+	fprintf(stdout,"  %s2%s:%"U_LONG_LONG_TYPE,
 #else /* HAVE_LONG_LONG */
 	fprintf(stdout,"  %s2%s:%lu",
 #endif /* HAVE_LONG_LONG */
@@ -456,7 +456,7 @@ PrintBrief(
 		pba->host_letter,
 		pab->packets);
 #ifdef HAVE_LONG_LONG
-	fprintf(stdout,"  %s2%s:%llu",
+	fprintf(stdout,"  %s2%s:%"U_LONG_LONG_TYPE,
 #else /* HAVE_LONG_LONG */
 	fprintf(stdout,"  %s2%s:%lu",
 #endif /* HAVE_LONG_LONG */
@@ -519,7 +519,7 @@ UDPPrintTrace(
     fprintf(stdout,"\telapsed time:  %s\n", elapsed2str(etime));
 
 #ifdef HAVE_LONG_LONG
-    fprintf(stdout,"\ttotal packets: %llu\n", pup->packets);
+    fprintf(stdout,"\ttotal packets: %" U_LONG_LONG_TYPE "\n", pup->packets);
 #else  /* HAVE_LONG_LONG */
     fprintf(stdout,"\ttotal packets: %lu\n", pup->packets);
 #endif  /* HAVE_LONG_LONG */
@@ -581,7 +581,7 @@ StatLineI_LL(
     u_llong argleft,
     u_llong argright)
 {
-    char *format = "%8llu";
+    char *format = "%8" U_LONG_LONG_TYPE;
     StatLineFieldL(label,units,format,argleft,0);
     StatLineFieldL(label,units,format,argright,1);
 }
@@ -738,8 +738,8 @@ UDPPrintBrief(
     /* new version */
     fprintf(stdout,"%*s", -max_width, UDPFormatBrief(pup));
 #ifdef HAVE_LONG_LONG
-    fprintf(stdout," %4llu>", pab->packets);
-    fprintf(stdout," %4llu<", pba->packets);
+    fprintf(stdout," %4" U_LONG_LONG_TYPE ">", pab->packets);
+    fprintf(stdout," %4" U_LONG_LONG_TYPE "<", pba->packets);
 #else /* HAVE_LONG_LONG */
     fprintf(stdout," %4lu>", pab->packets);
     fprintf(stdout," %4lu<", pba->packets);

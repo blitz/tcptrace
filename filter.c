@@ -569,10 +569,10 @@ PrintConst(
     switch (pf->vartype) {
       case V_ULLONG:
 	if (debug)
-	    sprintf(buf,"ULLONG(%llu)",
+	    sprintf(buf,"ULLONG(%" U_LONG_LONG_TYPE ")",
 		    pf->un.constant.u_longint);
 	else
-	    sprintf(buf,"%llu",pf->un.constant.u_longint);
+	    sprintf(buf,"%" U_LONG_LONG_TYPE,pf->un.constant.u_longint);
 	break;
       case V_LLONG:
 	if (debug)
@@ -677,7 +677,7 @@ Res2Str(
     
     /* for constants */
     switch (pres->vartype) {
-      case V_ULLONG:	sprintf(buf,"ULLONG(%llu)",pres->val.u_longint); break;
+      case V_ULLONG:	sprintf(buf,"ULLONG(%" U_LONG_LONG_TYPE ")",pres->val.u_longint); break;
       case V_LLONG:	sprintf(buf,"LLONG(%lld)", pres->val.longint); break;
       case V_STRING:	sprintf(buf,"STRING(%s)",pres->val.string); break;
       case V_BOOL:	sprintf(buf,"BOOL(%s)",  BOOL2STR(pres->val.bool)); break;
@@ -1083,7 +1083,7 @@ EvalMathopUnsigned(
 
     if (debug)
 #ifdef HAVE_LONG_LONG
-	printf("EvalMathopUnsigned %llu %s %llu returns %s\n",
+	printf("EvalMathopUnsigned %" U_LONG_LONG_TYPE " %s %" U_LONG_LONG_TYPE " returns %s\n",
 #else /* HAVE_LONG_LONG */
 	printf("EvalMathopUnsigned %lu %s %lu returns %s\n",
 #endif /* HAVE_LONG_LONG */
@@ -1191,7 +1191,7 @@ EvalRelopUnsigned(
 
     if (debug)
 #ifdef HAVE_LONG_LONG
-	printf("EvalUnsigned %llu %s %llu returns %s\n",
+	printf("EvalUnsigned %" U_LONG_LONG_TYPE " %s %" U_LONG_LONG_TYPE " returns %s\n",
 #else /* HAVE_LONG_LONG */
 	printf("EvalUnsigned %lu %s %lu returns %s\n",
 #endif /* HAVE_LONG_LONG */
@@ -1772,7 +1772,7 @@ VFuncTput(
     tput = (u_llong)(tput_f+0.5);
 
     if (debug)
-	printf("VFuncTput(%s<->%s) = %llu\n",
+	printf("VFuncTput(%s<->%s) = %" U_LONG_LONG_TYPE "\n",
 	       ptcb->ptp->a_endpoint,
 	       ptcb->ptp->b_endpoint,
 	       tput);

@@ -36,7 +36,31 @@ AC_CHECK_FUNCS(valloc memalign)
 dnl check for the IPv6 routines inet_pton
 AC_CHECK_FUNCS(inet_pton)
 
+AC_MSG_CHECKING(how to print unsigned long long)
+AC_SUBST(U_LONG_LONG_TYPE)
+dnl AC_TRY_RUN is a test program that performs a run-time test to find out
+dnl the correct syntax to print unsigned long long ints in printf stmts.
+dnl If strcmp returns 0, we are on an enironment that uses %llu, otherwise
+dnl we are on a MacOSX environment that uses %qu
+AC_TRY_RUN([
+#include <stdio.h>
 
+#define NIX "%llu"
+
+int main ()
+{
+  char test[10];
+  unsigned long long int num = 0xdeadbeef;
+  sprintf (test, NIX, num);
+  if (strcmp (test, "3735928559") == 0)
+     exit (0);
+  else
+     exit (1);
+}],
+AC_DEFINE(USE_LLU)
+AC_MSG_RESULT(%llu), 
+AC_MSG_RESULT(%qu),
+AC_MSG_ERROR(can not run test program while cross compiling))
 
 dnl Grab standard includes under weird Linux versions
 dnl case "$target_os" in

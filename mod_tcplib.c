@@ -1090,7 +1090,7 @@ void tcplib_done()
     debug_http_single = debug_http_total - debug_http_parallel;
     printf("tcplib: total connections seen: %lu (%lu accepted, %lu bad port)\n",
 	   debug_newconn_counter, debug_newconn_goodport, debug_newconn_badport);
-    printf("tcplib: total bytes seen: %llu\n",
+    printf("tcplib: total bytes seen: %" U_LONG_LONG_TYPE "\n",
 	   debug_total_bytes);
     printf("tcplib: %lu random connections accepted under FTP data heuristic\n",
 	   debug_newconn_ftp_data_heuristic);
@@ -1107,7 +1107,7 @@ void tcplib_done()
 	   debug_http_groups,
 	   debug_http_persistant,
 	   debug_http_nonpersistant);
-    printf("tcplib: %lu (%.2f%%) unidir. HTTP conns (%llu bytes, %.2f%%) ignored\n",
+    printf("tcplib: %lu (%.2f%%) unidir. HTTP conns (%" U_LONG_LONG_TYPE " bytes, %.2f%%) ignored\n",
 	   debug_http_uni_conns,
 	   100.0 * ((float)debug_http_uni_conns /
 		    (float)(debug_newconn_counter + debug_http_uni_conns)),
@@ -1138,7 +1138,7 @@ void tcplib_done()
 	    if (pmc->unidirectional_http)
 		continue;
 
-	    printf("%s: %30s\tGROUPNUM %5lu\tdata %llu:%llu\n",
+	    printf("%s: %30s\tGROUPNUM %5lu\tdata %" U_LONG_LONG_TYPE ":%" U_LONG_LONG_TYPE "\n",
 		   ts2ascii(&ptcb->ptp->first_time),
 		   FormatBrief(ptcb->ptp, ptcb),
 		   pmc->http_groupnum,
@@ -1155,8 +1155,8 @@ void tcplib_done()
 	    
 	    if (!pmc->unidirectional_http)
 		continue;
-
-	    printf("%s: %30s\tGROUPNUM %5lu\tdata %llu:%llu\n",
+		
+		printf("%s: %30s\tGROUPNUM %5lu\tdata %" U_LONG_LONG_TYPE ":%" U_LONG_LONG_TYPE "\n",
 		   ts2ascii(&ptcb->ptp->first_time),
 		   FormatBrief(ptcb->ptp, ptcb),
 		   pmc->http_groupnum,

@@ -2088,13 +2088,50 @@ fi
 done
 
 
+echo $ac_n "checking how to print unsigned long long""... $ac_c" 1>&6
+echo "configure:2093: checking how to print unsigned long long" >&5
+
+if test "$cross_compiling" = yes; then
+  { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2099 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+
+#define NIX "%llu"
+
+int main ()
+{
+  char test[10];
+  unsigned long long int num = 0xdeadbeef;
+  sprintf (test, NIX, num);
+  if (strcmp (test, "3735928559") == 0)
+     exit (0);
+  else
+     exit (1);
+}
+EOF
+if { (eval echo configure:2117: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  cat >> confdefs.h <<\EOF
+#define USE_LLU 1
+EOF
+
+echo "$ac_t""%llu" 1>&6
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  echo "$ac_t""%qu" 1>&6
+fi
+rm -fr conftest*
+fi
 
 
-case "$target_os" in
-  *inux*)	V_INCLS="$V_INCLS -Ilinux-include";;
-esac
 
-if [ -f /lib/libc-2.2* ]; then
+if [ -f /lib/libc-2* ]; then
  V_DEFINES="$V_DEFINES -D_BSD_SOURCE"
 fi
 
@@ -2265,6 +2302,7 @@ s%@build_os@%$build_os%g
 s%@SHLICC2@%$SHLICC2%g
 s%@CC@%$CC%g
 s%@SET_MAKE@%$SET_MAKE%g
+s%@U_LONG_LONG_TYPE@%$U_LONG_LONG_TYPE%g
 s%@V_CCOPT@%$V_CCOPT%g
 s%@V_INCLS@%$V_INCLS%g
 s%@V_DEFINES@%$V_DEFINES%g
