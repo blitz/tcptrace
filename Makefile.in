@@ -217,9 +217,15 @@ clean:
 noplots:
 	rm -f *.xpl *.dat
 
+initial:
+	cp Makefile.empty Makefile
+
+spotless: clean noplots initial
+
 #
 # for making distribution
 tarfile: versnum
+	make spotless
 	@ VERS=`./versnum`; DIR=tcptrace_$${VERS}; \
 	GZTAR=$$HOME/tcptrace.$${VERS}.tar.gz; \
 	cd ..; \
@@ -242,36 +248,69 @@ install-man:
 #
 # static file dependencies
 #
-compress.o: tcptrace.h ipv6.h compress.h
-etherpeek.o: tcptrace.h ipv6.h
-filt_parser.o: tcptrace.h ipv6.h filter.h
-filt_scanner.o: tcptrace.h ipv6.h filter.h filt_parser.h
-filter.o: tcptrace.h ipv6.h filter.h filter_vars.h
-gcache.o: tcptrace.h ipv6.h gcache.h
-ipv6.o: tcptrace.h ipv6.h
-mfiles.o: tcptrace.h ipv6.h
-missing.o: tcptrace.h ipv6.h
-names.o: tcptrace.h ipv6.h gcache.h
-netm.o: tcptrace.h ipv6.h
-nlanr.o: tcptrace.h ipv6.h
-output.o: tcptrace.h ipv6.h gcache.h
-plotter.o: tcptrace.h ipv6.h
-print.o: tcptrace.h ipv6.h
-rexmit.o: tcptrace.h ipv6.h
-snoop.o: tcptrace.h ipv6.h
-tcpdump.o: tcptrace.h ipv6.h tcpdump.h
-tcptrace.o: tcptrace.h ipv6.h file_formats.h modules.h version.h
-tcptrace.o: mod_http.h mod_tcplib.h mod_traffic.h mod_rttgraph.h mod_collie.h
-thruput.o: tcptrace.h ipv6.h
-trace.o: tcptrace.h ipv6.h gcache.h
-udp.o: tcptrace.h ipv6.h gcache.h
-versnum.o: version.h
+compress.o: tcptrace.h
+compress.o: ipv6.h
+compress.o: compress.h
 dyncounter.o: dyncounter.h
-mod_tcplib.o: tcptrace.h dyncounter.h
-mod_http.o: tcptrace.h 
-mod_traffic.o: tcptrace.h  mod_traffic.h
-mod_tcplib.o: tcptrace.h  mod_tcplib.h
-mod_rttgraph.o: tcptrace.h  mod_rttgraph.h
+etherpeek.o: tcptrace.h
+etherpeek.o: ipv6.h
+filt_parser.o: tcptrace.h
+filt_parser.o: ipv6.h
+filt_parser.o: filter.h
+filt_scanner.o: tcptrace.h
+filt_scanner.o: ipv6.h
+filt_scanner.o: filter.h
+filt_scanner.o: filt_parser.h
+filter.o: tcptrace.h
+filter.o: ipv6.h
+filter.o: filter.h
+filter.o: filter_vars.h
+gcache.o: tcptrace.h
+gcache.o: ipv6.h
+gcache.o: gcache.h
+ipv6.o: tcptrace.h
+ipv6.o: ipv6.h
+mfiles.o: tcptrace.h
+mfiles.o: ipv6.h
+missing.o: tcptrace.h
+missing.o: ipv6.h
+names.o: tcptrace.h
+names.o: ipv6.h
+names.o: gcache.h
+netm.o: tcptrace.h
+netm.o: ipv6.h
+nlanr.o: tcptrace.h
+nlanr.o: ipv6.h
+ns.o: tcptrace.h
+ns.o: ipv6.h
+output.o: tcptrace.h
+output.o: ipv6.h
+output.o: gcache.h
+plotter.o: tcptrace.h
+plotter.o: ipv6.h
+print.o: tcptrace.h
+print.o: ipv6.h
+rexmit.o: tcptrace.h
+rexmit.o: ipv6.h
+snoop.o: tcptrace.h
+snoop.o: ipv6.h
+tcpdump.o: tcptrace.h
+tcpdump.o: ipv6.h
+tcptrace.o: tcptrace.h
+tcptrace.o: ipv6.h
+tcptrace.o: file_formats.h
+tcptrace.o: modules.h
+tcptrace.o: version.h
+thruput.o: tcptrace.h
+thruput.o: ipv6.h
+trace.o: tcptrace.h
+trace.o: ipv6.h
+trace.o: gcache.h
+udp.o: tcptrace.h
+udp.o: ipv6.h
+udp.o: gcache.h
+versnum.o: version.h
+
 
 #
 # make development version
