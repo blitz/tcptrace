@@ -231,3 +231,5 @@
   fixed PAGESIZE reference for Craig Metz - not under some Linux
   fixed error in stats when SYNs and FINs rexmitted, unique bytes was wrong
     (which threw off missed data and throughput)
+  fixed a bug where rexmitted SYNs were not being included in the
+    rexmit counts (also fixed marking on tsg graphs)
