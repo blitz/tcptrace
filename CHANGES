@@ -339,3 +339,10 @@
 6.0.1a - added support for atmsnoop output format in snoop.c
 6.0.1a2 - changed all of the DLT_ constants in tcpdump.[ch] to PCAP_DLT_
    with the same numbers to avoid OSs that are renumbering them.
+====
+Note:
+  Wed Jun  6, 2001
+  We've switched to CVS for everything and there's a bunch of us working on
+  the code, so this file might not get updated the way that it should.  We'll
+  try to make the CVS logs visible in some fashion...
+====
