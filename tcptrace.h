@@ -359,6 +359,7 @@ double elapsed(timeval, timeval);
 int ConnReset(tcp_pair *);
 int ConnComplete(tcp_pair *);
 char *ts2ascii(timeval *);
+char *ts2ascii_date(timeval *);
 char *ServiceName(portnum);
 char *HostName(ipaddr);
 char *HostLetter(u_int);

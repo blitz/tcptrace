@@ -71,6 +71,30 @@ ts2ascii(
 	return(buf);
 }
 
+/* same as ts2ascii, but leave the year on */
+char *
+ts2ascii_date(
+    struct timeval	*ptime)
+{
+	static char buf[30];
+	struct tm *ptm;
+	char *now;
+	int decimal;
+
+	if (ZERO_TIME(ptime))
+	    return("        <the epoch>       ");
+
+	ptm = localtime(&ptime->tv_sec);
+	now = asctime(ptm);
+	now[24] = '\00';
+
+/* 	decimal = (ptime->tv_usec + 50) / 100;*/  /* for 4 digits */
+	decimal = ptime->tv_usec;  /* for 6 digits */
+	sprintf(buf, "%s.%06d", now, decimal);
+
+	return(buf);
+}
+
 
 static void
 printeth_packet(
