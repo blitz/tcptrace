@@ -252,3 +252,25 @@
 	  --show0lensegs     show zero length packets on time sequence graphs
 	  --noshow0lensegs   DON'T show zero length packets on time sequence graphs
     made the default for the RTT dongles FALSE, they're not generally useful
+  Minor Docs changes for filtering
+  Added new filter syntax prefix 'b_'
+     to recap:
+        # 'c_' means just "Client"
+	./tcptrace '-fc_segs>100' file
+	Output filter: (c_segs>100)
+
+        # 's_' means just "Server"
+	./tcptrace '-fs_segs>100' file
+	Output filter: (s_segs>100)
+
+        # no prefix, either one
+	./tcptrace '-fsegs>100' file
+	Output filter: ((c_segs>100)OR(s_segs>100))
+
+        # 'e_' means "Either", same as without prefix
+	./tcptrace '-fe_segs>100' file
+	Output filter: ((c_segs>100)OR(s_segs>100))
+
+        # 'b_' means "Both"
+	./tcptrace '-fb_segs>100' file
+	Output filter: ((c_segs>100)AND(s_segs>100))
