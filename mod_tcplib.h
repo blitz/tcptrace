@@ -72,7 +72,6 @@ void * tcplib_newconn(tcp_pair *ptp);
 
 #define EMPTY -1
 
-#define MAX_TEL_PACK_SIZE_COUNT 65537
 #define MAX_TEL_INTER_COUNT 1500000
 #define TIMER_VAL  60
 #define NUM_APPS 5
