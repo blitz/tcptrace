@@ -196,7 +196,6 @@ pread_netscout(
 pread_f *is_netscout(void)
 {    
    struct netscout_header nhdr;
-   int rlen;
    char * retval;
    char buffer_string[256];
 
