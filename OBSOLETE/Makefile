@@ -14,7 +14,7 @@ CC	= gcc
 INCS	= -I/usr/local/include
 LDFLAGS = -L/usr/local/lib
 #
-CFLAGS	= -O2 -Wall ${INCS}
+CFLAGS	= -g -O3 -Wall ${INCS}
 
 
 #
@@ -55,7 +55,7 @@ ci:
 #
 # for cleaning up
 clean:
-	rm -f *.o tcptrace core *.xpl
+	rm -f *.o tcptrace core *.xpl *.dat
 noplots:
 	rm -f *.xpl *.dat
 

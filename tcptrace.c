@@ -88,6 +88,7 @@ Graphing options\n\
   -T      create throughput graph[s], (average over 10 segments, see -A)\n\
   -R      create rtt sample graph[s]\n\
   -S      create time sequence graph[s]\n\
+  -G	  create ALL 3 graphs\n\
 Output format detail options\n\
   -D      print in decimal\n\
   -X      print in hexidecimal\n\
@@ -349,6 +350,7 @@ ParseArgs(
 		switch (*argv[i]) {
 		  case 'C': colorplot = TRUE; break;
 		  case 'D': hex = FALSE; break;
+		  case 'G': graph_tput = graph_tsg = graph_rtt = TRUE; break;
 		  case 'M': colorplot = FALSE; break;
 		  case 'R': graph_rtt = TRUE; break;
 		  case 'S': graph_tsg = TRUE; break;
