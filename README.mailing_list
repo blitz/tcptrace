@@ -1,25 +1,49 @@
-Mon Mar  9, 1998
+There are currently four mailing lists which pertain to tcptrace.  The
+two intended for normal users are the "tcptrace" and "tcptrace-announce"
+mailing lists.
 
-The tcptrace mailing list is maintained by Shawn Ostermann
-(ostermann@cs.ohiou.edu) for users of the tcptrace program.  The
-primary purpose of this mailing list is to allow me to tell users when
-there's an important update to the program.  I've only sent out 3 or 4
-notes in the last couple of years, so it's hardly a noisy list.
-Nevertheless, if you ever wish to be taken off the list, just drop me
-a note.  Unless and/or until the size of the list or number of
-requests becomes unmanageable, I prefer to keep the list under "human
-control", so just drop update requests to:
- 	ostermann@cs.ohiou.edu
+tcptrace-announce is a very low traffic list, which probably only sees
+one or two messages a year.  Everyone who uses tcptrace is encouraged to
+subscribe to this list, as it is used to spread the word when significant
+new versions of the program come out and major bugs are found and fixed.
+You can subscribe to the tcptrace-announce list by sending an email to
+majordomo@tcptrace.org which contains the text "subscribe tcptrace-announce".
+Should you wish to be removed from the list, all you need to do is send
+an email to majordomo@tcptrace.org with the text "unsubscribe tcptrace-announce"
+in the body.  No one except the list owner at tcptrace.org may post to this
+list.
 
-To date, there haven't been any notes sent to the list from anyone
-other than me.  Although not strictly forbidden, that's probably a good
-thing.  As the program begins to take on more of a life on it's own,
-however, I suspect that some of the users will be more familiar with
-some of it's features than I will.  If you really feel that your
-question/observation would be useful to approximately 100 other
-people, then send it to "tcptrace@picard.cs.ohiou.edu".  If you're not
-sure, send it to me first.
+The list which serves as a forum for most tcptrace related discussion can
+be subscribed to by sending email to majordomo@tcptrace.org with the text
+"subscribe tcptrace" contained in the body.  Unsubscribing is as easy as
+sending majordomo@tcptrace.org a message containing "unsubscribe tcptrace" in
+the body.  Posting to this list is restricted to list members only, due to
+problems with spam and such.  Traffic on this list is rather light as well,
+mostly occurring in short spurts when someone has a question or shares some
+tcptrace related software they've written with the community.  You may post
+to the list by sending your message to tcptrace@tcptrace.org, if you are
+subscribed to the list.  Before posting questions to this list, please consider
+that there are about 400 members, so if your question is just something basic
+about compiling the program or reading input files perhaps the tcptrace-
+maintainers list discussed in the next paragraph is a better venue to ask it.
+Problems with subscribing/unsubscribing should be sent to
+owner-tcptrace@tcptrace.org
 
---sdo
+There are also two lists "tcptrace-bugs" and "tcptrace-maintainers" which are
+used for notifying us that there is a problem.  If you find what you think is
+a bug in the software, please send a message to tcptrace-bugs@tcptrace.org.
+This list has all the active tcptrace developers on it, so usually someone can
+get on it and write a bugfix fairly quickly, but it's also quite nice when
+people send in their own bugfix code.  tcptrace-maintainers@tcptrace.org is
+the list which you can use to contact all the people responsible for keeping
+up the tcptrace mailing lists, website, and CVS tree.  Problems compiling
+tcptrace and questions about how to use the software or interpreting the
+output it produces should be addressed to the tcptrace-maintainers list.
+You will generally recieve an answer fairly promptly.
 
+tcptrace was written by Shawn Ostermann at Ohio University, who can be reached
+at ostermann@cs.ohiou.edu to give personal thanks or ask questions about the
+licensing of the software.
 
+HTML archives of the "tcptrace" and "tcptrace-bugs" lists can be found on
+the tcptrace website at http://www.tcptrace.org.
