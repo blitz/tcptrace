@@ -229,7 +229,7 @@ tarfile: versnum
 	GZTAR=$$HOME/tcptrace.$${VERS}.tar.gz; \
 	make spotless
 	cd ..; \
-	test -h $${DIR} || ln -s src $${DIR}; \
+	test -L $${DIR} || ln -s src $${DIR}; \
 	/usr/sbin/tar -FFcvhf - $${DIR} | gzip > $${GZTAR}; \
 	echo ; echo "Tarfile is in $${GZTAR}"
 #
