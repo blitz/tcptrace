@@ -180,10 +180,6 @@ findheader(
 	  case IPPROTO_UDP:
 	    return(NULL);	/* didn't find it */
 
-	    /* non-tcp protocols */
-	  case IPPROTO_NONE:
-	  case IPPROTO_ICMPV6:
-
 	    /* fragmentation */
 	  case IPPROTO_FRAGMENT:
 	  {
@@ -213,6 +209,11 @@ findheader(
 	      pheader = (struct ipv6_ext *)
 		  ((char *)pheader + pheader->ip6ext_len);
 	      break;
+
+	    /* non-tcp protocols, so we're finished. */
+	  case IPPROTO_NONE:
+	  case IPPROTO_ICMPV6:
+	    return(NULL);	/* didn't find it */
 
 	  /* I "think" that we can just skip over it, but better be careful */
 	  default:
