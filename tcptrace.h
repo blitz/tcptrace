@@ -310,7 +310,7 @@ extern timeval current_time;
 
 /* external routine decls */
 double sqrt(double x);
-char *ether_ntoa();
+char *ether_ntoa(struct ether_addr *e);
 void free(void *);
 int finite(double);
 
@@ -328,6 +328,7 @@ void plotter_uarrow(PLOTTER, timeval, u_long);
 void plotter_tick(PLOTTER, timeval, u_long, char);
 void plotter_text(PLOTTER, timeval, u_long, char *, char  *);
 void plotter_temp_color(PLOTTER, char *color);
+void plotter_ltick(PLOTTER, timeval, u_long);
 void plotter_rtick(PLOTTER, timeval, u_long);
 void plotter_rarrow(PLOTTER, timeval, u_long);
 void plotter_plus(PLOTTER, timeval, u_long);
@@ -462,6 +463,28 @@ struct tcp_options {
 #define PLOT_FILE_EXTENSION		"_tsg.xpl"
 #define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"
 #define CONTENTS_FILE_EXTENSION		"_contents.dat"
+
+
+/* packet-reading options... */
+/* the type for a packet reading routine */
+typedef int pread_f(struct timeval *, int *, int *, void **,
+		   int *, struct ip **, void **);
+
+/* give the prototypes for the is_GLORP() routines supported */
+#ifdef GROK_SNOOP
+	pread_f *is_snoop(void);
+#endif /* GROK_SNOOP */
+#ifdef GROK_NETM
+	pread_f *is_netm(void);
+#endif /* GROK_NETM */
+#ifdef GROK_TCPDUMP
+	pread_f *is_tcpdump(void);
+#endif /* GROK_TCPDUMP */
+#ifdef GROK_ETHERPEEK
+	pread_f *is_EP(void);
+#endif /* GROK_ETHERPEEK */
+
+
 
 
 /*

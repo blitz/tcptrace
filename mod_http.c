@@ -32,6 +32,7 @@ static char const rcsid_http[] =
 
 #include "tcptrace.h"
 #include <sys/mman.h>
+#include "mod_http.h"
 
 
 #define DEFAULT_SERVER_PORT 80
@@ -127,7 +128,7 @@ static void AddTS(struct time_stamp *phead, struct time_stamp *ptail,
 		  u_long position);
 static double ts2d(timeval *pt);
 static void HttpPrintone(MFILE *pmf, struct http_info *ph);
-static void HttpDoPlot();
+static void HttpDoPlot(void);
 static struct client_info *FindClient(char *clientname);
 
 
@@ -346,12 +347,13 @@ http_read(
     struct ip *pip,		/* the packet */
     tcp_pair *ptp,		/* info I have about this connection */
     void *plast,		/* past byte in the packet */
-    struct http_info *ph)	/* module specific info for this connection */
+    void *mod_data)		/* module specific info for this connection */
 {
     struct tcphdr *ptcp;
     unsigned tcp_length;
     unsigned tcp_data_length;
     char *pdata;
+    struct http_info *ph = mod_data;
 
     /* find the start of the TCP header */
     ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
@@ -534,8 +536,10 @@ WhenAcked(
     struct time_stamp *pts;
     timeval epoch = {0,0};
 
-/*     printf("pos:%ld, Chain:\n", position); */
-/*     PrintTSChain(phead,ptail); */
+    if (debug > 10) {
+	printf("pos:%ld, Chain:\n", position);
+	PrintTSChain(phead,ptail);
+    }
 
     for (pts = phead->next; pts != NULL; pts = pts->next) {
 /* 	fprintf(stderr,"Checking pos %ld against %ld\n", */
@@ -563,8 +567,10 @@ WhenSent(
     struct time_stamp *pts;
     timeval epoch = {0,0};
 
-/*     printf("pos:%ld, Chain:\n", position); */
-/*     PrintTSChain(phead,ptail); */
+    if (debug > 10) {
+	printf("pos:%ld, Chain:\n", position);
+	PrintTSChain(phead,ptail);
+    }
 
     for (pts = ptail->prev; pts != phead; pts = pts->prev) {
 /* 	fprintf(stderr,"Checking pos %ld against %ld\n", */
@@ -940,7 +946,7 @@ http_newfile(
 
 
 
-struct http_info *
+void *
 http_newconn(
     tcp_pair *ptp)
 {

@@ -66,7 +66,7 @@ struct module {
     void (*module_done) (void);
 
     /* Usage message additions */
-    void (*module_usage)();
+    void (*module_usage)(void);
 
     /* If you want to be called as each file is processed */
     void (*module_newfile)(

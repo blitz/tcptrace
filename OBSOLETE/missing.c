@@ -9,6 +9,8 @@
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 
+#include "tcptrace.h"
+
 /*
  * According to Rich Jones at HP, there is no ether_ntoa under HPUX.
  */

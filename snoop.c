@@ -138,7 +138,7 @@ pread_snoop(
 /*
  * is_snoop()   is the input file in snoop format??
  */
-int (*is_snoop(void))()
+pread_f *is_snoop(void)
 {
     char buf[20];
     int rlen;

@@ -208,7 +208,7 @@ pread_EP(
 
 
 /* is the input file a Ether Peek format file?? */
-int (*is_EP(void))()
+pread_f *is_EP(void)
 {
     struct EPFileHeader nhdr;
     struct EPFileHeader2 nhdr2;

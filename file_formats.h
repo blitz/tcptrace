@@ -42,7 +42,7 @@ static char const rcsid_file_formats[] =
 /**************************************************************/
 
 struct supported_formats {
-    int	(*(*test_func)())(void);/* pointer to the tester function	*/
+    pread_f	*(*test_func)(void);	/* pointer to the tester function	*/
     char	*format_name;	/* name of the file format		*/
     char	*format_descr;	/* description of the file format	*/
 };
@@ -62,21 +62,6 @@ struct supported_formats {
 /*   the reader function should return 0 at EOF and 1 otherwise		*/
 /* This routine must return ONLY IP packets, but they need not all be	*/
 /* TCP packets (if not, they're ignored).				*/
-
-
-/* give the prototypes for the is_GLORP() routines supported */
-#ifdef GROK_SNOOP
-	int (*is_snoop(void))();
-#endif /* GROK_SNOOP */
-#ifdef GROK_NETM
-	int (*is_netm(void))();
-#endif /* GROK_NETM */
-#ifdef GROK_TCPDUMP
-	int (*is_tcpdump(void))();
-#endif /* GROK_TCPDUMP */
-#ifdef GROK_ETHERPEEK
-	int (*is_EP(void))();
-#endif /* GROK_ETHERPEEK */
 
 
 /* install the is_GLORP() routines supported */

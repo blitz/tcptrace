@@ -169,7 +169,7 @@ pread_netm(
 
 
 /* is the input file a NetMetrix format file?? */
-int (*is_netm(void))()
+pread_f *is_netm(void)
 {
     struct netm_header nhdr;
     int rlen;
