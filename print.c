@@ -76,8 +76,8 @@ static void
 printeth_packet(
     struct ether_header *pep)
 {
-    printf("\tETH Srce: %s\n", ether_ntoa(pep->ether_shost));
-    printf("\t    Dest: %s\n", ether_ntoa(pep->ether_dhost));
+    printf("\tETH Srce: %s\n", ether_ntoa(&pep->ether_shost));
+    printf("\t    Dest: %s\n", ether_ntoa(&pep->ether_dhost));
 
     printf(
 	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
