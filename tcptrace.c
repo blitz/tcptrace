@@ -96,6 +96,8 @@ Bool graph_zero_len_pkts = TRUE;
 Bool plot_tput_instant = TRUE;
 Bool filter_output = FALSE;
 Bool do_udp = FALSE;
+Bool resolve_ipaddresses = TRUE;
+Bool resolve_ports = TRUE;
 int debug = 0;
 u_long beginpnum = 0;
 u_long endpnum = ~0;
@@ -144,6 +146,10 @@ static struct ext_bool_op {
      "mark triple dupacks on time sequence graphs"},
     {"showzerolensegs", &graph_zero_len_pkts,  TRUE,
      "show zero length packets on time sequence graphs"},
+    {"res_addr", &resolve_ipaddresses,  TRUE,
+     "resolve IP addresses into names (may be slow)"},
+    {"res_port", &resolve_ports,  TRUE,
+     "resolve port numbers into names"},
 };
 #define NUM_EXTENDED_BOOLS (sizeof(extended_bools) / sizeof(struct ext_bool_op))
 
@@ -1236,7 +1242,7 @@ ParseExtendedArg(
     }
 
     /* never found a match, so it's an error */
-    BadArg(argsource, "Bad extended argument '%s'\n", arg);
+    BadArg(argsource, "Bad extended argument '%s' (see -hargs)\n", arg);
 }
 
 
@@ -1353,7 +1359,10 @@ ParseArgs(
 		    BadArg(argsource,
 			   "-m option is obsolete (no longer necessary)\n");
 		    *(argv[i]+1) = '\00'; break;
-		  case 'n': nonames = TRUE; break;
+		  case 'n':
+		    resolve_ipaddresses = FALSE;
+		    resolve_ports = FALSE;
+		    break;
 		  case 'o':
 		    ++saw_i_or_o;
 		    GrabOnly(argsource,argv[i]+1);
@@ -1421,7 +1430,10 @@ ParseArgs(
 		  case 'c': ignore_non_comp = !TRUE; break;
 		  case 'e': save_tcp_data = FALSE; break;
 		  case 'l': printbrief = !FALSE; break;
-		  case 'n': nonames = !TRUE; break;
+		  case 'n':
+		    resolve_ipaddresses = !FALSE;
+		    resolve_ports = !FALSE;
+		    break;
 		  case 'p': printallofem = !TRUE; break;
 		  case 'q': printsuppress = !TRUE; break;
 		  case 'r': print_rtt = !TRUE; break;
@@ -1472,39 +1484,38 @@ DumpFlags(void)
 {
     int i;
 
-    fprintf(stderr,"printbrief:       %d\n", printbrief);
-    fprintf(stderr,"printsuppress:    %d\n", printsuppress);
-    fprintf(stderr,"warn_printtrunc:  %d\n", warn_printtrunc);
-    fprintf(stderr,"warn_printbadmbz: %d\n", warn_printbadmbz);
-    fprintf(stderr,"warn_printhwdups: %d\n", warn_printhwdups);
-    fprintf(stderr,"print_rtt:        %d\n", print_rtt);
-    fprintf(stderr,"graph tsg:        %d\n", graph_tsg);
-    fprintf(stderr,"graph rtt:        %d\n", graph_rtt);
-    fprintf(stderr,"graph tput:       %d\n", graph_tput);
+    fprintf(stderr,"printbrief:       %s\n", BOOL2STR(printbrief));
+    fprintf(stderr,"printsuppress:    %s\n", BOOL2STR(printsuppress));
+    fprintf(stderr,"warn_printtrunc:  %s\n", BOOL2STR(warn_printtrunc));
+    fprintf(stderr,"warn_printbadmbz: %s\n", BOOL2STR(warn_printbadmbz));
+    fprintf(stderr,"warn_printhwdups: %s\n", BOOL2STR(warn_printhwdups));
+    fprintf(stderr,"print_rtt:        %s\n", BOOL2STR(print_rtt));
+    fprintf(stderr,"graph tsg:        %s\n", BOOL2STR(graph_tsg));
+    fprintf(stderr,"graph rtt:        %s\n", BOOL2STR(graph_rtt));
+    fprintf(stderr,"graph tput:       %s\n", BOOL2STR(graph_tput));
     fprintf(stderr,"plotem:           %s\n",
 	    colorplot?"(color)":"(b/w)");
-    fprintf(stderr,"hex printing:     %d\n", hex);
-    fprintf(stderr,"ignore_non_comp:  %d\n", ignore_non_comp);
-    fprintf(stderr,"printem:          %d\n", printem);
-    fprintf(stderr,"printallofem:     %d\n", printallofem);
-    fprintf(stderr,"printticks:       %d\n", printticks);
-    fprintf(stderr,"no names:         %d\n", nonames);
-    fprintf(stderr,"use_short_names:  %d\n", use_short_names);
-    fprintf(stderr,"save_tcp_data:    %d\n", save_tcp_data);
-    fprintf(stderr,"graph_time_zero:  %d\n", graph_time_zero);
-    fprintf(stderr,"graph_seq_zero:   %d\n", graph_seq_zero);
+    fprintf(stderr,"hex printing:     %s\n", BOOL2STR(hex));
+    fprintf(stderr,"ignore_non_comp:  %s\n", BOOL2STR(ignore_non_comp));
+    fprintf(stderr,"printem:          %s\n", BOOL2STR(printem));
+    fprintf(stderr,"printallofem:     %s\n", BOOL2STR(printallofem));
+    fprintf(stderr,"printticks:       %s\n", BOOL2STR(printticks));
+    fprintf(stderr,"use_short_names:  %s\n", BOOL2STR(use_short_names));
+    fprintf(stderr,"save_tcp_data:    %s\n", BOOL2STR(save_tcp_data));
+    fprintf(stderr,"graph_time_zero:  %s\n", BOOL2STR(graph_time_zero));
+    fprintf(stderr,"graph_seq_zero:   %s\n", BOOL2STR(graph_seq_zero));
     fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
     fprintf(stderr,"ending pnum:      %lu\n", endpnum);
     fprintf(stderr,"throughput intvl: %d\n", thru_interval);
     fprintf(stderr,"number modules:   %d\n", NUM_MODULES);
-    fprintf(stderr,"debug:            %d\n", debug);
+    fprintf(stderr,"debug:            %s\n", BOOL2STR(debug));
 
     /* print out the stuff controlled by the extended args */
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
 	char buf[100];
 	sprintf(buf,"%s:", pbop->bool_optname);
-	fprintf(stderr,"%-18s%s\n", buf, *pbop->bool_popt?"TRUE":"FALSE");
+	fprintf(stderr,"%-18s%s\n", buf, BOOL2STR(*pbop->bool_popt));
     }
 }
 

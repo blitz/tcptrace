@@ -110,6 +110,7 @@ typedef struct timeval timeval;
 typedef u_char Bool;
 #define TRUE	1
 #define FALSE	0
+#define BOOL2STR(b) (b)?"TRUE":"FALSE"
 
 /* ACK types */
 enum t_ack {NORMAL = 1,		/* no retransmits, just advance */
@@ -426,7 +427,8 @@ extern Bool graph_segsize;
 extern Bool graph_cwin;
 extern Bool hex;
 extern Bool ignore_non_comp;
-extern Bool nonames;
+extern Bool resolve_ipaddresses;
+extern Bool resolve_ports;
 extern Bool print_rtt;
 extern Bool print_cwin;
 extern Bool printbrief;
