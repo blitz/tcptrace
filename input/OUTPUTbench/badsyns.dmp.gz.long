@@ -31,6 +31,8 @@ TCP connection 1:
      SYN/FIN pkts sent:       4/0           SYN/FIN pkts sent:       0/0      
      req 1323 ws/ts:          Y/Y           req 1323 ws/ts:          N/N      
      adv wind scale:            0           adv wind scale:            0      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:             0 bytes
      max segm size:             0 bytes     max segm size:             0 bytes
      min segm size:             0 bytes     min segm size:             0 bytes
@@ -95,12 +97,14 @@ TCP connection 2:
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
      req 1323 ws/ts:          Y/Y           req 1323 ws/ts:          Y/Y      
      adv wind scale:            0           adv wind scale:            0      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:          1448 bytes     max segm size:             0 bytes
      min segm size:           439 bytes     min segm size:             0 bytes
      avg segm size:          1279 bytes     avg segm size:             0 bytes
      max win adv:           17520 bytes     max win adv:           65535 bytes
-     min win adv:           16384 bytes     min win adv:           16384 bytes
+     min win adv:           17520 bytes     min win adv:           64088 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:           19568 bytes     avg win adv:           52885 bytes
      max owin:               2897 bytes     max owin:                  1 bytes

@@ -32,6 +32,8 @@ TCP connection 1:
      pushed data pkts:          2           pushed data pkts:          3      
      SYN/FIN pkts sent:       0/0           SYN/FIN pkts sent:       0/0      
      req 1323 ws/ts:          N/Y           req 1323 ws/ts:          N/Y      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:             0 bytes     mss requested:             0 bytes
      max segm size:             6 bytes     max segm size:            54 bytes
      min segm size:             6 bytes     min segm size:            24 bytes
@@ -98,6 +100,8 @@ TCP connection 2:
      adv wind scale:            0           adv wind scale:            0      
      req sack:                  Y           req sack:                  Y      
      sacks sent:                0           sacks sent:                0      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:             0 bytes     max segm size:           375 bytes
      min segm size:             0 bytes     min segm size:            83 bytes

@@ -1,0 +1,7 @@
+1 arg remaining, starting with 'urgent.dmp.gz'
+
+9476 packets seen, 9476 TCP packets traced
+trace file elapsed time: 407:46:31.562564
+TCP connection info:
+  1: 132.235.3.132:57247 - 132.235.1.12:19 (a2b) 3041> 5793<
+  2: 132.235.3.154:982 - 132.235.17.1:513 (c2d)   352>  290<  (complete)

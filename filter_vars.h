@@ -128,9 +128,13 @@ struct filter_line filters[] = {
 
     {"trunc_bytes",	V_ULLONG, PTCB_C_S(trunc_bytes), "number of bytes not in the file"},
     {"trunc_segs", 	V_ULLONG, PTCB_C_S(trunc_segs), "number of segments not in the file"},
-	{"num_zwnd_probes", V_ULONG, PTCB_C_S(num_zwnd_probes), "number of zero window probes"},
-	{"zwnd_probe_bytes", V_ULONG, PTCB_C_S(zwnd_probe_bytes), "number of window probe bytes"},
-    /* HOST IP addresses */
+    {"num_zwnd_probes", V_ULONG, PTCB_C_S(num_zwnd_probes), "number of zero window probes"},
+    {"zwnd_probe_bytes", V_ULONG, PTCB_C_S(zwnd_probe_bytes), "number of window probe bytes"},
+   
+    {"urg_data_pkts", V_ULONG, PTCB_C_S(urg_data_pkts), "Number of packets with URGENT bit set"},
+    {"urg_data_bytes", V_ULONG, PTCB_C_S(urg_data_bytes), "Number of bytes of urgent data"},
+
+   /* HOST IP addresses */
     {"hostaddr",	V_IPADDR,
      PTP(addr_pair.a_address, addr_pair.b_address),
      "IP Address (v4 or v6 in standard textual notation"},

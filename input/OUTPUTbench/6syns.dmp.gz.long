@@ -35,6 +35,8 @@ TCP connection 1:
      adv wind scale:            8           adv wind scale:            3      
      req sack:                  Y           req sack:                  Y      
      sacks sent:                0           sacks sent:                0      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:          1448 bytes     max segm size:             0 bytes
      min segm size:          1034 bytes     min segm size:             0 bytes
@@ -110,6 +112,8 @@ TCP connection 2:
      adv wind scale:            8           adv wind scale:            3      
      req sack:                  Y           req sack:                  Y      
      sacks sent:                0           sacks sent:                3      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:          1448 bytes     max segm size:             0 bytes
      min segm size:           507 bytes     min segm size:             0 bytes

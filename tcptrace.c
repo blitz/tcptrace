@@ -199,6 +199,8 @@ static struct ext_bool_op {
      "mark out-of-order on time sequence graphs"},
     {"showzerowindow", &show_zero_window,  TRUE,
      "mark zero windows on time sequence graphs"},
+    {"showurg", &show_urg,  TRUE,
+     "mark packets with URGENT bit set on the time sequence graphs"},
     {"showrttdongles", &show_rtt_dongles,  TRUE,
      "mark non-RTT-generating ACKs with special symbols"},
     {"showdupack3", &show_triple_dupack,  TRUE,

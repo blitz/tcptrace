@@ -112,6 +112,7 @@ Bool show_triple_dupack = TRUE;
 Bool show_zwnd_probes = TRUE;
 Bool nonames = FALSE;
 Bool use_short_names = FALSE;
+Bool show_urg = TRUE;
 int thru_interval = 10;	/* in segments */
 
 
@@ -130,7 +131,8 @@ char *default_color	= "white";
 char *synfin_color	= "orange";
 char *push_color	= "white";	/* top arrow for PUSHed segments */
 char *ecn_color		= "yellow";
-char *probe_color   = "orange";
+char *urg_color		= "red";
+char *probe_color       = "orange";
 
 /* ack diamond dongle colors */
 char *ackdongle_nosample_color	= "blue";
@@ -1104,6 +1106,7 @@ dotrace(
     Bool	ecn_echo = FALSE;
     Bool	cwr = FALSE;
     Bool        urg = FALSE;
+    int		retrans_num_bytes;
     Bool	out_order;	/* out of order */
     u_short	th_sport;	/* source port */
     u_short	th_dport;	/* destination port */
@@ -1112,6 +1115,7 @@ dotrace(
     u_short	th_win;		/* window */
     u_long	eff_win;	/* window after scaling */
     u_short     th_urp;         /* URGENT pointer */
+    short	ip_len;		/* total length */
     enum t_ack	ack_type=NORMAL; /* how should we draw the ACK */
     seqnum	old_this_windowend; /* for graphing */
     ptp_ptr	*tcp_ptr = NULL;
@@ -1134,6 +1138,7 @@ dotrace(
     th_dport = ntohs(ptcp->th_dport);
     th_win   = ntohs(ptcp->th_win);
     th_urp   = ntohs(ptcp->th_urp);
+    ip_len   = gethdrlength(pip, plast) + getpayloadlength(pip,plast);
 
     /* make sure this is one of the connections we want */
     ptp_save = FindTTP(pip,ptcp,&dir, &tcp_ptr);
@@ -1376,12 +1381,18 @@ dotrace(
 
     /* unless both sides advertised sack, we shouldn't see them, otherwise
     urg = FALSE;
+    if (tcp_data_length > 0) {
 	thisdir->data_pkts += 1;
 	if (PUSH_SET(ptcp))
 	    thisdir->data_pkts_push += 1;
 	thisdir->data_bytes += tcp_data_length;
         if (URGENT_SET(ptcp)) {     /* Checking if URGENT bit is set */
-	if (tcp_data_length > thisdir->max_seg_size)
+	    urg = TRUE; 
+	    thisdir->urg_data_pkts += 1;
+	    thisdir->urg_data_bytes += th_urp;
+	}
+       	if (tcp_data_length > thisdir->max_seg_size)
+	    thisdir->max_seg_size = tcp_data_length;
 	if ((thisdir->min_seg_size == 0) ||
 	    (tcp_data_length < thisdir->min_seg_size))
 	    thisdir->min_seg_size = tcp_data_length;
@@ -1456,7 +1467,7 @@ dotrace(
     /* do rexmit stats */
     retrans = FALSE;
     probe = FALSE;
-	probe = FALSE;
+    out_order = FALSE;
     retrans_num_bytes = 0;
     if (SYN_SET(ptcp) || FIN_SET(ptcp) || tcp_data_length > 0) {
 	int len = tcp_data_length;
@@ -1540,14 +1551,15 @@ dotrace(
 	thisdir->seq = end;
     }
    
+    if(probe) {
+        if(from_tsgpl != NO_PLOTTER && show_zwnd_probes){
+	    plotter_perm_color(from_tsgpl,probe_color);
+	    plotter_text(from_tsgpl,current_time,SeqRep (thisdir,end),
+			  "b", "P");
+	 }
+     }
+
     /* draw the packet */
-	if(probe) {
-		if(from_tsgpl != NO_PLOTTER && show_zwnd_probes){
-			plotter_perm_color(from_tsgpl,probe_color);
-			plotter_text(from_tsgpl,current_time,SeqRep (thisdir,end),
-						 "b", "P");
-		}
-	}
     if (from_tsgpl != NO_PLOTTER) {
 	plotter_perm_color(from_tsgpl, data_color);
 	if (SYN_SET(ptcp)) {		/* SYN  */
@@ -1635,7 +1647,17 @@ dotrace(
 			 cwr ? (ecn_ce ? "CWR CE" : "CWR") : "CE");
 	}
        
+    }
    
+    /* Plotting URGENT data */
+    if(urg) {
+        if(from_tsgpl != NO_PLOTTER && show_urg){
+	    plotter_perm_color(from_tsgpl,urg_color);
+	    plotter_text(from_tsgpl,current_time,SeqRep (thisdir,end),
+			   "a", "U");
+	 } 
+    }
+     }
     /* check for RESET */
     if (RESET_SET(ptcp)) {
 	u_long plot_at;
@@ -1668,8 +1690,7 @@ dotrace(
 	return(ptp_save);
     }
    
-
-    
+    /* do window stats (include first SYN too!) */
 	thisdir->win_last=eff_win;
 
     if (ACK_SET(ptcp) || SYN_SET(ptcp)) {

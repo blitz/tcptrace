@@ -321,13 +321,21 @@ typedef struct tcb {
     u_llong	sacks_sent;	/* sacks returned */
     u_long	ipv6_segments;	/* how many segments were ipv6? */
 
+
+    /* stats on urgent data */
+    u_long     urg_data_bytes;
+    u_long     urg_data_pkts;
+   
+   /* stats on sequence numbers */
+
 								
-	/* Statistics to store the number of Zero window probes
-	 seen and the total number of bytes spent for it. */
-	u_long num_zwnd_probes;  
-	u_long zwnd_probe_bytes;
+   /* Statistics to store the number of Zero window probes
+      seen and the total number of bytes spent for it. */
+    u_long      num_zwnd_probes;  
+    u_long      zwnd_probe_bytes;
 
     /* stats on sequence numbers */
+
     seqnum	min_seq;	/* smallest seq number seen */
     seqnum	max_seq;	/* largest seq number seen */
     seqnum	latest_seq;	/* most recent seq number seen */
@@ -617,6 +625,7 @@ extern Bool warn_printbad_syn_fin_seq;
 extern Bool show_out_order;
 extern Bool show_rexmit;
 extern Bool show_zero_window;
+extern Bool show_urg;
 extern Bool show_sacks;
 extern Bool show_rtt_dongles;
 extern Bool show_triple_dupack;

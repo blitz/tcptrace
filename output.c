@@ -284,6 +284,12 @@ PrintTrace(
 		  pab->sacks_sent,
 		  pba->sacks_sent);
     }
+    StatLineI("urgent data pkts", "pkts",
+	      pab->urg_data_pkts,
+	      pba->urg_data_pkts);
+    StatLineI("urgent data bytes", "bytes",
+	      pab->urg_data_bytes,
+	      pba->urg_data_bytes);
     StatLineI("mss requested","bytes", pab->mss, pba->mss);
     StatLineI("max segm size","bytes",
 	      pab->max_seg_size,

@@ -29,6 +29,8 @@ TCP connection 1:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           280 bytes     max segm size:            46 bytes
      min segm size:           280 bytes     min segm size:             2 bytes
@@ -91,6 +93,8 @@ TCP connection 2:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           338 bytes     max segm size:            46 bytes
      min segm size:           338 bytes     min segm size:             2 bytes
@@ -153,6 +157,8 @@ TCP connection 3:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           340 bytes     max segm size:            46 bytes
      min segm size:           340 bytes     min segm size:             2 bytes
@@ -215,6 +221,8 @@ TCP connection 4:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           338 bytes     max segm size:            46 bytes
      min segm size:           338 bytes     min segm size:             2 bytes
@@ -277,6 +285,8 @@ TCP connection 5:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           346 bytes     max segm size:            46 bytes
      min segm size:           346 bytes     min segm size:             2 bytes
@@ -339,6 +349,8 @@ TCP connection 6:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           336 bytes     max segm size:            46 bytes
      min segm size:           336 bytes     min segm size:             2 bytes
@@ -401,6 +413,8 @@ TCP connection 7:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           344 bytes     max segm size:            46 bytes
      min segm size:           344 bytes     min segm size:             2 bytes
@@ -463,6 +477,8 @@ TCP connection 8:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           362 bytes     max segm size:            46 bytes
      min segm size:           362 bytes     min segm size:             2 bytes
@@ -525,6 +541,8 @@ TCP connection 9:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           365 bytes     max segm size:            46 bytes
      min segm size:           365 bytes     min segm size:             2 bytes
@@ -587,6 +605,8 @@ TCP connection 10:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/2      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           368 bytes     max segm size:            46 bytes
      min segm size:           368 bytes     min segm size:             2 bytes
@@ -649,6 +669,8 @@ TCP connection 11:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           367 bytes     max segm size:            46 bytes
      min segm size:           367 bytes     min segm size:             2 bytes
@@ -711,6 +733,8 @@ TCP connection 12:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           366 bytes     max segm size:            46 bytes
      min segm size:           366 bytes     min segm size:             2 bytes
@@ -773,6 +797,8 @@ TCP connection 13:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           365 bytes     max segm size:            46 bytes
      min segm size:           365 bytes     min segm size:             2 bytes
@@ -835,6 +861,8 @@ TCP connection 14:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           363 bytes     max segm size:            46 bytes
      min segm size:           363 bytes     min segm size:             2 bytes
@@ -897,6 +925,8 @@ TCP connection 15:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           366 bytes     max segm size:            46 bytes
      min segm size:           366 bytes     min segm size:             2 bytes
@@ -959,6 +989,8 @@ TCP connection 16:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           370 bytes     max segm size:            46 bytes
      min segm size:           370 bytes     min segm size:             2 bytes
@@ -1021,6 +1053,8 @@ TCP connection 17:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           370 bytes     max segm size:            46 bytes
      min segm size:           370 bytes     min segm size:             2 bytes
@@ -1083,6 +1117,8 @@ TCP connection 18:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           367 bytes     max segm size:            46 bytes
      min segm size:           367 bytes     min segm size:             2 bytes
@@ -1145,6 +1181,8 @@ TCP connection 19:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           369 bytes     max segm size:            46 bytes
      min segm size:           369 bytes     min segm size:             2 bytes
@@ -1207,6 +1245,8 @@ TCP connection 20:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           364 bytes     max segm size:            46 bytes
      min segm size:           364 bytes     min segm size:             2 bytes
@@ -1269,6 +1309,8 @@ TCP connection 21:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           375 bytes     max segm size:            46 bytes
      min segm size:           375 bytes     min segm size:             2 bytes
@@ -1331,6 +1373,8 @@ TCP connection 22:
      outoforder pkts:           0           outoforder pkts:           0      
      pushed data pkts:          1           pushed data pkts:          7      
      SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     urgent data pkts:          0 pkts      urgent data pkts:          0 pkts 
+     urgent data bytes:         0 bytes     urgent data bytes:         0 bytes
      mss requested:          1460 bytes     mss requested:          1460 bytes
      max segm size:           371 bytes     max segm size:            46 bytes
      min segm size:           371 bytes     min segm size:             2 bytes
