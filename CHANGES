@@ -319,5 +319,8 @@
   fixed ipv6.h to work with the way that Linux/Redhat built IPv6
   fixed bug in recording window stats from SYN packets when using scaling
   fixed off-by-one in final report on number of packets seen
-
-
+  fixed ipv6 packet printing byte-sex problems
+5.2.1 - Wed Sep 15, 1999
+  fixed bug (probably introduced in 5.2.0) that kept -B from working
+  fixed bug in snoop-format code that caused it to fail if it saw a
+    non-IP packet
