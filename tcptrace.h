@@ -367,11 +367,6 @@ struct tcp_options *ParseOptions(struct tcphdr *ptcp, void *plast);
 #define A2B 1
 #define B2A -1
 
-/* all we REALLY need is the IP and TCP headers, so don't copy	*/
-/* any more than that...  IP header is <= (4*16) bytes and 	*/
-/* the TCP header is at most (4*16)				*/
-#define MAX_IP_PACKLEN ((4*16)+(4*16))
-
 
 /*macros for maintaining the seqspace used for rexmit*/
 #define QUADSIZE	(0x40000000)
