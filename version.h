@@ -30,20 +30,12 @@ static char const rcsid_version[] =
 
 
 /* source code version information */
-#define VERSION_MAJOR	6
-#define VERSION_MINOR	0
-#define VERSION_BUGFIX	0a5
+#define VERSION_MAJOR	"6"
+#define VERSION_MINOR	"0"
+#define VERSION_BUGFIX	"0a5"
 #define VERSION_DATE	"Tue Apr 10, 2001"
 
-
-
-/* the rest of these are just ugly conversion constants */
-#define STRINGIZE(y) #y
-#define ADD_QUOTES(x) STRINGIZE (x)
-
-/* just the digits */
-#define VERS_DIGITS   VERSION_MAJOR##.##VERSION_MINOR##.##VERSION_BUGFIX
-#define VERSION_NUM ADD_QUOTES(VERS_DIGITS)
+#define VERSION_NUM   VERSION_MAJOR "." VERSION_MINOR "." VERSION_BUGFIX
 
 /* the string to print */
 #define VERSION  "Ostermann's tcptrace -- version " VERSION_NUM " -- " VERSION_DATE
