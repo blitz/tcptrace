@@ -286,14 +286,14 @@ extern timeval current_time;
 
 #define MAX_NAME 20
 
+/* Let's use ANSI C rather than old BSD calls... */
+#define bzero(ptr,nbytes) memset(ptr,0,nbytes)
+#define bcopy(from_ptr,to_ptr,nbytes) memcpy(to_ptr,from_ptr,nbytes)
+
 
 /* external routine decls */
 double sqrt(double x);
 char *ether_ntoa();
-#ifndef I386_NBSD1
-void bzero(void *, int);
-void bcopy(void *, void *,int);
-#endif
 void free(void *);
 int finite(double);
 
