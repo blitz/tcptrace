@@ -809,8 +809,8 @@ AgeTraffic(void)
 	extend_line(line_open_conns,current_time, open_conns);
 
 	/* reset interval counters */
-	ttl_num_opens = num_opens;
-	ttl_num_closes = num_closes;
+	ttl_num_opens += num_opens;
+	ttl_num_closes += num_closes;
 	num_opens = 0;
 	num_closes = 0;
     }
