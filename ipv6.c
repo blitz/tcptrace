@@ -255,7 +255,7 @@ findheader(
 		  
 	      pheader = (struct ipv6_ext *)
 		  ((char *)pheader + 8 + (pheader->ip6ext_len)*8);
-
+	      break;
 	    /* non-tcp protocols, so we're finished. */
 	  case IPPROTO_NONE:
 	  case IPPROTO_ICMPV6:
