@@ -43,7 +43,9 @@ char *tcptrace_version = VERSION;
 
 /* local routines */
 static void Args(void);
-static void CallModules(struct ip *pip, tcp_pair *ptp, void *plast);
+static void ModulesPerPacket(struct ip *pip, tcp_pair *ptp, void *plast);
+static void ModulesPerConn(tcp_pair *ptp);
+static void ModulesPerFile(char *filename);
 static void DumpFlags(void);
 static void ExplainOutput(void);
 static void FinishModules();
@@ -70,6 +72,7 @@ Bool ignore_non_comp = FALSE;
 Bool print_rtt = FALSE;
 Bool print_cwin = FALSE;
 Bool printbrief = TRUE;
+Bool printsuppress = FALSE;
 Bool printem = FALSE;
 Bool printticks = FALSE;
 Bool printtrunc = FALSE;
@@ -82,6 +85,7 @@ int ctrunc = 0;
 
 /* globals */
 struct timeval current_time;
+int num_modules = 0;
 
 
 /* locally global variables */
@@ -282,6 +286,7 @@ Output format options  \n\
   -l      long output format  \n\
   -r      print rtt statistics (slower for large files)  \n\
   -W      report on estimated congestion window (not generally useful)  \n\
+  -q      no output (if you just want modules output) \n\
 Graphing options  \n\
   -T      create throughput graph[s], (average over 10 segments, see -A)  \n\
   -R      create rtt sample graph[s]  \n\
@@ -343,11 +348,13 @@ ListModules(void)
     int i;
 
     fprintf(stderr,"Included Modules:\n");
-    for (i=0; modules[i].module_name; ++i) {
+    for (i=0; i < NUM_MODULES; ++i) {
 	fprintf(stderr,"\t%-15s  %s\n",
 		modules[i].module_name, modules[i].module_descr);
-	fprintf(stderr,"\tusage:\n");
-	(*modules[i].module_usage)();
+	if (modules[i].module_usage) {
+	    fprintf(stderr,"\tusage:\n");
+	    (*modules[i].module_usage)();
+	}
     }
 }
      
@@ -468,6 +475,9 @@ ProcessFile(
 	exit(-1);
     }
 
+    /* inform the modules, if they care... */
+    ModulesPerFile(filename);
+
 
     /* read each packet */
     while (1) {
@@ -555,9 +565,12 @@ for other packet types, I just don't have a place to test them\n\n");
         /* perform packet analysis */
 	ptp = dotrace(pip,plast);
 
-	/* also, pass the packet to any modules defined */
-	CallModules(pip,ptp,plast);
+	/* if it's a new connection, tell the modules */
+	if (ptp->packets == 1)
+	    ModulesPerConn(ptp);
 	
+	/* also, pass the packet to any modules defined */
+	ModulesPerPacket(pip,ptp,plast);
 
 	/* for efficiency, only allow a signal every 1000 packets	*/
 	/* (otherwise the system call overhead will kill us)		*/
@@ -685,6 +698,7 @@ ParseArgs(
 		  case 'd': ++debug; break;
 		  case 'v': Version(); exit(0); break;
 		  case 'w': printtrunc = TRUE; break;
+		  case 'q': printsuppress = TRUE; break;
 		  case 'i':
 		    ++saw_i_or_o;
 		    IgnoreConn(atoi(argv[i]+1));
@@ -741,6 +755,7 @@ ParseArgs(
 		  case 's': use_short_names = !TRUE; break;
 		  case 't': printticks = !TRUE; break;
 		  case 'w': printtrunc = !TRUE; break;
+		  case 'q': printsuppress = !TRUE; break;
 		  default:
 		    Usage(argv[0]);
 		}
@@ -763,6 +778,7 @@ static void
 DumpFlags(void)
 {
 	fprintf(stderr,"printbrief:       %d\n", printbrief);
+	fprintf(stderr,"printsuppress:    %d\n", printsuppress);
 	fprintf(stderr,"printtrunc:       %d\n", printtrunc);
 	fprintf(stderr,"print_rtt:        %d\n", print_rtt);
 	fprintf(stderr,"graph tsg:        %d\n", graph_tsg);
@@ -783,6 +799,7 @@ DumpFlags(void)
 	fprintf(stderr,"beginning pnum:   %lu\n", beginpnum);
 	fprintf(stderr,"ending pnum:      %lu\n", endpnum);
 	fprintf(stderr,"throughput intvl: %d\n", thru_interval);
+	fprintf(stderr,"number modules:   %d\n", NUM_MODULES);
 	fprintf(stderr,"debug:            %d\n", debug);
 }
 
@@ -795,7 +812,8 @@ LoadModules(
     int i;
     int enable;
 
-    for (i=0; modules[i].module_init != NULL; ++i) {
+    for (i=0; i < NUM_MODULES; ++i) {
+	++num_modules;
 	if (debug)
 	    fprintf(stderr,"Initializing module \"%s\"\n",
 		    modules[i].module_name);
@@ -804,14 +822,15 @@ LoadModules(
 	    if (debug)
 		fprintf(stderr,"Module \"%s\" enabled\n",
 			modules[i].module_name);
+	    modules[i].module_inuse = TRUE;
 	} else {
 	    if (debug)
 		fprintf(stderr,"Module \"%s\" not active\n",
 			modules[i].module_name);
-	    modules[i].module_read = NULL;
-	    modules[i].module_done = NULL;
+	    modules[i].module_inuse = FALSE;
 	}
     }
+
 }
 
 
@@ -821,9 +840,12 @@ FinishModules(void)
 {
     int i;
 
-    for (i=0; modules[i].module_init != NULL; ++i) {
-	if (modules[i].module_done == NULL)
+    for (i=0; i < NUM_MODULES; ++i) {
+	if (!modules[i].module_inuse)
 	    continue;  /* might be disabled */
+
+	if (modules[i].module_done == NULL)
+	    continue;  /* might not have a cleanup */
 
 	if (debug)
 	    fprintf(stderr,"Calling cleanup for module \"%s\"\n",
@@ -835,21 +857,76 @@ FinishModules(void)
 
 
 static void
-CallModules(
+ModulesPerConn(
+    tcp_pair *ptp)
+{
+    int i;
+    void *pmodstruct;
+
+    for (i=0; i < NUM_MODULES; ++i) {
+	if (!modules[i].module_inuse)
+	    continue;  /* might be disabled */
+
+	if (modules[i].module_newconn == NULL)
+	    continue;  /* they might not care */
+
+	if (debug>3)
+	    fprintf(stderr,"Calling read routine for module \"%s\"\n",
+		    modules[i].module_name);
+
+	pmodstruct = (*modules[i].module_newconn)(ptp);
+	if (pmodstruct) {
+	    /* make sure the array is there */
+	    if (!ptp->pmod_info) {
+		ptp->pmod_info = MallocZ(num_modules * sizeof(void *));
+	    }
+
+	    /* remember this structure */
+	    ptp->pmod_info[i] = pmodstruct;
+	}
+    }
+}
+
+
+static void
+ModulesPerPacket(
     struct ip *pip,
     tcp_pair *ptp,
     void *plast)
 {
     int i;
 
-    for (i=0; modules[i].module_init != NULL; ++i) {
-	if (modules[i].module_read == NULL)
+    for (i=0; i < NUM_MODULES; ++i) {
+	if (!modules[i].module_inuse)
 	    continue;  /* might be disabled */
 
 	if (debug>3)
 	    fprintf(stderr,"Calling read routine for module \"%s\"\n",
 		    modules[i].module_name);
 
-	(*modules[i].module_read)(pip,ptp,plast);
+	(*modules[i].module_read)(pip,ptp,plast,
+				  ptp->pmod_info?ptp->pmod_info[i]:NULL);
+    }
+}
+
+
+static void
+ModulesPerFile(
+    char *filename)
+{
+    int i;
+
+    for (i=0; i < NUM_MODULES; ++i) {
+	if (!modules[i].module_inuse)
+	    continue;  /* might be disabled */
+
+	if (modules[i].module_newfile == NULL)
+	    continue;  /* they might not care */
+
+	if (debug>3)
+	    fprintf(stderr,"Calling newfile routine for module \"%s\"\n",
+		    modules[i].module_name);
+
+	(*modules[i].module_newfile)(filename);
     }
 }
