@@ -324,8 +324,8 @@ static void
 Args(void)
 {
     fprintf(stderr,"\n\
-Note: these options are first read from the file $HOME/'%s'\n\
-  (if it exists), and then from the environment variable '%s'\n\
+Note: these options are first read from the file $HOME/%s\n\
+  (if it exists), and then from the environment variable %s\n\
   (if it exists), and finally from the command line\n\
 ", TCPTRACE_RC_FILE, TCPTRACE_ENVARIABLE);
     fprintf(stderr,"\n\
@@ -369,6 +369,11 @@ Misc options\n\
   -e      extract contents of each TCP stream into file\n\
   -h      print help messages\n\
   +[v]    reverse the setting of the -[v] flag (for booleans)\n\
+Dump File Names\n\
+  Anything else in the arguments is taken to be one or more filenames.\n\
+  The files can be compressed, see compress.h for configuration.\n\
+  If the dump file name is 'stdin', then we read from standard input\n\
+    rather than from a file\n\
 Module options\n\
   -xMODULE_SPECIFIC\n\
 ");
@@ -502,6 +507,7 @@ ProcessFile(
     struct stat str_stat;
     long int location = 0;
     u_long fpnum = 0;
+    Bool is_stdin = 0;
 
     /* share the current file name */
     cur_filename = filename;
@@ -512,11 +518,16 @@ ProcessFile(
     }
 
     /* see how big the file is */
-    if (stat(filename,&str_stat) != 0) {
-	perror("stat");
-	exit(1);
+    if (FileIsStdin(filename)) {
+	filesize = 1;
+	is_stdin = 1;
+    } else {
+	if (stat(filename,&str_stat) != 0) {
+	    perror("stat");
+	    exit(1);
+	}
+	filesize = str_stat.st_size;
     }
-    filesize = str_stat.st_size;
 
     /* determine which input file format it is... */
     ppread = NULL;
@@ -620,7 +631,9 @@ rather than:
 
 		if (debug)
 		    fprintf(stderr, "%s: ", cur_filename);
-		if (CompIsCompressed()) {
+		if (is_stdin) {
+		    fprintf(stderr ,"%lu\r", fpnum);
+		} else if (CompIsCompressed()) {
 		    frac = location/(filesize/100);
 		    if (frac <= 100)
 			fprintf(stderr ,"%lu ~%u%% (compressed)\r", fpnum, frac);
