@@ -150,6 +150,7 @@ u_long bad_udp_checksums = 0;
 /* extended variables with values */
 char *output_file_dir = NULL;
 char *output_file_prefix = NULL;
+char *xplot_title_prefix = NULL;
 
 /* globals */
 struct timeval current_time;
@@ -258,6 +259,8 @@ static struct ext_var_op {
      "directory where all output files are placed"},
     {"output_prefix", &output_file_prefix, NULL,
      "prefix all output files with this string"},
+    {"xplot_title_prefix", &xplot_title_prefix, NULL,
+     "prefix to place in the titles of all xplot files"},
     {"update_interval", &update_interval_st, VerifyUpdateInt,
      "time interval for updates in real-time mode"},
     {"max_conn_num", &max_conn_num_st, VerifyMaxConnNum,
