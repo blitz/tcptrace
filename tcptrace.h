@@ -628,7 +628,7 @@ Bool PassesFilter(tcp_pair *ptp);
 #define IN_Q3(seq)	(QUADNUM(seq)==3)
 #define IN_Q4(seq)	(QUADNUM(seq)==4)
 #define FIRST_SEQ(quadnum)	(QUADSIZE*(quadnum-1))
-#define LAST_SEQ(quadnum)	((QUADSIZE-1)*quadnum)
+#define LAST_SEQ(quadnum)	((QUADSIZE*quadnum)-1) /* bug fix by Priya */
 #define BOUNDARY(beg,fin) (QUADNUM((beg)) != QUADNUM((fin)))
 
 
