@@ -29,13 +29,6 @@ static char const rcsid_modules[] =
     "$Id$";
 
 
-/* define LOAD_MODULE_HTTP to include the experimental HTTP module */
-#define LOAD_MODULE_HTTP
-
-/* define LOAD_MODULE_TRAFFIC to include the experimental TRAFFIC module */
-#define LOAD_MODULE_TRAFFIC
-
-
 /* 
  * modules.h -- Definitions for plug-in modules
  */
