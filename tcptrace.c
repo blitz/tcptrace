@@ -962,3 +962,19 @@ ModulesPerFile(
 	(*modules[i].module_newfile)(filename,filesize,CompIsCompressed());
     }
 }
+
+/* the memcpy() function that gcc likes to stuff into the program has alignment
+   problems, so here's MY version.  It's only used for small stuff, so the
+   copy should be "cheap", but we can't be too fancy due to alignment boo boos */
+void *
+MemCpy(void *vp1, void *vp2, size_t n)
+{
+    char *p1 = vp1;
+    char *p2 = vp2;
+
+    while (n-->0)
+	*p1++=*p2++;
+
+    return(vp1);
+}
+
