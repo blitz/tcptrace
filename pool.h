@@ -48,8 +48,8 @@
  * 		School of Electrical Engineering and Computer Science
  * 		Ohio University
  * 		Athens, OH
- */
  *		http://www.tcptrace.org/
+ */
 static char const rcsid_pool[] =
     "@(#)$Header$";
 

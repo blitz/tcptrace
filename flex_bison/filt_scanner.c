@@ -436,30 +436,56 @@ char *yytext;
 #define INITIAL 0
 #line 2 "filt_scanner.l"
 /*
- * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999
- *	Ohio University.  All rights reserved.
+ * Copyright (c) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ *	Ohio University.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that: (1) source code
- * distributions retain the above copyright notice and this paragraph
- * in its entirety, (2) distributions including binary code include
- * the above copyright notice and this paragraph in its entirety in
- * the documentation or other materials provided with the
- * distribution, and (3) all advertising materials mentioning features
- * or use of this software display the following acknowledgment:
- * ``This product includes software developed by the Ohio University
- * Internetworking Research Laboratory.''  Neither the name of the
- * University nor the names of its contributors may be used to endorse
- * or promote products derived from this software without specific
- * prior written permission.
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ * ---
+ * Starting with the release of tcptrace version 6 in 2001, tcptrace
+ * is licensed under the GNU General Public License (GPL).  We believe
+ * that, among the available licenses, the GPL will do the best job of
+ * allowing tcptrace to continue to be a valuable, freely-available
+ * and well-maintained tool for the networking community.
+ *
+ * Previous versions of tcptrace were released under a license that
+ * was much less restrictive with respect to how tcptrace could be
+ * used in commercial products.  Because of this, I am willing to
+ * consider alternate license arrangements as allowed in Section 10 of
+ * the GNU GPL.  Before I would consider licensing tcptrace under an
+ * alternate agreement with a particular individual or company,
+ * however, I would have to be convinced that such an alternative
+ * would be to the greater benefit of the networking community.
+ * 
+ * ---
+ *
+ * This file is part of Tcptrace.
+ *
+ * Tcptrace was originally written and continues to be maintained by
+ * Shawn Ostermann with the help of a group of devoted students and
+ * users (see the file 'THANKS').  The work on tcptrace has been made
+ * possible over the years through the generous support of NASA GRC,
+ * the National Science Foundation, and Sun Microsystems.
+ *
+ * Tcptrace is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Tcptrace is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Tcptrace (in the file 'COPYING'); if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ * 
  * 
  * Author:	Shawn Ostermann
  * 		School of Electrical Engineering and Computer Science
  * 		Ohio University
  * 		Athens, OH
+ *		http://www.tcptrace.org/
  *		ostermann@cs.ohiou.edu
  */
 
@@ -629,7 +655,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 48 "filt_scanner.l"
+#line 74 "filt_scanner.l"
 
 
 
@@ -716,137 +742,137 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 50 "filt_scanner.l"
+#line 76 "filt_scanner.l"
 { }  /* Just ignore white space */
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 52 "filt_scanner.l"
+#line 78 "filt_scanner.l"
 { return(EOS); } 
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 53 "filt_scanner.l"
+#line 79 "filt_scanner.l"
 { return(PLUS); } 
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 54 "filt_scanner.l"
+#line 80 "filt_scanner.l"
 { return(MINUS); } 
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 55 "filt_scanner.l"
+#line 81 "filt_scanner.l"
 { return(TIMES); } 
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 56 "filt_scanner.l"
+#line 82 "filt_scanner.l"
 { return(DIVIDE); } 
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 57 "filt_scanner.l"
+#line 83 "filt_scanner.l"
 { return(MOD); } 
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 58 "filt_scanner.l"
+#line 84 "filt_scanner.l"
 { return(LPAREN); } 
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 59 "filt_scanner.l"
+#line 85 "filt_scanner.l"
 { return(RPAREN); } 
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 60 "filt_scanner.l"
+#line 86 "filt_scanner.l"
 { return(LESS); } 
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 61 "filt_scanner.l"
+#line 87 "filt_scanner.l"
 { return(LESS_EQ); } 
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 62 "filt_scanner.l"
+#line 88 "filt_scanner.l"
 { return(GREATER); } 
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 63 "filt_scanner.l"
+#line 89 "filt_scanner.l"
 { return(GREATER_EQ); } 
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 64 "filt_scanner.l"
+#line 90 "filt_scanner.l"
 { return(EQUAL); } 
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 65 "filt_scanner.l"
+#line 91 "filt_scanner.l"
 { return(EQUAL); }   /* same as "=" */
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 66 "filt_scanner.l"
+#line 92 "filt_scanner.l"
 { return(NEQUAL); } 
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 67 "filt_scanner.l"
+#line 93 "filt_scanner.l"
 { return(NOT); } 
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 68 "filt_scanner.l"
+#line 94 "filt_scanner.l"
 { return(NOT); }   /* same as "!" */
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 69 "filt_scanner.l"
+#line 95 "filt_scanner.l"
 { return(AND); } 
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 70 "filt_scanner.l"
+#line 96 "filt_scanner.l"
 { return(AND); }    /* same as "AND" */
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 71 "filt_scanner.l"
+#line 97 "filt_scanner.l"
 { return(AND); }    /* same as "AND" */
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 72 "filt_scanner.l"
+#line 98 "filt_scanner.l"
 { return(OR); } 
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 73 "filt_scanner.l"
+#line 99 "filt_scanner.l"
 { return(OR); }     /* same as "OR" */
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 74 "filt_scanner.l"
+#line 100 "filt_scanner.l"
 { return(OR); }     /* same as "OR" */
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 75 "filt_scanner.l"
+#line 101 "filt_scanner.l"
 { return(BOR); }     /* bitwise OR */
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 76 "filt_scanner.l"
+#line 102 "filt_scanner.l"
 { return(BAND); }    /* bitwise AND */
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 79 "filt_scanner.l"
+#line 105 "filt_scanner.l"
 {
     /* an IPv4 addr */
     yylval.pipaddr = str2ipaddr(yytext);
@@ -855,7 +881,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 85 "filt_scanner.l"
+#line 111 "filt_scanner.l"
 {
     /* an IPv6 addr */
     yylval.pipaddr = str2ipaddr(yytext);
@@ -864,7 +890,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 91 "filt_scanner.l"
+#line 117 "filt_scanner.l"
 {
     /* an unsigned integer */
     yylval.unsigned_long = atoi(yytext);
@@ -873,7 +899,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 97 "filt_scanner.l"
+#line 123 "filt_scanner.l"
 {
     /* a signed integer */
     yylval.signed_long = atoi(yytext);
@@ -882,17 +908,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 102 "filt_scanner.l"
+#line 128 "filt_scanner.l"
 { yylval.unsigned_long = 0; return(UNSIGNED); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 103 "filt_scanner.l"
+#line 129 "filt_scanner.l"
 { yylval.unsigned_long = 1; return(UNSIGNED); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 105 "filt_scanner.l"
+#line 131 "filt_scanner.l"
 {
     /* a string */
     yylval.string = strdup(yytext+1);  /* make a copy of the string */
@@ -902,7 +928,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 112 "filt_scanner.l"
+#line 138 "filt_scanner.l"
 {
     /* a variable (word) */
     yylval.string = strdup(yytext);  /* make a copy of the string */
@@ -911,7 +937,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 119 "filt_scanner.l"
+#line 145 "filt_scanner.l"
 {
     /* if we haven't matched anything yet, then it's illegal */
     fprintf(stderr, "filter scanner: Bad character '%c' (%d decimal)\n",
@@ -921,7 +947,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 127 "filt_scanner.l"
+#line 153 "filt_scanner.l"
 ECHO;
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -1809,7 +1835,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 127 "filt_scanner.l"
+#line 153 "filt_scanner.l"
 
 
 int yywrap(void)
