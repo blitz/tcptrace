@@ -193,6 +193,12 @@ cacreate(
 
     bzero(pcb, sizeof(struct cacheblk));
     pcb->cb_status = CB_INUSE;
+#ifdef LINUX
+#ifdef strncpy
+    /* stupid Linux (redhat?) bug in macro */
+#undef strncpy
+#endif /* strncpy */
+#endif /* LINUX */
     strncpy(pcb->cb_name,name,CA_NAMELEN);
     pcb->cb_name[CA_NAMELEN-1] = '\00';
     pcb->cb_maxent = nentries;
