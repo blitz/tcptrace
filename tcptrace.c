@@ -778,14 +778,18 @@ rather than:\n\
 	if (ret == 0) /* EOF */
 	    break;
 
-	/* in case only a subset analysis was requested */
-	if (pnum+1 < beginpnum)	continue;
-	if ((endpnum != 0) && (pnum+1 > endpnum))	break;
-
-
 	/* update global and per-file packet counters */
 	++pnum;			/* global */
 	++fpnum;		/* local to this file */
+
+
+	/* in case only a subset analysis was requested */
+	if (pnum < beginpnum)	continue;
+	if ((endpnum != 0) && (pnum > endpnum))	{
+	    --pnum;
+	    --fpnum;
+	    break;
+	    }
 
 
 	/* check for re-ordered packets */
