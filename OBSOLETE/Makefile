@@ -169,6 +169,8 @@ tcptrace.o: tcptrace.h config.h file_formats.h modules.h mod_http.h version.h
 thruput.o: tcptrace.h config.h
 trace.o: tcptrace.h config.h gcache.h
 compress.o: tcptrace.h config.h compress.h
+mod_http.o: tcptrace.h config.h
+mod_traffic.o: tcptrace.h config.h mod_traffic.h
 
 #
 # generate dependencies
