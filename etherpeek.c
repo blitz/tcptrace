@@ -61,7 +61,7 @@ struct EPFileHeader2 {
     unsigned long timeDate;	/* time and date stamp of the file (MAC format)*/
     unsigned long timeStart;	/* time of the first packet in the file*/
     unsigned long timeStop;	/* time of the last packet in the file*/
-    unsigned long futureUse[7];	/*reserved for future use and irrelavent to us!*/
+    unsigned long futureUse[7];	/*reserved for future use and irrelevent to us!*/
 };
 
 struct EPFilePacket {
@@ -93,6 +93,11 @@ struct EPPacketData {
     unsigned short protoType;		/* ethernet protocol type*/
     unsigned char *packetDataStart;	/* here is the packet data*/
 };
+
+
+/* byte swapping */
+/* Mac's are in network byte order.  If this machine is NOT, then */
+/* we'll need to do conversion */
 
   
 unsigned long mactime;
@@ -137,6 +142,9 @@ pread_EP(
 		fprintf(stderr,"Bad EP header\n");
 	    return(0);
 	}
+	hdr.packetLength = ntohs(hdr.packetLength);
+	hdr.sliceLength = ntohs(hdr.sliceLength);
+	
 	if ((rlen=fread(&hdr2,1,Real_Size_FP2,stdin)) !=Real_Size_FP2) {
 	    if (rlen != 0)
 		fprintf(stderr,"Bad EP header\n");
@@ -147,6 +155,7 @@ pread_EP(
 		fprintf(stderr,"Bad EP header\n");
 	    return(0);
 	}
+	hdr3.timestamp = ntohl(hdr3.timestamp);
 
 	if (hdr.sliceLength)
 	    packlen = hdr.sliceLength; 
@@ -186,7 +195,8 @@ pread_EP(
 	*pphystype = PHYS_ETHER;
 
 	/* if it's not TCP/IP, then skip it */
-	if ((pep->ether_type != ETHERTYPE_IP) || ((*ppip)->ip_p != IPPROTO_TCP))
+	if ((ntohs(pep->ether_type) != ETHERTYPE_IP) ||
+	    ((*ppip)->ip_p != IPPROTO_TCP))
 	    continue;
 
 	return(1);
@@ -213,6 +223,14 @@ int (*is_EP(void))()
 	rewind(stdin);
 	return(NULL);
     }
+
+    /* byte swapping */
+    nhdr2.length = ntohl(nhdr2.length);
+    nhdr2.numPackets = ntohl(nhdr2.numPackets);
+    nhdr2.timeDate = ntohl(nhdr2.timeDate);
+    nhdr2.timeStart = ntohl(nhdr2.timeStart);
+    nhdr2.timeStop = ntohl(nhdr2.timeStop);
+    
     mactime=nhdr2.timeDate - Mac2unix;  /*get time plus offset to unix time */
     /********** File header info ********************************/
     if (debug>1) {
