@@ -2351,9 +2351,9 @@ trace_done(void)
     }
   }
 
+   static int count = 0;
     /* if we're filtering, see which connections pass */
-    if (filter_output) {
-	static int count = 0;
+    if (filter_output || ignore_non_comp) {
 
 	/* file to dump matching connection numbers into */
 	f_passfilter = fopen(PASS_FILTER_FILENAME,"w+");
@@ -2362,24 +2362,25 @@ trace_done(void)
 	    exit(-1);
 	}
 
-      if (!run_continuously) {
-	/* mark the connections to ignore */
-	for (ix = 0; ix <= num_tcp_pairs; ++ix) {
-	    ptp = ttp[ix];
-	    if (PassesFilter(ptp)) {
-		if (++count == 1)
-		    fprintf(f_passfilter,"%d", ix+1);
-		else
-		    fprintf(f_passfilter,",%d", ix+1);
-	    } else {
-		/* else ignore it */
-		ptp->ignore_pair = TRUE;
+      if (filter_output) {
+	 if (!run_continuously) {
+	    /* mark the connections to ignore */
+	    for (ix = 0; ix <= num_tcp_pairs; ++ix) {
+	       ptp = ttp[ix];
+	       if (PassesFilter(ptp)) {
+		  if (++count == 1)
+		      fprintf(f_passfilter,"%d", ix+1);
+		  else
+		      fprintf(f_passfilter,",%d", ix+1);
+	       } else {
+		  /* else ignore it */
+		  ptp->ignore_pair = TRUE;
+	       }
 	    }
-	}
+	 }
       }
     }
-
-
+   
   if (!run_continuously) {
     /* print each connection */
     if (!printsuppress) {
@@ -2405,16 +2406,29 @@ trace_done(void)
 		       if (ix > 0)
 			 fprintf(stdout,"================================\n");
 		       fprintf(stdout,"TCP connection %d:\n", ix+1);
+		       
 		    }
 		    PrintTrace(ptp);
 		}
+	       /* This piece of code dumps PF file when filtered with '-c' 
+		  option, this option says to select only complete connections.
+		  The PF file will contain the connection numbers which are
+		  selected to be complete */
+	       if (ignore_non_comp)
+		   if (ConnComplete(ptp)) {
+		      if (++count == 1)
+			  fprintf(f_passfilter, "%d", ix+1);
+		      else
+			  fprintf(f_passfilter, ",%d", ix+1);
+		   }
+	       /******************************/
 	    }
 	}
     }
   }
   
     /* if we're filtering, close the file */
-    if (filter_output) {
+    if (filter_output || ignore_non_comp) {
 	fprintf(f_passfilter,"\n");
 	fclose(f_passfilter);
     }

@@ -669,6 +669,10 @@ Formats(void)
 	fprintf(stderr,"\t%-15s  %s\n",
 		file_formats[i].format_name,
 		file_formats[i].format_descr);
+   fprintf(stderr, "If this file format is understood by tethereal\n"
+	   "then it can be read by tehereal and written back in tcpdump\n"
+	   "format, which then can be read by tcptrace.\n"
+	   "command to do this is:\n tehereal -r 'infile' -w 'outfile'\n");
 }
 
 

@@ -365,9 +365,11 @@ case 100:
 	physname = "Cisco HDLC";
 	break;
       default:
-	if (debug)
-	    fprintf(stderr,"is_tcpdump: I think it's tcpdump, but I don't understand link format (%d)\n", type);
-       
+        fprintf(stderr,"tcptrace did not understand link format (%d)!\n",type);
+        fprintf(stderr,
+		"\t If you can give us a capture file with this link format\n\
+\t or even better, a patch to decipher this format, we shall add it in, \n\
+\t in a future release.\n");
 	rewind(stdin);
 	return(NULL);
     }

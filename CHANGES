@@ -543,3 +543,10 @@ sent by Yann Samama.
 
 Fixing the bug with filtering connections based on hostname/portname with
 the -f option.
+
+6.4.12: 15 Sep 2003 Jitesh
+------
+
+Included the code to generate PF file with '-c' option. Error messages are
+made more logical when generating error messages for unsupported input and
+captured file formats.
