@@ -75,7 +75,7 @@ typedef int PLOTTER;
 #define NCOLORS 8
 extern char *ColorNames[NCOLORS];
 /* {"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink"}; */
-
+typedef struct pl_line *PLINE;
 
 
 /* type for a TCP sequence number, ACK, FIN, or SYN */
@@ -105,10 +105,18 @@ typedef struct ipaddr {
 typedef struct timeval timeval;
 #define ZERO_TIME(ptv)(((ptv)->tv_sec == 0) && ((ptv)->tv_usec == 0))
 
+
 /* type for a Boolean */
 typedef u_char Bool;
 #define TRUE	1
 #define FALSE	0
+
+/* ACK types */
+enum t_ack {NORMAL = 1,		/* no retransmits, just advance */
+	    AMBIG = 2,		/* segment ACKed was rexmitted */
+	    CUMUL = 3,		/* doesn't advance */
+	    TRIPLE = 4,		/* triple dupack */
+	    NOSAMP = 5};	/* covers retransmitted segs, no rtt sample */
 
 /* type for an internal file pointer */
 typedef struct mfile MFILE;
@@ -137,9 +145,9 @@ extern u_long udp_trace_count;
 typedef struct segment {
     seqnum	seq_firstbyte;	/* seqnumber of first byte */
     seqnum 	seq_lastbyte;	/* seqnumber of last byte */
-    Bool	acked;		/* has it been acknowledged? */
     u_char	retrans;	/* retransmit count */
-    timeval	time;	/* time the segment was sent */
+    u_int	acked;		/* how MANY times has has it been acked? */
+    timeval	time;		/* time the segment was sent */
     struct segment *next;
     struct segment *prev;
 } segment;
@@ -236,8 +244,12 @@ typedef struct tcb {
     /* ACK Counters */
     u_llong	rtt_amback;	/* ambiguous ACK */
     u_llong	rtt_cumack;	/* segments only cumulativly ACKed */
+    u_llong	rtt_nosample;	/* segments ACKED, but after retransmission */
+				/* of earlier segments, so sample isn't */
+				/* valid */
     u_llong	rtt_unkack;	/* unknown ACKs  ??? */
     u_llong	rtt_dupack;	/* duplicate ACKs */
+    u_llong	rtt_triple_dupack; /* triple duplicate ACKs */
     /* retransmission information */
     seqspace    *ss;		/* the sequence space*/
     u_long	retr_max;	/* maximum retransmissions ct */
@@ -484,6 +496,9 @@ void UDPPrintBrief(udp_pair *);
 void OnlyConn(int);
 void IgnoreConn(int);
 double elapsed(timeval, timeval);
+void tv_sub(struct timeval *plhs, struct timeval rhs);
+void tv_add(struct timeval *plhs, struct timeval rhs);
+int tv_cmp(struct timeval lhs, struct timeval rhs);
 char *elapsed2str(double etime);
 int ConnReset(tcp_pair *);
 int ConnComplete(tcp_pair *);
@@ -497,7 +512,7 @@ char *EndpointName(ipaddr,portnum);
 PLOTTER new_plotter(tcb *plast, char *filename, char *title,
 		    char *xlabel, char *ylabel, char *suffix);
 int rexmit(tcb *, seqnum, seglen, Bool *);
-void ack_in(tcb *, seqnum);
+enum t_ack ack_in(tcb *, seqnum);
 void DoThru(tcb *ptcb, int nbytes);
 struct mfile *Mfopen(char *fname, char *mode);
 void Minit(void);
@@ -524,6 +539,10 @@ void StringToArgv(char *buf, int *pargc, char ***pargv);
 void CopyAddr(tcp_pair_addrblock *, struct ip *pip,portnum,portnum);
 int WhichDir(tcp_pair_addrblock *, tcp_pair_addrblock *);
 int SameConn(tcp_pair_addrblock *, tcp_pair_addrblock *, int *);
+
+/* high-level line drawing */
+PLINE new_line(PLOTTER pl, char *label, char *color);
+void extend_line(PLINE pline, timeval xval, int yval);
 
 /* UDP support routines */
 void udptrace_init(void);
@@ -687,6 +706,20 @@ typedef int pread_f(struct timeval *, int *, int *, void **,
    and alignment problems.  This should fix it! */
 void *MemCpy(void *p1, void *p2, size_t n); /* in tcptrace.c */
 #define memcpy(p1,p2,n) MemCpy(p1,p2,n);
+
+
+/*
+ * timeval compare macros
+ */
+#define tv_ge(lhs,rhs) (tv_cmp((lhs),(rhs)) >= 0)
+#define tv_gt(lhs,rhs) (tv_cmp((lhs),(rhs)) >  0)
+#define tv_le(lhs,rhs) (tv_cmp((lhs),(rhs)) <= 0)
+#define tv_lt(lhs,rhs) (tv_cmp((lhs),(rhs)) <  0)
+#define tv_eq(lhs,rhs) (tv_cmp((lhs),(rhs)) == 0)
+
+/* handy constants */
+#define US_PER_SEC 1000000	/* microseconds per second */
+#define MS_PER_SEC 1000		/* milliseconds per second */
 
 
 /*
