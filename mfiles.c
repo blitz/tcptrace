@@ -196,8 +196,11 @@ int
 Mfclose(
     MFILE *pmf)
 {
+    int ret;
     Mcheck(pmf);
-    return(fclose(pmf->stream));
+    ret=fclose(pmf->stream);
+    pmf->stream = NULL;
+    return(ret);
 }
 
 
@@ -233,11 +236,10 @@ Mfopen_internal(
 	closehim->fptr = ftell(closehim->stream);  /* remember current position */
 	fclose(closehim->stream);
 	closehim->stream = NULL;
+
 	/* put closed file at the tail of the closed LRU list */
 	Mf_unlink(closehim);
 	Mf_totail(closehim,&mfc_tail);
-
-/* 	M_printlru(); */
 
 	if (debug > 1)
 	    fprintf(stderr,"Mfiles: too many files open, closed file '%s'\n",
@@ -274,7 +276,7 @@ Mcheck(
     if (pmf->stream == NULL) {
 	if (debug > 1)
 	    fprintf(stderr,"Mcheck: re-opening file '%s'\n", pmf->fname);
-	Mfopen_internal(pmf,"a");
+	Mfopen_internal(pmf,"r+");
     }
 
     /* put at the tail of the LRU list */
