@@ -33,6 +33,7 @@ static char const rcsid[] =
 
 #include "tcptrace.h"
 #include "file_formats.h"
+#include "modules.h"
 #include "version.h"
 
 
@@ -44,10 +45,14 @@ char *tcptrace_version = VERSION;
 static void ProcessFile(void);
 static void DumpFlags(void);
 static void Formats(void);
+static void ListModules(void);
 static void ParseArgs(int *pargc, char *argv[]);
 static void QuitSig();
 static void Usage(char *prog);
 static void Version(void);
+static void LoadModules(int argc, char *argv[]);
+static void CallModules(struct ip *pip, tcp_pair *ptp, void *plast);
+static void FinishModules();
 
 
 /* option flags and default values */
@@ -119,6 +124,7 @@ Misc options\n\
   +[v]    reverse the setting of the -[v] flag (for booleans)\n\
 ");
     Formats();
+    ListModules();
     Version();
     exit(-2);
 }
@@ -143,6 +149,21 @@ Formats(void)
 		file_formats[i].format_name,
 		file_formats[i].format_descr);
 }
+
+
+static void
+ListModules(void)
+{
+    int i;
+
+    fprintf(stderr,"Included Modules:\n");
+    for (i=0; modules[i].module_name; ++i) {
+	fprintf(stderr,"\t%-15s  %s\n",
+		modules[i].module_name, modules[i].module_descr);
+	fprintf(stderr,"\tusage:\n");
+	(*modules[i].module_usage)();
+    }
+}
      
 
 
@@ -153,6 +174,9 @@ main(
 {
     struct stat stat;
     int i;
+
+    /* let modules start first */
+    LoadModules(argc,argv);
 
     /* parse the flags */
     ParseArgs(&argc,argv);
@@ -198,6 +222,7 @@ main(
     /* close files, cleanup, and etc... */
     plotter_done();
     trace_done();
+    FinishModules();
 
     exit(0);
 }
@@ -211,6 +236,7 @@ ProcessFile(void)
     struct ip *pip;
     int phystype;
     void *phys;  /* physical transport header */
+    tcp_pair *ptp;
     int fix;
     int len;
     int tlen;
@@ -330,7 +356,11 @@ for other packet types, I just don't have a place to test them\n\n");
 	plast = (void *)((unsigned)pip + tlen - 1);
 	if (phystype == PHYS_ETHER)
 	    plast = (void *)((u_int)plast - sizeof(struct ether_header));
-	dotrace(pip,plast);
+	ptp = dotrace(pip,plast);
+
+	/* also, pass the packet to any modules defined */
+	CallModules(pip,ptp,plast);
+	
 
 	/* for efficiency, only allow a signal every 1000 packets	*/
 	/* (otherwise the system call overhead will kill us)		*/
@@ -420,6 +450,10 @@ ParseArgs(
 
     /* parse the args */
     for (i=1; i < *pargc; ++i) {
+	/* modules might have stolen args... */
+	if (argv[i] == NULL)
+	    continue;
+
 	if (*argv[i] == '-') {
 	    if (argv[i][1] == '\00') /* just a '-' */
 		Usage(argv[0]);
@@ -543,4 +577,72 @@ DumpFlags(void)
 	fprintf(stderr,"ending pnum:      %lu\n", endpnum);
 	fprintf(stderr,"throughput intvl: %d\n", thru_interval);
 	fprintf(stderr,"debug:            %d\n", debug);
+}
+
+
+static void
+LoadModules(
+    int argc,
+    char *argv[])
+{
+    int i;
+    int enable;
+
+    for (i=0; modules[i].module_init != NULL; ++i) {
+	if (debug)
+	    fprintf(stderr,"Initializing module \"%s\"\n",
+		    modules[i].module_name);
+	enable = (*modules[i].module_init)(argc,argv);
+	if (enable) {
+	    if (debug)
+		fprintf(stderr,"Module \"%s\" enabled\n",
+			modules[i].module_name);
+	} else {
+	    if (debug)
+		fprintf(stderr,"Module \"%s\" not active\n",
+			modules[i].module_name);
+	    modules[i].module_read = NULL;
+	    modules[i].module_done = NULL;
+	}
+    }
+}
+
+
+
+static void
+FinishModules(void)
+{
+    int i;
+
+    for (i=0; modules[i].module_init != NULL; ++i) {
+	if (modules[i].module_done == NULL)
+	    continue;  /* might be disabled */
+
+	if (debug)
+	    fprintf(stderr,"Calling cleanup for module \"%s\"\n",
+		    modules[i].module_name);
+
+	(*modules[i].module_done)();
+    }
+}
+
+
+static void
+CallModules(
+    struct ip *pip,
+    tcp_pair *ptp,
+    void *plast)
+{
+    int i;
+
+    for (i=0; modules[i].module_init != NULL; ++i) {
+	if (modules[i].module_read == NULL)
+	    continue;  /* might be disabled */
+
+	if (debug>3)
+	    fprintf(stderr,"Calling read routine for module \"%s\"\n",
+		    modules[i].module_name);
+
+	(*modules[i].module_read)(pip,ptp,plast);
+    }
 }
