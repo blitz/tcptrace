@@ -949,10 +949,19 @@ StringToArgv(
 {
     char **argv;
     int nargs = 0;
+    int debug = 20;
 
     /* (very pessimistically) make the argv array */
     argv = malloc(sizeof(char *) * ((strlen(buf)/2)+1));
 
+    /* skip leading blanks */
+    while ((*buf != '\00') && (isspace((int)*buf))) {
+	if (debug > 10)
+	    printf("skipping isspace('%c')\n", *buf);	    
+	++buf;
+    }
+
+    /* break into args */
     for (nargs = 1; *buf != '\00'; ++nargs) {
 	char *stringend;
 	argv[nargs] = buf;
