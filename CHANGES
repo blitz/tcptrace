@@ -281,4 +281,4 @@
 		resolve_ipaddresses
 		resolve_ports
 	+-n still toggles both, but extended args let you control either
-	
+  changed "-o" option to allow "-oM-N"	
