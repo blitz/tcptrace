@@ -272,6 +272,9 @@ traffic_init(
 			"time","events/second",
 			NULL);
 
+    /* we don't want the normal output */
+    printsuppress = TRUE;
+
     /* init the graphs and etc... */
     AgeTraffic();
 
