@@ -43,6 +43,8 @@ struct last {
 	u_long	win_zero_ct;
 	u_long	min_seq;
 	u_long	packets;
+	u_short syn_count;
+	u_short fin_count;
 
 	/* plotter for this one */
 	PLOTTER	plotter;
@@ -52,7 +54,7 @@ struct last {
 	char	*host_letter;
 };
 
-typedef u_int hash;
+typedef u_short hash;
 
 typedef struct {
 	u_long	a_address;
@@ -64,6 +66,9 @@ typedef struct {
 
 
 struct stcp_pair {
+	/* are we ignoring this one?? */
+	int		ignore_pair;
+
 	/* endpoint identification */
 	tcp_pair_addr	addr_pair;
 
@@ -73,8 +78,6 @@ struct stcp_pair {
 	struct timeval	first_time;
 	struct timeval	last_time;
 	u_long		packets;
-	u_short		syn_count;
-	u_short		fin_count;
 	struct last	a2b;
 	struct last	b2a;
 };
@@ -88,6 +91,8 @@ extern int debug;
 extern int show_zero_window;
 extern int show_rexmit;
 extern int ignore_non_comp;
+extern int printbrief;
+extern int printticks;
 
 
 #define MAX_NAME 20
@@ -120,6 +125,9 @@ void printeth();
 void printpacket();     
 void printtcp();     
 void trace_done();
+void trace_init();
+void OnlyConn();
+void IgnoreConn();
 int Complete();
 char *HostLetter();
 

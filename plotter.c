@@ -4,10 +4,11 @@
 #define MAX_PLOTTERS (2*MAX_TCP_PAIRS)
 
 
+#define NO_PLOTTER -1
 
 static FILE *fplot[MAX_PLOTTERS] = {NULL};
 static struct last *p2plast[MAX_PLOTTERS] = {NULL};
-static PLOTTER plotter_ix = -1;
+static PLOTTER plotter_ix = NO_PLOTTER;
 
 
 #define PLOT if(plotem) DoPlot
@@ -62,7 +63,7 @@ static void DoPlot(pl, fmt, va_alist)
 
 	va_start(ap);
 
-	if (pl == -1)
+	if (pl == NO_PLOTTER)
 	    return;
 
 	if (pl > plotter_ix) {
@@ -94,7 +95,7 @@ plotter_init(plast,title)
 	++plotter_ix;
 	if (plotter_ix >= MAX_PLOTTERS) {
 		fprintf(stderr,"No more plotters\n");
-		exit(-1);
+		return(NO_PLOTTER);
 	}
 
 	pl = plotter_ix;
@@ -106,7 +107,7 @@ plotter_init(plast,title)
 
 	if ((f = fopen(filename,"w")) == NULL) {
 		perror(filename);
-		exit(-2);
+		return(NO_PLOTTER);
 	}
 
 	fprintf(f,"timeval unsigned\n");
