@@ -483,6 +483,8 @@ printudp_packet(
     void *plast)
 {
     struct udphdr *pudp;
+    unsigned udp_length;
+    unsigned udp_data_length;
     u_char *pdata;
 
     /* find the udp header */
@@ -504,6 +506,17 @@ printudp_packet(
 	   ntohs(pudp->uh_dport),
 	   ParenServiceName(ntohs(pudp->uh_dport)));
     pdata = (u_char *)pudp + sizeof(struct udphdr);
+    udp_length = ntohs(pudp->uh_ulen);
+    udp_data_length = udp_length - sizeof(struct udphdr);
+    printf("\t  UCKSUM: 0x%04x", ntohs(pudp->uh_sum));
+    pdata = (u_char *)pudp + sizeof(struct udphdr);
+    if (verify_checksums) {
+	if ((char *)pdata + udp_data_length > ((char *)plast+1))
+	    printf(" (too short to verify)");
+	else
+	    printf(" (%s)", udp_cksum_valid(pip,pudp,plast)?"CORRECT":"WRONG");
+    }
+    printf("\n");
     printf("\t    DLEN: %u", ntohs(pudp->uh_ulen));
     if ((char *)pdata + ntohs(pudp->uh_ulen) > ((char *)plast+1))
 	printf(" (only %lu bytes in dump file)\n",
