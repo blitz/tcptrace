@@ -177,5 +177,6 @@
 	calculation.
 5.0.9 - Thu Sep 24, 1998
   fixed bug with "only" connections not detecting reuse of ports
+  added warnings for re-ordered packets and/or files
 
 

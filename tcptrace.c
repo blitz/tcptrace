@@ -82,6 +82,7 @@ Bool printsuppress = FALSE;
 Bool printem = FALSE;
 Bool printallofem = FALSE;
 Bool printticks = FALSE;
+Bool warn_ooo = FALSE;
 Bool warn_printtrunc = FALSE;
 Bool warn_printbadmbz = FALSE;
 Bool warn_printhwdups = FALSE;
@@ -557,6 +558,7 @@ ProcessFile(
     long int location = 0;
     u_long fpnum = 0;
     Bool is_stdin = 0;
+    static int file_count = 0;
 
     /* share the current file name */
     cur_filename = filename;
@@ -650,6 +652,9 @@ rather than:
     /* inform the modules, if they care... */
     ModulesPerFile(filename);
 
+    /* count the files */
+    ++file_count;
+
 
     /* read each packet */
     while (1) {
@@ -660,6 +665,35 @@ rather than:
 
 	++pnum;			/* global */
 	++fpnum;		/* local to this file */
+
+	/* check for re-ordered packets */
+	if (!ZERO_TIME(&last_packet)) {
+	    if (elapsed(last_packet , current_time) < 0) {
+		/* out of order */
+		if ((file_count > 1) && (fpnum == 1)) {
+		    fprintf(stderr, "\
+Warning, first packet in file %s comes BEFORE the last packet\n\
+in the previous file.  That will likely confuse the program, please\n\
+order the files in time if you have trouble\n", filename);
+		} else {
+		    static int warned = 0;
+
+		    if (warn_ooo) {
+			fprintf(stderr, "\
+Warning, packet %ld in file %s comes BEFORE the previous packet\n\
+That will likely confuse the program, so be careful!\n",
+				fpnum, filename);
+		    } else if (!warned) {
+			fprintf(stderr, "\
+Packets in file %s are out of order.\n\
+That will likely confuse the program, so be careful!\n", filename);
+		    }
+		    warned = 1;
+		}
+
+	    }
+	}
+	
 
 	/* install signal handler */
 	if (fpnum == 1) {
@@ -1118,6 +1152,7 @@ ParseArgs(
 		    warn_printtrunc = TRUE;
 		    warn_printbadmbz = TRUE;
 		    warn_printhwdups = TRUE;
+		    warn_ooo = TRUE;
 		    break;
 		  case 'y': plot_tput_instant = FALSE; break;
 		  case 'q': printsuppress = TRUE; break;
@@ -1224,6 +1259,7 @@ ParseArgs(
 		    warn_printtrunc = !TRUE;
 		    warn_printbadmbz = !TRUE;
 		    warn_printhwdups = !TRUE;
+		    warn_ooo = !TRUE;
 		    break;
 		  case 'q': printsuppress = !TRUE; break;
 		  case 'z':

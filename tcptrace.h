@@ -409,6 +409,7 @@ extern Bool printsuppress;
 extern Bool printem;
 extern Bool printallofem;
 extern Bool printticks;
+extern Bool warn_ooo;
 extern Bool warn_printtrunc;
 extern Bool warn_printbadmbz;
 extern Bool warn_printhwdups;
