@@ -203,6 +203,7 @@ extern int printbrief;
 extern int printem;
 extern int printticks;
 extern int show_rexmit;
+extern int show_ooo;
 extern int show_zero_window;
 
 

@@ -45,7 +45,7 @@ ci:
 	ci -q -l -t-initial -mlatest Makefile *.h *.c
 
 clean:
-	rm -f *.o tcptrace core [a-z]2[a-z].xpl [a-z][a-z]2[a-z][a-z].xpl *.PS.?
+	rm -f *.o tcptrace core *.xpl *.PS.?
 
 tidy:
 	rm -f core [a-z]2[a-z].xpl [a-z][a-z]2[a-z][a-z].xpl *.PS.?
