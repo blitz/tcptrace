@@ -172,6 +172,9 @@ struct module {
 #include "mod_realtime.h"       /* for the example real-time package */
 #endif /* LOAD_MODULE_REALTIME */
 
+#ifdef LOAD_MODULE_INBOUNDS
+#include "mod_inbounds.h"       /* include the INBOUNDS module */
+#endif /* LOAD_MODULE_INBOUNDS */
 
 /* declare (install) the various module routines */
 struct module modules[] = {
@@ -258,5 +261,23 @@ struct module modules[] = {
 				    packets*/
      realtime_deleteconn},
 #endif /* LOAD_MODULE_REALTIME */
+  
+#ifdef LOAD_MODULE_INBOUNDS
+    {TRUE,		         /* make FALSE if you don't want to call it at all */
+     "inbounds",                 /* name of the module */
+     "INBOUNDS analysis package",/* description of the module */
+     inbounds_init,		 /* routine to call to init the module */
+     inbounds_tcp_read,		 /* routine to pass each TCP segment */
+     inbounds_done,		 /* routine to call at program end */
+     inbounds_usage,		 /* routine to call to print module usage */
+     NULL,			 /* routine to call on each new file */
+     inbounds_tcp_newconn,		 /* routine to call on each new connection */
+     inbounds_udp_read,          /* routine to pass each UDP segment */
+     inbounds_udp_newconn,       /* routine to call on each new UDP conn */
+     inbounds_nontcpudp_read, 	 /* routine to pass each non-tcp and non-udp 
+				    packets*/
+     inbounds_tcp_deleteconn},        /* routine to remove TCP connections */
+#endif /* LOAD_MODULE_INBOUNDS */
+  
 };
 #define NUM_MODULES (sizeof(modules) / sizeof(struct module))

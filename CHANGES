@@ -615,3 +615,10 @@ Fixed tcpdump.c to trace IP packets buried under VLAN headers.
 Added a function MissingData() in trace.c to check if TCP segments were
 missing or were truncated when the -e option is given to extract
 contents.
+
+6.6.4: 4 Mar 2004 Mani
+-----
+
+Adding in the INBOUNDS module into the main tcptrace development tree.
+It is NOT built in by default though; you need to uncomment a line in
+Makefile.in to enable it.

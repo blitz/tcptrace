@@ -80,7 +80,11 @@ DEFINES += -DLOAD_MODULE_COLLIE
 # Example module for real-time mode 
 # 
 DEFINES += -DLOAD_MODULE_REALTIME
-
+#
+# INBOUNDS module implements the functionality required for the INBOUNDS
+# intrusion detection system project, Ohio University.
+# ( Uncomment the following line before running configure to build it )
+# DEFINES += -DLOAD_MODULE_INBOUNDS
 
 
 ################################################################## 
@@ -175,7 +179,7 @@ CFILES= avl.c compress.c erf.c etherpeek.c gcache.c mfiles.c names.c \
 	ns.c netscout.c version.c pool.c poolaccess.c \
 	dstring.c
 MODULES=mod_http.c mod_traffic.c mod_rttgraph.c mod_tcplib.c mod_collie.c \
-	mod_slice.c mod_realtime.c
+	mod_slice.c mod_realtime.c mod_inbounds.c
 MODSUPPORT=dyncounter.c
 OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o} ${MODSUPPORT:.c=.o}
 
