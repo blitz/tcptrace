@@ -50,6 +50,7 @@ struct mfile {
     char *fname;
     MFILE *next;
     MFILE *prev;
+    long fptr;
 };
 
 
@@ -100,12 +101,24 @@ Mfopen(
     pmf = (MFILE *) MallocZ(sizeof(MFILE));
 
     pmf->fname = strdup(fname);
-    Mfopen_internal(pmf,"w");
+    Mfopen_internal(pmf,"w+");
 
     /* put at the tail of the LRU list */
     Mf_totail(pmf,&mf_tail);
 
     return(pmf);
+}
+
+
+int
+Mfileno(
+    MFILE *pmf)
+{
+    /* Warning, I'll GIVE you the fd, but I won't guarantee that it'll stay */
+    /* where you want it if you call my functions back!!! */
+
+    Mcheck(pmf);
+    return(fileno(pmf->stream));
 }
 
 
@@ -126,6 +139,7 @@ Mvfprintf(
 }
 
 
+
 int
 Mfprintf(
     MFILE *pmf,
@@ -144,6 +158,39 @@ Mfprintf(
 
     return(ret);
 }
+
+
+long
+Mftell(
+    MFILE *pmf)
+{
+    Mcheck(pmf);
+    return(ftell(pmf->stream));
+}
+
+
+int
+Mfseek(
+    MFILE *pmf,
+    long offset,
+    int ptrname)
+{
+    Mcheck(pmf);
+    return(fseek(pmf->stream, offset, ptrname));
+}
+
+
+int
+Mfwrite(
+    char *buf,
+    u_long size,
+    u_long nitems,
+    MFILE *pmf)
+{
+    Mcheck(pmf);
+    return(fwrite(buf,size,nitems,pmf->stream));
+}
+
 
 int
 Mfclose(
@@ -183,6 +230,7 @@ Mfopen_internal(
 
 	/* OK, close a file we haven't used for a while */
 	closehim = mf_head.next;
+	closehim->fptr = ftell(closehim->stream);  /* remember current position */
 	fclose(closehim->stream);
 	closehim->stream = NULL;
 	/* put closed file at the tail of the closed LRU list */
@@ -204,6 +252,14 @@ Mfopen_internal(
     }
 
     pmf->stream = stream;
+
+    /* seek back to where we were last time, if this was previously opened */
+    if (pmf->fptr != 0) {
+	if (fseek(stream, pmf->fptr, SEEK_SET) != 0) {
+	    perror("fseek");
+	    exit(-1);
+	}
+    }
 
     return;
 }
