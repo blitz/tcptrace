@@ -1003,10 +1003,16 @@ RemoveTcpPair(
     free(ptp->a2b.owin_avg_line);
   }
   if (ptp->a2b.owin_wavg_line) {
+    free(ptp->a2b.owin_avg_line);
+  }
+  if (ptp->b2a.owin_line) {
     free(ptp->b2a.owin_line);
   }
   if (ptp->b2a.owin_avg_line) {
     free(ptp->b2a.owin_avg_line);
+  }
+  if (ptp->b2a.owin_wavg_line) {
+    free(ptp->b2a.owin_wavg_line);
   }
 
   if (ptp->a2b.segsize_line) {
