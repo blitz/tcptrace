@@ -119,7 +119,7 @@ printip_packet(
 	(ntohs(pip->ip_p) == IPPROTO_EGP)?"(EGP)":
 	"");
 
-    printf("\t  IPHLEN: %d\n", pip->ip_hl*4);
+    printf("\t    HLEN: %d\n", pip->ip_hl*4);
     printf("\t     TTL: %d\n", pip->ip_ttl);
     printf("\t     LEN: %d\n", ntohs(pip->ip_len));
     printf("\t      ID: %d\n", ntohs(pip->ip_id));
