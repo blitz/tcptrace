@@ -138,3 +138,8 @@
   count/print truncated bytes/segs ALWAYS, not just when extracting data
   changed to use flex/bison for better portability
   fixed bug in etherpeek for odd-sized packets from compressed files
+5.0.4 - Thu May 14, 1998
+  forced the "char" types for tcp_opt for ws and sack_count to be
+    "SIGNED char", because the compiler on my PB3400/Linux makes them
+     unsigned by default.  The "-fsigned-char" could also fix it, but this
+     seems easier.
