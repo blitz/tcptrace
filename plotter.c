@@ -182,13 +182,68 @@ plotter_line(pl,t1,x1,t2,x2)
 
 
 void
-plotter_darrow(pl,t,x)
+plotter_dline(pl,t1,x1,t2,x2)
+     PLOTTER pl;
+     struct timeval	t1,t2;
+     unsigned long	x1,x2;
+{
+	DoPlot(pl,"dline %u.%06u %u %u.%06u %u",
+	     t1.tv_sec, t1.tv_usec,
+	     x1,
+	     t2.tv_sec, t2.tv_usec,
+	     x2);
+}
+
+
+void
+plotter_diamond(pl,t,x)
      PLOTTER pl;
      struct timeval	t;
      unsigned long	x;
 {
-	DoPlot(pl,"darrow %u.%06u %u",
-	     t.tv_sec, t.tv_usec,x);
+	DoPlot(pl,"diamond %u.%06u %u", t.tv_sec, t.tv_usec,x);
+}
+
+
+void
+plotter_dot(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+	DoPlot(pl,"dot %u.%06u %u", t.tv_sec, t.tv_usec,x);
+}
+
+
+void
+plotter_plus(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+	DoPlot(pl,"plus %u.%06u %u", t.tv_sec, t.tv_usec,x);
+}
+
+
+void
+plotter_box(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+	DoPlot(pl,"box %u.%06u %u", t.tv_sec, t.tv_usec,x);
+}
+
+
+
+void
+plotter_arrow(pl,t,x,dir)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+     char	dir;
+{
+	DoPlot(pl,"%carrow %u.%06u %u", dir, t.tv_sec, t.tv_usec,x);
 }
 
 
@@ -198,8 +253,48 @@ plotter_uarrow(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	DoPlot(pl,"uarrow %u.%06u %u",
-	     t.tv_sec, t.tv_usec,x);
+    plotter_arrow(pl,t,x,'u');
+}
+
+
+void
+plotter_darrow(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+    plotter_arrow(pl,t,x,'d');
+}
+
+
+void
+plotter_rarrow(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+    plotter_arrow(pl,t,x,'r');
+}
+
+
+void
+plotter_larrow(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+    plotter_arrow(pl,t,x,'l');
+}
+
+
+void
+plotter_tick(pl,t,x,dir)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+     char	dir;
+{
+	DoPlot(pl,"%ctick %u.%06u %u", dir, t.tv_sec, t.tv_usec,x);
 }
 
 
@@ -209,8 +304,7 @@ plotter_dtick(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	DoPlot(pl,"dtick %u.%06u %u",
-	     t.tv_sec, t.tv_usec,x);
+    plotter_tick(pl,t,x,'d');
 }
 
 
@@ -220,9 +314,49 @@ plotter_utick(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	DoPlot(pl,"utick %u.%06u %u",
-	     t.tv_sec, t.tv_usec,x);
+    plotter_tick(pl,t,x,'u');
 }
+
+
+void
+plotter_ltick(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+    plotter_tick(pl,t,x,'l');
+}
+
+
+void
+plotter_rtick(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+    plotter_tick(pl,t,x,'r');
+}
+
+
+void
+plotter_htick(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+    plotter_tick(pl,t,x,'h');
+}
+
+
+void
+plotter_vtick(pl,t,x)
+     PLOTTER pl;
+     struct timeval	t;
+     unsigned long	x;
+{
+    plotter_tick(pl,t,x,'v');
+}
+
 
 
 void

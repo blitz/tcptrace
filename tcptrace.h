@@ -35,6 +35,8 @@ struct last {
     /* TCP information */
     u_long	ack;
     u_long	seq;
+    u_long	syn;
+    u_long	fin;
     u_long	windowend;
     struct	timeval	time;
 

@@ -28,12 +28,14 @@ ts(ptime)
 	static char buf[100];
 	struct tm *ptm;
 	char *now;
+	int decimal;
 
 	ptm = localtime(&ptime->tv_sec);
 	now = asctime(ptm);
 	now[19] = '\00';
 
-	sprintf(buf, "%s.%03d", now, ptime->tv_usec / 1000);
+	decimal = (ptime->tv_usec + 500) / 1000;
+	sprintf(buf, "%s.%03d", now, decimal);
 
 	return(buf);
 }
