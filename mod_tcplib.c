@@ -321,7 +321,7 @@ static void tcplib_init_setup(void);
 static void update_breakdown(tcp_pair *ptp, struct tcplibstats *pstats);
 module_conninfo *FindPrevConnection(module_conninfo *pmc,
 					   enum t_statsix ttype);
-static char *FormatBrief(tcp_pair *ptp);
+static char *FormatBrief(tcp_pair *ptp,tcb *ptcb);
 static char *FormatAddrBrief(tcp_pair_addrblock *addr_pair);
 static void ModuleConnFillcache(void);
 
@@ -682,7 +682,7 @@ Must be integer value greater than 0.\n");
 		tcplib_usage();
 		exit(-1);
 	    }
-		
+
 	    DefineInside(argv[i]+2);
 	}
 
@@ -1122,12 +1122,20 @@ void tcplib_read(
 	if (IsNewBurst(pmc, ptcb, ptcbc, seq)) {
 	    int etime;
 
+	    if (1 || ldebug > 1)
+		printf("New burst starts at time %s for %s\n",
+		       ts2ascii(&current_time),
+		       FormatBrief(pmc->ptp,ptcb));
+
+	    /* count the PREVIOUS burst item */
+	    /* NB: the last is counted in tcplib_cleanup_bursts() */
 	    ++ptcbc->numitems;
 
 	    /* accumulate burst size stats */
 	    if (ldebug)
 		printf("Adding burst size %ld to %s\n",
-		       ptcbc->burst_bytes, FormatBrief(pmc->ptp));
+		       ptcbc->burst_bytes,
+		       FormatBrief(pmc->ptp,ptcb));
 	    AddToCounter(&ptcbc->pburst->size, ptcbc->burst_bytes, 1);
 
 	    /* reset counter for next burst */
@@ -1954,7 +1962,7 @@ static void do_tcplib_next_converse(
 
     if (ldebug>2) {
 	printf("do_tcplib_next_converse: %s, %s\n",
-	       FormatBrief(pmc->ptp), ttype_names[ttype]);
+	       FormatBrief(pmc->ptp, ptcbc->ptcb), ttype_names[ttype]);
     }
 
 
@@ -1983,7 +1991,7 @@ static void do_tcplib_next_converse(
 
     if (ldebug>2) {
 	printf("   prev: %s, etime: %d ms\n",
-	       FormatBrief(pmc_previous->ptp), etime);
+	       FormatBrief(pmc_previous->ptp, ptcbc->ptcb), etime);
     }
 
     /* keep stats */
@@ -2103,7 +2111,7 @@ static void do_tcplib_next_duration(
 
     if (ldebug>2) {
 	printf("do_tcplib_next_duration: %s, %s\n",
-	       FormatBrief(pmc->ptp), ttype_names[ttype]);
+	       FormatBrief(pmc->ptp, ptcbc->ptcb), ttype_names[ttype]);
     }
 
 
@@ -2573,7 +2581,7 @@ void tcplib_do_ftp_numitems(
 	    if ((*p_tester)(pmc, &pmc->tcb_cache[TCB_CACHE_A2B])) {
 		if (ldebug && (pmc->tcb_cache[TCB_CACHE_A2B].numitems == 0))
 			printf("numitems: control %s has NONE\n",
-			       FormatBrief(pmc->ptp));
+			       FormatBrief(pmc->ptp, NULL));
 		AddToCounter(&psizes, pmc->tcb_cache[TCB_CACHE_A2B].numitems, 1);
 	    }
 	}
@@ -2833,6 +2841,10 @@ tcplib_cleanup_bursts()
 	    if (ptcbc->pburst == NULL)
 		continue;
 
+	    /* count the LAST burst */
+	    if (ptcbc->burst_bytes != 0)
+		++ptcbc->numitems;
+
 	    if (ptcbc->burst_bytes != 0)
 		AddToCounter(&ptcbc->pburst->size,
 			     ptcbc->burst_bytes/BUCKETSIZE_BURSTSIZE, 1);
@@ -2925,15 +2937,22 @@ traffic_type(
 
 static char *
 FormatBrief(
-    tcp_pair *ptp)
+    tcp_pair *ptp,
+    tcb *ptcb)
 {
     tcb *pab = &ptp->a2b;
     tcb *pba = &ptp->b2a;
     static char infobuf[100];
 
-    sprintf(infobuf,"%s - %s (%s2%s)",
-	    ptp->a_endpoint, ptp->b_endpoint,
-	    pab->host_letter, pba->host_letter);
+    if (ptcb == pba)
+	sprintf(infobuf,"%s - %s (%s2%s)",
+		ptp->b_endpoint, ptp->a_endpoint,
+		pba->host_letter, pab->host_letter);
+    else
+	sprintf(infobuf,"%s - %s (%s2%s)",
+		ptp->a_endpoint, ptp->b_endpoint,
+		pab->host_letter, pba->host_letter);
+
     return(infobuf);
 }
 
@@ -3141,13 +3160,14 @@ TrackEndpoints(
 	    ++tcbc_control->numitems;
 	    if (ldebug>1) {
 		printf("Charging ftp data to %s, count %lu\n",
-		       FormatBrief(tcbc_control->ptcb->ptp),
+		       FormatBrief(tcbc_control->ptcb->ptp,
+				   tcbc_control->ptcb),
 		       tcbc_control->numitems);
 	    }
 	} else {
 	    if (ldebug>1)
 		fprintf(stderr,"WARNING: no FTP control conn for %s???\n",
-			FormatBrief(pmc->ptp));
+			FormatBrief(pmc->ptp, NULL));
 	}
     }
 
