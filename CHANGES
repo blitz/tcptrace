@@ -143,3 +143,5 @@
     "SIGNED char", because the compiler on my PB3400/Linux makes them
      unsigned by default.  The "-fsigned-char" could also fix it, but this
      seems easier.
+5.0.5 - Tue Jun 23, 1998
+  fixed mod_traffic memory allocation bug.  I wonder why nobody reported this? 
