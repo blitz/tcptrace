@@ -34,7 +34,7 @@
 
 #define yylval filtyylval
 
-#include "y.tab.h"
+#include "filt_parser.h"
 
 /* define our own input routine using filter_getc() */
 #define YY_INPUT(buf,result,max_size) \
