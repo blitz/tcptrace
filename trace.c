@@ -2592,7 +2592,7 @@ tcp_cksum(
 	/* length (TCP header length + TCP data length) */
 	tcp_length = ntohs(pip->ip_len) - (4 * IP_HL(pip));
 	sum += (u_short) tcp_length;
-	sum += (u_short) htons(tcp_length);
+    } else /* if (PIP_ISV6(pip))*/  {
               
 	static Bool warned = FALSE;
         int total_length = 0;  /* Total length of the extension headers */
