@@ -82,6 +82,16 @@ pread_tcpdump(
     while (1) {
 	if ((ret = pcap_offline_read(pcap,1,callback,0)) != 1) {
 	    /* prob EOF */
+
+	    if (ret == -1) {
+		char *error;
+		error = pcap_geterr(pcap);
+
+		if (error && *error)
+		    fprintf(stderr,"PCAP error: '%s'\n",pcap_geterr(pcap));
+		/* else, it's just EOF */
+	    }
+	    
 	    return(0);
 	}
 

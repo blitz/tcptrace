@@ -33,6 +33,7 @@ static int addseg(tcb *, quadrant *, seglen, seqnum, Bool *);
 static void rtt_retrans(tcb *, segment *);
 static void rtt_ackin(tcb *, segment *);
 static void freequad(quadrant **);
+static void dump_rtt_sample(tcb *, segment *, unsigned long);
 
 
 
@@ -344,36 +345,41 @@ rtt_ackin(
     tcb *ptcb,
     segment *pseg)
 {
-    unsigned long etime;
+    unsigned long etime_rtt;
 
     /* how long did it take */
-    etime = elapsed(pseg->time,current_time);
+    etime_rtt = elapsed(pseg->time,current_time);
 
     if (pseg->retrans == 0) {
-	if ((ptcb->rtt_min == 0) || (ptcb->rtt_min > etime))
-	    ptcb->rtt_min = etime;
+	if ((ptcb->rtt_min == 0) || (ptcb->rtt_min > etime_rtt))
+	    ptcb->rtt_min = etime_rtt;
 
-	if (ptcb->rtt_max < etime)
-	    ptcb->rtt_max = etime;
+	if (ptcb->rtt_max < etime_rtt)
+	    ptcb->rtt_max = etime_rtt;
 
-	ptcb->rtt_sum += etime;
-	ptcb->rtt_sum2 += (double)etime * (double)etime;
+	ptcb->rtt_sum += etime_rtt;
+	ptcb->rtt_sum2 += (double)etime_rtt * (double)etime_rtt;
 	++ptcb->rtt_count;
     } else {
 	/* retrans, can't use it */
-	if ((ptcb->rtt_min_last == 0) || (ptcb->rtt_min_last > etime))
-	    ptcb->rtt_min_last = etime;
+	if ((ptcb->rtt_min_last == 0) || (ptcb->rtt_min_last > etime_rtt))
+	    ptcb->rtt_min_last = etime_rtt;
 
-	if (ptcb->rtt_max_last < etime)
-	    ptcb->rtt_max_last = etime;
+	if (ptcb->rtt_max_last < etime_rtt)
+	    ptcb->rtt_max_last = etime_rtt;
 
-	ptcb->rtt_sum_last += etime;
-	ptcb->rtt_sum2_last += (double)etime * (double)etime;
+	ptcb->rtt_sum_last += etime_rtt;
+	ptcb->rtt_sum2_last += (double)etime_rtt * (double)etime_rtt;
 	++ptcb->rtt_count_last;
 
 	++ptcb->rtt_amback;  /* ambiguous ACK */
     }
-	    
+
+
+    /* dump RTT samples, if asked */
+    if (dump_rtt) {
+	dump_rtt_sample(ptcb,pseg,etime_rtt);
+    }
 }
 
 
@@ -478,4 +484,41 @@ freequad(
 	free(pseg);
     free(*ppquad);
     *ppquad = NULL;
+}
+
+
+/* dump RTT samples in milliseconds */
+static void
+dump_rtt_sample(
+    tcb *ptcb,
+    segment *pseg,
+    unsigned long etime_rtt)
+{
+    /* if the FILE is "-1", couldn't open file */
+    if (ptcb->rtt_dump_file == (FILE *) -1) {
+	return;
+    }
+
+    /* if the FILE is NULL, open file */
+    if (ptcb->rtt_dump_file == (FILE *) NULL) {
+	FILE *f;
+	static char filename[15];
+
+	sprintf(filename,"%s2%s.rtt",
+		ptcb->host_letter, ptcb->ptwin->host_letter);
+
+	if ((f = fopen(filename,"w")) == NULL) {
+	    perror(filename);
+	    ptcb->rtt_dump_file = (FILE *) -1;
+	}
+
+	if (debug)
+	    fprintf(stderr,"RTT Sample file is '%s'\n", filename);
+
+	ptcb->rtt_dump_file = f;
+    }
+
+    fprintf(ptcb->rtt_dump_file,"%lu %lu\n",
+	    pseg->seq_firstbyte,
+	    etime_rtt/1000  /* convert from us to ms */ );
 }

@@ -149,6 +149,9 @@ typedef struct tcb {
     PLOTTER	tsg_plotter;
     char	*tsg_plotfile;
 
+    /* Dumped RTT samples */
+    FILE	*rtt_dump_file;
+
     /* host name letter(s) */
     char	*host_letter;
 } tcb;
@@ -201,6 +204,7 @@ extern Bool printem;
 extern Bool printticks;
 extern Bool show_rexmit;
 extern Bool print_rtt;
+extern Bool dump_rtt;
 extern Bool show_out_order;
 extern Bool show_zero_window;
 
