@@ -440,11 +440,32 @@ BEGIN	   {
 			  max_ypoint = ypoint;
 			x_pt[label_index] = xpoint;
 			y_pt[label_index] = ypoint;
+			label_dir[label_index] = +1;
                         getline;
                         label[label_index++] = $0;
 			next;
 		}
-		
+
+/^btext .*$/    {
+			xpoint=$2;
+  			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
+			x_pt[label_index] = xpoint;
+			y_pt[label_index] = ypoint;
+			label_dir[label_index] = -1;
+                        getline;
+                        label[label_index++] = $0;
+			next;
+		}
+
+
 /^ltext.*$/	{
 			xpoint=$2;
   			ypoint=$3;
@@ -461,6 +482,25 @@ BEGIN	   {
 			getline;
 			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f right\n", $0, xpoint, secs_2000, ypoint) >> labels_file;
 			else printf("set label \"%s\" at %f, %f right\n", $0, xpoint, ypoint) >> labels_file;
+			next;
+		}
+
+/^rtext.*$/	{
+			xpoint=$2;
+  			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
+                        if(NR == 4)
+			  current_dataset_color = $4;
+			getline;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f left\n", $0, xpoint, secs_2000, ypoint) >> labels_file;
+			else printf("set label \"%s\" at %f, %f left\n", $0, xpoint, ypoint) >> labels_file;
 			next;
 		}
 
@@ -651,7 +691,8 @@ END	{
 		{
 		  xpoint = x_pt[l];
 		  ypoint = y_pt[l];
-		  if(max_ypoint > 0) ypoint = ypoint + (50000000 * ((max_ypoint - min_ypoint)/max_ypoint));
+		  if(max_ypoint > 0 && label_dir[l] == -1) ypoint = ypoint - (50000000 * ((max_ypoint - min_ypoint)/max_ypoint));		  
+		  if(max_ypoint > 0 && label_dir[l] == +1) ypoint = ypoint + (50000000 * ((max_ypoint - min_ypoint)/max_ypoint));
 		  curr_label = label[l];
 		  if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f center\n", curr_label, xpoint, secs_2000, ypoint) >> labels_file;
 		  else printf("set label \"%s\" at %f, %f center\n", $1, xpoint, ypoint) >> labels_file;
@@ -1095,8 +1136,6 @@ BEGIN	   {
 			next;
 		}
 
-
-
 /^atext .*$/    {
 			xpoint=$2;
   			ypoint=$3;
@@ -1110,11 +1149,32 @@ BEGIN	   {
 			  max_ypoint = ypoint;
 			x_pt[label_index] = xpoint;
 			y_pt[label_index] = ypoint;
+			label_dir[label_index] = +1;
                         getline;
                         label[label_index++] = $0;
 			next;
 		}
-		
+
+/^btext .*$/    {
+			xpoint=$2;
+  			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
+			x_pt[label_index] = xpoint;
+			y_pt[label_index] = ypoint;
+			label_dir[label_index] = -1;
+                        getline;
+                        label[label_index++] = $0;
+			next;
+		}
+
+
 /^ltext.*$/	{
 			xpoint=$2;
   			ypoint=$3;
@@ -1131,6 +1191,25 @@ BEGIN	   {
 			getline;
 			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f right\n", $0, xpoint, secs_2000, ypoint) >> labels_file;
 			else printf("set label \"%s\" at %f, %f right\n", $0, xpoint, ypoint) >> labels_file;
+			next;
+		}
+
+/^rtext.*$/	{
+			xpoint=$2;
+  			ypoint=$3;
+			if(min_xpoint > xpoint)
+			  min_xpoint = xpoint;
+			if(max_xpoint < xpoint)
+			  max_xpoint = xpoint;
+			if(min_ypoint > ypoint)
+			  min_ypoint = ypoint;
+			if(max_ypoint < ypoint)
+			  max_ypoint = ypoint;
+                        if(NR == 4)
+			  current_dataset_color = $4;
+			getline;
+			if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f left\n", $0, xpoint, secs_2000, ypoint) >> labels_file;
+			else printf("set label \"%s\" at %f, %f left\n", $0, xpoint, ypoint) >> labels_file;
 			next;
 		}
 
@@ -1298,7 +1377,8 @@ END	{
 		{
 		  xpoint = x_pt[l];
 		  ypoint = y_pt[l];
-		  if(max_ypoint > 0) ypoint = ypoint + (50000000 * ((max_ypoint - min_ypoint)/max_ypoint));
+		  if(max_ypoint > 0 && label_dir[l] == -1) ypoint = ypoint - (50000000 * ((max_ypoint - min_ypoint)/max_ypoint));		  
+		  if(max_ypoint > 0 && label_dir[l] == +1) ypoint = ypoint + (50000000 * ((max_ypoint - min_ypoint)/max_ypoint));
 		  curr_label = label[l];
 		  if(xaxis_type == "timeval" || xaxis_type == "dtime") printf("set label \"%s\" at (%f-%f), %f center\n", curr_label, xpoint, secs_2000, ypoint) >> labels_file;
 		  else printf("set label \"%s\" at %f, %f center\n", $1, xpoint, ypoint) >> labels_file;
