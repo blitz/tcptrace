@@ -22,11 +22,11 @@
 #
 CC	= gcc
 #
-# If you're using the pcap library, you'll need to add it's include
+# If you're using the pcap library, you'll need to add its include
 # and library location, otherwise the default should be fine
 # 
 INCS	= -I/usr/local/include
-LDFLAGS = -L/usr/local/lib
+LDFLAGS = -L/usr/local/lib 
 
 #
 # For HP:  (Rick Jones)
@@ -40,6 +40,10 @@ LDFLAGS = -L/usr/local/lib
 #
 CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 
+
+# for profiling (under Solaris 5.2)
+#CFLAGS	+= -pg
+#LDFLAGS += /usr/lib/libdl.so.1
 
 #
 # All the different libraries, differ from machine to machine
@@ -55,14 +59,19 @@ CFLAGS	= -g -O3 -fno-builtin -Wall ${INCS} ${DEFINES}
 # for general Unix boxes (I hope)
 # LDLIBS = -lpcap -lm
 #
-LDLIBS = -lpcap -lnsl -lsocket -lm
+LDLIBS = -lnsl -lsocket -lm -lpcap
 
 
 
+# Plug-in modules (if you want any)
+MODULES= mod_http.c
+
+# Standard files
 CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
 	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c \
 	missing.c
-OFILES= ${CFILES:.c=.o}
+OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
+
 
 
 tcptrace: ${OFILES}
@@ -99,6 +108,7 @@ tarfile:
 etherpeek.o: tcptrace.h config.h
 gcache.o: tcptrace.h config.h gcache.h
 mfiles.o: tcptrace.h config.h
+mod_http.o: tcptrace.h config.h
 names.o: tcptrace.h config.h gcache.h
 netm.o: tcptrace.h config.h
 output.o: tcptrace.h config.h gcache.h
@@ -108,7 +118,7 @@ rexmit.o: tcptrace.h config.h
 rtt.o: tcptrace.h config.h
 snoop.o: tcptrace.h config.h
 tcpdump.o: tcptrace.h tcpdump.h config.h
-tcptrace.o: tcptrace.h config.h file_formats.h version.h
+tcptrace.o: tcptrace.h config.h file_formats.h modules.h mod_http.h version.h
 thruput.o: tcptrace.h config.h
 trace.o: tcptrace.h config.h gcache.h
 
@@ -116,5 +126,3 @@ trace.o: tcptrace.h config.h gcache.h
 # generate dependencies
 depend:
 	makedepend ${INCS} -w 10 *.c
-# DO NOT DELETE THIS LINE -- make depend depends on it.
-

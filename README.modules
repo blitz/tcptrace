@@ -1,0 +1,8 @@
+Mon Jul 14, 1997
+
+I added a "plugin module" interface (actually, "compile-in") which
+makes it a lot easier to add warts to the program for special purpose
+tasks.  There's an example in the modules.h header file (commented
+out) that include the module in mod_http.c
+
+Shawn

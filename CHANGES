@@ -58,3 +58,15 @@
   Fixed bug is TS options are not 4-byte aligned
   Fixed tick printing (bad % value) for HUGE files (millions of packets)
      
+3.2.12a - Thu Apr 24, 1997
+  Fixed bug for file with large snap length
+     
+3.2.13a - Mon Apr 28, 1997
+  Big fix for Rob Austein <sra@epilogue.com>
+  otherdir->ack being initialized incorrectly in trace.c at SYN time
+     
+3.3.0 - Mon Jul 14, 1997
+  Added modules support
+    Included http module for NASA
+  Backed out delete of libpcap, causes too many problems
+  Now using libpcap 0.4
