@@ -93,6 +93,7 @@ static struct traffic_info **ports;  /* [NUM_PORTS] */
 
 /* name of the file that port data is dumped into */
 #define PORT_FILENAME "traffic_byport.dat"
+#define STATS_FILENAME "traffic_stats.dat"
 
 /* additional info kept per connection */
 struct conn_info {
@@ -943,6 +944,7 @@ traffic_done(void)
 {
     struct traffic_info *pti;
     struct conn_info *pci;
+    int etime_secs = elapsed(first_packet,last_packet) / 1000000.0;
     MFILE *pmf;
     int i;
 
@@ -973,55 +975,56 @@ traffic_done(void)
 		     pti->ttlbytes, pti->ttlpackets, pti->ttlactive);
 	}
     }
+    Mfclose(pmf);
 
     /* dump specific stats */
-    {
-	int etime_secs = elapsed(first_packet,last_packet) / 1000000;
-	pti = ports[0];
+    pmf = Mfopen(STATS_FILENAME,"w");
+    printf("Dumping overall statistics into file %s\n", STATS_FILENAME);
 
-	Mfprintf(pmf, "\n\nOverall Statistics over %d seconds:\n",
-		 etime_secs);
+    pti = ports[0];
 
-	/* ttl bytes */
-	Mfprintf(pmf, "%u ttl bytes sent, %.3f bytes/second\n",
-		 data_nbytes_all,
-		 (float)data_nbytes_all / ((float)etime_secs));
+    Mfprintf(pmf, "\n\nOverall Statistics over %d seconds:\n",
+	     etime_secs);
 
-	/* ttl bytes (nonrexmit)*/
-	Mfprintf(pmf, "%u ttl non-rexmit bytes sent, %.3f bytes/second\n",
-		 data_nbytes_nonrexmit,
-		 (float)data_nbytes_nonrexmit / ((float)etime_secs));
+    /* ttl bytes */
+    Mfprintf(pmf, "%llu ttl bytes sent, %.3f bytes/second\n",
+	     data_nbytes_all,
+	     (float)data_nbytes_all / ((float)etime_secs));
 
-	/* ttl bytes (nonrexmit)*/
-	Mfprintf(pmf, "%u ttl rexmit bytes sent, %.3f bytes/second\n",
-		 data_nbytes_all - data_nbytes_nonrexmit,
-		 (float)(data_nbytes_all - data_nbytes_nonrexmit) /
-		 ((float)etime_secs));
+    /* ttl bytes (nonrexmit)*/
+    Mfprintf(pmf, "%llu ttl non-rexmit bytes sent, %.3f bytes/second\n",
+	     data_nbytes_nonrexmit,
+	     (float)data_nbytes_nonrexmit / ((float)etime_secs));
 
-	/* ttl packets */
-	Mfprintf(pmf, "%u packets sent, %.3f packets/second\n",
-		 pti->ttlpackets,
-		 (float)pti->ttlpackets / ((float)etime_secs));
+    /* ttl bytes (nonrexmit)*/
+    Mfprintf(pmf, "%llu ttl rexmit bytes sent, %.3f bytes/second\n",
+	     data_nbytes_all - data_nbytes_nonrexmit,
+	     (float)(data_nbytes_all - data_nbytes_nonrexmit) /
+	     ((float)etime_secs));
 
-	/* connections opened */
-	Mfprintf(pmf, "%u connections opened, %.3f conns/second\n",
-		 num_opens,
-		 (float)num_opens / ((float)etime_secs));
+    /* ttl packets */
+    Mfprintf(pmf, "%u packets sent, %.3f packets/second\n",
+	     pti->ttlpackets,
+	     (float)pti->ttlpackets / ((float)etime_secs));
 
-	/* dupacks */
-	Mfprintf(pmf, "%u dupacks sent, %.3f dupacks/second\n",
-		 ttl_dupacks,
-		 (float)ttl_dupacks / ((float)etime_secs));
+    /* connections opened */
+    Mfprintf(pmf, "%u connections opened, %.3f conns/second\n",
+	     num_opens,
+	     (float)num_opens / ((float)etime_secs));
 
-	/* rexmits */
-	Mfprintf(pmf, "%u rexmits sent, %.3f rexmits/second\n",
-		 ttl_rexmits,
-		 (float)ttl_rexmits / ((float)etime_secs));
+    /* dupacks */
+    Mfprintf(pmf, "%u dupacks sent, %.3f dupacks/second\n",
+	     ttl_dupacks,
+	     (float)ttl_dupacks / ((float)etime_secs));
 
-	/* RTT */
-	Mfprintf(pmf, "average RTT: %.3f msecs\n",
-		 ttl_rtt_ttl / (float)ttl_rtt_samples);
-    }
+    /* rexmits */
+    Mfprintf(pmf, "%u rexmits sent, %.3f rexmits/second\n",
+	     ttl_rexmits,
+	     (float)ttl_rexmits / ((float)etime_secs));
+
+    /* RTT */
+    Mfprintf(pmf, "average RTT: %.3f msecs\n",
+	     ttl_rtt_ttl / (float)ttl_rtt_samples);
 
 
     Mfclose(pmf);
