@@ -388,10 +388,10 @@ CompOpenHeader(
     }
 
     /* open the file through compression */
-    if (debug)
+    if (debug>1)
 	printf("Decompressing file of type '%s' using program '%s'\n",
 	       pf->comp_descr, pf->comp_bin);
-    else
+    else if (debug)
 	printf("Decompressing file using '%s'\n", pf->comp_bin);
 
     f = CompSaveHeader(filename,pf);
