@@ -94,44 +94,27 @@ tarfile:
 
 
 #
+# static file dependencies
+#
+etherpeek.o: tcptrace.h config.h
+gcache.o: tcptrace.h config.h gcache.h
+mfiles.o: tcptrace.h config.h
+names.o: tcptrace.h config.h gcache.h
+netm.o: tcptrace.h config.h
+output.o: tcptrace.h config.h gcache.h
+plotter.o: tcptrace.h config.h
+print.o: tcptrace.h config.h
+rexmit.o: tcptrace.h config.h
+rtt.o: tcptrace.h config.h
+snoop.o: tcptrace.h config.h
+tcpdump.o: tcptrace.h tcpdump.h config.h
+tcptrace.o: tcptrace.h config.h file_formats.h version.h
+thruput.o: tcptrace.h config.h
+trace.o: tcptrace.h config.h gcache.h
+
+#
 # generate dependencies
 depend:
 	makedepend ${INCS} -w 10 *.c
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-etherpeek.o: tcptrace.h
-etherpeek.o: config.h
-gcache.o: tcptrace.h
-gcache.o: config.h
-gcache.o: gcache.h
-mfiles.o: tcptrace.h
-mfiles.o: config.h
-names.o: tcptrace.h
-names.o: config.h
-names.o: gcache.h
-netm.o: tcptrace.h
-netm.o: config.h
-output.o: tcptrace.h
-output.o: config.h
-output.o: gcache.h
-plotter.o: tcptrace.h
-plotter.o: config.h
-print.o: tcptrace.h
-print.o: config.h
-rexmit.o: tcptrace.h
-rexmit.o: config.h
-rtt.o: tcptrace.h
-rtt.o: config.h
-snoop.o: tcptrace.h
-snoop.o: config.h
-tcpdump.o: tcptrace.h
-tcpdump.o: config.h
-tcptrace.o: tcptrace.h
-tcptrace.o: config.h
-tcptrace.o: file_formats.h
-tcptrace.o: version.h
-thruput.o: tcptrace.h
-thruput.o: config.h
-trace.o: tcptrace.h
-trace.o: config.h
-trace.o: gcache.h
