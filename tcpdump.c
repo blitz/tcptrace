@@ -155,6 +155,22 @@ pread_tcpdump(
 	    return(0);
 	}
 
+	/* at least one tcpdump implementation (AIX) seems to be */
+	/* storing NANOseconds in the usecs field of the timestamp. */
+	/* This confuses EVERYTHING.  Try to compensate. */
+	{
+	    static Bool bogus_nanoseconds = FALSE;
+	    if ((callback_phdr->ts.tv_usec >= US_PER_SEC) ||
+		(bogus_nanoseconds)) {
+		if (!bogus_nanoseconds) {
+		    fprintf(stderr,
+			    "tcpdump: attempting to adapt to bogus nanosecond timestamps\n");
+		    bogus_nanoseconds = TRUE;
+		}
+		callback_phdr->ts.tv_usec /= 1000;
+	    }
+	}
+
 	/* fill in all of the return values */
 	*pphys     = &eth_header;/* everything assumed to be ethernet */
 	*pphystype = PHYS_ETHER; /* everything assumed to be ethernet */
