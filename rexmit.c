@@ -45,7 +45,7 @@ static char const rcsid[] =
 
 /*
 This function rexmit() checks to see if a particular packet
-is a retransmit. It returns 0 if it is'nt a retransmit and 
+is a retransmit. It returns 0 if it isn't a retransmit and 
 returns the number of bytes retransmitted if it is a retransmit - 
 considering the fact that it might be a partial retransmit. 
 It can also keep track of packets that come out of order.
