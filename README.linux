@@ -1,0 +1,36 @@
+Mon Aug 10, 1998
+
+Linux is an annoying beast.  My current solution is to include the
+standard Unix header files in a subdirectory and then have the ./configure
+program add them in for Linux compiles (this is from the tcpdump
+sources, thanks!)
+
+That seems to be working fine on my PPC Linux box (Mac 3400
+Powerbook).  I don't have ready access to an Intel Linux box to check
+it on.
+
+If you have trouble, try this suggestion from Peter Waltenberg:
+
+>> From peterw@dascom.com Mon Jul 13 22:32 EST 1998
+>> X-Priority: 3 (Normal)
+>> Date: Tue, 14 Jul 1998 08:31:57 +1000 (EST)
+>> Reply-To: peterw@dascom.com
+>> Organization: DASCOM
+>> Sender: peterw@mulga.surf.dascom.com
+>> From: Peter Waltenberg <peterw@dascom.com>
+>> To: Shawn Ostermann <sdo@picard.cs.ohiou.edu>
+>> Subject: Re: tcptrace
+>> 
+>> On Linux with glibc-2 it needs 
+>> 
+>> DEFINES += -D_BSD_SOURCE
+>> 
+>> to build properly.
+>> 
+>> It's simply a matter of which "style" of tcphdr struct naming is
+>> pulled in from the include files.
+>> 
+>> From memory the "-D_BSD_SOURCE" is safe for older Linux setups as
+>> well, however I can't test it.
+>> 
+>> Peter

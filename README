@@ -13,13 +13,11 @@ dump file formats supported are:
 
 To see the graphs, you'll also need Tim Shepard's xplot program,
 available on mercury.lcs.mit.edu:
-	ftp://mercury.lcs.mit.edu/pub/shep 
+	ftp://mercury.lcs.mit.edu/pub/shep
 
-As this is the first public release of tcptrace, the installation
-procedure is fairly raw.  There's a standard Makefile here.  The
-program has been successfully compiled on various Sun platforms here
-using GCC.  I'd love to hear from people who have problems (preferably
-with solutions!!!).
+I've switched to using "./configure" to set up the Makefile.  That
+seems to have eased portability problems a great deal.  Just say
+"./configure" and then "make" to build the program.
 
 Most of the rest of the Docs are on the web.  Check out:
   http://jarok.cs.ohiou.edu/software/tcptrace/tcptrace.html
@@ -106,3 +104,5 @@ or ported the program to other architectures:
 		sent me diffs to get it to compile on HP systems
 	 Keith Scott (kscott@zorba.jpl.nasa.gov)
 		sent me Linux diffs
+	 Nasseef Abukamail (nabukama@cs.ohiou.edu) who wrote much of
+		the IPv6 code

@@ -1,4 +1,6 @@
-Tcptrace FAQ
+Some good/common questions with some relatively good answers :-)
+
+--sdo
 
 ============================================================
 Tue May 26, 1998
@@ -12,11 +14,12 @@ Tue May 26, 1998
 
 Probably.  It appears that you're doing the "packet grabbing" on the
 same machine that's hosting the connection.  That's a problem under
-SunOS.  Their packet capturing pseudo-device can't grab both ends of a 
-connection whose home is the local machine.  I never can remember
-which end it omits, but given your output, it appears that it can't
-see packets SENT by the local host.  The easiest solution is to run
-tcpdump on a machine OTHER than the ones you're monitoring.
+SunOS (and maybe other systems).  Their packet capturing pseudo-device
+can't grab both ends of a connection whose home is the local machine.
+I never can remember which end it omits, but given your output, it
+appears that it can't see packets SENT by the local host.  The easiest
+solution is to run tcpdump on a machine OTHER than the ones you're
+monitoring.
 
 ============================================================
 Fri Jul 24, 1998
@@ -59,4 +62,69 @@ that I'm aware of for Wintel machines is etherpeek (Windows/NT/Mac):
 
 It's nice software, but it's commercial.
 
---sdo
+============================================================
+Tue Jul 28, 1998
+
+>> I've just tried tcptrace. It seems to be really good. But, I've got a
+>> problem: I can't trace any UDP packets. It's like we can only decode TCP
+>> packets. Is it a tcptrace feature? 
+>> 
+>> Thanks in advance.
+
+:-)
+
+Yes, that's why it's called _TCP_trace!!!  Seriously, I've never had
+any reason to look at UDP packets.  Tcptrace was designed to explore
+TCP's protocol details and there's not much protocol detail to UDP to
+look into.
+
+
+============================================================
+Wed Jul 29, 1998
+
+
+>> I was trying to measure tcp throuphput in an experimental testbed
+>> here in xxxxx initially using netperf so as to have a roughly idea
+>> how much it would be.
+>> 
+>> I tried afterwards to have the same results in the tcprtace. The
+>> problem is that the use of tcpdump program seems to degradate the
+>> performance up to 75%.
+>> 
+>> Parameters used in the tcpdump are: -i interface -w file
+>> 
+>> For example without tcpdump : TPUT: 45Mbps
+>> 		with tcpdump: TPUT: 11Mbps
+>> 
+>> If the use of the tcpdump degradates performance then how else can
+>> someone use your tcptrace program in Free BSD?
+
+If you want really good data from tcpdump, you need to run it on a
+machine on the same LAN as the tcp sender, but NOT on the same
+machine.  You also need to make sure that the data that you're writing
+is going to a local file system, rather than a remote file system,
+which would cause extra network traffic.
+
+From what you describe, I'm assuming that you're running tcpdump on
+the SAME machine as one connection endpoint.  I've never seen a case
+in which running tcpdump on a reasonably fast machine would slow it
+down enough to cause that sort of degradation.  One other possibility
+is that the machine is busy enough that tcpdump is not seeing all the
+packets (which IS common, the kernel drops them if tcpdump gets
+behind).  Tcptrace only counts the packets that it sees, so if it only
+sees half of them, its throughput estimate will be off by half.
+
+The other possibility that I alluded to is that you're writing the
+packet data to a file system on a different machine.  That competing
+network traffic might congest the network enough to skew the results.
+
+
+>> And a last question: In case of TPUT which line should I consider?
+>> I suspect it should be the blue one.
+
+That's the running average.  Network throughput is difficult to
+represent discretely.  Normally, you take bytes/second over a short
+period of time.  The blue line is a running average of that figure
+from the beginning of the connection.  If you want a numeric answer,
+just use "-l" with tcptrace and look at the figure that it prints
+out.
