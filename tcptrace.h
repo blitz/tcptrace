@@ -50,6 +50,9 @@ typedef u_short portnum;
 /* type for an IP address */
 typedef struct in_addr ipaddr;
 
+/* type for a timestamp */
+typedef struct timeval timeval;
+
 /* type for a Boolean */
 typedef u_char Bool;
 #define TRUE	1
@@ -71,7 +74,7 @@ typedef struct segment {
     seqnum 	seq_lastbyte;	/* seqnumber of last byte */
     Bool	acked;		/* has it been acknowledged? */
     u_char	retrans;	/* retransmit count */
-    struct	timeval	time;	/* time the segment was sent */
+    timeval	time;	/* time the segment was sent */
     struct segment *next;
     struct segment *prev;
 } segment;
@@ -99,7 +102,13 @@ typedef struct tcb {
     seqnum	syn;
     seqnum	fin;
     seqnum	windowend;
-    struct	timeval	time;
+    timeval	time;
+
+    /* TCP options */
+    u_int	mss;
+    Bool	f1323_ws;	/* did he request 1323 window scaling? */
+    Bool	f1323_ts;	/* did he request 1323 timestamps? */
+    u_char	window_scale;
 
     /* statistics added */
     u_long	data_bytes;
@@ -147,10 +156,13 @@ typedef struct tcb {
     u_long	retr_tm_count;	/* for averages */
 
     /* Instantaneous throughput info */
-    struct	timeval	thru_firsttime;	/* time of first packet this interval */
+    timeval	thru_firsttime;	/* time of first packet this interval */
+    double	thru_lastthru_i; /* last instantaneous throughput value */
     u_long	thru_bytes;	/* number of bytes this interval */
-    double	thru_lastthru;	/* last throughput value (for graph) */
+    u_long	thru_pkts;	/* number of packets this interval */
+    double	thru_lastthru_t; /* last average throughput value */
     PLOTTER	thru_plotter;	/* throughput data dump file */
+    timeval	thru_lasttime;	/* time of previous segment */
     
     /* Time Sequence Graph info for this one */
     PLOTTER	tsg_plotter;
@@ -162,7 +174,7 @@ typedef struct tcb {
     /* RTT Graph info for this one */
     PLOTTER	rtt_plotter;
     u_long	rtt_lastrtt;
-    struct	timeval	rtt_lasttime;
+    timeval	rtt_lasttime;
 
     /* host name letter(s) */
     char	*host_letter;
@@ -190,8 +202,8 @@ struct stcp_pair {
     /* connection information */
     char		*a_endpoint;
     char		*b_endpoint;
-    struct timeval	first_time;
-    struct timeval	last_time;
+    timeval		first_time;
+    timeval		last_time;
     u_long		packets;
     tcb			a2b;
     tcb			b2a;
@@ -231,7 +243,7 @@ extern Bool show_out_order;
 extern Bool show_zero_window;
 extern Bool use_short_names;
 
-extern struct timeval current_time;
+extern timeval current_time;
 
 
 #define MAX_NAME 20
@@ -252,27 +264,27 @@ void trace_init();
 void trace_done();
 void seglist_init(tcb *);
 void printpacket(int, int, void *, int, struct ip *);
-void plotter_vtick(PLOTTER, struct timeval, u_long);
-void plotter_utick(PLOTTER, struct timeval, u_long);
-void plotter_uarrow(PLOTTER, struct timeval, u_long);
-void plotter_tick(PLOTTER, struct timeval, u_long, char);
-void plotter_text(PLOTTER, struct timeval, u_long, char *, char  *);
+void plotter_vtick(PLOTTER, timeval, u_long);
+void plotter_utick(PLOTTER, timeval, u_long);
+void plotter_uarrow(PLOTTER, timeval, u_long);
+void plotter_tick(PLOTTER, timeval, u_long, char);
+void plotter_text(PLOTTER, timeval, u_long, char *, char  *);
 void plotter_temp_color(PLOTTER, char *color);
-void plotter_rtick(PLOTTER, struct timeval, u_long);
-void plotter_rarrow(PLOTTER, struct timeval, u_long);
-void plotter_plus(PLOTTER, struct timeval, u_long);
+void plotter_rtick(PLOTTER, timeval, u_long);
+void plotter_rarrow(PLOTTER, timeval, u_long);
+void plotter_plus(PLOTTER, timeval, u_long);
 void plotter_perm_color(PLOTTER, char *color);
-void plotter_line(PLOTTER, struct timeval, u_long, struct timeval, u_long);
-void plotter_larrow(PLOTTER, struct timeval, u_long);
-void plotter_htick(PLOTTER, struct timeval, u_long);
-void plotter_dtick(PLOTTER, struct timeval, u_long);
-void plotter_dot(PLOTTER, struct timeval, u_long);
+void plotter_line(PLOTTER, timeval, u_long, timeval, u_long);
+void plotter_larrow(PLOTTER, timeval, u_long);
+void plotter_htick(PLOTTER, timeval, u_long);
+void plotter_dtick(PLOTTER, timeval, u_long);
+void plotter_dot(PLOTTER, timeval, u_long);
 void plotter_done();
-void plotter_dline(PLOTTER, struct timeval, u_long, struct timeval, u_long);
-void plotter_diamond(PLOTTER, struct timeval, u_long);
-void plotter_darrow(PLOTTER, struct timeval, u_long);
-void plotter_box(PLOTTER, struct timeval, u_long);
-void plotter_arrow(PLOTTER, struct timeval, u_long, char);
+void plotter_dline(PLOTTER, timeval, u_long, timeval, u_long);
+void plotter_diamond(PLOTTER, timeval, u_long);
+void plotter_darrow(PLOTTER, timeval, u_long);
+void plotter_box(PLOTTER, timeval, u_long);
+void plotter_arrow(PLOTTER, timeval, u_long, char);
 void plot_init();
 void dotrace(int, struct ip *);
 void dotrace();
@@ -280,10 +292,10 @@ void PrintTrace(tcp_pair *);
 void PrintBrief(tcp_pair *);
 void OnlyConn(int);
 void IgnoreConn(int);
-u_long elapsed(struct timeval, struct timeval);
+u_long elapsed(timeval, timeval);
 int ConnReset(tcp_pair *);
 int ConnComplete(tcp_pair *);
-char *ts2ascii(struct timeval *);
+char *ts2ascii(timeval *);
 char *ServiceName(portnum);
 char *HostName(ipaddr);
 char *HostLetter(u_int);
@@ -298,6 +310,7 @@ int Mvfprintf(MFILE *pmf, char *format, va_list ap);
 int Mfclose(MFILE *pmf);
 int Mfflush(MFILE *pmf);
 void Minit();
+struct tcp_options *ParseOptions(struct tcphdr *ptcp);
 
 
 /* TCP flags macros */
@@ -314,9 +327,9 @@ void Minit();
 #define B2A -1
 
 /* all we REALLY need is the IP and TCP headers, so don't copy	*/
-/* any more than that...  IP header is <= 20 bytes and 		*/
-/* the TCP header is 20 (don't use options here)		*/
-#define MAX_IP_PACKLEN 40
+/* any more than that...  IP header is <= (4*16) bytes and 	*/
+/* the TCP header is at most (4*16)				*/
+#define MAX_IP_PACKLEN ((4*16)+(4*16))
 
 
 /*macros for maintaining the seqspace used for rexmit*/
@@ -347,6 +360,18 @@ void Minit();
 #define	SEQCMP(a, b)		((long)(a) - (long)(b))
 #define	SEQ_LESSTHAN(a, b)	(SEQCMP(a,b) < 0)
 #define	SEQ_GREATERTHAN(a, b)	(SEQCMP(a,b) > 0)
+
+
+/* RFC 1323 TCP options (not usually in tcp.h yet) */
+#define	TCPOPT_WS	3	/* window scaling */
+#define	TCPOPT_TS	8	/* timestamp */
+struct tcp_options {
+    short	mss;	/* maximum segment size 	*/
+    char	ws;	/* window scale (1323) 		*/
+    long	tsval;	/* Time Stamp Val (1323)	*/
+    long	tsecr;	/* Time Stamp Echo Reply (1323)	*/
+};
+
 
 
 /*

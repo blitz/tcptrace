@@ -52,7 +52,7 @@ static void
 Usage(
     char *prog)
 {
-    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPSTX] [+bclnprtCPS] [-(BEmio)N]* file\n", prog);
+    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPSX] [+bclnprtCPS] [-(TBEmio)N]* file\n", prog);
     fprintf(stderr,"\
   -b      brief synopsis\n\
   -c      ignore non-complete connections\n\
@@ -74,7 +74,7 @@ Usage(
   -P      create packet trace files\n\
   -R      dump rtt samples to files\n\
   -S      use short names (list \"host.b.c\" as just \"host\")\n\
-  -T      output instantaneous throughput plot files\n\
+  -TN     output throughput plot files, average over N segments\n\
   -X      print in hexidecimal\n\
   +[v]    reverse the setting of the -[v] flag\n");
     Version();
@@ -145,7 +145,6 @@ main(
 		  case 'r': print_rtt = TRUE; break;
 		  case 'G': graph_rtt = TRUE; break;
 		  case 'R': dump_rtt = TRUE; break;
-		  case 'T': thru_interval = 1; break;
 		  case 'S': use_short_names = TRUE; break;
 		  case 't': printticks = TRUE; break;
 		  case 'v': Version(); exit(0); break;
@@ -162,6 +161,13 @@ main(
 		    *(argv[i]+1) = '\00'; break;
 		  case 'E':
 		    endpnum = atoi(argv[i]+1);
+		    *(argv[i]+1) = '\00'; break;
+		  case 'T':
+		    thru_interval = atoi(argv[i]+1);
+		    if (thru_interval <= 0) {
+			fprintf(stderr, "-T  must be > 1\n");
+			Usage(argv[0]);
+		    }
 		    *(argv[i]+1) = '\00'; break;
 		  case 'm':
 		    max_tcp_pairs = atoi(argv[i]+1);

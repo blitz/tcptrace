@@ -10,4 +10,4 @@
  */
 
 
-#define VERSION "2.2.2 beta -- Thu Aug 10, 1995"
+#define VERSION "2.3 beta -- Wed Aug 23, 1995"
