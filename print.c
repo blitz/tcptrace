@@ -162,6 +162,9 @@ printipv4(
     struct ip *pip,
     void *plast)
 {
+    u_short offset;
+    Bool mf;
+    
     /* make sure we have enough of the packet */
     if ((unsigned)pip+sizeof(struct ip)-1 > (unsigned)plast) {
 	if (printtrunc)
@@ -192,7 +195,22 @@ printipv4(
     printf("\t     TTL: %d\n", pip->ip_ttl);
     printf("\t     LEN: %d\n", ntohs(pip->ip_len));
     printf("\t      ID: %d\n", ntohs(pip->ip_id));
-    printf("\t  OFFSET: 0x%04x\n", ntohs(pip->ip_off));
+
+    /* fragmentation stuff */
+    offset = ntohs(pip->ip_off) << 3;
+    mf = (pip->ip_off & IP_MF) != 0;
+    if ((offset == 0) && (!mf)) {
+	printf("\t  OFFSET: 0x%04x", ntohs(pip->ip_off));
+    } else {
+	printf("\t  OFFSET: 0x%04x (frag: %d bytes at offset %u - %s)",
+	       ntohs(pip->ip_off),
+	       ntohs(pip->ip_len)-pip->ip_hl*4,
+	       offset,
+	       mf?"More Frags":"Last Frag");
+    }
+    if ((pip->ip_off & IP_DF) != 0)
+	printf("  Don't Fragment\n");	/* don't fragment */
+    printf("\n");
 }
 
 
