@@ -415,3 +415,7 @@ Fixed a divide-by-zero error in PlotHist() in mod_rttgraph.c.
 Matt Muggeridge has been very kind in providing detailed information regarding
 porting tcptrace to OpenVMS. Please read the new file README.OpenVMS if you
 are interested in running tcptrace on OpenVMS.
+
+Changes made to code in order to be able to compile tcptrace under cygwin on
+Windows. Now works on windows too. Does not support reading compressed dump
+files directly though.
