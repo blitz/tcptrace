@@ -146,7 +146,7 @@ LDFLAGS += ${PCAP_LDFLAGS}
 
 
 # Source Files
-CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
+CFILES=compress.c etherpeek.c gcache.c mfiles.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c nlanr.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \
@@ -272,8 +272,6 @@ ipv6.o: tcptrace.h
 ipv6.o: ipv6.h
 mfiles.o: tcptrace.h
 mfiles.o: ipv6.h
-missing.o: tcptrace.h
-missing.o: ipv6.h
 names.o: tcptrace.h
 names.o: ipv6.h
 names.o: gcache.h
