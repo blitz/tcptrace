@@ -42,7 +42,7 @@ static char const rcsid_ipv6[] =
 #endif
 
 /* just guessing... */
-#if !defined(IPPROTO_NONE) && !defined(IPPROTO_FRAGMENT) && !defined(IPPROTO_DSTOPTS)
+#if !defined(IPPROTO_NONE) && !defined(IPPROTO_FRAGMENT) && !defined(IPPROTO_DSTOPTS) && !defined(INET6_ADDRSTRLEN)
 /* when IPv6 is more widely/standardly deployed, these constants won't need to be
    here.  In the mean time, here's the stuff we need... */
 #define IPV6NOTFOUND
