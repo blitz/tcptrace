@@ -351,7 +351,7 @@ char *ServiceName(portnum);
 char *HostName(ipaddr);
 char *HostLetter(u_int);
 char *EndpointName(ipaddr,portnum);
-PLOTTER new_plotter(tcb *plast, char *title,
+PLOTTER new_plotter(tcb *plast, char *filename, char *title,
 		    char *xlabel, char *ylabel, char *suffix);
 int rexmit(tcb *, seqnum, seglen, Bool *);
 void ack_in(tcb *, seqnum);

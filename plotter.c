@@ -198,6 +198,7 @@ DoPlot(
 PLOTTER
 new_plotter(
     tcb *plast,
+    char *filename,	/* if NULL, use default name from plast */
     char *title,
     char *xlabel,
     char *ylabel,
@@ -205,7 +206,6 @@ new_plotter(
 {
     PLOTTER pl;
     MFILE *f;
-    char *filename;
 
     ++plotter_ix;
     if (plotter_ix >= max_plotters) {
@@ -214,7 +214,8 @@ new_plotter(
 
     pl = plotter_ix;
 
-    filename = TSGPlotName(plast,pl,suffix);
+    if (filename == NULL)
+	filename = TSGPlotName(plast,pl,suffix);
 
     if (debug)
 	fprintf(stderr,"Plotter %d file is '%s'\n", pl, filename);

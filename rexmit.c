@@ -579,7 +579,7 @@ graph_rtt_sample(
     if (ptcb->rtt_plotter == (PLOTTER) NULL) {
 	sprintf(title,"%s_==>_%s (rtt samples)",
 		ptcb->ptp->a_endpoint, ptcb->ptp->b_endpoint);
-	ptcb->rtt_plotter = new_plotter(ptcb,title,
+	ptcb->rtt_plotter = new_plotter(ptcb,NULL,title,
 					"time","rtt (ms)",
 					RTT_GRAPH_FILE_EXTENSION);
 	plotter_perm_color(ptcb->rtt_plotter,"red");
