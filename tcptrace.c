@@ -64,6 +64,7 @@ Bool graph_tsg = FALSE;
 Bool hex = TRUE;
 Bool ignore_non_comp = FALSE;
 Bool print_rtt = FALSE;
+Bool print_cwin = FALSE;
 Bool printbrief = TRUE;
 Bool printem = FALSE;
 Bool printticks = FALSE;
@@ -94,6 +95,7 @@ Output format options\n\
   -b      brief output format\n\
   -l      long output format\n\
   -r      print rtt statistics (slower for large files)\n\
+  -W      report on estimated congestion window (not generally useful)\n\
 Graphing options\n\
   -T      create throughput graph[s], (average over 10 segments, see -A)\n\
   -R      create rtt sample graph[s]\n\
@@ -467,6 +469,7 @@ ParseArgs(
 		  case 'R': graph_rtt = TRUE; break;
 		  case 'S': graph_tsg = TRUE; break;
 		  case 'T': graph_tput = TRUE; break;
+		  case 'W': print_cwin = TRUE; break;
 		  case 'X': hex = TRUE; break;
 		  case 'Z': dump_rtt = TRUE; break;
 		  case 'b': printbrief = TRUE; break;
@@ -524,6 +527,7 @@ ParseArgs(
 		  case 'R': graph_rtt = !TRUE; break;
 		  case 'S': graph_tsg = !TRUE; break;
 		  case 'T': graph_tput = !TRUE; break;
+		  case 'W': print_cwin = !TRUE; break;
 		  case 'X': hex = !TRUE; break;
 		  case 'Z': dump_rtt = !TRUE; break;
 		  case 'b': printbrief = !TRUE; break;
