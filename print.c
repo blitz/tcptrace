@@ -511,7 +511,8 @@ printudp_packet(
 	printf(" (only %ld bytes in dump file)\n",
 	       (u_long)plast - (u_long)pdata + 1);
     if (ntohs(pudp->uh_ulen) > 0) {
-	PrintRawData("   data", pdata, plast, TRUE);
+	if (dump_packet_data)
+	    PrintRawData("   data", pdata, plast, TRUE);
     }
 }
 
