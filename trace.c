@@ -402,6 +402,14 @@ NewTTP(
 	strdup(EndpointName(ptp->addr_pair.b_address,
 			    ptp->addr_pair.b_port));
 
+    /* make the initial guess that each side is a reno tcp */
+    /* this might actually be a poor thing to do in the sense that
+       we could be looking at a Tahoe trace ... but the only side
+       effect for the moment is that the LEAST estimate may be
+       busted, although it very well may not be */
+    ptp->a2b.tcp_strain = TCP_RENO;
+    ptp->b2a.tcp_strain = TCP_RENO;
+
     /* init time sequence graphs */
     ptp->a2b.tsg_plotter = ptp->b2a.tsg_plotter = NO_PLOTTER;
     if (graph_tsg && !ptp->ignore_pair) {
@@ -1440,6 +1448,12 @@ dotrace(
     }
 
     /* unless both sides advertised sack, we shouldn't see them, otherwise
+       we hope they actually send them */
+    if (!SYN_SET(ptcp) && (thisdir->fsack_req && otherdir->fsack_req)) {
+	thisdir->tcp_strain = otherdir->tcp_strain = TCP_SACK;
+    }
+
+    /* do data stats */
     urg = FALSE;
     if (tcp_data_length > 0) {
 	thisdir->data_pkts += 1;
@@ -2060,6 +2074,9 @@ dotrace(
 	                    ptcpo->sacks[1].sack_right)) {
 	                    ptcpo->sacks[1].sack_right)) ++thisdir->num_dsacks;
 	    /* if we saw any dsacks from the other guy, we'll assume he did
+               it on purpose and is a dsack tcp */
+            if (thisdir->num_dsacks > 0) thisdir->tcp_strain = TCP_DSACK;
+	}
 
 	/* draw sacks, if appropriate */
 	if (to_tsgpl != NO_PLOTTER && show_sacks
