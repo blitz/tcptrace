@@ -309,6 +309,7 @@ Output format detail options\n\
 Connection filtering options\n\
   -iN     ignore connection N (can use multiple times)\n\
   -oN     only connection N (can use multiple times)\n\
+          (if N is not a number but a file, read list from file instead)\n\
   -c      ignore non-complete connections (didn't see syn's and fin's)\n\
   -BN     first segment number to analyze (default 1)\n\
   -EN     last segment number to analyze (default last in file)\n\
@@ -754,8 +755,30 @@ ParseArgs(
 		    *(argv[i]+1) = '\00'; break;
 		  case 'o':
 		    ++saw_i_or_o;
-		    OnlyConn(atoi(argv[i]+1));
-		    *(argv[i]+1) = '\00'; break;
+		    if (*(argv[i]+1) == '\00') {
+			Usage(argv[0]);
+		    } else if (isdigit(*(argv[i]+1))) {
+			OnlyConn(atoi(argv[i]+1));
+			*(argv[i]+1) = '\00';
+		    } else {
+			FILE *f;
+			char *filename=argv[i]+1;
+			int num;
+			f = fopen(filename,"r");
+			if (!f) {
+			    fprintf(stderr,"Open of '%s' failed\n", filename);
+			    perror(filename);
+			    Usage(argv[0]);
+			}
+			while (fscanf(f,"%d",&num) == 1) {
+			    if (debug)
+				printf("setting OnlyConn(%d)\n", num);
+			    OnlyConn(num);
+			}
+			fclose(f);
+			*(argv[i]+1) = '\00';
+		    }
+		    break;
 		  case 'B':
 		    beginpnum = atoi(argv[i]+1);
 		    *(argv[i]+1) = '\00'; break;
