@@ -62,6 +62,8 @@
  */
 #ifdef __GNUC__
 #define GCC_UNUSED __attribute__((unused))
+#else
+#define GCC_UNUSED
 #endif
 
 static char const GCC_UNUSED rcsid_tcptrace[] =
