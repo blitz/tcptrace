@@ -47,7 +47,7 @@ static pcap_t *pcap;
 /* Interaction with pcap */
 static struct ether_header eth_header;
 #define EH_SIZE sizeof(struct ether_header)
-static int ip_buf[IP_MAXPACKET/sizeof(int)];
+static int *ip_buf;  /* [IP_MAXPACKET/sizeof(int)] */
 static struct pcap_pkthdr *callback_phdr;
 static void *callback_plast;
 
@@ -201,6 +201,9 @@ pread_f *is_tcpdump(void)
     if (debug)
 	fprintf(stderr,"Tcpdump format, physical type is %d (%s)\n",
 		type, physname);
+
+    /* set up some stuff */
+    ip_buf = MallocZ(IP_MAXPACKET);
 
 
     return(pread_tcpdump);
