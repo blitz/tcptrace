@@ -75,7 +75,8 @@ typedef enum {
      MethodCodePost,
      MethodCodePut,
      MethodCodeDelete,
-     MethodCodeTrace
+     MethodCodeTrace,
+     MethodCodeUnknown
 } MethodCode;
 
 char *MethodCodeString[] = {
@@ -668,8 +669,8 @@ FindContent(
     char *pch2;
     struct get_info *pget;
     char getbuf[1024];
-    u_long position;
-    unsigned last_position;
+    u_long position = 0;
+    unsigned last_position = 0;
     int done;
     int i;
     typedef enum {
@@ -885,12 +886,12 @@ FindGets(
     char *plast;
     char *pch;
     char *pch2;
-    struct get_info *pget;
+    struct get_info *pget = NULL;
     char getbuf[1024];
-    u_long position;
+    u_long position = 0;
     int j;
     int methodlen;
-     unsigned long long contentLength;
+    unsigned long long contentLength = 0;
 
      typedef enum {
        GetStateStartMethod,
@@ -922,7 +923,7 @@ FindGets(
 	   * are all the methods defined in
            * draft-ietf-http-v11-spec-rev-06
 	   */
-	     MethodCode method;
+	     MethodCode method = MethodCodeUnknown;
 	     methodlen = 0;
 	     if (strncasecmp(pch, "options ", 8) == 0) {
 		methodlen = 8;
@@ -1042,15 +1043,17 @@ FindGets(
 	     break;
 	  }
       }
-      
+            
       MFUnMap(mf,pdata);
    }
+   
    else {
       if (debug > 4) {
 	 printf("FindGets() with null client contents");
       }
    }
-}   
+}
+
 
 static void
 HttpDoPlot()
@@ -1175,7 +1178,7 @@ HttpPrintone(
     tcp_pair *ptp = ph->ptp;
     tcb *pab = &ptp->a2b;
     tcb *pba = &ptp->b2a;
-    struct get_info *pget;
+    struct get_info *pget = NULL;
     u_long missing;
     double etime;
 
@@ -1241,8 +1244,8 @@ connection (FINs) were not found in trace file.\n");
    
    for (pget = ph->gets_head; pget; pget = pget->next) {
       
-      unsigned request_length;
-      unsigned reply_length;
+      unsigned request_length = 0;
+      unsigned reply_length = 0;
       
       /* Compute request lengths */
       if (pget->next) {
