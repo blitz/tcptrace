@@ -350,7 +350,7 @@ ParenServiceName(
     static char buf[80];
 
     pname = ServiceName(port);
-    if (!pname || isdigit(*pname))
+    if (!pname || isdigit((int)(*pname)))
 	return("");
 
     sprintf(buf,"(%s)",pname);
@@ -366,7 +366,7 @@ ParenHostName(
     static char buf[80];
 
     pname = HostName(addr);
-    if (!pname || isdigit(*pname))
+    if (!pname || isdigit((int)(*pname)))
 	return("");
 
     sprintf(buf,"(%s)",pname);

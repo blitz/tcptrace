@@ -379,7 +379,7 @@ ListModules(void)
      
 
 
-void
+int
 main(
     int argc,
     char *argv[])
@@ -704,7 +704,7 @@ GrabOnly(
 
     /* option is a list of connection numbers separated by commas */
     /* option can be immediately "here" or given as a file name */
-    if (isdigit(*opt)) {
+    if (isdigit((int)(*opt))) {
 	/* list is on the command line */
 	o_arg = opt;
     } else {

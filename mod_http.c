@@ -154,7 +154,7 @@ http_init(
 	    if (strncasecmp(argv[i]+2,"http",4) == 0) {
 		/* I want to be called */
 		enable = 1;
-		if (isdigit(argv[i][6])) {
+		if (isdigit((int)(argv[i][6]))) {
 		    httpd_port = atoi(argv[i]+6);
 		} else {
 		    httpd_port = DEFAULT_SERVER_PORT;
