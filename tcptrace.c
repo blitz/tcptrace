@@ -66,6 +66,7 @@ static void QuitSig(int signum);
 static void Usage(void);
 static void BadArg(char *argsource, char *format, ...);
 static void Version(void);
+static char *FileToBuf(char *filename);
 
 
 /* option flags and default values */
@@ -1001,6 +1002,14 @@ MallocZ(
 	ptr = malloc(nbytes);
 	if (ptr == NULL) {
 		perror("Malloc failed, fatal\n");
+		fprintf(stderr,"\
+when memory allocation fails, it's either because:\n\
+1) You're out of swap space, talk to your local sysadmin about making more\n\
+   (look for system commands 'swap' or 'swapon' for quick fixes)\n\
+2) The amount of memory that your OS gives each process is too little\n\
+   That's a system configuration issue that you'll need to discuss\n\
+   with the system administrator\n\
+");
 		exit(2);
 	}
 
@@ -1048,35 +1057,14 @@ GrabOnly(
 	o_arg = opt;
     } else {
 	/* it's in a file */
-	FILE *f;
-	char *filename=opt;
-	struct stat str_stat;
-	int filesize;
 
 	/* open the file */
-	if ((f = fopen(filename,"r")) == NULL) {
-	    fprintf(stderr,"Open of '%s' failed\n", filename);
-	    perror(filename);
+	o_arg = FileToBuf(opt);
+
+	/* if that fails, it's a command line error */
+	if (o_arg == NULL) {
 	    Usage();
 	}
-
-	/* determine the file length */
-	if (fstat(fileno(f),&str_stat) != 0) {
-	    perror("fstat");
-	    exit(1);
-	}
-	filesize = str_stat.st_size;
-
-	/* make a big-enough buffer */
-	o_arg = MallocZ(filesize+1);
-
-	/* read the file into the buffer */
-	if (fread(o_arg,1,filesize,f) != filesize) {
-	    perror("fread");
-	    exit(1);
-	}
-
-	fclose(f);
     }
 
     /* wherever we got it, o_arg is a connection list */
@@ -1198,44 +1186,65 @@ CheckArguments(
 	} else {
 	    int argc;
 	    char **argv;
-	    FILE *f;
-
-	    rc_buf = malloc(statbuf.st_size+1);
+	    char *pch_file;
+	    char *pch_new;
+	    char *file_buf;
 
 	    if (debug>1)
 		printf("resource file %s exists\n", rc_path);
 
-	    if ((f = fopen(rc_path,"r")) != NULL) {
-		char *pbuf = rc_buf;
-		*rc_buf = '\00';
-		/* read each line in turn */
-		while (!feof(f)) {
-		    if (fgets(pbuf,statbuf.st_size+1-(pbuf-rc_buf),f) == NULL) {
-			if (ferror(f)) {
-			    perror(rc_path);
-			    exit(-1);
-			}
-			/* else, just EOF */
-			continue;
-		    }
+	    /* read the file into a buffer */
+	    rc_buf = file_buf = FileToBuf(rc_path);
 
-		    if (debug)
-			printf("read line from resource file: %s", pbuf);
-
-		    /* look for comments */
-		    while ((*pbuf) && (*pbuf != '#') && (*pbuf != '\n'))
-			++pbuf;
-		    
-		    /* terminate the string */
-		    *(pbuf++) = ' ';
-		    *pbuf = '\00';
-		}
-
-		StringToArgv(rc_buf,&argc,&argv);
-		ParseArgs(TCPTRACE_RC_FILE, &argc, argv);
-
-		fclose(f);
+	    /* if it exists but can't be read, that's a fatal error */
+	    if (rc_buf == NULL) {
+		fprintf(stderr,
+			"Couldn't read resource file '%s'\n", rc_path);
+		fprintf(stderr,
+			"(either make the file readable or change its name)\n");
+		exit(-1);
 	    }
+	    
+
+	    /* make a new buffer to hold the converted string */
+	    pch_file = rc_buf;
+	    rc_buf = pch_new = MallocZ(strlen(file_buf)+3);
+
+	    /* loop until end of string */
+	    while (*pch_file) {
+		if (*pch_file == '\n') {
+		    /* turn newlines into spaces */
+		    *pch_new++ = ' ';
+		    ++pch_file;
+		} else if (*pch_file == '#') {
+		    /* skip over the '#' */
+		    ++pch_file;
+
+		    /* remove comments (until NULL or newline) */
+		    while ((*pch_file != '\00') &&
+			   (*pch_file != '\n')) {
+			++pch_file;
+		    }
+		    /* insert a space */
+		    *pch_new++ = ' ';
+		} else {
+		    /* just copy the characters */
+		    *pch_new++ = *pch_file++;
+		}
+	    }
+
+	    /* append a NULL to pch_new */
+	    *pch_new = '\00';
+
+	    if (debug>2)
+		printf("Resource file string: '%s'\n", rc_buf);
+
+	    /* we're finished with the original buffer, but need to keep pch_new */
+	    free(file_buf);
+
+	    /* parse those args */
+	    StringToArgv(rc_buf,&argc,&argv);
+	    ParseArgs(TCPTRACE_RC_FILE, &argc, argv);
 	}
     }
 
@@ -1820,5 +1829,55 @@ MemCpy(void *vp1, void *vp2, size_t n)
 	*p1++=*p2++;
 
     return(vp1);
+}
+
+
+/* read from a file, store contents into NULL-terminated string */
+/* memory returned must be "free"ed to be reclaimed */
+static char *
+FileToBuf(
+    char *filename)
+{
+    FILE *f;
+    struct stat str_stat;
+    int filesize;
+    char *buffer;
+
+    /* open the file */
+    if ((f = fopen(filename,"r")) == NULL) {
+	fprintf(stderr,"Open of '%s' failed\n", filename);
+	perror(filename);
+	return(NULL);
+    }
+
+
+    /* determine the file length */
+    if (fstat(fileno(f),&str_stat) != 0) {
+	perror("fstat");
+	exit(1);
+    }
+    filesize = str_stat.st_size;
+
+    /* make a big-enough buffer */
+    buffer = MallocZ(filesize+2);  /* with room to NULL terminate */
+
+
+    /* read the file into the buffer */
+    if (fread(buffer,1,filesize,f) != filesize) {
+	perror("fread");
+	exit(1);
+    }
+
+    fclose(f);
+
+    /* put a NULL at the end */
+    buffer[filesize] = '\00';
+
+    if (debug > 1)
+	printf("Read %d characters from resource '%s': '%s'\n",
+	       filesize, filename, buffer);
+
+    /* somebody else will "free" it */
+    return(buffer);
 }
 
