@@ -29,10 +29,7 @@
 
 
 
-/* maximum number of TCP pairs to maintain */
-#define DEFAULT_MAX_TCP_PAIRS 1024
-extern int max_tcp_pairs;
-
+/* type for plotting into a file */
 typedef int PLOTTER;
 #define NO_PLOTTER -1
 
@@ -192,6 +189,14 @@ typedef struct stcp_pair tcp_pair;
 typedef struct tcphdr tcphdr;
 
 
+/* maximum number of TCP pairs to maintain */
+#define DEFAULT_MAX_TCP_PAIRS 1024
+extern int max_tcp_pairs;
+
+extern int num_tcp_pairs;	/* how many pairs are in use */
+extern tcp_pair **ttp;		/* array of pointers to allocated pairs */
+
+
 /* option flags */
 extern Bool colorplot;
 extern int debug;
@@ -207,6 +212,7 @@ extern Bool print_rtt;
 extern Bool dump_rtt;
 extern Bool show_out_order;
 extern Bool show_zero_window;
+extern Bool use_short_names;
 
 extern struct timeval current_time;
 

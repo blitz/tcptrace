@@ -24,6 +24,7 @@ static void StatLineF(char *, char *, char *, double, double);
 static void StatLineField(char *, char *, char *, u_long, int);
 static void StatLineFieldF(char *, char *, char *, double, int);
 static void StatLineOne(char *, char *, char *);
+static char *FormatBrief(tcp_pair *ptp);
 
 
 
@@ -104,52 +105,72 @@ Stdev(
 
 
 
-void
-PrintBrief(
+
+static char *
+FormatBrief(
     tcp_pair *ptp)
 {
     tcb *pab = &ptp->a2b;
     tcb *pba = &ptp->b2a;
     static char infobuf[100];
 
-    sprintf(infobuf,"%s - %s",
-	    ptp->a_endpoint,
-	    ptp->b_endpoint);
-    fprintf(stdout,"%-60s", infobuf);
-    fprintf(stdout," %4lu>", pab->packets);
-    fprintf(stdout," %4lu<", pba->packets);
-    if (ConnComplete(ptp))
-	fprintf(stdout,"  (complete)");
-    if (ConnReset(ptp))
-	fprintf(stdout,"  (reset)");
-    fprintf(stdout,"\n");
+    sprintf(infobuf,"%s - %s (%s2%s)",
+	    ptp->a_endpoint, ptp->b_endpoint,
+	    pab->host_letter, pba->host_letter);
+    return(infobuf);
 }
 
 
-#ifdef OLDVERSION
 void
 PrintBrief(
     tcp_pair *ptp)
 {
     tcb *pab = &ptp->a2b;
     tcb *pba = &ptp->b2a;
+    static int max_width = -1;
 
-    fprintf(stdout,"%s <==> %s", ptp->a_endpoint, ptp->b_endpoint);
-    fprintf(stdout,"  %s2%s:%lu",
-	    pab->host_letter,
-	    pba->host_letter,
-	    pab->packets);
-    fprintf(stdout,"  %s2%s:%lu",
-	    pba->host_letter,
-	    pab->host_letter,
-	    pba->packets);
+    /* determine the maximum connection name width to make it nice */
+    if (max_width == -1) {
+	int ix;
+	int len;
+	tcp_pair *tmp_ptp;
+	
+	for (ix = 0; ix <= num_tcp_pairs; ++ix) {
+	    tmp_ptp = ttp[ix];
+	    len = strlen(FormatBrief(tmp_ptp));
+	    if (len > max_width)
+		max_width = len;
+	}
+	if (debug > 2)
+	    fprintf(stderr,"Max name width: %d\n", max_width);
+    }
+
+
+    if (TRUE) {
+	/* new version */
+	fprintf(stdout,"%*s", -max_width, FormatBrief(ptp));
+	fprintf(stdout," %4lu>", pab->packets);
+	fprintf(stdout," %4lu<", pba->packets);
+    } else {
+	/* old version */
+	fprintf(stdout,"%s <==> %s",
+		ptp->a_endpoint,
+		ptp->b_endpoint);
+	fprintf(stdout,"  %s2%s:%lu",
+		pab->host_letter,
+		pba->host_letter,
+		pab->packets);
+	fprintf(stdout,"  %s2%s:%lu",
+		pba->host_letter,
+		pab->host_letter,
+		pba->packets);
+    }
     if (ConnComplete(ptp))
 	fprintf(stdout,"  (complete)");
     if (ConnReset(ptp))
 	fprintf(stdout,"  (reset)");
     fprintf(stdout,"\n");
 }
-#endif OLDVERSION
 
 
 
@@ -163,9 +184,12 @@ PrintTrace(
     tcb *pba = &ptp->b2a;
     char *host1 = pab->host_letter;
     char *host2 = pba->host_letter;
+    char bufl[40],bufr[40];
 
-    fprintf(stdout,"\thost %s:        %s\n", host1, ptp->a_endpoint);
-    fprintf(stdout,"\thost %s:        %s\n", host2, ptp->b_endpoint);
+    fprintf(stdout,"\thost %-4s      %s\n",
+	    (sprintf(bufl,"%s:", host1),bufl), ptp->a_endpoint);
+    fprintf(stdout,"\thost %-4s      %s\n",
+	    (sprintf(bufl,"%s:", host2),bufl), ptp->b_endpoint);
     fprintf(stdout,"\tcomplete conn: %s",
 	    ConnReset(ptp)?"RESET":(
 		ConnComplete(ptp)?"yes":"no"));
@@ -207,6 +231,9 @@ PrintTrace(
     StatlineI("rexmt data pkts","","%8lu", pab->rexmit_pkts, pba->rexmit_pkts);
     StatlineI("rexmt data bytes","","%8lu", pab->rexmit_bytes, pba->rexmit_bytes);
     StatlineI("outoforder pkts","","%8lu", pab->out_order_pkts, pba->out_order_pkts);
+    StatlineI("SYN/FIN pkts sent","","%s",
+	      (sprintf(bufl,"%d/%d", pab->syn_count, pab->fin_count),(int)bufl),
+	      (sprintf(bufr,"%d/%d", pba->syn_count, pba->fin_count),(int)bufr));
     StatlineI("max segm size","bytes","%8lu",
 	      pab->max_seg_size,
 	      pba->max_seg_size);

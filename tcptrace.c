@@ -20,6 +20,7 @@ char *tcptrace_version = "2.2.2 beta -- Thu Jun 22, 1995";
 /* local routines */
 static void Usage(char *prog);
 static void Version();
+static void Formats();
 static void QuitSig();
 
 
@@ -49,7 +50,7 @@ static void
 Usage(
     char *prog)
 {
-    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPX] [+bclnprtCP] [-(BEmio)N]* file\n", prog);
+    fprintf(stderr,"usage: %s  [-ncdlnprtvCDPSX] [+bclnprtCPS] [-(BEmio)N]* file\n", prog);
     fprintf(stderr,"\
   -b      brief synopsis\n\
   -c      ignore non-complete connections\n\
@@ -69,9 +70,11 @@ Usage(
   -EN     last segment number to analyze (default last in file)\n\
   -P      create plot files\n\
   -R      dump rtt samples to files\n\
+  -S      use short names (list \"host.b.c\" as just \"host\")\n\
   -X      print in hexidecimal\n\
   +[v]    reverse the setting of the -[v] flag\n");
     Version();
+    Formats();
     exit(-2);
 }
 
@@ -80,13 +83,20 @@ Usage(
 static void
 Version()
 {
+    fprintf(stderr,"Version: %s\n", tcptrace_version);
+}
+
+
+static void
+Formats()
+{
     int i;
     
-    fprintf(stderr,"Version: %s\n", tcptrace_version);
     fprintf(stderr,"Supported Input File Formats:\n");
     for (i=0; file_formats[i].format_name; ++i)
-	fprintf(stderr,"\t%s\n", file_formats[i].format_name);
-    exit(-2);
+	fprintf(stderr,"\t%-15s  %s\n",
+		file_formats[i].format_name,
+		file_formats[i].format_descr);
 }
      
 
@@ -130,6 +140,7 @@ main(
 		  case 'p': printem = TRUE; break;
 		  case 'r': print_rtt = TRUE; break;
 		  case 'R': dump_rtt = TRUE; break;
+		  case 'S': use_short_names = TRUE; break;
 		  case 't': printticks = TRUE; break;
 		  case 'v': Version(); exit(0); break;
 		  case 'i':
@@ -208,6 +219,7 @@ main(
 	fprintf(stderr,"printem:          %d\n", printem);
 	fprintf(stderr,"printticks:       %d\n", printticks);
 	fprintf(stderr,"no names:         %d\n", nonames);
+	fprintf(stderr,"use_short_names:  %d\n", use_short_names);
 	fprintf(stderr,"print_rtt:        %d\n", print_rtt);
 	fprintf(stderr,"show_rexmit:      %d\n", show_rexmit);
 	fprintf(stderr,"show_zero_window: %d\n", show_zero_window);
@@ -235,12 +247,17 @@ main(
     fix = 0;
     ppread = NULL;
     while (file_formats[fix].test_func != NULL) {
+	    if (debug)
+                fprintf(stderr,"Checking for file format '%s' (%s)\n",
+	                file_formats[fix].format_name,
+	                file_formats[fix].format_descr);
 	rewind(stdin);
 	ppread = (*file_formats[fix].test_func)();
 	if (ppread) {
 	    if (debug)
-                fprintf(stderr,"File format is %s\n",
-	                file_formats[fix].format_name);
+                fprintf(stderr,"File format is '%s' (%s)\n",
+	                file_formats[fix].format_name,
+	                file_formats[fix].format_descr);
 	    break;
 	}
 	++fix;
@@ -248,6 +265,7 @@ main(
     /* if we haven't found a reader, then we can't continue */
     if (ppread == NULL) {
 	fprintf(stderr,"Unknown input file format\n");
+	Formats();
 	exit(1);
     }
 

@@ -12,7 +12,7 @@ OPTIM	= -O2 -g -Wall
 INCS	= -I/usr/local/include
 CC	= gcc
 LDFLAGS = -L/usr/local/lib
-SUPPORTED_FORMATS = -DGROK_SNOOP -DGROK_TCPDUMP -DGROK_NETM
+SUPPORTED_FORMATS = -DGROK_SNOOP -DGROK_TCPDUMP -DGROK_NETM -DGROK_EP
 
 
 #
@@ -34,8 +34,8 @@ else
 endif
 
 
-OFILES= gcache.o tcptrace.o names.o netm.o output.o plotter.o print.o \
-	snoop.o tcpdump.o trace.o rexmit.o
+OFILES= etherpeek.o gcache.o tcptrace.o names.o netm.o output.o \
+	plotter.o print.o snoop.o tcpdump.o trace.o rexmit.o
 
 tcptrace: ${OFILES}
 	${CC} ${LDFLAGS} ${CFLAGS} ${OFILES} -o tcptrace ${LDLIBS}

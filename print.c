@@ -25,7 +25,7 @@ char *
 ts2ascii(
     struct timeval	*ptime)
 {
-	static char buf[100];
+	static char buf[30];
 	struct tm *ptm;
 	char *now;
 	int decimal;
@@ -34,8 +34,9 @@ ts2ascii(
 	now = asctime(ptm);
 	now[19] = '\00';
 
-	decimal = (ptime->tv_usec + 50) / 100;
-	sprintf(buf, "%s.%04d", now, decimal);
+/* 	decimal = (ptime->tv_usec + 50) / 100;*/  /* for 4 digits */
+	decimal = ptime->tv_usec;  /* for 6 digits */
+	sprintf(buf, "%s.%06d", now, decimal);
 
 	return(buf);
 }

@@ -119,7 +119,8 @@ int (*is_tcpdump())()
     char errbuf[100];
 
     if ((pcap = pcap_open_offline("-",errbuf)) == NULL) {
-	fprintf(stderr,"PCAP said: '%s'\n", errbuf);
+	if (debug > 2)
+	    fprintf(stderr,"PCAP said: '%s'\n", errbuf);
 	rewind(stdin);
 	return(NULL);
     }

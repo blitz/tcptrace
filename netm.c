@@ -51,6 +51,11 @@ struct netm_packet_header {
 int netm_oldversion;
 
 
+/* static buffers for reading */
+static struct ether_header *pep;
+static int *pip_buf;
+
+
 /* currently only works for ETHERNET */
 static int
 pread_netm(
@@ -66,8 +71,6 @@ pread_netm(
     struct netm_packet_header hdr;
     int len;
     int hlen;
-    static struct ether_header ep;
-    static int ip_buf[IP_MAXPACKET/sizeof(int)];  /* force alignment */
 
     while (1) {
 	hlen = netm_oldversion?
@@ -86,7 +89,7 @@ pread_netm(
 	len = (packlen + 3) & ~0x3;
 
 	/* read the ethernet header */
-	rlen=fread(&ep,1,sizeof(struct ether_header),stdin);
+	rlen=fread(pep,1,sizeof(struct ether_header),stdin);
 	if (rlen != sizeof(struct ether_header)) {
 	    fprintf(stderr,"Couldn't read ether header\n");
 	    return(0);
@@ -94,7 +97,7 @@ pread_netm(
 
 	/* read the rest of the packet */
 	len -= sizeof(struct ether_header);
-	if ((rlen=fread(ip_buf,1,len,stdin)) != len) {
+	if ((rlen=fread(pip_buf,1,len,stdin)) != len) {
 	    if (rlen != 0)
 		fprintf(stderr,
 			"Couldn't read %d more bytes, skipping last packet\n",
@@ -118,13 +121,14 @@ pread_netm(
 	}
 
 
-	*ppip  = (struct ip *) ip_buf;
-	*pphys  = &ep;
+	*ppip  = (struct ip *) pip_buf;
+	*pphys  = pep;
 	*pphystype = PHYS_ETHER;
 
 
 	/* if it's not TCP/IP, then skip it */
-	if ((ep.ether_type != ETHERTYPE_IP) || ((*ppip)->ip_p != IPPROTO_TCP))
+	if ((pep->ether_type != ETHERTYPE_IP) ||
+	    ((*ppip)->ip_p != IPPROTO_TCP))
 	    continue;
 
 
@@ -173,7 +177,13 @@ int (*is_netm())()
 	exit(-1);
     }
 
+    /* OK, it's mine.  Init some stuff */
+    pep = MallocZ(sizeof(struct ether_header));
+    pip_buf = MallocZ(IP_MAXPACKET);
+    
+
     return(pread_netm);
 }
 
 #endif GROK_NETM
+

@@ -23,7 +23,7 @@ ServiceName(
     static int cache = -1;
     tcelen len;
     struct servent *pse;
-    static char port_buf[50];
+    static char port_buf[20];
     char *sb_port;
 
     if (nonames) {
@@ -113,6 +113,15 @@ HostName(
     } else {
 	sb_host = inet_ntoa(ipaddress);
     }
+
+    if (use_short_names) {
+	char *pdot;
+
+	if ((pdot = strchr(sb_host,'.')) != NULL) {
+	    *pdot = '\00';  /* chop off the end */
+	}
+    }
+
     if (debug > 2)
 	fprintf(stderr,"Putting host %s='%s' in cache\n",
 		inet_ntoa(ipaddress), sb_host);
