@@ -222,7 +222,6 @@ SnapInsert(
 	   ptp_snap *new_node)
 {
    enum AVLRES tmp;
-   int dir;
    
    if (debug > 4)
      printf("SnapInsert(): Inserting a node in the AVL tree\n");
@@ -464,7 +463,6 @@ SnapRemove(
 	   tcp_pair_addrblock addr)
 {   
    enum AVLRES tmp = BALANCE;
-   int dir;
    
    if (debug > 4)
      printf("SnapRemove(): Removing a node from the AVL tree\n");
