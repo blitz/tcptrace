@@ -776,11 +776,11 @@ PrintSeqRep(
     
     if (ptcb && print_seq_zero && (ptcb->syn_count>0)) {
 	/* Relative form */
-	sprintf(buf,hex?"0x%08x(R)":"%d(R)",
+	sprintf(buf,hex?"0x%08x(R)":"%u(R)",
 		seq - ptcb->syn);
     } else {
 	/* Absolute form */
-	sprintf(buf,hex?"0x%08x":"%d",seq);
+	sprintf(buf,hex?"0x%08x":"%u",seq);
     }
     return(buf);
 }
