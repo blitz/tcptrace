@@ -422,21 +422,21 @@ void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr)
 /*
  * ipsameaddr: test for equality of two IPv4 or IPv6 addresses
  */
-int IP_SAMEADDR (ipaddr addr1, ipaddr addr2)
+int IP_SAMEADDR (ipaddr *addr1, ipaddr *addr2)
 {
     int ret = 0;
-    if (ADDR_ISV6(&addr1)) {
-	if (ADDR_ISV6(&addr2))
-	    ret = (memcmp(addr1.un.ip6.s6_addr,
-			  addr2.un.ip6.s6_addr,16) == 0);
+    if (ADDR_ISV6(addr1)) {
+	if (ADDR_ISV6(addr2))
+	    ret = (memcmp(addr1->un.ip6.s6_addr,
+			  addr2->un.ip6.s6_addr,16) == 0);
     } else {
-	if (ADDR_ISV4(&addr2))
-	    ret = (addr1.un.ip4.s_addr == addr2.un.ip4.s_addr);
+	if (ADDR_ISV4(addr2))
+	    ret = (addr1->un.ip4.s_addr == addr2->un.ip4.s_addr);
     }
    if (debug > 3)
 	printf("SameAddr(%s(%d),%s(%d)) returns %d\n",
-	       HostName(addr1), ADDR_VERSION(&addr1),
-	       HostName(addr2), ADDR_VERSION(&addr2),
+	       HostName(*addr1), ADDR_VERSION(addr1),
+	       HostName(*addr2), ADDR_VERSION(addr2),
 	       ret);
     return ret;
 }
@@ -444,22 +444,22 @@ int IP_SAMEADDR (ipaddr addr1, ipaddr addr2)
 /*  
  *  iplowaddr: test if one IPv4 or IPv6 address is lower than the second one
  */
-int IP_LOWADDR (ipaddr addr1, ipaddr addr2)
+int IP_LOWADDR (ipaddr *addr1, ipaddr *addr2)
 {
    int ret = 0;
-   if (ADDR_ISV6(&addr1)) {
-      if (ADDR_ISV6(&addr2))
-	ret = (memcmp(addr1.un.ip6.s6_addr,
-		      addr2.un.ip6.s6_addr,16) < 0);
+   if (ADDR_ISV6(addr1)) {
+      if (ADDR_ISV6(addr2))
+	ret = (memcmp(addr1->un.ip6.s6_addr,
+		      addr2->un.ip6.s6_addr,16) < 0);
    } else {
-      if (ADDR_ISV4(&addr2))
-	ret = (addr1.un.ip4.s_addr < addr2.un.ip4.s_addr);
+      if (ADDR_ISV4(addr2))
+	ret = (addr1->un.ip4.s_addr < addr2->un.ip4.s_addr);
    }
    
    if (debug > 3)
      printf("LowAddr(%s(%d),%s(%d)) returns %d\n",
-	    HostName(addr1), ADDR_VERSION(&addr1),
-	    HostName(addr2), ADDR_VERSION(&addr2),
+	    HostName(*addr1), ADDR_VERSION(addr1),
+	    HostName(*addr2), ADDR_VERSION(addr2),
 	    ret);
    return ret;
 }

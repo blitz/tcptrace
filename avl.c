@@ -234,14 +234,14 @@ SnapInsert(
       return BALANCE;
    }
    
-   else if (AVL_CheckHash(&new_node->addr_pair, &((*root)->addr_pair), &dir) == LOW) {
+   else if (AVL_WhichDir(&new_node->addr_pair, &((*root)->addr_pair)) == LT) {
       if ((tmp = SnapInsert(&(*root)->left, new_node)) == BALANCE) {
 	 return SnapLeftGrown(root);
       }
       return tmp;
    }
    
-   else if (AVL_CheckHash(&new_node->addr_pair, &((*root)->addr_pair), &dir) == HIGH) {
+   else if (AVL_WhichDir(&new_node->addr_pair, &((*root)->addr_pair)) == RT) {
       if ((tmp = SnapInsert(&(*root)->right, new_node)) == BALANCE) {
 	 return SnapRightGrown(root);
       }
@@ -473,7 +473,7 @@ SnapRemove(
       return 0;
    }
    
-   if (AVL_CheckHash(&addr, &((*root)->addr_pair), &dir) == LOW) {
+   if (AVL_WhichDir(&addr, &((*root)->addr_pair)) == LT) {
       if ((tmp = SnapRemove(&(*root)->left, addr)) == BALANCE) {
 	 return SnapLeftShrunk(root);
       }
@@ -481,7 +481,7 @@ SnapRemove(
       return tmp;
    }
    
-   if (AVL_CheckHash(&addr, &((*root)->addr_pair), &dir) == HIGH) {
+   if (AVL_WhichDir(&addr, &((*root)->addr_pair)) == RT) {
       if ((tmp = SnapRemove(&(*root)->right, addr)) == BALANCE) {
 	 return SnapRightShrunk(root);
       }

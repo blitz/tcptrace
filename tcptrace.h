@@ -875,8 +875,8 @@ int CompIsCompressed(void);
 Bool FileIsStdin(char *filename);
 struct tcb *ptp2ptcb(tcp_pair *ptp, struct ip *pip, struct tcphdr *ptcp);
 void IP_COPYADDR (ipaddr *toaddr, ipaddr fromaddr);
-int IP_SAMEADDR (ipaddr addr1, ipaddr addr2);
-int IP_LOWADDR (ipaddr addr1, ipaddr addr2);
+int IP_SAMEADDR (ipaddr *addr1, ipaddr *addr2);
+int IP_LOWADDR (ipaddr *addr1, ipaddr *addr2);
 void PcapSavePacket(char *filename, struct ip *pip, void *plast);
 void StringToArgv(char *buf, int *pargc, char ***pargv);
 void CopyAddr(tcp_pair_addrblock *, struct ip *pip,portnum,portnum);
@@ -909,9 +909,7 @@ void freequad(quadrant **);
 /* AVL tree support routines */
 enum AVLRES SnapInsert(ptp_snap **n, ptp_snap *new_node);
 enum AVLRES SnapRemove(ptp_snap **n, tcp_pair_addrblock address);
-int AVL_CheckHash(tcp_pair_addrblock *ptpa1,
-		  tcp_pair_addrblock *ptpa2, int *pdir);
-int AVL_CheckDir(tcp_pair_addrblock *ptpa1, tcp_pair_addrblock *ptpa2);
+int AVL_WhichDir(tcp_pair_addrblock *ptpa1, tcp_pair_addrblock *ptpa2);
     
 /* high-level line drawing */
 PLINE new_line(PLOTTER pl, char *label, char *color);
@@ -956,8 +954,12 @@ of bits as specified in RFC 2481 and draft-ietf-tsvwg-ecn-04.txt */
 #define B2A -1
 
 /* If the AVL node is to left or right in the AVL tree */
-#define LOW 2
-#define HIGH 3
+/* Words "LEFT" and "RIGHT" have already been taken in an enum
+ * above. Let us call them LT, RT just not to make it ambiguous for ourselves
+ * or the compiler or both :-)
+ */
+#define LT -2
+#define RT 2
 
 /*macros for maintaining the seqspace used for rexmit*/
 #define QUADSIZE	(0x40000000)

@@ -290,133 +290,85 @@ CopyAddr(
 }
 
 /* 
- * To see if the packet is in same or opposite direction
- * Also for AVL trees to see if a node is to the left or
- * right of the current node
+ * This function tells us which way to go (Left or Right) in search for our 
+ * matching 4-tuple {IP1:port1; IP2:port2} in the AVL tree hash-bucket.
+ * 
+ * It returns LT or RT depending on if we had to go left or right in the AVL Tree to 
+ * find our exact 4-tuple match, if it existed in the tree.
+ * If the exact 4-tuple is found, it returns 0.
  */
 
 int
-AVL_CheckDir(
+AVL_WhichDir(
 	     tcp_pair_addrblock *ptpa1,
 	     tcp_pair_addrblock *ptpa2)
 {
-   /* same as first packet */
-   
-   if ((ptpa1->a_port == ptpa2->a_port)) {
-      if ((ptpa1->b_port == ptpa2->b_port)) {
-	 if (IP_SAMEADDR(ptpa1->a_address, ptpa2->a_address)) {
-	    if (IP_SAMEADDR(ptpa1->b_address, ptpa2->b_address)) {
-	       if (debug > 3)
-		 printf("Packet in the same direction as first packet\n");
-	       return(A2B);  /* Found connection and same as first packet */
-	    }
-	    else if (IP_LOWADDR(ptpa1->b_address, ptpa2->b_address))
-	      return(LOW);  /* Connection to left in AVL tree */
-	    else
-	      return(HIGH); /* Connection to right in AVL tree */
-	 }
-	 else if (IP_LOWADDR(ptpa1->a_address, ptpa2->a_address))
-	   return(LOW);  /* Connection to left in AVL tree */
-	 else
-	   return(HIGH); /* Connection to right in AVL tree */
-      }
-   }
-   
-   /* reverse of first packet */
-   
-    if ((ptpa1->a_port == ptpa2->b_port)) {
-       if ((ptpa1->b_port == ptpa2->a_port)) {
-	  if (IP_SAMEADDR(ptpa1->a_address, ptpa2->b_address)) {
-	     if (IP_SAMEADDR(ptpa1->b_address, ptpa2->a_address)) {
-		if (debug > 3)
-		  printf("Packet in the reverse direction of first packet\n");
-		return(B2A);  /* Found connection and same as first packet */
-	     }
-	     else if (IP_LOWADDR(ptpa1->b_address, ptpa2->a_address))
-	       return(LOW);  /* Connection to left in AVL tree */
-	     else
-	       return(HIGH); /* Connection to right in AVL tree */
-	  }
-	  else if (IP_LOWADDR(ptpa1->a_address, ptpa2->b_address))
-	    return(LOW);  /* Connection to left in AVL tree */
-	  else
-	    return(HIGH); /* Connection to right in AVL tree */
-       }
+
+    /*
+     * Here is our algorithm. If ptpa1={x1:p1; x2:p2} and ptpa2={y1:q1; y2:q2}
+     * we choose X1=min(x1,x2) and X2=max(x1,x2); Similarly for Y1, Y2.
+     * P1=port associated with X1, i.e. it is p1 if x1<x2 and it is p2 if not.
+     * P2=port associated with X2. Similarly Q1, Q2 are calculated based on Y1,Y2.
+     * 
+     * Compare (X1, Y1)? ; X1<Y1 => LEFT; X1>Y1 => RIGHT; X1==Y1 => Continue down
+     * 
+     * Compare (X2, Y2)? ; X2<Y2 => LEFT; X2>Y2 => RIGHT; X2==Y2 => Continue down
+     * 
+     * Compare (P1, Q1)? ; P1<Q1 => LEFT; P1>Q1 => RIGHT; P1==Q1 => Continue down
+     * 
+     * Compare (P2, Q2)? ; P2<Q2 => LEFT; P2>Q2 => RIGHT;
+     * 
+     * If P2==Q2, then this connection should have matched the A2B or B2A catch 
+     * from WhichDir()
+     */
+	
+    ipaddr *X1, *X2, *Y1, *Y2;
+    int P1, P2, Q1, Q2;
+	
+    if (IP_LOWADDR(&(ptpa1->a_address), &(ptpa1->b_address))) {		
+        X1=&ptpa1->a_address;
+	P1=ptpa1->a_port;	    
+	X2=&ptpa1->b_address;
+	P2=ptpa1->b_port;
+    } 
+    else {
+        X1=&ptpa1->b_address;
+	P1=ptpa1->b_port;
+	X2=&ptpa1->a_address;
+	P2=ptpa1->a_port;
     }
 
-   if (ptpa1->a_port < ptpa1->b_port)
-     if (ptpa2->a_port < ptpa2->b_port) {
-	if (IP_LOWADDR(ptpa1->a_address, ptpa2->a_address))
-	  return(LOW); /* Connection to left in AVL tree */
-	else
-	  return(HIGH); /* Connection to right in AVL tree */
-     }
-                                                                                                                                   
-   if (ptpa1->a_port < ptpa1->b_port)
-     if (ptpa2->a_port > ptpa2->b_port) {
-	if (IP_LOWADDR(ptpa1->a_address, ptpa2->b_address))
-	  return(LOW); /* Connection to left in AVL tree */
-	else
-	  return(HIGH); /* Connection to right in AVL tree */
-     }
-   
-   if (ptpa1->a_port > ptpa1->b_port)
-     if (ptpa2->a_port < ptpa2->b_port) {
-	if (IP_LOWADDR(ptpa1->b_address, ptpa2->a_address))
-	  return(LOW); /* Connection to left in AVL tree */
-	else
-	  return(HIGH); /* Connection to right in AVL tree */
-     }
-                                                                                                                                   
-   if (ptpa1->a_port > ptpa1->b_port)
-     if (ptpa2->a_port > ptpa2->b_port) {
-	if (IP_LOWADDR(ptpa1->b_address, ptpa2->b_address))
-	  return(LOW); /* Connection to left in AVL tree */
-	else 
-	  return(HIGH); /* Connection to right in AVL tree */
-     }
-   
-   if (ptpa1->a_port == ptpa1->b_port) {
-      if (ptpa2->a_port < ptpa2->b_port) {
-	 if (IP_LOWADDR(ptpa1->a_address, ptpa2->a_address))
-	   return(LOW); /* Connection to left in AVL tree */
-	 else
-	   return(HIGH); /* Connection to right in AVL tree */
-      }
-      else if (ptpa2->a_port > ptpa2->b_port) {
-	 if (IP_LOWADDR(ptpa1->a_address, ptpa2->b_address))
-	   return(LOW); /* Connection to left in AVL tree */
-	 else
-	   return(HIGH); /* Connection to right in AVL tree */
-      }
-      else {
-	 if (IP_LOWADDR(ptpa1->a_address, ptpa2->a_address))
-	   return(LOW); /* Connection to left in AVL tree */
-	 else
-	   return(HIGH); /* Connection to right in AVL tree */
-      }
-   }
-   
-   /* different connection */
-   return(0);
-}
+    if (IP_LOWADDR(&(ptpa2->a_address), &(ptpa2->b_address))) {		
+        Y1=&ptpa2->a_address;
+	Q1=ptpa2->a_port;
+	Y2=&ptpa2->b_address;
+	Q2=ptpa2->b_port;
+    } 
+    else {
+        Y1=&ptpa2->b_address;
+	Q1=ptpa2->b_port;	    
+ 	Y2=&ptpa2->a_address;
+	Q2=ptpa2->a_port;
+    }
+
+    // Optimization suggested by Dr.Ostermann. Check the ports first.
+    if (P1<Q1) return LT;
+    if (Q1<P1) return RT;
+	
+    if (P2<Q2) return LT;
+    if (Q2<P2) return RT;
 
 
-int
-AVL_CheckHash(
-	      tcp_pair_addrblock *ptpa1,
-	      tcp_pair_addrblock *ptpa2,
-	      int      *pdir)
-{
-   /* Check if the hash value is lesser or greater than the other */
-   if (ptpa1->hash < ptpa2->hash)
-     return(LOW);
-   else if (ptpa1->hash > ptpa2->hash)
-     return(HIGH);
-   
-   /* If hash is the same, check the position of node in the AVL tree */
-   *pdir = AVL_CheckDir(ptpa1,ptpa2);
-   return(*pdir); 
+    if (IP_LOWADDR(X1,Y1)) return LT;
+    if (IP_LOWADDR(Y1,X1)) return RT;
+	
+    if (IP_LOWADDR(X2,Y2)) return LT;
+    if (IP_LOWADDR(Y2,X2)) return RT;
+	
+    // We should not come here if we called WhichDir before.
+    // fprintf(stderr, "Should not come here! May be WhichDir() was not called earlier\n"
+    // 		       "to see if the hash collision was a perfect match??\n");
+    return 0;
 }
 
 int
@@ -429,29 +381,29 @@ int
    /* Optimizer (under 'gcc version cygnus-2.0.2')*/
    
    /* same as first packet */
-   if (IP_SAMEADDR(ptpa1->a_address, ptpa2->a_address))
-     if (IP_SAMEADDR(ptpa1->b_address, ptpa2->b_address))
+   if (IP_SAMEADDR(&(ptpa1->a_address), &(ptpa2->a_address)))
+     if (IP_SAMEADDR(&(ptpa1->b_address), &(ptpa2->b_address)))
        if ((ptpa1->a_port == ptpa2->a_port))
 	 if ((ptpa1->b_port == ptpa2->b_port))
 	   return(A2B);
    
    /* reverse of first packet */
-   if (IP_SAMEADDR(ptpa1->a_address, ptpa2->b_address))
-     if (IP_SAMEADDR(ptpa1->b_address, ptpa2->a_address))
+   if (IP_SAMEADDR(&(ptpa1->a_address), &(ptpa2->b_address)))
+     if (IP_SAMEADDR(&(ptpa1->b_address), &(ptpa2->a_address)))
        if ((ptpa1->a_port == ptpa2->b_port))
 	 if ((ptpa1->b_port == ptpa2->a_port))
 	   return(B2A);
 #else /* BROKEN_COMPILER */
    /* same as first packet */
-   if (IP_SAMEADDR(ptpa1->a_address, ptpa2->a_address) &&
-       IP_SAMEADDR(ptpa1->b_address, ptpa2->b_address) &&
+   if (IP_SAMEADDR(&(ptpa1->a_address), &(ptpa2->a_address)) &&
+       IP_SAMEADDR(&(ptpa1->b_address), &(ptpa2->b_address)) &&
        (ptpa1->a_port == ptpa2->a_port) &&
        (ptpa1->b_port == ptpa2->b_port))
      return(A2B);
    
    /* reverse of first packet */
-   if (IP_SAMEADDR(ptpa1->a_address, ptpa2->b_address) &&
-       IP_SAMEADDR(ptpa1->b_address, ptpa2->a_address) &&
+   if (IP_SAMEADDR(&(ptpa1->a_address), &(ptpa2->b_address)) &&
+       IP_SAMEADDR(&(ptpa1->b_address), &(ptpa2->a_address)) &&
        (ptpa1->a_port == ptpa2->b_port) &&
        (ptpa1->b_port == ptpa2->a_port))
      return(B2A);
@@ -756,12 +708,14 @@ FindTTP(
     for (ptph = *pptph_head; ptph; ) {
        ++search_count;
 
-       /* Check if connection already seen or traverse the AVL tree
-	* to see the connection node position */
-       
-       conn_status = AVL_CheckHash(&tp_in,&ptph->addr_pair,&dir); 
-       
-       if (conn_status == A2B || conn_status == B2A) {
+       /* See if the current node in the AVL tree hash-bucket 
+	* is the exact same connection as ourselves,
+	* either in A2B or B2A directions.
+	*/
+	    
+       dir = WhichDir(&tp_in, &ptph->addr_pair);
+       	    
+       if (dir == A2B || dir == B2A) {
 
 	  /* OK, this looks good, suck it into memory */
 	  
@@ -882,14 +836,15 @@ FindTTP(
 	  *pdir = dir;
 	  return (ptp);
        }
-       
-       /* Traverse the AVL tree based on whether its on the left or right subtree */
-       else if (conn_status == LOW)
-	 ptph = ptph->left;
-       else if (conn_status == HIGH)
-	 ptph = ptph->right;
-       else if (!conn_status)
-	 break;
+       else {// WhichDir returned 0
+           conn_status = AVL_WhichDir(&tp_in,&ptph->addr_pair);	
+           if (conn_status == LT) ptph = ptph->left;
+           else if (conn_status == RT) ptph = ptph->right;
+           else if (!conn_status)  {
+	     fprintf(stderr, "I wouldn't expect AVL_WhichDir() to return 0 here!\n");
+	     break;
+	   }
+       }
     }
    
    
