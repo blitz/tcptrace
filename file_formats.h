@@ -113,6 +113,9 @@ struct supported_formats file_formats[] = {
 #ifdef GROK_NETSCOUT
 	{is_netscout,	"netscout","NetScout Manager format"},
 #endif /* GROK_NETSCOUT */
+#ifdef GROK_ERF
+	{is_erf,	"erf","Endace Extensible Record Format"},
+#endif /* GROK_ERF */
 };
 
 #define NUM_FILE_FORMATS (sizeof(file_formats) / sizeof(struct supported_formats))

@@ -1051,6 +1051,9 @@ typedef int pread_f(struct timeval *, int *, int *, void **,
 #ifdef GROK_NETSCOUT
 	pread_f *is_netscout(char *);
 #endif /* GROK_NETSCOUT */
+#ifdef GROK_ERF
+	pread_f *is_erf(char *);
+#endif /* GROK_ERF */
 
 #ifndef __VMS
 /* I've had problems with the memcpy function that gcc stuffs into the program

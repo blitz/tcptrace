@@ -110,7 +110,9 @@ DEFINES += -DGROK_NS
 # define GROK_NETSCOUT if you want tcptrace to understand ascii
 # formatted netscout output files
 DEFINES += -DGROK_NETSCOUT
-
+# define GROK_ERF if you want tcptrace to understand the output
+# format of the Endace Technology dagsnap program */
+DEFINES += -DGROK_ERF
 
 ################################################################## 
 # 
@@ -161,7 +163,7 @@ LDFLAGS += ${PCAP_LDFLAGS}
 
 
 # Source Files
-CFILES=compress.c etherpeek.c gcache.c mfiles.c names.c \
+CFILES=compress.c erf.c etherpeek.c gcache.c mfiles.c names.c \
 	netm.c output.c plotter.c print.c rexmit.c snoop.c nlanr.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \

@@ -170,6 +170,11 @@ static int callback(
 	memcpy((char *)ip_buf, buf+offset, iplen);
 	callback_plast = ip_buf+iplen-offset-1;
 	break;
+      case PCAP_DLT_C_HDLC:
+	offset=4;
+	memcpy((char *)ip_buf, buf+offset, iplen);
+	callback_plast = (char *)ip_buf+iplen-offset-1;
+	break;
       default:
 	fprintf(stderr,"Don't understand link-level format (%d)\n", type);
 	exit(1);
@@ -325,6 +330,10 @@ case 100:
       case PCAP_DLT_PRISM2:
 	eth_header.ether_type = htons(ETHERTYPE_IP);
 	physname = "PRISM2";
+	break;
+      case PCAP_DLT_C_HDLC:
+	eth_header.ether_type = htons(ETHERTYPE_IP);
+	physname = "Cisco HDLC";
 	break;
       default:
 	if (debug)

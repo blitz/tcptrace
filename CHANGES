@@ -525,3 +525,9 @@ Made the --csv/--tsv/--sv options' implementation better.
 Fixed a bug in traffic module, so that the number of open connections are
 printed correct in the traffic_stats.dat file, even without giving 
 the -C option.
+
+6.4.9 : 6 AUG 2003 Jitesh
+-----
+
+Included the code to recognize Endace ERF (Extensible Record Format), sent
+by Jesper Peterson.
