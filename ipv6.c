@@ -365,6 +365,37 @@ int IP_SAMEADDR (ipaddr addr1, ipaddr addr2)
 
 
 
+#ifndef HAVE_INET_PTON
+int
+inet_pton(int af, const char *src, void *dst)
+{
+    if (af == AF_INET) {
+	/* use standard function */
+	long answer = inet_addr(src);
+	if (answer != -1) {
+	    *((long *)dst) = answer;
+	    return(1);
+	}
+    } else if (af == AF_INET6) {
+	/* YUCC - lazy for now, not fully supported */
+	int shorts[8];
+	if (sscanf(src,"%x:%x:%x:%x:%x:%x:%x:%x",
+		   &shorts[0], &shorts[1], &shorts[2], &shorts[3],
+		   &shorts[4], &shorts[5], &shorts[6], &shorts[7]) == 8) {
+	    int i;
+	    for (i=0; i < 8; ++i)
+		((u_short *)dst)[i] = (u_short)shorts[i];
+	    return(1);
+	}
+    }
+
+    /* else, it failed */
+    return(0);
+}
+#endif /* HAVE_INET_PTON */
+
+
+
 #ifndef HAVE_INET_NTOP
 /*
  * inet_ntop: makes a string address of the 16 byte ipv6 address
@@ -418,4 +449,46 @@ IPV6ADDR2ADDR(
     memcpy(&addr.un.ip6.s6_addr,&addr6->s6_addr, 16);
 
     return(&addr);
+}
+
+
+/* given an internet address (IPv4 dotted decimal or IPv6 hex colon),
+   return an "ipaddr" (allocated from heap) */
+ipaddr *
+str2ipaddr(
+    char *str)
+{
+    ipaddr *pipaddr;
+
+    /* allocate space */
+    pipaddr = MallocZ(sizeof(ipaddr));
+
+    /* N.B. - uses standard IPv6 facility inet_pton from RFC draft */
+    if (strchr(str,'.') != NULL) {
+	/* has dots, better be IPv4 */
+	pipaddr->addr_vers = 4;
+	if (inet_pton(AF_INET, str,
+		      &pipaddr->un.ip4.s_addr) != 1) {
+	    if (debug)
+		fprintf(stderr,"Address string '%s' unparsable as IPv4\n",
+			str);
+	    return(NULL);
+	}
+    } else if (strchr(str,':') != NULL) {
+	/* has colons, better be IPv6 */
+	pipaddr->addr_vers = 6;
+	if (inet_pton(AF_INET6, str, 
+		      &pipaddr->un.ip6.s6_addr) != 1) {
+	    if (debug)
+		fprintf(stderr,"Address string '%s' unparsable as IPv6\n",
+			str);
+	    return(NULL);
+	}
+    } else {
+	if (debug)
+	    fprintf(stderr,"Address string '%s' unparsable\n", str);
+	return(NULL);
+    }
+
+    return(pipaddr);
 }
