@@ -1,0 +1,39 @@
+#!/bin/sh
+PLATFORM=`uname -smr | sed 's/[ \.]/_/g'`
+VERSION=`../versnum`
+OUTDIR=OUTPUT_${VERSION}_${PLATFORM}
+BINDIR=BINARY_${VERSION}_${PLATFORM}
+#
+echo "Saving Binary"
+rm -rf ${BINDIR}
+mkdir ${BINDIR}
+#
+# Grab docs...
+#
+cp ../BUGS ../FAQ ../CHANGES ../COPYRIGHT ../INSTALL ../README* ../WWW ${BINDIR}
+#
+# Grab binary
+#
+cp ../tcptrace ${BINDIR}
+#
+strip ${BINDIR}/tcptrace
+#
+# Tell how we got it...
+#
+cat >> ${BINDIR}/README.binary<<EOF
+ Date compiled:	`date`
+ Compiled by:	`whoami`
+ Compiled on:	`hostname`
+ Platform:	${PLATFORM}
+EOF
+#
+# leave a tar file up above
+#
+TARFILE=../bin.${PLATFORM}.${VERSION}.tar
+tar cf ${TARFILE} ${BINDIR}
+gzip ${TARFILE}
+echo "Left binary tar file in ${TARFILE}.gz"
+#
+exit 0
+
+

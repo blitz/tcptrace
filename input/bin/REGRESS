@@ -1,0 +1,40 @@
+#!/bin/sh
+PLATFORM=`uname -smr | sed 's/[ \.]/_/g'`
+OUTDIR=OUTPUT_${PLATFORM}
+BINDIR=BINARY_${PLATFORM}
+#
+DIFFS=DIFFS
+#
+echo "Platform is ${PLATFORM}"
+#
+echo "Cleaning..."
+rm -rf ${OUTDIR} ${DIFFS} *.xpl
+echo "Preparing output directory..."
+mkdir ${OUTDIR}
+#
+echo "Running each regression trace file"
+for FILE in *.*; do
+  echo -n "  ${FILE}:	"
+  # short output format
+  echo -n " short"
+  ../tcptrace +t -nr ${FILE} 2>&1 | bin/cleanup > ${OUTDIR}/$FILE.short
+  # long output format
+  echo -n " long"
+  ../tcptrace +t -lnr ${FILE} 2>&1 | bin/cleanup  > ${OUTDIR}/$FILE.long
+  # first 100 packets
+  echo -n " packets"
+  ../tcptrace +t -pn -E100 ${FILE} | bin/cleanup > ${OUTDIR}/$FILE.packets
+  # ALL PLOTS for first 1000 packets
+  echo -n " plots"
+  ../tcptrace +t -n -G -E1000 ${FILE} > /dev/null 2>&1
+  cksum *.xpl 2>/dev/null | sed 's/[ 	][ 	]*/	/g' > ${OUTDIR}/$FILE.xplots.cksum
+#  tar cf ${OUTDIR}/$FILE.xplots.tar *.xpl 2>/dev/null
+  # cleanup
+  rm -f *.xpl 
+  echo "."
+done
+#
+echo "Testing for differences from benchmark output"
+diff -r OUTPUTbench ${OUTDIR} | tee ${DIFFS}
+#
+exit 0

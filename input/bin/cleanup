@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# cleanup tcptrace output for regression
+# mostly just remove output that I don't EXPECT to be the same
+#
+grep -v "elapsed wallclock"
