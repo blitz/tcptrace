@@ -106,6 +106,7 @@ Bool graph_tsg = FALSE;
 Bool graph_segsize = FALSE;
 Bool graph_owin = FALSE;
 Bool graph_tline = FALSE;
+Bool graph_recvwin = FALSE;
 Bool hex = TRUE;
 Bool ignore_non_comp = FALSE;
 Bool dump_packet_data = FALSE;
@@ -224,6 +225,8 @@ static struct ext_bool_op {
      "show title on the graphs"},
     {"showrwinline", &show_rwinline,  TRUE,
      "show yellow receive-window line in owin graphs"},
+    {"graphrecvwin", &graph_recvwin,  TRUE,
+     "create recv window graph"},
     {"res_addr", &resolve_ipaddresses,  TRUE,
      "resolve IP addresses into names (may be slow)"},
     {"res_port", &resolve_ports,  TRUE,
@@ -2131,6 +2134,7 @@ ParseArgs(
 		    graph_owin = TRUE;
 		    graph_segsize = TRUE;
 		    graph_tline = TRUE;
+		    graph_recvwin = TRUE;
 		    break;
 		  case 'L': graph_tline = TRUE;
 		    fprintf(stderr, "\nWarning: You have chosen the option '-L' to plot Time Line Graphs.\n         This option is yet under development and may not reflect accurate results.\n         Please take a look at the file README.tline_graphs for more details.\n\n");
@@ -2338,6 +2342,7 @@ DumpFlags(void)
     fprintf(stderr,"graph segsize:    %s\n", BOOL2STR(graph_segsize));
     fprintf(stderr,"graph owin:       %s\n", BOOL2STR(graph_owin));
     fprintf(stderr,"graph tline:      %s\n", BOOL2STR(graph_tline));
+    fprintf(stderr,"graph recvwin:    %s\n", BOOL2STR(graph_recvwin));
     fprintf(stderr,"plotem:           %s\n",
 	    colorplot?"(color)":"(b/w)");
     fprintf(stderr,"hex printing:     %s\n", BOOL2STR(hex));

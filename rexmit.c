@@ -567,11 +567,12 @@ ack_in (tcb * ptcb,
     timeval last_xmit = { 0, 0 };
     enum t_ack ret = 0;
 
-    enum dup_ack_handling { BSD_VERSION = 1, /* Handling of duplicate ack's
-						based on the specifications of
-						BSD code */
-	LEGACY_VERSION = 2  /* Handling of duplicate ack's according to the 
-			       old versions of "tcptrace" */
+    enum dup_ack_handling {
+	BSD_VERSION = 1,	/* Handling of duplicate ack's
+				   based on the specifications of
+				   BSD code */
+	LEGACY_VERSION = 2	/* Handling of duplicate ack's according to the 
+				   old versions of "tcptrace" */
     };
     enum dup_ack_handling dup_ack_type;	/* default type is the code based on
 					   BSD specifications */

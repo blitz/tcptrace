@@ -479,6 +479,10 @@ typedef struct tcb {
     PLINE	owin_avg_line;
     PLINE 	owin_wavg_line;
 
+    /* RWIN Graph info for this one */
+    PLOTTER	recvwin_plotter;
+    PLINE	recvwin_line;
+
     /* for tracking unidirectional idle time */
     timeval	last_time;	/* last packet SENT from this side */
     u_llong	idle_max;	/* maximum idle time observed (usecs) */
@@ -682,6 +686,7 @@ extern Bool graph_tsg;
 extern Bool graph_segsize;
 extern Bool graph_owin;
 extern Bool graph_tline;
+extern Bool graph_recvwin;
 extern Bool hex;
 extern Bool ignore_non_comp;
 extern Bool resolve_ipaddresses;
@@ -1070,6 +1075,7 @@ struct tcp_options {
 #define TLINE_FILE_EXTENSION		"_tline.xpl"
 #define THROUGHPUT_FILE_EXTENSION	"_tput.xpl"
 #define CONTENTS_FILE_EXTENSION		"_contents.dat"
+#define RECVWIN_FILE_EXTENSION		"_rwin.xpl"
 
 /* name of file to store filtered output into */
 #define PASS_FILTER_FILENAME		"PF"

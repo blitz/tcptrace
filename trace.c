@@ -712,6 +712,34 @@ NewTTP(
 	    new_line(ptp->b2a.segsize_plotter, "avg segsize", "blue");
     }
 
+    /* init RWIN graphs */
+    ptp->a2b.recvwin_plotter = ptp->b2a.recvwin_plotter = NO_PLOTTER;
+    if (graph_recvwin && !ptp->ignore_pair) {
+	snprintf(title,sizeof(title),"%s_==>_%s (advertised receive window graph)",
+		ptp->a_endpoint, ptp->b_endpoint);
+	ptp->a2b.recvwin_plotter =
+	    new_plotter(&ptp->a2b,NULL,title,
+			graph_time_zero?"relative time":"time",
+			"advertised window (bytes)",
+			RECVWIN_FILE_EXTENSION);
+	snprintf(title,sizeof(title),"%s_==>_%s (advertised receive window graph)",
+		ptp->b_endpoint, ptp->a_endpoint);
+	ptp->b2a.recvwin_plotter =
+	    new_plotter(&ptp->b2a,NULL,title,
+			graph_time_zero?"relative time":"time",
+			"advertised window (bytes)",
+			RECVWIN_FILE_EXTENSION);
+	if (graph_time_zero) {
+	    /* set graph zero points */
+	    plotter_nothing(ptp->a2b.recvwin_plotter, current_time);
+	    plotter_nothing(ptp->b2a.recvwin_plotter, current_time);
+	}
+	ptp->a2b.recvwin_line =
+	    new_line(ptp->a2b.recvwin_plotter, "recvwin", "red");
+	ptp->b2a.recvwin_line =
+	    new_line(ptp->b2a.recvwin_plotter, "recvwin", "red");
+    }
+
     /* init RTT graphs */
     ptp->a2b.rtt_plotter = ptp->b2a.rtt_plotter = NO_PLOTTER;
 
@@ -1321,6 +1349,13 @@ RemoveTcpPair(
   }
   if (ptp->b2a.segsize_avg_line) {
     free(ptp->b2a.segsize_avg_line);
+  }
+
+  if (ptp->a2b.recvwin_line) {
+    free(ptp->a2b.recvwin_line);
+  }
+  if (ptp->b2a.recvwin_line) {
+    free(ptp->b2a.recvwin_line);
   }
 
   if (ptp->a2b.ss) {
@@ -2464,6 +2499,12 @@ dotrace(
 	    extend_line(thisdir->owin_avg_line, current_time,
 			(thisdir->owin_count?(thisdir->owin_tot/thisdir->owin_count):0)); 
 	}
+
+	/* add to rwin graph */
+	if (thisdir->recvwin_plotter != NO_PLOTTER) {
+	    extend_line(thisdir->recvwin_line, current_time, otherdir->win_last);
+	}
+
     }
     if (run_continuously) {
       UpdateConnLists(tcp_ptr, ptcp);
