@@ -26,7 +26,7 @@
  *		ostermann@cs.ohiou.edu
  */
 static char const rcsid_modules[] =
-    "$Id$";
+    "$Header$";
 
 
 /* 

@@ -26,9 +26,7 @@
  *		ostermann@cs.ohiou.edu
  */
 /* Added FDDI support 9/96 Jeffrey Semke, Pittsburgh Supercomputing Center */
-static char const copyright[] =
-    "@(#)Copyright (c) 1998 -- Shawn Ostermann -- Ohio University.  All rights reserved.\n";
-static char const rcsid[] =
+static char const rcsid_tcpdump[] =
     "@(#)$Header$";
 
 

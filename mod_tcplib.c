@@ -26,7 +26,7 @@
  *		ehelvey@cs.ohiou.edu
  * Modified:    Shawn Ostermann
  */
-static char const rcsid_tcplib[] =
+static char const rcsid[] =
    "$Id$";
 
 #ifdef LOAD_MODULE_TCPLIB
