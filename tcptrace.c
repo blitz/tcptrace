@@ -271,8 +271,10 @@ For large files, use \"-t\" and I'll give you progress feedback as I go\n\
 If there's a lot of hosts, particularly if they're non-local, use \"-n\"\n\
    to disable address to name mapping which can be very slow\n\
 If you're graphing results and only want the information for a few hosts,\n\
-   from a large file, use the -o flag, as in \"tcptrace -o3 -o5\" to only\n\
-   process connections 3 and 5.  Writing the graphics files can be slow\n\
+   from a large file, use the -o flag, as in \"tcptrace -o3,4,5 -o8,11\" to only\n\
+   process connections 3,4,5,8 and 11.  Writing the graphics files can be slow\n\
+   Alternately, the '-oFILE' option is OK if you want to write the connection\n\
+   list into a file using some other program\n\
 Make sure the snap length in the packet grabber is big enough.\n\
      Ethernet headers are 14 bytes, as are several others\n\
      IPv4 headers are at least 20 bytes, but can be as large as 64 bytes\n\
