@@ -53,6 +53,7 @@ static void Formats(void);
 static void Help(char *harg);
 static void Hints(void);
 static void ListModules(void);
+static void UsageModules(void);
 static void LoadModules(int argc, char *argv[]);
 static void ParseArgs(int *pargc, char *argv[]);
 static void ProcessFile(char *filename);
@@ -106,6 +107,7 @@ Help(
 {
     if (harg && *harg && strncmp(harg,"arg",3) == 0) {
 	Args();
+	UsageModules();
     } else if (harg && *harg && strncmp(harg,"filt",4) == 0) {
 	HelpFilter();
     } else if (harg && *harg && strncmp(harg,"conf",4) == 0) {
@@ -370,6 +372,21 @@ ListModules(void)
     for (i=0; i < NUM_MODULES; ++i) {
 	fprintf(stderr,"  %-15s  %s\n",
 		modules[i].module_name, modules[i].module_descr);
+	if (modules[i].module_usage) {
+	    fprintf(stderr,"    usage:\n");
+	    (*modules[i].module_usage)();
+	}
+    }
+}
+
+
+static void
+UsageModules(void)
+{
+    int i;
+
+    for (i=0; i < NUM_MODULES; ++i) {
+	fprintf(stderr," Module %s:\n", modules[i].module_name);
 	if (modules[i].module_usage) {
 	    fprintf(stderr,"    usage:\n");
 	    (*modules[i].module_usage)();
