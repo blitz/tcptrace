@@ -248,6 +248,10 @@ PrintTrace(
     StatLineI("rexmt data pkts","", pab->rexmit_pkts, pba->rexmit_pkts);
     StatLineI("rexmt data bytes","",
 	      pab->rexmit_bytes, pba->rexmit_bytes);
+    StatLineI("zwnd probe pkts","", 
+		  pab->num_zwnd_probes, pba->num_zwnd_probes);
+    StatLineI("zwnd probe bytes","",
+	      pab->zwnd_probe_bytes, pba->zwnd_probe_bytes);
     StatLineI("outoforder pkts","",
 	      pab->out_order_pkts, pba->out_order_pkts);
     StatLineI("pushed data pkts","", pab->data_pkts_push, pba->data_pkts_push);
