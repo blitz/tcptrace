@@ -214,7 +214,9 @@ pread_EP(
 		unsigned long long int usecs;
 
 		/* avoid ugly alignment problems */
-		memcpy(&usecs, &hdrv7.timestamphi, sizeof(usecs));
+		usecs = ntohl(hdrv7.timestamphi);
+		usecs <<= 32;
+		usecs |= ntohl(hdrv7.timestamplo);
 
 		ptime->tv_sec  = usecs / 1000000 - Mac2unix;
 		ptime->tv_usec = usecs % 1000000;
