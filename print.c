@@ -199,7 +199,7 @@ printipv4(
 
     /* fragmentation stuff */
     offset = ntohs(pip->ip_off) << 3;
-    mf = (pip->ip_off & IP_MF) != 0;
+    mf = (ntohs(pip->ip_off) & IP_MF) != 0;
     if ((offset == 0) && (!mf)) {
 	printf("\t  OFFSET: 0x%04x", ntohs(pip->ip_off));
     } else {
@@ -209,7 +209,7 @@ printipv4(
 	       offset,
 	       mf?"More Frags":"Last Frag");
     }
-    if ((pip->ip_off & IP_DF) != 0)
+    if ((ntohs(pip->ip_off) & IP_DF) != 0)
 	printf("  Don't Fragment\n");	/* don't fragment */
     printf("\n");
 }
