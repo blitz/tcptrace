@@ -335,4 +335,6 @@
     IPPROTO_ICMPV6 was causing infinite loop
 5.2.6 - Thu Jul  6, 2000
   fixed bug in TCP checksum code, it was always saying CORRECT
+6.0.0a - preparing for alpha release of version 6
+
 
