@@ -161,6 +161,12 @@ typedef struct ipaddr {
 #define IP_V(pip)    ((pip)->ip_v)
 #define TH_X2(ptcp)  ((ptcp)->th_x2)
 #define TH_OFF(ptcp) ((ptcp)->th_off)
+/* One alternative looks like this:
+#define IP_HL(pip)   ((pip)->ip_vhl&0xf)
+#define IP_V(pip)    ((pip)->ip_vhl>>4)
+#define TH_X2(ptcp)  ((ptcp)->th_xoff&0xf)
+#define TH_OFF(ptcp) ((ptcp)->th_xoff>>4)
+ */
 
 
 
