@@ -178,7 +178,7 @@ int (*is_tcpdump(void))()
 	printf("Using 'pcap' version of tcpdump\n");
 
     /* check the phys type (pretend everything is ethernet) */
-    memset(&eth_header,EH_SIZE,0);
+    memset(&eth_header,0,EH_SIZE);
     switch (type = pcap_datalink(pcap)) {
       case DLT_EN10MB:
 	/* OK, we understand this one */
