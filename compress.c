@@ -137,6 +137,8 @@ WhichFormat(
 	}
     }
 
+    pf = NULL;
+
     if (debug)
 	fprintf(stderr,"WhichFormat: failed to find compression format for file '%s'\n",
 		filename);
@@ -398,7 +400,7 @@ void
 CompCloseFile(
     char *filename)
 {
-    fclose(stdin);
+/*     fclose(stdin); */
 
     /* in case we have a child still in the background */
     wait(0);
