@@ -53,8 +53,8 @@ struct module {
     /* I won't.								*/
     int (*module_init) (int argc, char *argv[]);
 
-    /* Reading routing, for each packet grabbed, I'll pass you the TCP	*/
-    /* structure and the IP packet itself (in				*/
+    /* TCP Reading routine, for each packet grabbed, I'll pass you the	*/
+    /* TCP structure and the IP packet itself (in			*/
     /* host byte order).						*/
     void (*module_read) (
 	struct ip *pip,		/* the packet */
@@ -80,6 +80,28 @@ struct module {
     /* you with each read, otherwise return NULL  */
     void *(*module_newconn)(
 	tcp_pair *ptp);		/* info I have about this connection */
+
+    /* UDP Reading routine, for each packet grabbed, I'll pass you the	*/
+    /* UDP structure and the IP packet itself (in			*/
+    /* host byte order).						*/
+    void (*module_udp_read) (
+	struct ip *pip,		/* the packet */
+	udp_pair *pup,		/* info I have about this connection */
+	void *plast,		/* pointer to last byte */
+	void *pmodstruct);	/* module-specific structure */
+
+    /* If you want to be called for each new UDP connection */
+    /* If you want to attach a module-specifi structure to this */
+    /* udp_pair, return its address and I'll hand it back to */
+    /* you with each read, otherwise return NULL  */
+    void *(*module_udp_newconn)(
+	udp_pair *ptp);		/* info I have about this connection */
+
+    /* Called for non-tcp packets.  Tcptrace ignores them, but you */
+    /* might want them */
+    void (*module_nontcpudp_read) (
+	struct ip *pip,		/* the packet */
+	void *plast);		/* pointer to last byte */
 };
 
 
@@ -120,7 +142,8 @@ struct module modules[] = {
      http_done,			/* routine to call at program end */
      http_usage,		/* routine to call to print module usage */
      http_newfile,		/* routine to call on each new file */
-     http_newconn},		/* routine to call on each new connection */
+     http_newconn,		/* routine to call on each new connection */
+     NULL,NULL,NULL},			/* not interested in non-tcp */
 #endif /* LOAD_MODULE_HTTP */
 
     /* list other modules here ... */
@@ -129,12 +152,13 @@ struct module modules[] = {
     {TRUE,			/* make FALSE if you don't want to call it at all */
      "tcplib",			/* name of the module */
      "TCPLib analysis package",	/* description of the module */
-     tcplib_init,			/* routine to call to init the module */
-     tcplib_read,			/* routine to pass each TCP segment */
-     tcplib_done,			/* routine to call at program end */
+     tcplib_init,		/* routine to call to init the module */
+     tcplib_read,		/* routine to pass each TCP segment */
+     tcplib_done,		/* routine to call at program end */
      tcplib_usage,		/* routine to call to print module usage */
      tcplib_newfile,		/* routine to call on each new file */
-     tcplib_newconn},		/* routine to call on each new connection */
+     tcplib_newconn,		/* routine to call on each new connection */
+     NULL,NULL,NULL},			/* not interested in non-tcp */
 #endif /* LOAD_MODULE_TCPLIB */
 
 
@@ -143,7 +167,7 @@ struct module modules[] = {
     {TRUE,			/* make FALSE if you don't want to call it at all */
      "traffic", "traffic analysis package",
      traffic_init, traffic_read, traffic_done,		
-     traffic_usage, NULL, traffic_newconn},
+     traffic_usage, NULL, traffic_newconn, NULL,NULL,NULL},
 #endif /* LOAD_MODULE_TRAFFIC */
 
 #ifdef LOAD_MODULE_RTTGRAPH
@@ -154,7 +178,8 @@ struct module modules[] = {
      rttgraph_done,		/* routine to call at program end */
      rttgraph_usage,		/* routine to call to print module usage */
      NULL,			/* routine to call on each new file */
-     rttgraph_newconn},		/* routine to call on each new connection */
+     rttgraph_newconn,		/* routine to call on each new connection */
+     NULL,NULL,NULL},			/* not interested in non-tcp */
 #endif /* LOAD_MODULE_TRAFFIC */
 
 #ifdef LOAD_MODULE_COLLIE
@@ -162,7 +187,8 @@ struct module modules[] = {
     {TRUE,			/* make FALSE if you don't want to call it at all */
      "collie", "connection summary package",
      collie_init, NULL /* read */, collie_done,		
-     collie_usage, NULL, collie_newconn},
+     collie_usage, collie_newfile, collie_newconn,
+     NULL, collie_newudpconn, NULL},
 #endif /* LOAD_MODULE_COLLIE */
 };
 #define NUM_MODULES (sizeof(modules) / sizeof(struct module))
