@@ -62,6 +62,7 @@ static int
 pread_tcpdump(
     struct timeval	*ptime,
     int		 	*plen,
+    int		 	*ptlen,
     struct ether_header **ppep,
     struct ip		**ppip)
 {
@@ -76,6 +77,7 @@ pread_tcpdump(
     /* fill in all of the return values */
     *ptime = hdr.ts;
     *plen  = hdr.len;
+    *ptlen = hdr.caplen;
     *ppip  = (struct ip *) ip_buf;
     *ppep  = &ep;
 

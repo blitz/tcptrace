@@ -212,7 +212,7 @@ PrintTrace(
     else
 	thru_float = (float) (pab->data_bytes-pab->rexmit_bytes) / etime_float;
     if (thru_float == 0)
-	fprintf(stdout, "\tthroughput:        ----    ");
+	fprintf(stdout, "\tthroughput:          NA    ");
     else
 	fprintf(stdout, "\tthroughput:    %8.0f Bps", thru_float);
 
@@ -221,7 +221,7 @@ PrintTrace(
     else
     thru_float = (float) (pba->data_bytes-pba->rexmit_bytes) / etime_float;
     if (thru_float == 0)
-	fprintf(stdout, "\tthroughput:        ----\n");
+	fprintf(stdout, "\tthroughput:          NA\n");
     else
 	fprintf(stdout, "\tthroughput:    %8.0f Bps\n", thru_float);
 

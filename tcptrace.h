@@ -73,6 +73,7 @@ typedef struct tcb {
     u_long	packets;
     u_char	syn_count;
     u_char	fin_count;
+    u_char	reset_count;  /* resets SENT */
 
     /* information for RTO tracking */
     seg_rec	seglist_head;
@@ -182,7 +183,8 @@ void dotrace(struct timeval, int, struct ether_header *, struct ip *);
 char *EndpointName(long, long);
 char *HostLetter(u_int);
 char *ts(struct timeval	*);
-int Complete(tcp_pair *);
+int ConnComplete(tcp_pair *);
+int ConnReset(tcp_pair *);
 void PrintBrief(tcp_pair *);
 void PrintTrace(tcp_pair *);
 void calc_rtt(tcb *, struct timeval, struct tcphdr *, struct ip *);
@@ -211,7 +213,7 @@ void plotter_htick(PLOTTER, struct timeval, u_long);
 void plotter_vtick(PLOTTER, struct timeval, u_long);
 void plotter_text(PLOTTER, struct timeval, u_long, char *, char  *);
 void printeth(struct ether_header *);
-void printpacket(struct timeval, int, struct ether_header *, struct ip *);
+void printpacket(struct timeval, int, int, struct ether_header *, struct ip *);
 void printtcp(struct ip *);     
 void seglist_init(tcb *);
 
@@ -228,6 +230,8 @@ void seglist_init(tcb *);
 #define FIN_SET(ptcp)((ptcp)->th_flags & TH_FIN)
 #define ACK_SET(ptcp)((ptcp)->th_flags & TH_ACK)
 #define RESET_SET(ptcp)((ptcp)->th_flags & TH_RST)
+#define PUSH_SET(ptcp)((ptcp)->th_flags & TH_PUSH)
+#define URGENT_SET(ptcp)((ptcp)->th_flags & TH_URG)
 
 
 /* connection directions */

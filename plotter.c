@@ -201,7 +201,7 @@ plotter_done()
     for (pl = 0; pl < plotter_ix; ++pl) {
 	if ((f = fplot[pl]) == NULL)
 	    continue;
-	if (!ignore_non_comp || Complete(p2plast[pl]->ptp)) {
+	if (!ignore_non_comp || ConnComplete(p2plast[pl]->ptp)) {
 	    fprintf(f,"go\n");
 	    fclose(f);
 	} else {

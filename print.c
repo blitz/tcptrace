@@ -87,12 +87,12 @@ printtcp(
     printf("\tTCP SPORT: %u\n", ntohs(ptcp->th_sport));
     printf("\t    DPORT: %u\n", ntohs(ptcp->th_dport));
     printf("\t    FLG:   %c%c%c%c%c%c\n",
-	   (ptcp->th_flags & TH_FIN)?'F':'-',
-	   (ptcp->th_flags & TH_SYN)?'S':'-',
-	   (ptcp->th_flags & TH_RST)?'R':'-',
-	   (ptcp->th_flags & TH_PUSH)?'P':'-',
-	   (ptcp->th_flags & TH_ACK)?'A':'-',
-	   (ptcp->th_flags & TH_URG)?'U':'-');
+	   URGENT_SET(ptcp)?'U':'-',
+	   ACK_SET(ptcp)?   'A':'-',
+	   PUSH_SET(ptcp)?  'P':'-',
+	   RESET_SET(ptcp)? 'R':'-',
+	   SYN_SET(ptcp)?   'S':'-',
+	   FIN_SET(ptcp)?   'F':'-');
     printf(
 	hex?"\t    SEQ:   0x%08x\n":"\t    SEQ:   %d\n",
 	ntohl(ptcp->th_seq));
@@ -100,9 +100,10 @@ printtcp(
 	hex?"\t    ACK:   0x%08x\n":"\t    ACK:   %d\n",
 	ntohl(ptcp->th_ack));
     printf("\t    WIN:   %u\n", ntohs(ptcp->th_win));
-    printf("\t    OFF:   %u\n", ptcp->th_off);
+    if (ptcp->th_off != 5)
+        printf("\tHDR LEN:   %u\n", ptcp->th_off*4);
     if (tcp_data_length > 0)
-	printf("\t    data:  %u bytes\n", tcp_data_length);
+	printf("\t   data:   %u bytes\n", tcp_data_length);
 }
 
 
@@ -111,10 +112,14 @@ void
 printpacket(
      struct timeval	time,
      int		len,
+     int		tlen,
      struct ether_header *pep,
      struct ip		*pip)
 {
-    printf("\tPacket Length: %d\n", len);
+    if (len == tlen)
+        printf("\tPacket Length: %d\n", len);
+    else
+        printf("\tPacket Length: %d (saved length %d)\n", len,tlen);
 
     printf("\tCollected: %s\n", ts(&time));
 

@@ -17,8 +17,8 @@
 /* information necessary to understand Solaris Snoop output */
 #define SNOOP_DUMP_OFFSET 16
 struct snoop_packet_header {
-    unsigned int	tlen;
     unsigned int	len;
+    unsigned int	tlen;
     unsigned int	unused2;
     unsigned int	unused3;
     unsigned int	secs;
@@ -31,6 +31,7 @@ static int
 pread_snoop(
     struct timeval	*ptime,
     int		 	*plen,
+    int		 	*ptlen,
     struct ether_header **ppep,
     struct ip		**ppip)
 {
@@ -52,7 +53,7 @@ pread_snoop(
 	return(0);
     }
 
-    packlen = hdr.len;
+    packlen = hdr.tlen;
     /* round up to multiple of 4 bytes */
     len = (packlen + 3) & ~0x3;
 
@@ -74,6 +75,7 @@ pread_snoop(
     ptime->tv_sec  = hdr.secs;
     ptime->tv_usec = hdr.usecs;
     *plen          = hdr.len;
+    *ptlen         = hdr.tlen;
 
 
     *ppip  = (struct ip *) ip_buf;
