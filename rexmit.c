@@ -63,7 +63,7 @@ static void collapse_quad(quadrant *);
 static segment *create_seg(seqnum, seglen);
 static quadrant *whichquad(seqspace *, seqnum);
 static quadrant *create_quadrant(void);
-static int addseg(tcb *, quadrant *, seglen, seqnum, Bool *);
+static int addseg(tcb *, quadrant *, seqnum, seglen, Bool *);
 static void rtt_retrans(tcb *, segment *);
 static enum t_ack rtt_ackin(tcb *, segment *, Bool rexmit);
 static void freequad(quadrant **);
