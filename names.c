@@ -19,7 +19,7 @@
 
 char *
 ServiceName(
-     long port)
+     u_short port)
 {
     static int cache = -1;
     tcelen len;
@@ -28,13 +28,13 @@ ServiceName(
     char *sb_port;
 
     if (nonames) {
-	sprintf(port_buf,"%d",port);
+	sprintf(port_buf,"%hd",port);
 	return(port_buf);
     }
 
     /* only small numbers have names */
     if (port > 1023) {
-	sprintf(port_buf,"%d",port);
+	sprintf(port_buf,"%hd",port);
 	return(port_buf);
     }
 
@@ -99,13 +99,13 @@ HostName(
     }
     len = sizeof(name_buf);
     if (debug > 2)
-	fprintf(stderr,"Searching cache for host %x='%s'\n",
+	fprintf(stderr,"Searching cache for host %lx='%s'\n",
 		addr, name_buf);
     if (calookup(cache,
 		 (char *) &addr,    (tcelen)  sizeof(addr),
 		 (char *) name_buf, &len) == OK) {
 	if (debug > 2)
-	    fprintf(stderr,"Found host %x='%s' in cache\n",
+	    fprintf(stderr,"Found host %lx='%s' in cache\n",
 		    addr, name_buf);
 	return(name_buf);
     }
@@ -118,7 +118,7 @@ HostName(
 	sb_host = inet_ntoa(ina);
     }
     if (debug > 2)
-	fprintf(stderr,"Putting host %x='%s' in cache\n",
+	fprintf(stderr,"Putting host %lx='%s' in cache\n",
 		addr, sb_host);
     cainsert(cache,
 	     (char *) &addr,   (tcelen)sizeof(addr),
