@@ -562,6 +562,7 @@ typedef struct ptp_ptr {
   tcp_pair		*ptp;
 } ptp_ptr;
 
+#define NONREAL_LIVE_CONN_INTERVAL      4*60    /* 4 minutes */
 #define REMOVE_LIVE_CONN_INTERVAL	8*3600	/* 8 hours */
 #define REMOVE_CLOSED_CONN_INTERVAL	8*60	/* 8 minutes */
 #define UPDATE_INTERVAL			30	/* 30 seconds */
@@ -676,6 +677,7 @@ extern Bool conn_num_threshold;
 extern Bool xplot_all_files;
 extern Bool ns_hdrs;
 extern u_long remove_live_conn_interval;
+extern u_long nonreal_live_conn_interval;
 extern u_long remove_closed_conn_interval;
 extern u_long update_interval;
 extern u_long max_conn_num;

@@ -143,7 +143,6 @@ char *b2a_seg_color     = "yellow";
 char *ackdongle_nosample_color	= "blue";
 char *ackdongle_ambig_color	= "red";
 
-
 /* return elapsed time in microseconds */
 /* (time2 - time1) */
 double
@@ -580,6 +579,7 @@ static ptp_ptr	*closed_conn_list_head = NULL;
 static ptp_ptr	*closed_conn_list_tail = NULL;
 static timeval	last_update_time = {0, 0};
 
+
 static tcp_pair *
 FindTTP(
     struct ip *pip,
@@ -682,7 +682,7 @@ FindTTP(
 	    } 
 
 	    if (/* rule 1 */
-		(elapsed(ptp->last_time,current_time)/1000000 > (4*60))
+		(elapsed(ptp->last_time,current_time)/1000000 > nonreal_live_conn_interval)//(4*60)) - Using nonreal_live_conn_interval instead of the 4 mins heuristic
 		|| /* rule 2 */
 		((SYN_SET(ptcp)) && 
 		 (((thisdir->fin_count >= 1) ||
@@ -792,7 +792,7 @@ FindTTP(
       return (tcp_pair *)(ptph->ptp);
 }
      
- 
+
 static void 
 UpdateConnLists(
 		ptp_ptr *tcp_ptr,
@@ -1905,7 +1905,7 @@ dotrace(
 
         if (run_continuously) {
             UpdateConnLists(tcp_ptr, ptcp); /*Ramani: Call this even in nocontinuous mode */
-            UpdateConnLists(tcp_ptr, ptcp);
+        }
 	return(ptp_save);
     }
    

@@ -140,6 +140,7 @@ Bool xplot_all_files = FALSE;
 Bool conn_num_threshold = FALSE;
 Bool ns_hdrs = TRUE;
 u_long remove_live_conn_interval = REMOVE_LIVE_CONN_INTERVAL;
+u_long nonreal_live_conn_interval = NONREAL_LIVE_CONN_INTERVAL;
 u_long remove_closed_conn_interval = REMOVE_CLOSED_CONN_INTERVAL;
 u_long update_interval = UPDATE_INTERVAL;
 u_long max_conn_num = MAX_CONN_NUM;
@@ -175,6 +176,7 @@ char *output_filename = NULL;
 static char *update_interval_st = NULL;
 static char *max_conn_num_st = NULL;
 static char *live_conn_interval_st = NULL;
+static char *nonreal_conn_interval_st = NULL;
 static char *closed_conn_interval_st = NULL;
 
 /* for elapsed processing time */
@@ -258,6 +260,7 @@ static u_long VerifyPositive(char *varname, char *value);
 static void VerifyUpdateInt(char *varname, char *value);
 static void VerifyMaxConnNum(char *varname, char *value);
 static void VerifyLiveConnInt(char *varname, char *value);
+static void VerifyNonrealLiveConnInt(char *varname, char*value);
 static void VerifyClosedConnInt(char *varname, char *value);
 
 /* extended variable options */
@@ -283,7 +286,9 @@ static struct ext_var_op {
      "maximum number of connections to keep at a time in real-time mode"},
     {"remove_live_conn_interval", &live_conn_interval_st, VerifyLiveConnInt,
      "idle time after which an open connection is removed in real-time mode"},
-    {"remove_closed_conn_interval", &closed_conn_interval_st, VerifyClosedConnInt,
+    {"nonreal_live_conn_interval", &nonreal_conn_interval_st, VerifyNonrealLiveConnInt,
+     "idle time after which an open connection is removed in nonreal-time mode"},
+     {"remove_closed_conn_interval", &closed_conn_interval_st, VerifyClosedConnInt,
      "time interval after which a closed connection is removed in real-time mode"},
 	{"xplot_args", &xplot_args, NULL,
 	 "arguments to pass to xplot, if we are calling xplot from here"},
@@ -1725,6 +1730,14 @@ VerifyLiveConnInt(
     char *value)
 {
     remove_live_conn_interval = VerifyPositive(varname, value);
+}
+
+static void
+  VerifyNonrealLiveConnInt(
+		        char *varname,
+		        char *value)
+{
+   nonreal_live_conn_interval = VerifyPositive(varname, value);
 }
 
 
