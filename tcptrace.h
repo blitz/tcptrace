@@ -327,7 +327,7 @@ void plotter_darrow(PLOTTER, timeval, u_long);
 void plotter_box(PLOTTER, timeval, u_long);
 void plotter_arrow(PLOTTER, timeval, u_long, char);
 void plot_init(void);
-void dotrace(struct ip *, void *plast);
+tcp_pair *dotrace(struct ip *, void *plast);
 void PrintTrace(tcp_pair *);
 void PrintBrief(tcp_pair *);
 void OnlyConn(int);
