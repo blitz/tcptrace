@@ -26,7 +26,7 @@
  *		ostermann@cs.ohiou.edu
  */
 static char const rcsid_compress[] =
-    "@(#)";
+    "$Id$";
 
 #define COMP_HDR_SIZE (8*1024)	/* number of bytes from a compressed file that */
 				/* we save into a real file for header check, */
