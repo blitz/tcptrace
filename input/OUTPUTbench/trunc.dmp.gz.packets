@@ -1,0 +1,23 @@
+1 arg remaining, starting with 'trunc.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+Packet 1
+	Packet Length: 60
+	Collected: Tue Feb  3 20:01:55.857081 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 204.123.2.84 
+	IP  Dest: 208.159.216.49 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 56
+	     LEN: 28
+	      ID: 47376
+	   CKSUM: 0xf22a
+	  OFFSET: 0x6000 (frag: 8 bytes at offset 0 - More Frags)  Don't Fragment
+
+1 packets seen, 0 TCP packets traced
+trace file elapsed time: 0:00:00.000000
+no traced TCP packets

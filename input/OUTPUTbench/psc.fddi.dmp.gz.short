@@ -1,0 +1,7 @@
+1 arg remaining, starting with 'psc.fddi.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+529 packets seen, 529 TCP packets traced
+trace file elapsed time: 0:00:00.878610
+TCP connection info:
+  1: 128.182.40.126:1034 - 128.182.61.120:1066 (a2b)  240>  289<  (complete)

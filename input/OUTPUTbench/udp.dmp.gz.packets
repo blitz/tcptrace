@@ -1,0 +1,406 @@
+1 arg remaining, starting with 'udp.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+Packet 1
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.704304 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61485
+	   CKSUM: 0x7a82
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 2
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.706838 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26265
+	   CKSUM: 0x0417
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 3
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.713414 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61486
+	   CKSUM: 0x7a81
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 4
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.714916 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26266
+	   CKSUM: 0x0416
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 5
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.715121 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61487
+	   CKSUM: 0x7a80
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 6
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.716452 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26267
+	   CKSUM: 0x0415
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 7
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.716662 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61488
+	   CKSUM: 0x7a7f
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 8
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.720029 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26268
+	   CKSUM: 0x0414
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 9
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.720235 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61489
+	   CKSUM: 0x7a7e
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 10
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.721586 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26269
+	   CKSUM: 0x0413
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 11
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.721795 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61490
+	   CKSUM: 0x7a7d
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 12
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.724676 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26270
+	   CKSUM: 0x0412
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 13
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.724884 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61491
+	   CKSUM: 0x7a7c
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 14
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.727912 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26271
+	   CKSUM: 0x0411
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 15
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.728119 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61492
+	   CKSUM: 0x7a7b
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 16
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.729730 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26272
+	   CKSUM: 0x0410
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 17
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.729957 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61493
+	   CKSUM: 0x7a7a
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 18
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.732896 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26273
+	   CKSUM: 0x040f
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 19
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.733104 1998
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 08:00:20:22:46:6a
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 132.235.3.148 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 61494
+	   CKSUM: 0x7a79
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 35142 
+	    DPRT: 7 
+	    DLEN: 62 (only 26 bytes in dump file)
+Packet 20
+	Packet Length: 96 (saved length 68)
+	Collected: Fri Aug 14 12:52:27.734482 1998
+	ETH Srce: 08:00:20:22:46:6a
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.148 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x11 (UDP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 82
+	      ID: 26274
+	   CKSUM: 0x040e
+	  OFFSET: 0x4000  Don't Fragment
+
+	UDP SPRT: 7 
+	    DPRT: 35142 
+	    DLEN: 62 (only 26 bytes in dump file)
+20 packets seen, 0 TCP packets traced
+trace file elapsed time: 0:00:00.030178
+no traced TCP packets

@@ -1,0 +1,2457 @@
+1 arg remaining, starting with 'ipv6_ftp_nasa.snp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+Packet 1
+	Packet Length: 78
+	Collected: Mon Mar  2 11:51:09.763956 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 24
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   ----S- (0x02)
+	     SEQ: 0x8a0e0945
+	     ACK: 0x00000000
+	     WIN: 8640
+	    HLEN: 24
+	   CKSUM: 0x4a00
+	    DLEN: 0
+	    OPTS: 4 bytes	 MSS(1440)
+Packet 2
+	Packet Length: 78
+	Collected: Mon Mar  2 11:51:09.765437 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 24
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 21 
+	    DPRT: 33793 
+	     FLG:   -A--S- (0x12)
+	     SEQ: 0x8e963f61
+	     ACK: 0x8a0e0946
+	     WIN: 8640
+	    HLEN: 24
+	   CKSUM: 0x7bf7
+	    DLEN: 0
+	    OPTS: 4 bytes	 MSS(1440)
+Packet 3
+	Packet Length: 74
+	Collected: Mon Mar  2 11:51:09.765760 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8a0e0946
+	     ACK: 0x8e963f62
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x93a0
+	    DLEN: 0
+Packet 4
+	Packet Length: 86
+	Collected: Mon Mar  2 11:51:14.450374 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 15
+	    Flow: 0
+	    PLEN: 32
+	    NXTH: 58 (IPv6 ICMP)
+	    HLIM: 255
+Packet 5
+	Packet Length: 86
+	Collected: Mon Mar  2 11:51:14.451207 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 15
+	    Flow: 0
+	    PLEN: 40
+	    NXTH: 58 (IPv6 ICMP)
+	    HLIM: 255
+Packet 6
+	Packet Length: 136
+	Collected: Mon Mar  2 11:51:21.704882 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 82
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 21 
+	    DPRT: 33793 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8e963f62
+	     ACK: 0x8a0e0946
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x11dc
+	    DLEN: 62
+	    data: 62 bytes
+Packet 7
+	Packet Length: 85
+	Collected: Mon Mar  2 11:51:21.716106 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 31
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8a0e0946
+	     ACK: 0x8e963fa0
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0xeaba
+	    DLEN: 11
+	    data: 11 bytes
+Packet 8
+	Packet Length: 107
+	Collected: Mon Mar  2 11:51:21.724017 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 53
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 21 
+	    DPRT: 33793 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8e963fa0
+	     ACK: 0x8a0e0951
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0xbcde
+	    DLEN: 33
+	    data: 33 bytes
+Packet 9
+	Packet Length: 74
+	Collected: Mon Mar  2 11:51:21.770552 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8a0e0951
+	     ACK: 0x8e963fc1
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x9336
+	    DLEN: 0
+Packet 10
+	Packet Length: 91
+	Collected: Mon Mar  2 11:51:25.826392 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 37
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8a0e0951
+	     ACK: 0x8e963fc1
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x13c2
+	    DLEN: 17
+	    data: 17 bytes
+Packet 11
+	Packet Length: 74
+	Collected: Mon Mar  2 11:51:25.872140 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 21 
+	    DPRT: 33793 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8e963fc1
+	     ACK: 0x8a0e0962
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x9325
+	    DLEN: 0
+Packet 12
+	Packet Length: 100
+	Collected: Mon Mar  2 11:51:25.872925 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 46
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 21 
+	    DPRT: 33793 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8e963fc1
+	     ACK: 0x8a0e0962
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x9ceb
+	    DLEN: 26
+	    data: 26 bytes
+Packet 13
+	Packet Length: 74
+	Collected: Mon Mar  2 11:51:25.920445 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8a0e0962
+	     ACK: 0x8e963fdb
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x930b
+	    DLEN: 0
+Packet 14
+	Packet Length: 82
+	Collected: Mon Mar  2 11:51:34.826184 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 28
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8a0e0962
+	     ACK: 0x8e963fdb
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0xc109
+	    DLEN: 8
+	    data: 8 bytes
+Packet 15
+	Packet Length: 94
+	Collected: Mon Mar  2 11:51:34.827770 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 40
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 21 
+	    DPRT: 33793 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8e963fdb
+	     ACK: 0x8a0e096a
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x0004
+	    DLEN: 20
+	    data: 20 bytes
+Packet 16
+	Packet Length: 74
+	Collected: Mon Mar  2 11:51:34.870449 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8a0e096a
+	     ACK: 0x8e963fef
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x92ef
+	    DLEN: 0
+Packet 17
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:47.784391 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37181
+	   CKSUM: 0x7aa9
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b42c
+	     ACK: 0xea9f797d
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x345a
+	    DLEN: 1
+	    data: 1 bytes
+Packet 18
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:47.791088 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 41
+	      ID: 4075
+	   CKSUM: 0xfefb
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f797d
+	     ACK: 0x6607b42d
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x3459
+	    DLEN: 1
+	    data: 1 bytes
+Packet 19
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:47.840746 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37182
+	   CKSUM: 0x7aa9
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b42d
+	     ACK: 0xea9f797e
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x9961
+	    DLEN: 0
+Packet 20
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:47.964221 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37183
+	   CKSUM: 0x7aa7
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b42d
+	     ACK: 0xea9f797e
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x2158
+	    DLEN: 1
+	    data: 1 bytes
+Packet 21
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:47.968024 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 41
+	      ID: 4076
+	   CKSUM: 0xfefa
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f797e
+	     ACK: 0x6607b42e
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x2157
+	    DLEN: 1
+	    data: 1 bytes
+Packet 22
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:48.010477 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37184
+	   CKSUM: 0x7aa7
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b42e
+	     ACK: 0xea9f797f
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x995f
+	    DLEN: 0
+Packet 23
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:48.024139 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37185
+	   CKSUM: 0x7aa5
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b42e
+	     ACK: 0xea9f797f
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x3056
+	    DLEN: 1
+	    data: 1 bytes
+Packet 24
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:48.030086 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 41
+	      ID: 4077
+	   CKSUM: 0xfef9
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f797f
+	     ACK: 0x6607b42f
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x3055
+	    DLEN: 1
+	    data: 1 bytes
+Packet 25
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:48.080771 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37186
+	   CKSUM: 0x7aa5
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b42f
+	     ACK: 0xea9f7980
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x995d
+	    DLEN: 0
+Packet 26
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:48.174129 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37187
+	   CKSUM: 0x7aa3
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b42f
+	     ACK: 0xea9f7980
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x2554
+	    DLEN: 1
+	    data: 1 bytes
+Packet 27
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:48.180454 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 41
+	      ID: 4078
+	   CKSUM: 0xfef8
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f7980
+	     ACK: 0x6607b430
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x2553
+	    DLEN: 1
+	    data: 1 bytes
+Packet 28
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:48.230378 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37188
+	   CKSUM: 0x7aa3
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b430
+	     ACK: 0xea9f7981
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x995b
+	    DLEN: 0
+Packet 29
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:48.294250 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37189
+	   CKSUM: 0x7aa1
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b430
+	     ACK: 0xea9f7981
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x8c52
+	    DLEN: 1
+	    data: 1 bytes
+Packet 30
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:48.297195 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 42
+	      ID: 4079
+	   CKSUM: 0xfef6
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f7981
+	     ACK: 0x6607b431
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x8c46
+	    DLEN: 2
+	    data: 2 bytes
+Packet 31
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:48.340431 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37190
+	   CKSUM: 0x7aa1
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b431
+	     ACK: 0xea9f7983
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x9958
+	    DLEN: 0
+Packet 32
+	Packet Length: 63
+	Collected: Mon Mar  2 11:51:48.350581 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 49
+	      ID: 4080
+	   CKSUM: 0xfeee
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f7983
+	     ACK: 0x6607b431
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0xd4c7
+	    DLEN: 9
+	    data: 9 bytes
+Packet 33
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:48.400340 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37191
+	   CKSUM: 0x7aa0
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b431
+	     ACK: 0xea9f798c
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x994f
+	    DLEN: 0
+Packet 34
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:48.410904 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 42
+	      ID: 4081
+	   CKSUM: 0xfef4
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f798c
+	     ACK: 0x6607b431
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x7525
+	    DLEN: 2
+	    data: 2 bytes
+Packet 35
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:48.460359 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37192
+	   CKSUM: 0x7a9f
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b431
+	     ACK: 0xea9f798e
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x994d
+	    DLEN: 0
+Packet 36
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:48.884224 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37193
+	   CKSUM: 0x7a9d
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b431
+	     ACK: 0xea9f798e
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x3444
+	    DLEN: 1
+	    data: 1 bytes
+Packet 37
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:49.070407 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37194
+	   CKSUM: 0x7a9c
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b431
+	     ACK: 0xea9f798e
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x3444
+	    DLEN: 1
+	    data: 1 bytes
+Packet 38
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:49.450443 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37195
+	   CKSUM: 0x7a9b
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b431
+	     ACK: 0xea9f798e
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x344c
+	    DLEN: 1
+	    data: 1 bytes
+Packet 39
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:49.466432 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 41
+	      ID: 4086
+	   CKSUM: 0xfef0
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f798e
+	     ACK: 0x6607b432
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x3443
+	    DLEN: 1
+	    data: 1 bytes
+Packet 40
+	Packet Length: 57
+	Collected: Mon Mar  2 11:51:49.466668 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 43
+	      ID: 37196
+	   CKSUM: 0x7a98
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b432
+	     ACK: 0xea9f798f
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0xacd6
+	    DLEN: 3
+	    data: 3 bytes
+Packet 41
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:49.469104 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 43
+	      ID: 4087
+	   CKSUM: 0xfeed
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f798f
+	     ACK: 0x6607b435
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0xacd3
+	    DLEN: 3
+	    data: 3 bytes
+Packet 42
+	Packet Length: 55
+	Collected: Mon Mar  2 11:51:49.494130 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 37197
+	   CKSUM: 0x7a99
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x6607b435
+	     ACK: 0xea9f7992
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x8c3c
+	    DLEN: 1
+	    data: 1 bytes
+Packet 43
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:49.497528 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 42
+	      ID: 4088
+	   CKSUM: 0xfeed
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xea9f7992
+	     ACK: 0x6607b436
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x8c30
+	    DLEN: 2
+	    data: 2 bytes
+Packet 44
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:49.540401 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37198
+	   CKSUM: 0x7a99
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b436
+	     ACK: 0xea9f7994
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x9942
+	    DLEN: 0
+Packet 45
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:50.796488 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 40
+	      ID: 4089
+	   CKSUM: 0xfeee
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -A---F (0x11)
+	     SEQ: 0xea9f7994
+	     ACK: 0x6607b436
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x9941
+	    DLEN: 0
+Packet 46
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:50.796793 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37199
+	   CKSUM: 0x7a98
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6607b436
+	     ACK: 0xea9f7995
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x9941
+	    DLEN: 0
+Packet 47
+	Packet Length: 54
+	Collected: Mon Mar  2 11:51:50.817987 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 00:00:0c:07:23:41
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 198.119.6.39 
+	IP  Dest: 128.183.34.146 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 40
+	      ID: 37200
+	   CKSUM: 0x7a97
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1023 
+	    DPRT: 513 
+	     FLG:   -A---F (0x11)
+	     SEQ: 0x6607b436
+	     ACK: 0xea9f7995
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x9940
+	    DLEN: 0
+Packet 48
+	Packet Length: 60
+	Collected: Mon Mar  2 11:51:50.820332 1998
+	ETH Srce: 00:00:0c:07:23:41
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 128.183.34.146 
+	IP  Dest: 198.119.6.39 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 252
+	     LEN: 40
+	      ID: 4090
+	   CKSUM: 0xfeed
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 513 
+	    DPRT: 1023 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xea9f7995
+	     ACK: 0x6607b437
+	     WIN: 8760
+	    HLEN: 20
+	   CKSUM: 0x9940
+	    DLEN: 0
+Packet 49
+	Packet Length: 139
+	Collected: Mon Mar  2 11:52:34.442299 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 85
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8a0e096a
+	     ACK: 0x8e963fef
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x2f94
+	    DLEN: 65
+	    data: 65 bytes
+Packet 50
+	Packet Length: 104
+	Collected: Mon Mar  2 11:52:34.444150 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 50
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 21 
+	    DPRT: 33793 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8e963fef
+	     ACK: 0x8a0e09ab
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0xd99f
+	    DLEN: 30
+	    data: 30 bytes
+Packet 51
+	Packet Length: 90
+	Collected: Mon Mar  2 11:52:34.446121 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 36
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8a0e09ab
+	     ACK: 0x8e96400d
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x0d22
+	    DLEN: 16
+	    data: 16 bytes
+Packet 52
+	Packet Length: 78
+	Collected: Mon Mar  2 11:52:34.453217 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 24
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   ----S- (0x02)
+	     SEQ: 0x8f39727a
+	     ACK: 0x00000000
+	     WIN: 25920
+	    HLEN: 24
+	   CKSUM: 0x981f
+	    DLEN: 0
+	    OPTS: 4 bytes	 MSS(1440)
+Packet 53
+	Packet Length: 78
+	Collected: Mon Mar  2 11:52:34.454051 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 24
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A--S- (0x12)
+	     SEQ: 0x8ab20441
+	     ACK: 0x8f39727b
+	     WIN: 8640
+	    HLEN: 24
+	   CKSUM: 0x4c9b
+	    DLEN: 0
+	    OPTS: 4 bytes	 MSS(1440)
+Packet 54
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.454833 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab20442
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x20c4
+	    DLEN: 0
+Packet 55
+	Packet Length: 152
+	Collected: Mon Mar  2 11:52:34.456086 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 98
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 21 
+	    DPRT: 33793 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8e96400d
+	     ACK: 0x8a0e09bb
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x1e85
+	    DLEN: 78
+	    data: 78 bytes
+Packet 56
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.493819 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab20442
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x643a
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 57
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.496002 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab209e2
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x1b24
+	    DLEN: 0
+Packet 58
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.496324 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab209e2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x7620
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 59
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.496522 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab20f82
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x9e71
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 60
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.499677 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab21522
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x0fe4
+	    DLEN: 0
+Packet 61
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.500326 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab21522
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x5872
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 62
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.500540 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab21ac2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xe8fb
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 63
+	Packet Length: 1066
+	Collected: Mon Mar  2 11:52:34.500718 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1012
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab22062
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xc084
+	    DLEN: 992
+	    data: 992 bytes
+Packet 64
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.501004 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33793 
+	    DPRT: 21 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8a0e09bb
+	     ACK: 0x8e96405b
+	     WIN: 8640
+	    HLEN: 20
+	   CKSUM: 0x9232
+	    DLEN: 0
+Packet 65
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.546345 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab22442
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x00c4
+	    DLEN: 0
+Packet 66
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.546755 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab22442
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x93be
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 67
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.546969 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab229e2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x0970
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 68
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.547172 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab22f82
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xa659
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 69
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.547363 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab23522
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x894d
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 70
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.552205 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab229e2
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xfb23
+	    DLEN: 0
+Packet 71
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.552428 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab23522
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xefe3
+	    DLEN: 0
+Packet 72
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.552794 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab23ac2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x5ab2
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 73
+	Packet Length: 1066
+	Collected: Mon Mar  2 11:52:34.552978 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1012
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab24062
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x7755
+	    DLEN: 992
+	    data: 992 bytes
+Packet 74
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.553509 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab24442
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x3b9f
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 75
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.554067 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab249e2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xbab8
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 76
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.554560 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab24f82
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x52a5
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 77
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.559301 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab249e2
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xdb23
+	    DLEN: 0
+Packet 78
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.559665 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab25522
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xab06
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 79
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.559879 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab25ac2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x07e0
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 80
+	Packet Length: 1066
+	Collected: Mon Mar  2 11:52:34.560112 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1012
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab26062
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xd6a8
+	    DLEN: 992
+	    data: 992 bytes
+Packet 81
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.560325 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab26442
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x72b6
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 82
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.560531 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab269e2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xb0cd
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 83
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.566179 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab26062
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xc4a3
+	    DLEN: 0
+Packet 84
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.566653 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab26f82
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xa520
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 85
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.566871 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab27522
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x9b1e
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 86
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.567090 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab27ac2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x87a8
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 87
+	Packet Length: 1066
+	Collected: Mon Mar  2 11:52:34.567289 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1012
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab28062
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x46a0
+	    DLEN: 992
+	    data: 992 bytes
+Packet 88
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.567496 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab28442
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x97ce
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 89
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.573128 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab28062
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xa4a3
+	    DLEN: 0
+Packet 90
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.573519 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab289e2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xa771
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 91
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.573749 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab28f82
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x202b
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 92
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.573966 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab29522
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xa979
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 93
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.574199 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8ab29ac2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x742a
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 94
+	Packet Length: 1066
+	Collected: Mon Mar  2 11:52:34.574412 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1012
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab2a062
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xff0d
+	    DLEN: 992
+	    data: 992 bytes
+Packet 95
+	Packet Length: 74
+	Collected: Mon Mar  2 11:52:34.579926 1998
+	ETH Srce: 08:00:20:22:dd:b7
+	ETH Dest: 08:00:20:22:e8:0f
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0001:0a00:20ff:fe22:ddb7
+	IP  Dest: fe80::0002:0a00:20ff:fe22:e80f
+	   Class: 0
+	    Flow: 0
+	    PLEN: 20
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 20 
+	    DPRT: 33794 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x8f39727b
+	     ACK: 0x8ab2a442
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x80c3
+	    DLEN: 0
+Packet 96
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.586710 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab2a442
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xba15
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 97
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.587368 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab2a9e2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xbbb4
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 98
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.587975 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab2af82
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x5b6d
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 99
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.588546 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab2b522
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0xf8fd
+	    DLEN: 1440
+	    data: 1440 bytes
+Packet 100
+	Packet Length: 1514
+	Collected: Mon Mar  2 11:52:34.589056 1998
+	ETH Srce: 08:00:20:22:e8:0f
+	ETH Dest: 08:00:20:22:dd:b7
+	    Type: 0x86dd (IPv6)
+	IP  Vers: 6
+	IP  Srce: fe80::0002:0a00:20ff:fe22:e80f
+	IP  Dest: fe80::0001:0a00:20ff:fe22:ddb7
+	   Class: 0
+	    Flow: 0
+	    PLEN: 1460
+	    NXTH: 6 (TCP)
+	    HLIM: 255
+	TCP SPRT: 33794 
+	    DPRT: 20 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x8ab2bac2
+	     ACK: 0x8f39727b
+	     WIN: 25920
+	    HLEN: 20
+	   CKSUM: 0x021e
+	    DLEN: 1440
+	    data: 1440 bytes
+100 packets seen, 98 TCP packets traced
+trace file elapsed time: 0:01:24.825100
+TCP connection info:
+  1: fe80::0002:0a00:20ff:fe22:e80f:33793 - fe80::0001:0a00:20ff:fe22:ddb7:21 (a2b)   11>    8<
+  2: 198.119.6.39:1023 - 128.183.34.146:513 (c2d)                                     20>   12<
+  3: fe80::0001:0a00:20ff:fe22:ddb7:20 - fe80::0002:0a00:20ff:fe22:e80f:33794 (e2f)   11>   36<

@@ -1,0 +1,2607 @@
+1 arg remaining, starting with 'all.snoop.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+Packet 1
+	Packet Length: 62 (saved length 54)
+	Collected: Tue Mar  8 21:42:51.975039 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 192.20.239.131 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 48
+	      ID: 1319
+	   CKSUM: 0x441c
+	  OFFSET: 0x0000
+	TCP SPRT: 119 
+	    DPRT: 2380 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x2e71ab91
+	     ACK: 0x090918d4
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x9fd3
+	    DLEN: 8 (none of it in dump file)
+	    data: 8 bytes
+Packet 2
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:51.994384 1994
+	ETH Srce: 08:00:02:03:a8:6f
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.200.5 
+	IP  Dest: 132.235.2.30 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 58951
+	   CKSUM: 0xe27e
+	  OFFSET: 0x0000
+	TCP SPRT: 17157 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xba61450d
+	     ACK: 0x2115129e
+	     WIN: 2048
+	    HLEN: 20
+	   CKSUM: 0x5d9c
+	    DLEN: 0
+Packet 3
+	Packet Length: 1078 (saved length 54)
+	Collected: Tue Mar  8 21:42:51.996231 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:02:03:a8:6f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.2.30 
+	IP  Dest: 132.235.200.5 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 1064
+	      ID: 1320
+	   CKSUM: 0xa1ae
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 17157 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x2115129e
+	     ACK: 0xba61450d
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xe86d
+	    DLEN: 1024 (none of it in dump file)
+	    data: 1024 bytes
+Packet 4
+	Packet Length: 1078 (saved length 54)
+	Collected: Tue Mar  8 21:42:51.997089 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:02:03:a8:6f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.2.30 
+	IP  Dest: 132.235.200.5 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 1064
+	      ID: 1321
+	   CKSUM: 0xa1ad
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 17157 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x2115169e
+	     ACK: 0xba61450d
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xb685
+	    DLEN: 1024 (none of it in dump file)
+	    data: 1024 bytes
+Packet 5
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.001687 1994
+	ETH Srce: 08:00:02:03:a8:6f
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.200.5 
+	IP  Dest: 132.235.2.30 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 58952
+	   CKSUM: 0xe27d
+	  OFFSET: 0x0000
+	TCP SPRT: 17157 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xba61450d
+	     ACK: 0x2115169e
+	     WIN: 1024
+	    HLEN: 20
+	   CKSUM: 0x5d9c
+	    DLEN: 0
+Packet 6
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.004776 1994
+	ETH Srce: 08:00:02:03:a8:6f
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.200.5 
+	IP  Dest: 132.235.2.30 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 58953
+	   CKSUM: 0xe27c
+	  OFFSET: 0x0000
+	TCP SPRT: 17157 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xba61450d
+	     ACK: 0x21151a9e
+	     WIN: 0
+	    HLEN: 20
+	   CKSUM: 0x5d9c
+	    DLEN: 0
+Packet 7
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.008614 1994
+	ETH Srce: 08:00:2b:15:c3:b7
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.130 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 50919
+	   CKSUM: 0xa98d
+	  OFFSET: 0x0000
+	TCP SPRT: 1022 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x021343d8
+	     ACK: 0x2a486969
+	     WIN: 16384
+	    HLEN: 20
+	   CKSUM: 0x1cd5
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 8
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.017653 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:2b:15:c3:b7
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.3.130 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 1322
+	   CKSUM: 0x6b4b
+	  OFFSET: 0x0000
+	TCP SPRT: 513 
+	    DPRT: 1022 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x2a486969
+	     ACK: 0x021343d9
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x4cd4
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 9
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.021157 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 149.84.33.3 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 1323
+	   CKSUM: 0x3d61
+	  OFFSET: 0x0000
+	TCP SPRT: 1835 
+	    DPRT: 1729 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x09b09310
+	     ACK: 0x068cc5cd
+	     WIN: 4073
+	    HLEN: 20
+	   CKSUM: 0xeca0
+	    DLEN: 0
+Packet 10
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.021353 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 1324
+	   CKSUM: 0x6d8c
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 32023 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x083c5684
+	     ACK: 0x3d7294a3
+	     WIN: 4094
+	    HLEN: 20
+	   CKSUM: 0xe5b9
+	    DLEN: 0
+Packet 11
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.025175 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 129.110.31.10 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 44
+	     LEN: 43
+	      ID: 60446
+	   CKSUM: 0x7c49
+	  OFFSET: 0x0000
+	TCP SPRT: 2770 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x00abebdb
+	     ACK: 0x24bec127
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x3cbf
+	    DLEN: 3 (none of it in dump file)
+	    data: 3 bytes
+Packet 12
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.046685 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 129.110.31.10 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 44
+	      ID: 1325
+	   CKSUM: 0x533a
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 2770 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x24bec127
+	     ACK: 0x00abebde
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x38a5
+	    DLEN: 4 (none of it in dump file)
+	    data: 4 bytes
+Packet 13
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.063628 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 1326
+	   CKSUM: 0x6d89
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 32023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x083c5684
+	     ACK: 0x3d7294a3
+	     WIN: 4094
+	    HLEN: 20
+	   CKSUM: 0x75b0
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 14
+	Packet Length: 566 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.076053 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 192.20.239.131 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 55
+	     LEN: 552
+	      ID: 52842
+	   CKSUM: 0x7de0
+	  OFFSET: 0x0000
+	TCP SPRT: 2380 
+	    DPRT: 119 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x090918d4
+	     ACK: 0x2e71ab99
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x90a7
+	    DLEN: 512 (none of it in dump file)
+	    data: 512 bytes
+Packet 15
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.077124 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30005
+	   CKSUM: 0x1b83
+	  OFFSET: 0x0000
+	TCP SPRT: 32023 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3d7294a3
+	     ACK: 0x083c5685
+	     WIN: 89
+	    HLEN: 20
+	   CKSUM: 0xf55d
+	    DLEN: 0
+Packet 16
+	Packet Length: 566 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.080254 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 192.20.239.131 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 55
+	     LEN: 552
+	      ID: 52843
+	   CKSUM: 0x7ddf
+	  OFFSET: 0x0000
+	TCP SPRT: 2380 
+	    DPRT: 119 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x09091ad4
+	     ACK: 0x2e71ab99
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xcf61
+	    DLEN: 512 (none of it in dump file)
+	    data: 512 bytes
+Packet 17
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.082337 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 192.20.239.131 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 1327
+	   CKSUM: 0x441c
+	  OFFSET: 0x0000
+	TCP SPRT: 119 
+	    DPRT: 2380 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x2e71ab99
+	     ACK: 0x09091cd4
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x60a4
+	    DLEN: 0
+Packet 18
+	Packet Length: 566 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.083192 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 192.20.239.131 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 55
+	     LEN: 552
+	      ID: 52844
+	   CKSUM: 0x7dde
+	  OFFSET: 0x0000
+	TCP SPRT: 2380 
+	    DPRT: 119 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x09091cd4
+	     ACK: 0x2e71ab99
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x68bc
+	    DLEN: 512 (none of it in dump file)
+	    data: 512 bytes
+Packet 19
+	Packet Length: 342 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.084088 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 192.20.239.131 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 55
+	     LEN: 328
+	      ID: 52845
+	   CKSUM: 0x7ebd
+	  OFFSET: 0x0000
+	TCP SPRT: 2380 
+	    DPRT: 119 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x09091ed4
+	     ACK: 0x2e71ab99
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xd943
+	    DLEN: 288 (none of it in dump file)
+	    data: 288 bytes
+Packet 20
+	Packet Length: 67 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.097531 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 192.20.239.131 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 53
+	      ID: 1328
+	   CKSUM: 0x440e
+	  OFFSET: 0x0000
+	TCP SPRT: 119 
+	    DPRT: 2380 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x2e71ab99
+	     ACK: 0x09091ff4
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x9cc4
+	    DLEN: 13 (none of it in dump file)
+	    data: 13 bytes
+Packet 21
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.098512 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:1b:4b:f4
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.4.63 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30006
+	   CKSUM: 0x1844
+	  OFFSET: 0x0000
+	TCP SPRT: 26638 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3d9bf35c
+	     ACK: 0x44444a8d
+	     WIN: 130
+	    HLEN: 20
+	   CKSUM: 0x5805
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 22
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.100362 1994
+	ETH Srce: 08:00:2b:15:c3:b7
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.130 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 50920
+	   CKSUM: 0xa98c
+	  OFFSET: 0x0000
+	TCP SPRT: 1022 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x021343d9
+	     ACK: 0x2a48696a
+	     WIN: 16384
+	    HLEN: 20
+	   CKSUM: 0x0fd3
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 23
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.100613 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:09:99:75
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 147.205.85.10 
+	IP  Dest: 132.235.1.100 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 48
+	     LEN: 40
+	      ID: 14479
+	   CKSUM: 0xe31a
+	  OFFSET: 0x0000
+	TCP SPRT: 3043 
+	    DPRT: 5000 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x1af56c06
+	     ACK: 0x1c2e99dc
+	     WIN: 6144
+	    HLEN: 20
+	   CKSUM: 0xcc3c
+	    DLEN: 0
+Packet 24
+	Packet Length: 61 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.102961 1994
+	ETH Srce: 08:00:20:1b:4b:f4
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.4.63 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 47
+	      ID: 27736
+	   CKSUM: 0x001b
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 23 
+	    DPRT: 26638 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x44444a8d
+	     ACK: 0x3d9bf35d
+	     WIN: 8774
+	    HLEN: 20
+	   CKSUM: 0x896d
+	    DLEN: 7 (none of it in dump file)
+	    data: 7 bytes
+Packet 25
+	Packet Length: 100 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.109527 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 192.20.239.131 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 55
+	     LEN: 86
+	      ID: 52847
+	   CKSUM: 0x7fad
+	  OFFSET: 0x0000
+	TCP SPRT: 2380 
+	    DPRT: 119 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x09091ff4
+	     ACK: 0x2e71aba6
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xc49d
+	    DLEN: 46 (none of it in dump file)
+	    data: 46 bytes
+Packet 26
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.115071 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:1b:4b:f4
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.4.63 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30007
+	   CKSUM: 0x1844
+	  OFFSET: 0x0000
+	TCP SPRT: 26638 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3d9bf35d
+	     ACK: 0x44444a94
+	     WIN: 123
+	    HLEN: 20
+	   CKSUM: 0x780d
+	    DLEN: 0
+Packet 27
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.119240 1994
+	ETH Srce: 08:00:02:03:a8:6f
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.200.5 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 58956
+	   CKSUM: 0xe395
+	  OFFSET: 0x0000
+	TCP SPRT: 24077 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xba5967ba
+	     ACK: 0x1c620145
+	     WIN: 1418
+	    HLEN: 20
+	   CKSUM: 0x398d
+	    DLEN: 0
+Packet 28
+	Packet Length: 1078 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.121144 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:02:03:a8:6f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.200.5 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 1064
+	      ID: 1329
+	   CKSUM: 0xa2c1
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 24077 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x1c620145
+	     ACK: 0xba5967ba
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x09bf
+	    DLEN: 1024 (none of it in dump file)
+	    data: 1024 bytes
+Packet 29
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.122955 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:2b:15:c3:b7
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.3.130 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 1330
+	   CKSUM: 0x6b43
+	  OFFSET: 0x0000
+	TCP SPRT: 513 
+	    DPRT: 1022 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x2a48696a
+	     ACK: 0x021343da
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x3fd2
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 30
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.127640 1994
+	ETH Srce: 08:00:02:03:a8:6f
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.200.5 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 58957
+	   CKSUM: 0xe394
+	  OFFSET: 0x0000
+	TCP SPRT: 24077 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xba5967ba
+	     ACK: 0x1c620545
+	     WIN: 394
+	    HLEN: 20
+	   CKSUM: 0x398d
+	    DLEN: 0
+Packet 31
+	Packet Length: 75 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.152715 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 61
+	      ID: 1331
+	   CKSUM: 0x6d70
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 32023 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x083c5685
+	     ACK: 0x3d7294a3
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xe012
+	    DLEN: 21 (none of it in dump file)
+	    data: 21 bytes
+Packet 32
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.157530 1994
+	ETH Srce: 08:00:20:11:cf:1e
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.17.1 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 43
+	      ID: 5848
+	   CKSUM: 0x4c1c
+	  OFFSET: 0x0000
+	TCP SPRT: 3711 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x4345ce33
+	     ACK: 0x5d8fc762
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xe29f
+	    DLEN: 3 (none of it in dump file)
+	    data: 3 bytes
+Packet 33
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.164450 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30008
+	   CKSUM: 0x1b80
+	  OFFSET: 0x0000
+	TCP SPRT: 32023 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3d7294a3
+	     ACK: 0x083c569a
+	     WIN: 164
+	    HLEN: 20
+	   CKSUM: 0xf4fd
+	    DLEN: 0
+Packet 34
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.167886 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:20:11:cf:1e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.17.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 43
+	      ID: 1332
+	   CKSUM: 0x5dc0
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 3711 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x5d8fc762
+	     ACK: 0x4345ce36
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xe290
+	    DLEN: 3 (none of it in dump file)
+	    data: 3 bytes
+Packet 35
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.184067 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 129.110.31.10 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 44
+	     LEN: 40
+	      ID: 60460
+	   CKSUM: 0x7c3e
+	  OFFSET: 0x0000
+	TCP SPRT: 2770 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x00abebde
+	     ACK: 0x24bec12b
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x9c12
+	    DLEN: 0
+Packet 36
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.185039 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 129.110.31.10 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 1333
+	   CKSUM: 0x5335
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 2770 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x24bec12b
+	     ACK: 0x00abebde
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x5809
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 37
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.187863 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:09:99:75
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 150.252.1.1 
+	IP  Dest: 132.235.1.100 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 43
+	     LEN: 43
+	      ID: 57961
+	   CKSUM: 0x8f17
+	  OFFSET: 0x0000
+	TCP SPRT: 1211 
+	    DPRT: 5000 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x38fde379
+	     ACK: 0x1c0d82cf
+	     WIN: 6144
+	    HLEN: 20
+	   CKSUM: 0x36d9
+	    DLEN: 3 (none of it in dump file)
+	    data: 3 bytes
+Packet 38
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.200649 1994
+	ETH Srce: 08:00:20:1b:42:d0
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.24.25 
+	IP  Dest: 129.71.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 254
+	     LEN: 41
+	      ID: 46086
+	   CKSUM: 0xa87b
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 23 
+	    DPRT: 1890 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x53f0ec27
+	     ACK: 0x76540554
+	     WIN: 9112
+	    HLEN: 20
+	   CKSUM: 0x3fad
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 39
+	Packet Length: 55 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.200980 1994
+	ETH Srce: 08:00:20:1b:42:d0
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.24.25 
+	IP  Dest: 129.71.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 254
+	     LEN: 41
+	      ID: 46086
+	   CKSUM: 0xa87b
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 23 
+	    DPRT: 1890 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x53f0ec27
+	     ACK: 0x76540554
+	     WIN: 9112
+	    HLEN: 20
+	   CKSUM: 0x3fad
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 40
+	Packet Length: 70 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.205305 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:02:03:a8:6f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.2.30 
+	IP  Dest: 132.235.200.5 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 56
+	      ID: 1334
+	   CKSUM: 0xa590
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 3592 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x5474ae28
+	     ACK: 0xb9ddaccf
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x524c
+	    DLEN: 16 (none of it in dump file)
+	    data: 16 bytes
+Packet 41
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.220433 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:09:99:75
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 147.205.85.10 
+	IP  Dest: 132.235.1.100 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 48
+	     LEN: 45
+	      ID: 14480
+	   CKSUM: 0xe314
+	  OFFSET: 0x0000
+	TCP SPRT: 3054 
+	    DPRT: 5000 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x1e049d97
+	     ACK: 0x1f31cfe4
+	     WIN: 6144
+	    HLEN: 20
+	   CKSUM: 0xadfc
+	    DLEN: 5 (none of it in dump file)
+	    data: 5 bytes
+Packet 42
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.221160 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 192.20.239.131 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 1335
+	   CKSUM: 0x4414
+	  OFFSET: 0x0000
+	TCP SPRT: 119 
+	    DPRT: 2380 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x2e71aba6
+	     ACK: 0x09092022
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x5d49
+	    DLEN: 0
+Packet 43
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.258052 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:2b:1d:6f:30
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30009
+	   CKSUM: 0x1a7f
+	  OFFSET: 0x0000
+	TCP SPRT: 11049 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3db4abf4
+	     ACK: 0x737e6856
+	     WIN: 164
+	    HLEN: 20
+	   CKSUM: 0x4c52
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 44
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.258249 1994
+	ETH Srce: 08:00:20:09:99:75
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.100 
+	IP  Dest: 147.205.85.10 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 21946
+	   CKSUM: 0xb9ef
+	  OFFSET: 0x0000
+	TCP SPRT: 5000 
+	    DPRT: 3054 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x1f31cfe4
+	     ACK: 0x1e049d9c
+	     WIN: 4091
+	    HLEN: 20
+	   CKSUM: 0x6686
+	    DLEN: 0
+Packet 45
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.258436 1994
+	ETH Srce: 08:00:20:09:99:75
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.100 
+	IP  Dest: 150.252.1.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 21947
+	   CKSUM: 0x0ac9
+	  OFFSET: 0x0000
+	TCP SPRT: 5000 
+	    DPRT: 1211 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x1c0d82cf
+	     ACK: 0x38fde37c
+	     WIN: 4093
+	    HLEN: 20
+	   CKSUM: 0xadf1
+	    DLEN: 0
+Packet 46
+	Packet Length: 491 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.259342 1994
+	ETH Srce: 08:00:20:09:99:75
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.100 
+	IP  Dest: 134.241.10.5 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 477
+	      ID: 21948
+	   CKSUM: 0x101a
+	  OFFSET: 0x0000
+	TCP SPRT: 5000 
+	    DPRT: 1783 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x27b576dc
+	     ACK: 0x0c65d838
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x2f5c
+	    DLEN: 437 (none of it in dump file)
+	    data: 437 bytes
+Packet 47
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.261280 1994
+	ETH Srce: 08:00:2b:1d:6f:30
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.2.1 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 55470
+	   CKSUM: 0x9909
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 11049 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x737e6856
+	     ACK: 0x3db4abf5
+	     WIN: 16384
+	    HLEN: 20
+	   CKSUM: 0x0cf5
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 48
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.267403 1994
+	ETH Srce: 08:00:2b:15:c3:b7
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.130 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 50921
+	   CKSUM: 0xa98b
+	  OFFSET: 0x0000
+	TCP SPRT: 1022 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x021343da
+	     ACK: 0x2a48696b
+	     WIN: 16384
+	    HLEN: 20
+	   CKSUM: 0x53d1
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 49
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.276253 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:2b:1d:6f:30
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30010
+	   CKSUM: 0x1a7f
+	  OFFSET: 0x0000
+	TCP SPRT: 11049 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3db4abf5
+	     ACK: 0x737e6857
+	     WIN: 163
+	    HLEN: 20
+	   CKSUM: 0xb15a
+	    DLEN: 0
+Packet 50
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.282865 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30011
+	   CKSUM: 0x1b7c
+	  OFFSET: 0x0000
+	TCP SPRT: 32023 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3d7294a3
+	     ACK: 0x083c569a
+	     WIN: 164
+	    HLEN: 20
+	   CKSUM: 0x87f4
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 51
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.290607 1994
+	ETH Srce: 02:60:8c:8d:4d:de
+	ETH Dest: aa:00:04:00:54:b4
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.17.161 
+	IP  Dest: 132.235.1.6 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 11123
+	   CKSUM: 0x36df
+	  OFFSET: 0x0000
+	TCP SPRT: 28930 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x00158499
+	     ACK: 0x22832b16
+	     WIN: 1024
+	    HLEN: 20
+	   CKSUM: 0x2bed
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 52
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.292137 1994
+	ETH Srce: aa:00:04:00:54:b4
+	ETH Dest: 02:60:8c:8d:4d:de
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.6 
+	IP  Dest: 132.235.17.161 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 32
+	     LEN: 40
+	      ID: 2056
+	   CKSUM: 0x764b
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 28930 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x22832b16
+	     ACK: 0x0015849a
+	     WIN: 7798
+	    HLEN: 20
+	   CKSUM: 0x317f
+	    DLEN: 0
+Packet 53
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.296804 1994
+	ETH Srce: aa:00:04:00:54:b4
+	ETH Dest: 02:60:8c:8d:4d:de
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.6 
+	IP  Dest: 132.235.17.161 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 32
+	     LEN: 41
+	      ID: 2057
+	   CKSUM: 0x7649
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 28930 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x22832b16
+	     ACK: 0x0015849a
+	     WIN: 7798
+	    HLEN: 20
+	   CKSUM: 0x1176
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 54
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.300842 1994
+	ETH Srce: 02:60:8c:8d:4d:de
+	ETH Dest: aa:00:04:00:54:b4
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.17.161 
+	IP  Dest: 132.235.1.6 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 11379
+	   CKSUM: 0x35e0
+	  OFFSET: 0x0000
+	TCP SPRT: 28930 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x0015849a
+	     ACK: 0x22832b17
+	     WIN: 1024
+	    HLEN: 20
+	   CKSUM: 0x4bec
+	    DLEN: 0
+Packet 55
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.319045 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:1b:4b:f4
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.4.63 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30012
+	   CKSUM: 0x183e
+	  OFFSET: 0x0000
+	TCP SPRT: 26638 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3d9bf35d
+	     ACK: 0x44444a94
+	     WIN: 123
+	    HLEN: 20
+	   CKSUM: 0x0a04
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 56
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.322349 1994
+	ETH Srce: 08:00:20:11:cf:1e
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.17.1 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 5850
+	   CKSUM: 0x4c1d
+	  OFFSET: 0x0000
+	TCP SPRT: 3711 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x4345ce36
+	     ACK: 0x5d8fc765
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x3ef4
+	    DLEN: 0
+Packet 57
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.323367 1994
+	ETH Srce: 08:00:20:1b:4b:f4
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.4.63 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 27737
+	   CKSUM: 0x0020
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 23 
+	    DPRT: 26638 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x44444a94
+	     ACK: 0x3d9bf35e
+	     WIN: 8774
+	    HLEN: 20
+	   CKSUM: 0xe837
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 58
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.325764 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:2b:1d:6f:30
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30013
+	   CKSUM: 0x1a7b
+	  OFFSET: 0x0000
+	TCP SPRT: 11049 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3db4abf5
+	     ACK: 0x737e6857
+	     WIN: 163
+	    HLEN: 20
+	   CKSUM: 0x3a51
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 59
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.326830 1994
+	ETH Srce: 08:00:20:11:cf:1e
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.17.1 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 43
+	      ID: 5851
+	   CKSUM: 0x4c19
+	  OFFSET: 0x0000
+	TCP SPRT: 3711 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x4345ce36
+	     ACK: 0x5d8fc765
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xe299
+	    DLEN: 3 (none of it in dump file)
+	    data: 3 bytes
+Packet 60
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.328457 1994
+	ETH Srce: 08:00:2b:1d:6f:30
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.2.1 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 55471
+	   CKSUM: 0x9908
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 11049 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x737e6857
+	     ACK: 0x3db4abf6
+	     WIN: 16384
+	    HLEN: 20
+	   CKSUM: 0xfaf2
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 61
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.330993 1994
+	ETH Srce: 08:00:02:03:a8:6f
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.200.5 
+	IP  Dest: 132.235.2.30 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 43
+	      ID: 58960
+	   CKSUM: 0xe272
+	  OFFSET: 0x0000
+	TCP SPRT: 2065 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xba3a1300
+	     ACK: 0x09832f11
+	     WIN: 2048
+	    HLEN: 20
+	   CKSUM: 0x697d
+	    DLEN: 3 (none of it in dump file)
+	    data: 3 bytes
+Packet 62
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.340700 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:1b:4b:f4
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.4.63 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30014
+	   CKSUM: 0x183d
+	  OFFSET: 0x0000
+	TCP SPRT: 26638 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3d9bf35e
+	     ACK: 0x44444a95
+	     WIN: 122
+	    HLEN: 20
+	   CKSUM: 0x780c
+	    DLEN: 0
+Packet 63
+	Packet Length: 72 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.342278 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:02:03:a8:6f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.2.30 
+	IP  Dest: 132.235.200.5 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 58
+	      ID: 1338
+	   CKSUM: 0xa58a
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 2065 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x09832f11
+	     ACK: 0xba3a1303
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x4374
+	    DLEN: 18 (none of it in dump file)
+	    data: 18 bytes
+Packet 64
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.350591 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:2b:1d:6f:30
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30015
+	   CKSUM: 0x1a7a
+	  OFFSET: 0x0000
+	TCP SPRT: 11049 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3db4abf6
+	     ACK: 0x737e6858
+	     WIN: 162
+	    HLEN: 20
+	   CKSUM: 0xb159
+	    DLEN: 0
+Packet 65
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.358858 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30016
+	   CKSUM: 0x1b77
+	  OFFSET: 0x0000
+	TCP SPRT: 32301 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3d910135
+	     ACK: 0x1a2e948d
+	     WIN: 153
+	    HLEN: 20
+	   CKSUM: 0xbe53
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 66
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.373971 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:09:99:75
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 134.241.10.5 
+	IP  Dest: 132.235.1.100 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 15
+	     LEN: 40
+	      ID: 48962
+	   CKSUM: 0xd548
+	  OFFSET: 0x0000
+	TCP SPRT: 1783 
+	    DPRT: 5000 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x0c65d838
+	     ACK: 0x27b57891
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xe92b
+	    DLEN: 0
+Packet 67
+	Packet Length: 62 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.374224 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 48
+	      ID: 1339
+	   CKSUM: 0x6d75
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 32301 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x1a2e948d
+	     ACK: 0x3d910136
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x0094
+	    DLEN: 8 (none of it in dump file)
+	    data: 8 bytes
+Packet 68
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.381942 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 129.110.31.10 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 44
+	     LEN: 40
+	      ID: 60480
+	   CKSUM: 0x7c2a
+	  OFFSET: 0x0000
+	TCP SPRT: 2770 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x00abebde
+	     ACK: 0x24bec12c
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x9c11
+	    DLEN: 0
+Packet 69
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.386906 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30017
+	   CKSUM: 0x1b77
+	  OFFSET: 0x0000
+	TCP SPRT: 32301 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3d910136
+	     ACK: 0x1a2e9495
+	     WIN: 145
+	    HLEN: 20
+	   CKSUM: 0x375c
+	    DLEN: 0
+Packet 70
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.407247 1994
+	ETH Srce: 08:00:02:03:a8:6f
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.200.5 
+	IP  Dest: 132.235.2.30 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 58961
+	   CKSUM: 0xe274
+	  OFFSET: 0x0000
+	TCP SPRT: 3592 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xb9ddaccf
+	     ACK: 0x5474ae38
+	     WIN: 2048
+	    HLEN: 20
+	   CKSUM: 0x5c61
+	    DLEN: 0
+Packet 71
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.409177 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:02:03:a8:6f
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.2.30 
+	IP  Dest: 132.235.200.5 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 43
+	      ID: 1340
+	   CKSUM: 0xa597
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 3592 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x5474ae38
+	     ACK: 0xb9ddaccf
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x404c
+	    DLEN: 3 (none of it in dump file)
+	    data: 3 bytes
+Packet 72
+	Packet Length: 109 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.414407 1994
+	ETH Srce: 08:00:20:09:99:75
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.100 
+	IP  Dest: 144.32.128.6 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 95
+	      ID: 21949
+	   CKSUM: 0x9266
+	  OFFSET: 0x0000
+	TCP SPRT: 5000 
+	    DPRT: 4427 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x2b1f2ce4
+	     ACK: 0x68966b10
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x464b
+	    DLEN: 55 (none of it in dump file)
+	    data: 55 bytes
+Packet 73
+	Packet Length: 107 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.415197 1994
+	ETH Srce: 08:00:20:09:99:75
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.100 
+	IP  Dest: 147.205.85.10 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 93
+	      ID: 21950
+	   CKSUM: 0xb9b6
+	  OFFSET: 0x0000
+	TCP SPRT: 5000 
+	    DPRT: 3054 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x1f31cfe4
+	     ACK: 0x1e049d9c
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xf804
+	    DLEN: 53 (none of it in dump file)
+	    data: 53 bytes
+Packet 74
+	Packet Length: 378 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.416298 1994
+	ETH Srce: 08:00:20:09:99:75
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.100 
+	IP  Dest: 150.252.1.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 364
+	      ID: 21951
+	   CKSUM: 0x0981
+	  OFFSET: 0x0000
+	TCP SPRT: 5000 
+	    DPRT: 1211 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x1c0d82cf
+	     ACK: 0x38fde37c
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xc4ae
+	    DLEN: 324 (none of it in dump file)
+	    data: 324 bytes
+Packet 75
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.416714 1994
+	ETH Srce: 08:00:20:1b:42:d0
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.24.25 
+	IP  Dest: 129.71.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 254
+	     LEN: 42
+	      ID: 46087
+	   CKSUM: 0xa879
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 23 
+	    DPRT: 1890 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x53f0ec28
+	     ACK: 0x76540554
+	     WIN: 9112
+	    HLEN: 20
+	   CKSUM: 0x3b8b
+	    DLEN: 2 (none of it in dump file)
+	    data: 2 bytes
+Packet 76
+	Packet Length: 56 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.417133 1994
+	ETH Srce: 08:00:20:1b:42:d0
+	ETH Dest: aa:00:04:00:fd:b5
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.24.25 
+	IP  Dest: 129.71.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 254
+	     LEN: 42
+	      ID: 46087
+	   CKSUM: 0xa879
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 23 
+	    DPRT: 1890 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x53f0ec28
+	     ACK: 0x76540554
+	     WIN: 9112
+	    HLEN: 20
+	   CKSUM: 0x3b8b
+	    DLEN: 2 (none of it in dump file)
+	    data: 2 bytes
+Packet 77
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.418165 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30018
+	   CKSUM: 0x1b75
+	  OFFSET: 0x0000
+	TCP SPRT: 32023 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3d7294a4
+	     ACK: 0x083c569a
+	     WIN: 164
+	    HLEN: 20
+	   CKSUM: 0x93f3
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 78
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.421010 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:2b:15:c3:b7
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.3.130 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 1341
+	   CKSUM: 0x6b39
+	  OFFSET: 0x0000
+	TCP SPRT: 513 
+	    DPRT: 1022 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x2a48696b
+	     ACK: 0x021343db
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0xb1d9
+	    DLEN: 0
+Packet 79
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.421319 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 1342
+	   CKSUM: 0x6d7a
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 32023 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x083c569a
+	     ACK: 0x3d7294a5
+	     WIN: 4095
+	    HLEN: 20
+	   CKSUM: 0xe5a0
+	    DLEN: 0
+Packet 80
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.421598 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:20:11:cf:1e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.17.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 1343
+	   CKSUM: 0x5db8
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 3711 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x5d8fc765
+	     ACK: 0x4345ce39
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x3ef1
+	    DLEN: 0
+Packet 81
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.422424 1994
+	ETH Srce: 08:00:2b:15:c3:b7
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.130 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 50922
+	   CKSUM: 0xa98a
+	  OFFSET: 0x0000
+	TCP SPRT: 1022 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x021343db
+	     ACK: 0x2a48696b
+	     WIN: 16384
+	    HLEN: 20
+	   CKSUM: 0x1ed0
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 82
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.497040 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:1b:4b:f4
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.4.63 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30019
+	   CKSUM: 0x1837
+	  OFFSET: 0x0000
+	TCP SPRT: 26638 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3d9bf35e
+	     ACK: 0x44444a95
+	     WIN: 122
+	    HLEN: 20
+	   CKSUM: 0x0903
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 83
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.501308 1994
+	ETH Srce: 08:00:20:1b:4b:f4
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.4.63 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 255
+	     LEN: 41
+	      ID: 27738
+	   CKSUM: 0x001f
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 23 
+	    DPRT: 26638 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x44444a95
+	     ACK: 0x3d9bf35f
+	     WIN: 8774
+	    HLEN: 20
+	   CKSUM: 0xe735
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 84
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.505988 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:2b:15:c3:b7
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.3.130 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 1344
+	   CKSUM: 0x6b35
+	  OFFSET: 0x0000
+	TCP SPRT: 513 
+	    DPRT: 1022 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x2a48696b
+	     ACK: 0x021343dc
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x83cf
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 85
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.507967 1994
+	ETH Srce: 08:00:02:03:a8:6f
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.200.5 
+	IP  Dest: 132.235.2.30 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 58963
+	   CKSUM: 0xe272
+	  OFFSET: 0x0000
+	TCP SPRT: 2065 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xba3a1303
+	     ACK: 0x09832f23
+	     WIN: 2048
+	    HLEN: 20
+	   CKSUM: 0xc5ce
+	    DLEN: 0
+Packet 86
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.515214 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:1b:4b:f4
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.4.63 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30020
+	   CKSUM: 0x1837
+	  OFFSET: 0x0000
+	TCP SPRT: 26638 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3d9bf35f
+	     ACK: 0x44444a96
+	     WIN: 121
+	    HLEN: 20
+	   CKSUM: 0x780b
+	    DLEN: 0
+Packet 87
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.538325 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:2b:1d:6f:30
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30021
+	   CKSUM: 0x1a73
+	  OFFSET: 0x0000
+	TCP SPRT: 11049 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3db4abf6
+	     ACK: 0x737e6858
+	     WIN: 162
+	    HLEN: 20
+	   CKSUM: 0x4250
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 88
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.541109 1994
+	ETH Srce: 08:00:2b:1d:6f:30
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.2.1 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 55473
+	   CKSUM: 0x9906
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 11049 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x737e6858
+	     ACK: 0x3db4abf7
+	     WIN: 16384
+	    HLEN: 20
+	   CKSUM: 0x02f1
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 89
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.544960 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 41
+	      ID: 30022
+	   CKSUM: 0x1b71
+	  OFFSET: 0x0000
+	TCP SPRT: 32301 
+	    DPRT: 23 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3d910136
+	     ACK: 0x1a2e9495
+	     WIN: 145
+	    HLEN: 20
+	   CKSUM: 0xc852
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 90
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.551175 1994
+	ETH Srce: 08:00:2b:15:c3:b7
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.130 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 50923
+	   CKSUM: 0xa989
+	  OFFSET: 0x0000
+	TCP SPRT: 1022 
+	    DPRT: 513 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x021343dc
+	     ACK: 0x2a48696c
+	     WIN: 16384
+	    HLEN: 20
+	   CKSUM: 0x74ce
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 91
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.553682 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:2b:15:c3:b7
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.3.130 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 41
+	      ID: 1345
+	   CKSUM: 0x6b34
+	  OFFSET: 0x0000
+	TCP SPRT: 513 
+	    DPRT: 1022 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x2a48696c
+	     ACK: 0x021343dd
+	     WIN: 4095
+	    HLEN: 20
+	   CKSUM: 0x4ece
+	    DLEN: 1 (none of it in dump file)
+	    data: 1 bytes
+Packet 92
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.558200 1994
+	ETH Srce: 00:00:d0:00:80:05
+	ETH Dest: 08:00:2b:1d:6f:30
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.64 
+	IP  Dest: 132.235.2.1 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 30
+	     LEN: 40
+	      ID: 30023
+	   CKSUM: 0x1a72
+	  OFFSET: 0x0000
+	TCP SPRT: 11049 
+	    DPRT: 23 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x3db4abf7
+	     ACK: 0x737e6859
+	     WIN: 161
+	    HLEN: 20
+	   CKSUM: 0xb158
+	    DLEN: 0
+Packet 93
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.585542 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:09:49:d4:f9
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.147 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 44
+	      ID: 1348
+	   CKSUM: 0x6d1d
+	  OFFSET: 0x0000
+	TCP SPRT: 3141 
+	    DPRT: 9100 
+	     FLG:   ----S- (0x02)
+	     SEQ: 0x301b6e00
+	     ACK: 0x00000000
+	     WIN: 4096
+	    HLEN: 24 (only 20 bytes in dump file)
+	   CKSUM: 0xadce
+	    DLEN: 0
+	    OPTS: 4 bytes (none of it in dump file)	
+Packet 94
+	Packet Length: 62 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.588438 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 48
+	      ID: 1349
+	   CKSUM: 0x6d6b
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 32301 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x1a2e9495
+	     ACK: 0x3d910137
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x0a8b
+	    DLEN: 8 (none of it in dump file)
+	    data: 8 bytes
+Packet 95
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.589239 1994
+	ETH Srce: 08:00:09:49:d4:f9
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.147 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 44
+	      ID: 1528
+	   CKSUM: 0x6c69
+	  OFFSET: 0x0000
+	TCP SPRT: 9100 
+	    DPRT: 3141 
+	     FLG:   -A--S- (0x12)
+	     SEQ: 0x0003281d
+	     ACK: 0x301b6e01
+	     WIN: 8760
+	    HLEN: 24 (only 20 bytes in dump file)
+	   CKSUM: 0x7365
+	    DLEN: 0
+	    OPTS: 4 bytes (none of it in dump file)	
+Packet 96
+	Packet Length: 60 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.590064 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:09:49:d4:f9
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.147 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 40
+	      ID: 1350
+	   CKSUM: 0x6d1f
+	  OFFSET: 0x0000
+	TCP SPRT: 3141 
+	    DPRT: 9100 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x301b6e01
+	     ACK: 0x0003281e
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x9d5a
+	    DLEN: 0
+Packet 97
+	Packet Length: 381 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.593311 1994
+	ETH Srce: aa:00:04:00:fd:b5
+	ETH Dest: 08:00:20:0f:1a:be
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 130.236.254.159 
+	IP  Dest: 132.235.1.2 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 241
+	     LEN: 367
+	      ID: 16286
+	   CKSUM: 0x4171
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 2000 
+	    DPRT: 1459 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x3c65a2fb
+	     ACK: 0x704c23a5
+	     WIN: 9112
+	    HLEN: 20
+	   CKSUM: 0xf455
+	    DLEN: 327 (none of it in dump file)
+	    data: 327 bytes
+Packet 98
+	Packet Length: 96 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.595327 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 08:00:09:49:d4:f9
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.147 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 82
+	      ID: 1351
+	   CKSUM: 0x6cf4
+	  OFFSET: 0x0000
+	TCP SPRT: 3141 
+	    DPRT: 9100 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0x301b6e01
+	     ACK: 0x0003281e
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x121b
+	    DLEN: 42 (none of it in dump file)
+	    data: 42 bytes
+Packet 99
+	Packet Length: 136 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.603979 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 122
+	      ID: 1352
+	   CKSUM: 0x6d1e
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 22058 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6f484aad
+	     ACK: 0x3d457089
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x6e7e
+	    DLEN: 82 (none of it in dump file)
+	    data: 82 bytes
+Packet 100
+	Packet Length: 136 (saved length 54)
+	Collected: Tue Mar  8 21:42:52.604321 1994
+	ETH Srce: 08:00:20:0f:1a:be
+	ETH Dest: 00:00:d0:00:80:05
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.1.2 
+	IP  Dest: 132.235.1.64 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 60
+	     LEN: 122
+	      ID: 1353
+	   CKSUM: 0x6d1d
+	  OFFSET: 0x0000
+	TCP SPRT: 23 
+	    DPRT: 22058 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0x6f484aff
+	     ACK: 0x3d457089
+	     WIN: 4096
+	    HLEN: 20
+	   CKSUM: 0x3330
+	    DLEN: 82 (none of it in dump file)
+	    data: 82 bytes
+100 packets seen, 100 TCP packets traced
+trace file elapsed time: 0:00:00.629282
+TCP connection info:
+*** 4 packets were too short to process at some point
+	(use -w option to show details)
+  1: 132.235.1.2:119 - 192.20.239.131:2380 (a2b)        4>    5<
+  2: 132.235.200.5:17157 - 132.235.2.30:23 (c2d)        3>    2<
+  3: 132.235.3.130:1022 - 132.235.1.2:513 (e2f)         5>    5<
+  4: 132.235.1.2:1835 - 149.84.33.3:1729 (g2h)          1>    0<  (unidirectional)
+  5: 132.235.1.2:23 - 132.235.1.64:32023 (i2j)          4>    4<
+  6: 129.110.31.10:2770 - 132.235.1.2:23 (k2l)          3>    2<
+  7: 132.235.1.64:26638 - 132.235.4.63:23 (m2n)         6>    3<
+  8: 147.205.85.10:3043 - 132.235.1.100:5000 (o2p)      1>    0<  (unidirectional)
+  9: 132.235.200.5:24077 - 132.235.1.2:23 (q2r)         2>    1<
+ 10: 132.235.17.1:3711 - 132.235.1.2:23 (s2t)           3>    2<
+ 11: 150.252.1.1:1211 - 132.235.1.100:5000 (u2v)        1>    2<
+ 12: 132.235.24.25:23 - 129.71.2.1:1890 (w2x)           4>    0<  (unidirectional)
+    ** Warning, w2x: detected 2 hardware duplicate(s) (same seq # and IP ID)
+ 13: 132.235.2.30:23 - 132.235.200.5:3592 (y2z)         2>    1<
+ 14: 147.205.85.10:3054 - 132.235.1.100:5000 (ba2bb)    1>    2<
+ 15: 132.235.1.64:11049 - 132.235.2.1:23 (bc2bd)        6>    3<
+ 16: 132.235.1.100:5000 - 134.241.10.5:1783 (be2bf)     1>    1<
+ 17: 132.235.17.161:28930 - 132.235.1.6:23 (bg2bh)      2>    2<
+ 18: 132.235.200.5:2065 - 132.235.2.30:23 (bi2bj)       2>    1<
+ 19: 132.235.1.64:32301 - 132.235.1.2:23 (bk2bl)        3>    2<
+ 20: 132.235.1.100:5000 - 144.32.128.6:4427 (bm2bn)     1>    0<  (unidirectional)
+ 21: 132.235.1.2:3141 - 132.235.1.147:9100 (bo2bp)      3>    1<
+ 22: 130.236.254.159:2000 - 132.235.1.2:1459 (bq2br)    1>    0<  (unidirectional)
+ 23: 132.235.1.2:23 - 132.235.1.64:22058 (bs2bt)        2>    0<  (unidirectional)

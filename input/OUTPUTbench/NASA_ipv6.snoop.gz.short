@@ -1,0 +1,8 @@
+1 arg remaining, starting with 'NASA_ipv6.snoop.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+169 packets seen, 169 TCP packets traced
+trace file elapsed time: 0:00:28.233468
+TCP connection info:
+  1: fe80::0002:0a00:20ff:fe22:e80f:32797 - fe80::0001:0a00:20ff:fe22:ddb7:21 (a2b)   16>    0<  (unidirectional)
+  2: fe80::0002:0a00:20ff:fe22:e80f:32798 - fe80::0001:0a00:20ff:fe22:ddb7:20 (c2d)  153>    0<  (unidirectional)

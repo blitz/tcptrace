@@ -1,0 +1,114 @@
+1 arg remaining, starting with 'NASA_ipv6.snoop.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+169 packets seen, 169 TCP packets traced
+trace file elapsed time: 0:00:28.233468
+TCP connection info:
+2 TCP connections traced:
+TCP connection 1:
+	host a:        fe80::0002:0a00:20ff:fe22:e80f:32797
+	host b:        fe80::0001:0a00:20ff:fe22:ddb7:21
+	complete conn: no	(SYNs: 1)  (FINs: 1)
+	first packet:  Mon Nov 10 11:02:36.261535 1997
+	last packet:   Mon Nov 10 11:03:04.495004 1997
+	elapsed time:  0:00:28.233468
+	total packets: 16
+	filename:      NASA_ipv6.snoop.gz
+   a->b:			      b->a:
+     total packets:            16           total packets:             0      
+     ack pkts sent:            15           ack pkts sent:             0      
+     pure acks sent:            8           pure acks sent:            0      
+     unique bytes sent:       122           unique bytes sent:         0      
+     actual data pkts:          6           actual data pkts:          0      
+     actual data bytes:       122           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          6           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       0/0      
+     mss requested:          1440 bytes     mss requested:             0 bytes
+     max segm size:            66 bytes     max segm size:             0 bytes
+     min segm size:             6 bytes     min segm size:             0 bytes
+     avg segm size:            20 bytes     avg segm size:             0 bytes
+     max win adv:            8640 bytes     max win adv:               0 bytes
+     min win adv:            8640 bytes     min win adv:               0 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:            9216 bytes     avg win adv:               0 bytes
+     initial window:          122 bytes     initial window:            0 bytes
+     initial window:            6 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:       24.939 secs      data xmit time:        0.000 secs 
+     idletime max:         8705.5 ms        idletime max:             NA ms   
+     throughput:                4 Bps       throughput:                0 Bps  
+
+     RTT samples:               0           RTT samples:               0      
+     RTT min:                 0.0 ms        RTT min:                 0.0 ms   
+     RTT max:                 0.0 ms        RTT max:                 0.0 ms   
+     RTT avg:                 0.0 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 2:
+	host c:        fe80::0002:0a00:20ff:fe22:e80f:32798
+	host d:        fe80::0001:0a00:20ff:fe22:ddb7:20
+	complete conn: no	(SYNs: 1)  (FINs: 1)
+	first packet:  Mon Nov 10 11:02:58.836617 1997
+	last packet:   Mon Nov 10 11:02:59.155372 1997
+	elapsed time:  0:00:00.318755
+	total packets: 153
+	filename:      NASA_ipv6.snoop.gz
+   c->d:			      d->c:
+     total packets:           153           total packets:             0      
+     ack pkts sent:           153           ack pkts sent:             0      
+     pure acks sent:            1           pure acks sent:            0      
+     unique bytes sent:    204800           unique bytes sent:         0      
+     actual data pkts:        150           actual data pkts:          0      
+     actual data bytes:    204800           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:         72           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       0/0      
+     mss requested:          1440 bytes     mss requested:             0 bytes
+     max segm size:          1440 bytes     max segm size:             0 bytes
+     min segm size:           992 bytes     min segm size:             0 bytes
+     avg segm size:          1365 bytes     avg segm size:             0 bytes
+     max win adv:           25920 bytes     max win adv:               0 bytes
+     min win adv:            8640 bytes     min win adv:               0 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           25807 bytes     avg win adv:               0 bytes
+     initial window:       204800 bytes     initial window:            0 bytes
+     initial window:          150 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.251 secs      data xmit time:        0.000 secs 
+     idletime max:         5339.6 ms        idletime max:             NA ms   
+     throughput:           642500 Bps       throughput:                0 Bps  
+
+     RTT samples:               0           RTT samples:               0      
+     RTT min:                 0.0 ms        RTT min:                 0.0 ms   
+     RTT max:                 0.0 ms        RTT max:                 0.0 ms   
+     RTT avg:                 0.0 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

@@ -1,0 +1,7 @@
+1 arg remaining, starting with 'dlt_null.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+470 packets seen, 470 TCP packets traced
+trace file elapsed time: 0:00:01.046289
+TCP connection info:
+  1: 10.0.0.3:1479 - 10.0.0.4:9000 (a2b)  241>  229<  (complete)

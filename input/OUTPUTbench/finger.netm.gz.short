@@ -1,0 +1,7 @@
+1 arg remaining, starting with 'finger.netm.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+9 packets seen, 9 TCP packets traced
+trace file elapsed time: 0:00:00.318940
+TCP connection info:
+  1: 132.235.1.184:40491 - 132.235.3.130:79 (a2b)    4>    5<  (complete)

@@ -1,0 +1,8 @@
+1 arg remaining, starting with 'badsyns.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+17 packets seen, 17 TCP packets traced
+trace file elapsed time: 0:03:23.788559
+TCP connection info:
+  1: 132.235.67.36:1700 - 132.235.67.21:9080 (a2b)    4>    0<  (unidirectional)
+  2: 132.235.67.36:1700 - 132.235.67.21:9080 (c2d)    9>    4<  (complete)

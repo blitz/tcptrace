@@ -1,0 +1,12 @@
+1 arg remaining, starting with 'discard.solaris.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+2550 packets seen, 2550 TCP packets traced
+trace file elapsed time: 0:00:38.349719
+TCP connection info:
+  1: 132.235.1.184:35651 - 132.235.1.2:9 (a2b)       1>    1<  (reset)
+  2: 132.235.1.184:35652 - 132.235.2.1:9 (c2d)       1>    1<  (reset)
+  3: 132.235.1.184:35653 - 132.235.3.134:9 (e2f)   604>  436<  (complete)
+  4: 132.235.1.184:35654 - 132.235.1.221:9 (g2h)   655>  725<  (complete)
+  5: 132.235.1.184:35655 - 132.235.201.18:9 (i2j)   88>   38<
+    ** Warning, i2j: detected 44 hardware duplicate(s) (same seq # and IP ID)

@@ -1,0 +1,133 @@
+1 arg remaining, starting with 'pcap_v2.2.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+40 packets seen, 40 TCP packets traced
+trace file elapsed time: 0:00:01.448223
+TCP connection info:
+2 TCP connections traced:
+*** 2 packets were too short to process at some point
+	(use -w option to show details)
+TCP connection 1:
+	host a:        128.224.2.23:1036
+	host b:        128.224.1.148:9
+	complete conn: no	(SYNs: 2)  (FINs: 0)
+	first packet:  Tue Feb 11 19:25:57.818762 1997
+	last packet:   Tue Feb 11 19:25:59.266986 1997
+	elapsed time:  0:00:01.448223
+	total packets: 37
+	filename:      pcap_v2.2.dmp.gz
+   a->b:			      b->a:
+     total packets:            19           total packets:            18      
+     ack pkts sent:            18           ack pkts sent:            18      
+     pure acks sent:            1           pure acks sent:           16      
+     unique bytes sent:      8650           unique bytes sent:         0      
+     actual data pkts:         17           actual data pkts:          0      
+     actual data bytes:      8650           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           1      
+     rexmt data bytes:          0           rexmt data bytes:          1      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          2           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/0           SYN/FIN pkts sent:       2/0      
+     req 1323 ws/ts:          Y/N           req 1323 ws/ts:          N/N      
+     adv wind scale:            0           adv wind scale:            0      
+     mss requested:          1460 bytes     mss requested:           536 bytes
+     max segm size:           536 bytes     max segm size:             0 bytes
+     min segm size:            74 bytes     min segm size:             0 bytes
+     avg segm size:           508 bytes     avg segm size:             0 bytes
+     max win adv:           16616 bytes     max win adv:           16384 bytes
+     min win adv:           16384 bytes     min win adv:           16384 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           17526 bytes     avg win adv:           16384 bytes
+     initial window:          610 bytes     initial window:            0 bytes
+     initial window:            2 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:         8412 bytes     truncated data:            0 bytes
+     truncated packets:        17 pkts      truncated packets:         0 pkts 
+     data xmit time:        1.382 secs      data xmit time:        0.000 secs 
+     idletime max:           87.1 ms        idletime max:          687.4 ms   
+     hardware dups:             0 segs      hardware dups:             9 segs 
+       ** WARNING: presence of hardware duplicates makes these figures suspect!
+     throughput:             5973 Bps       throughput:                0 Bps  
+
+     RTT samples:               9           RTT samples:               0      
+     RTT min:                 1.2 ms        RTT min:                 0.0 ms   
+     RTT max:                 2.0 ms        RTT max:                 0.0 ms   
+     RTT avg:                 1.4 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.2 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+	  For the following 5 RTT statistics, only ACKs for
+	  multiply-transmitted segments (ambiguous ACKs) were
+	  considered.  Times are taken from the last instance
+	  of a segment.
+     ambiguous acks:            0           ambiguous acks:            1      
+     RTT min (last):          0.0 ms        RTT min (last):         35.4 ms   
+     RTT max (last):          0.0 ms        RTT max (last):         35.4 ms   
+     RTT avg (last):          0.0 ms        RTT avg (last):         35.4 ms   
+     RTT sdv (last):          0.0 ms        RTT sdv (last):          0.0 ms   
+     segs cum acked:            1           segs cum acked:            0      
+     duplicate acks:            9           duplicate acks:           17      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             1      
+     min retr time:           0.0 ms        min retr time:           2.6 ms   
+     max retr time:           0.0 ms        max retr time:           2.6 ms   
+     avg retr time:           0.0 ms        avg retr time:           2.6 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 2:
+	host c:        128.224.2.23:1037
+	host d:        128.224.1.148:19
+	complete conn: no	(SYNs: 2)  (FINs: 0)
+	first packet:  Tue Feb 11 19:25:57.831914 1997
+	last packet:   Tue Feb 11 19:25:57.835566 1997
+	elapsed time:  0:00:00.003652
+	total packets: 3
+	filename:      pcap_v2.2.dmp.gz
+   c->d:			      d->c:
+     total packets:             1           total packets:             2      
+     ack pkts sent:             0           ack pkts sent:             2      
+     pure acks sent:            0           pure acks sent:            0      
+     unique bytes sent:         0           unique bytes sent:         0      
+     actual data pkts:          0           actual data pkts:          0      
+     actual data bytes:         0           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           1      
+     rexmt data bytes:          0           rexmt data bytes:          1      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          0           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/0           SYN/FIN pkts sent:       2/0      
+     req 1323 ws/ts:          Y/N           req 1323 ws/ts:          N/N      
+     adv wind scale:            0           adv wind scale:            0      
+     mss requested:          1460 bytes     mss requested:           536 bytes
+     max segm size:             0 bytes     max segm size:             0 bytes
+     min segm size:             0 bytes     min segm size:             0 bytes
+     avg segm size:             0 bytes     avg segm size:             0 bytes
+     max win adv:           16384 bytes     max win adv:               1 bytes
+     min win adv:           16384 bytes     min win adv:               1 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:               0 bytes     avg win adv:               1 bytes
+     initial window:            0 bytes     initial window:            0 bytes
+     initial window:            0 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.000 secs 
+     idletime max:         1435.1 ms        idletime max:         1431.4 ms   
+     hardware dups:             0 segs      hardware dups:             1 segs 
+       ** WARNING: presence of hardware duplicates makes these figures suspect!
+     throughput:                0 Bps       throughput:                0 Bps  
+
+     RTT samples:               1           RTT samples:               0      
+     RTT min:                 1.1 ms        RTT min:                 0.0 ms   
+     RTT max:                 1.1 ms        RTT max:                 0.0 ms   
+     RTT avg:                 1.1 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            1           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             1      
+     min retr time:           0.0 ms        min retr time:           2.6 ms   
+     max retr time:           0.0 ms        max retr time:           2.6 ms   
+     avg retr time:           0.0 ms        avg retr time:           2.6 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

@@ -1,0 +1,254 @@
+1 arg remaining, starting with 'ipopts.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+Packet 1
+	Packet Length: 138
+	Collected: Wed Jan 27 16:55:20.877461 1999
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 00:00:0c:47:be:87
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 135.145.9.134 
+	    Type: 0x1 (ICMP)
+	    HLEN: 60
+	     TTL: 255
+	     LEN: 124
+	      ID: 21572
+	   CKSUM: 0xf892
+	  OFFSET: 0x4000  Don't Fragment
+	 Options: 40 bytes
+	    IP option 7 (copy:N  class:ctrl  number:7)
+	      Record Route:  len: 39  ptr:4
+	        1: xxxxxxxxxxx
+	        2: xxxxxxxxxxx
+	        3: xxxxxxxxxxx
+	        4: xxxxxxxxxxx
+	        5: xxxxxxxxxxx
+	        6: xxxxxxxxxxx
+	        7: xxxxxxxxxxx
+	        8: xxxxxxxxxxx
+	        9: xxxxxxxxxxx
+	    IP option 0 (copy:N  class:ctrl  number:0)
+	      EOL
+
+Packet 2
+	Packet Length: 138
+	Collected: Wed Jan 27 16:55:20.945113 1999
+	ETH Srce: 00:00:0c:47:be:87
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 135.145.9.134 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x1 (ICMP)
+	    HLEN: 60
+	     TTL: 245
+	     LEN: 124
+	      ID: 10801
+	   CKSUM: 0x1a7b
+	  OFFSET: 0x4000  Don't Fragment
+	 Options: 40 bytes
+	    IP option 7 (copy:N  class:ctrl  number:7)
+	      Record Route:  len: 39  ptr:40
+	        1: 132.235.1.22     132.235.1.22
+	        2: 199.18.18.6      199.18.18.6
+	        3: 199.18.202.82    199.18.202.82
+	        4: 199.18.202.13    199.18.202.13
+	        5: 157.130.102.158  157.130.102.158
+	        6: 146.188.209.65   146.188.209.65
+	        7: 146.188.208.154  146.188.208.154
+	        8: 157.130.96.9     157.130.96.9
+	        9: 192.205.31.125   192.205.31.125
+	    IP option 0 (copy:N  class:ctrl  number:0)
+	      EOL
+
+Packet 3
+	Packet Length: 138
+	Collected: Wed Jan 27 16:55:21.877469 1999
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 00:00:0c:47:be:87
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 135.145.9.134 
+	    Type: 0x1 (ICMP)
+	    HLEN: 60
+	     TTL: 255
+	     LEN: 124
+	      ID: 21573
+	   CKSUM: 0xf891
+	  OFFSET: 0x4000  Don't Fragment
+	 Options: 40 bytes
+	    IP option 7 (copy:N  class:ctrl  number:7)
+	      Record Route:  len: 39  ptr:4
+	        1: xxxxxxxxxxx
+	        2: xxxxxxxxxxx
+	        3: xxxxxxxxxxx
+	        4: xxxxxxxxxxx
+	        5: xxxxxxxxxxx
+	        6: xxxxxxxxxxx
+	        7: xxxxxxxxxxx
+	        8: xxxxxxxxxxx
+	        9: xxxxxxxxxxx
+	    IP option 0 (copy:N  class:ctrl  number:0)
+	      EOL
+
+Packet 4
+	Packet Length: 138
+	Collected: Wed Jan 27 16:55:21.971355 1999
+	ETH Srce: 00:00:0c:47:be:87
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 135.145.9.134 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x1 (ICMP)
+	    HLEN: 60
+	     TTL: 245
+	     LEN: 124
+	      ID: 10802
+	   CKSUM: 0x2a7a
+	  OFFSET: 0x4000  Don't Fragment
+	 Options: 40 bytes
+	    IP option 7 (copy:N  class:ctrl  number:7)
+	      Record Route:  len: 39  ptr:40
+	        1: 132.235.1.22     132.235.1.22
+	        2: 199.18.18.6      199.18.18.6
+	        3: 199.18.202.82    199.18.202.82
+	        4: 199.18.202.13    199.18.202.13
+	        5: 157.130.102.158  157.130.102.158
+	        6: 146.188.209.69   146.188.209.69
+	        7: 146.188.208.150  146.188.208.150
+	        8: 157.130.96.9     157.130.96.9
+	        9: 192.205.31.109   192.205.31.109
+	    IP option 0 (copy:N  class:ctrl  number:0)
+	      EOL
+
+Packet 5
+	Packet Length: 138
+	Collected: Wed Jan 27 16:55:22.877515 1999
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 00:00:0c:47:be:87
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 135.145.9.134 
+	    Type: 0x1 (ICMP)
+	    HLEN: 60
+	     TTL: 255
+	     LEN: 124
+	      ID: 21574
+	   CKSUM: 0xf890
+	  OFFSET: 0x4000  Don't Fragment
+	 Options: 40 bytes
+	    IP option 7 (copy:N  class:ctrl  number:7)
+	      Record Route:  len: 39  ptr:4
+	        1: xxxxxxxxxxx
+	        2: xxxxxxxxxxx
+	        3: xxxxxxxxxxx
+	        4: xxxxxxxxxxx
+	        5: xxxxxxxxxxx
+	        6: xxxxxxxxxxx
+	        7: xxxxxxxxxxx
+	        8: xxxxxxxxxxx
+	        9: xxxxxxxxxxx
+	    IP option 0 (copy:N  class:ctrl  number:0)
+	      EOL
+
+Packet 6
+	Packet Length: 138
+	Collected: Wed Jan 27 16:55:22.976203 1999
+	ETH Srce: 00:00:0c:47:be:87
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 135.145.9.134 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x1 (ICMP)
+	    HLEN: 60
+	     TTL: 245
+	     LEN: 124
+	      ID: 10803
+	   CKSUM: 0x1a79
+	  OFFSET: 0x4000  Don't Fragment
+	 Options: 40 bytes
+	    IP option 7 (copy:N  class:ctrl  number:7)
+	      Record Route:  len: 39  ptr:40
+	        1: 132.235.1.22     132.235.1.22
+	        2: 199.18.18.6      199.18.18.6
+	        3: 199.18.202.82    199.18.202.82
+	        4: 199.18.202.13    199.18.202.13
+	        5: 157.130.102.158  157.130.102.158
+	        6: 146.188.209.65   146.188.209.65
+	        7: 146.188.208.154  146.188.208.154
+	        8: 157.130.96.9     157.130.96.9
+	        9: 192.205.31.125   192.205.31.125
+	    IP option 0 (copy:N  class:ctrl  number:0)
+	      EOL
+
+Packet 7
+	Packet Length: 138
+	Collected: Wed Jan 27 16:55:23.877578 1999
+	ETH Srce: 08:00:20:85:af:9e
+	ETH Dest: 00:00:0c:47:be:87
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 132.235.3.128 
+	IP  Dest: 135.145.9.134 
+	    Type: 0x1 (ICMP)
+	    HLEN: 60
+	     TTL: 255
+	     LEN: 124
+	      ID: 21575
+	   CKSUM: 0xf88f
+	  OFFSET: 0x4000  Don't Fragment
+	 Options: 40 bytes
+	    IP option 7 (copy:N  class:ctrl  number:7)
+	      Record Route:  len: 39  ptr:4
+	        1: xxxxxxxxxxx
+	        2: xxxxxxxxxxx
+	        3: xxxxxxxxxxx
+	        4: xxxxxxxxxxx
+	        5: xxxxxxxxxxx
+	        6: xxxxxxxxxxx
+	        7: xxxxxxxxxxx
+	        8: xxxxxxxxxxx
+	        9: xxxxxxxxxxx
+	    IP option 0 (copy:N  class:ctrl  number:0)
+	      EOL
+
+Packet 8
+	Packet Length: 138
+	Collected: Wed Jan 27 16:55:23.943422 1999
+	ETH Srce: 00:00:0c:47:be:87
+	ETH Dest: 08:00:20:85:af:9e
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 135.145.9.134 
+	IP  Dest: 132.235.3.128 
+	    Type: 0x1 (ICMP)
+	    HLEN: 60
+	     TTL: 245
+	     LEN: 124
+	      ID: 10804
+	   CKSUM: 0x2a78
+	  OFFSET: 0x4000  Don't Fragment
+	 Options: 40 bytes
+	    IP option 7 (copy:N  class:ctrl  number:7)
+	      Record Route:  len: 39  ptr:40
+	        1: 132.235.1.22     132.235.1.22
+	        2: 199.18.18.6      199.18.18.6
+	        3: 199.18.202.82    199.18.202.82
+	        4: 199.18.202.13    199.18.202.13
+	        5: 157.130.102.158  157.130.102.158
+	        6: 146.188.209.69   146.188.209.69
+	        7: 146.188.208.150  146.188.208.150
+	        8: 157.130.96.9     157.130.96.9
+	        9: 192.205.31.109   192.205.31.109
+	    IP option 0 (copy:N  class:ctrl  number:0)
+	      EOL
+
+8 packets seen, 0 TCP packets traced
+trace file elapsed time: 0:00:03.065961
+no traced TCP packets

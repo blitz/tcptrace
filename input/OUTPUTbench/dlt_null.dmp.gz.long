@@ -1,0 +1,64 @@
+1 arg remaining, starting with 'dlt_null.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+470 packets seen, 470 TCP packets traced
+trace file elapsed time: 0:00:01.046289
+TCP connection info:
+1 TCP connection traced:
+TCP connection 1:
+	host a:        10.0.0.3:1479
+	host b:        10.0.0.4:9000
+	complete conn: yes
+	first packet:  Fri Sep  5 13:47:33.254875 1997
+	last packet:   Fri Sep  5 13:47:34.301165 1997
+	elapsed time:  0:00:01.046289
+	total packets: 470
+	filename:      dlt_null.dmp.gz
+   a->b:			      b->a:
+     total packets:           241           total packets:           229      
+     ack pkts sent:           240           ack pkts sent:           229      
+     pure acks sent:            2           pure acks sent:          227      
+     unique bytes sent:    331296           unique bytes sent:         0      
+     actual data pkts:        238           actual data pkts:          0      
+     actual data bytes:    331296           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:        214           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     req 1323 ws/ts:          Y/Y           req 1323 ws/ts:          Y/Y      
+     adv wind scale:            0           adv wind scale:            0      
+     req sack:                  Y           req sack:                  Y      
+     sacks sent:                0           sacks sent:                0      
+     mss requested:          1392 bytes     mss requested:          1392 bytes
+     max segm size:          1392 bytes     max segm size:             0 bytes
+     min segm size:          1392 bytes     min segm size:             0 bytes
+     avg segm size:          1391 bytes     avg segm size:             0 bytes
+     max win adv:           16704 bytes     max win adv:           16704 bytes
+     min win adv:           16384 bytes     min win adv:           15312 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           16772 bytes     avg win adv:           15403 bytes
+     initial window:         1392 bytes     initial window:            0 bytes
+     initial window:            1 pkts      initial window:            0 pkts 
+     ttl stream length:    331296 bytes     ttl stream length:         0 bytes
+     missed data:               0 bytes     missed data:               0 bytes
+     truncated data:       256802 bytes     truncated data:            0 bytes
+     truncated packets:       238 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.968 secs      data xmit time:        0.000 secs 
+     idletime max:           41.3 ms        idletime max:           40.1 ms   
+     throughput:           316639 Bps       throughput:                0 Bps  
+
+     RTT samples:             228           RTT samples:               2      
+     RTT min:                26.7 ms        RTT min:                 0.1 ms   
+     RTT max:                61.0 ms        RTT max:                 0.1 ms   
+     RTT avg:                38.1 ms        RTT avg:                 0.1 ms   
+     RTT stdev:               6.5 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:           11           segs cum acked:            0      
+     duplicate acks:            1           duplicate acks:          238      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

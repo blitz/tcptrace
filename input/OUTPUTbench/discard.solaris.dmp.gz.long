@@ -1,0 +1,298 @@
+1 arg remaining, starting with 'discard.solaris.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+2550 packets seen, 2550 TCP packets traced
+trace file elapsed time: 0:00:38.349719
+TCP connection info:
+5 TCP connections traced:
+TCP connection 1:
+	host a:        132.235.1.184:35651
+	host b:        132.235.1.2:9
+	complete conn: RESET	(SYNs: 1)  (FINs: 0)
+	first packet:  Thu Aug  4 16:47:57.261947 1994
+	last packet:   Thu Aug  4 16:47:57.263033 1994
+	elapsed time:  0:00:00.001086
+	total packets: 2
+	filename:      discard.solaris.dmp.gz
+   a->b:			      b->a:
+     total packets:             1           total packets:             1      
+     resets sent:               0           resets sent:               1      
+     ack pkts sent:             0           ack pkts sent:             1      
+     pure acks sent:            0           pure acks sent:            0      
+     unique bytes sent:         0           unique bytes sent:         0      
+     actual data pkts:          0           actual data pkts:          0      
+     actual data bytes:         0           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          0           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/0           SYN/FIN pkts sent:       0/0      
+     mss requested:          1460 bytes     mss requested:             0 bytes
+     max segm size:             0 bytes     max segm size:             0 bytes
+     min segm size:             0 bytes     min segm size:             0 bytes
+     avg segm size:             0 bytes     avg segm size:             0 bytes
+     max win adv:            8760 bytes     max win adv:               0 bytes
+     min win adv:            8760 bytes     min win adv:               0 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:               0 bytes     avg win adv:               0 bytes
+     initial window:            0 bytes     initial window:            0 bytes
+     initial window:            0 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.000 secs 
+     idletime max:            0.0 ms        idletime max:            0.0 ms   
+     throughput:                0 Bps       throughput:                0 Bps  
+
+     RTT samples:               1           RTT samples:               0      
+     RTT min:                 1.1 ms        RTT min:                 0.0 ms   
+     RTT max:                 1.1 ms        RTT max:                 0.0 ms   
+     RTT avg:                 1.1 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 2:
+	host c:        132.235.1.184:35652
+	host d:        132.235.2.1:9
+	complete conn: RESET	(SYNs: 1)  (FINs: 0)
+	first packet:  Thu Aug  4 16:48:03.250874 1994
+	last packet:   Thu Aug  4 16:48:03.255572 1994
+	elapsed time:  0:00:00.004698
+	total packets: 2
+	filename:      discard.solaris.dmp.gz
+   c->d:			      d->c:
+     total packets:             1           total packets:             1      
+     resets sent:               0           resets sent:               1      
+     ack pkts sent:             0           ack pkts sent:             1      
+     pure acks sent:            0           pure acks sent:            0      
+     unique bytes sent:         0           unique bytes sent:         0      
+     actual data pkts:          0           actual data pkts:          0      
+     actual data bytes:         0           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          0           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/0           SYN/FIN pkts sent:       0/0      
+     mss requested:          1460 bytes     mss requested:             0 bytes
+     max segm size:             0 bytes     max segm size:             0 bytes
+     min segm size:             0 bytes     min segm size:             0 bytes
+     avg segm size:             0 bytes     avg segm size:             0 bytes
+     max win adv:            8760 bytes     max win adv:               0 bytes
+     min win adv:            8760 bytes     min win adv:               0 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:               0 bytes     avg win adv:               0 bytes
+     initial window:            0 bytes     initial window:            0 bytes
+     initial window:            0 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.000 secs 
+     idletime max:            0.0 ms        idletime max:            0.0 ms   
+     throughput:                0 Bps       throughput:                0 Bps  
+
+     RTT samples:               1           RTT samples:               0      
+     RTT min:                 4.7 ms        RTT min:                 0.0 ms   
+     RTT max:                 4.7 ms        RTT max:                 0.0 ms   
+     RTT avg:                 4.7 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 3:
+	host e:        132.235.1.184:35653
+	host f:        132.235.3.134:9
+	complete conn: yes
+	first packet:  Thu Aug  4 16:48:06.166396 1994
+	last packet:   Thu Aug  4 16:48:08.236911 1994
+	elapsed time:  0:00:02.070514
+	total packets: 1040
+	filename:      discard.solaris.dmp.gz
+   e->f:			      f->e:
+     total packets:           604           total packets:           436      
+     ack pkts sent:           603           ack pkts sent:           436      
+     pure acks sent:            2           pure acks sent:          434      
+     unique bytes sent:    819200           unique bytes sent:         0      
+     actual data pkts:        600           actual data pkts:          0      
+     actual data bytes:    819200           actual data bytes:         0      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           2           outoforder pkts:           0      
+     pushed data pkts:         39           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     mss requested:          1460 bytes     mss requested:          1460 bytes
+     max segm size:          1460 bytes     max segm size:             0 bytes
+     min segm size:           892 bytes     min segm size:             0 bytes
+     avg segm size:          1365 bytes     avg segm size:             0 bytes
+     max win adv:            8760 bytes     max win adv:            4096 bytes
+     min win adv:            8760 bytes     min win adv:            1744 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:            8774 bytes     avg win adv:            3241 bytes
+     initial window:         1460 bytes     initial window:            0 bytes
+     initial window:            1 pkts      initial window:            0 pkts 
+     ttl stream length:    819200 bytes     ttl stream length:         0 bytes
+     missed data:               0 bytes     missed data:               0 bytes
+     truncated data:       794000 bytes     truncated data:            0 bytes
+     truncated packets:       600 pkts      truncated packets:         0 pkts 
+     data xmit time:        1.875 secs      data xmit time:        0.000 secs 
+     idletime max:          226.5 ms        idletime max:          167.4 ms   
+     throughput:           395650 Bps       throughput:                0 Bps  
+
+     RTT samples:             311           RTT samples:               2      
+     RTT min:                 0.4 ms        RTT min:                 0.6 ms   
+     RTT max:                85.0 ms        RTT max:                50.6 ms   
+     RTT avg:                 1.9 ms        RTT avg:                25.6 ms   
+     RTT stdev:               4.7 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            2           post-loss acks:            0      
+     segs cum acked:          289           segs cum acked:            0      
+     duplicate acks:          123           duplicate acks:          601      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 4:
+	host g:        132.235.1.184:35654
+	host h:        132.235.1.221:9
+	complete conn: yes
+	first packet:  Thu Aug  4 16:48:11.951023 1994
+	last packet:   Thu Aug  4 16:48:14.456877 1994
+	elapsed time:  0:00:02.505853
+	total packets: 1380
+	filename:      discard.solaris.dmp.gz
+   g->h:			      h->g:
+     total packets:           655           total packets:           725      
+     ack pkts sent:           654           ack pkts sent:           725      
+     pure acks sent:            2           pure acks sent:          723      
+     unique bytes sent:    819200           unique bytes sent:         0      
+     actual data pkts:        651           actual data pkts:          0      
+     actual data bytes:    888196           actual data bytes:         0      
+     rexmt data pkts:          51           rexmt data pkts:           0      
+     rexmt data bytes:      68996           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:        216           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     mss requested:          1460 bytes     mss requested:          1436 bytes
+     max segm size:          1436 bytes     max segm size:             0 bytes
+     min segm size:          1012 bytes     min segm size:             0 bytes
+     avg segm size:          1364 bytes     avg segm size:             0 bytes
+     max win adv:           10052 bytes     max win adv:            8192 bytes
+     min win adv:            8760 bytes     min win adv:              88 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           10065 bytes     avg win adv:            7018 bytes
+     initial window:         1436 bytes     initial window:            0 bytes
+     initial window:            1 pkts      initial window:            0 pkts 
+     ttl stream length:    819200 bytes     ttl stream length:         0 bytes
+     missed data:               0 bytes     missed data:               0 bytes
+     truncated data:       860854 bytes     truncated data:            0 bytes
+     truncated packets:       651 pkts      truncated packets:         0 pkts 
+     data xmit time:        2.165 secs      data xmit time:        0.000 secs 
+     idletime max:          134.4 ms        idletime max:          144.6 ms   
+     throughput:           326914 Bps       throughput:                0 Bps  
+
+     RTT samples:             281           RTT samples:               2      
+     RTT min:                 0.7 ms        RTT min:                 0.5 ms   
+     RTT max:                11.9 ms        RTT max:                47.5 ms   
+     RTT avg:                 7.1 ms        RTT avg:                24.0 ms   
+     RTT stdev:               2.7 ms        RTT stdev:               0.0 ms   
+     post-loss acks:           54           post-loss acks:            0      
+	  For the following 5 RTT statistics, only ACKs for
+	  multiply-transmitted segments (ambiguous ACKs) were
+	  considered.  Times are taken from the last instance
+	  of a segment.
+     ambiguous acks:            4           ambiguous acks:            0      
+     RTT min (last):          1.9 ms        RTT min (last):          0.0 ms   
+     RTT max (last):          2.2 ms        RTT max (last):          0.0 ms   
+     RTT avg (last):          2.0 ms        RTT avg (last):          0.0 ms   
+     RTT sdv (last):          0.1 ms        RTT sdv (last):          0.0 ms   
+     segs cum acked:          263           segs cum acked:            0      
+     duplicate acks:          385           duplicate acks:          652      
+     triple dupacks:           62           triple dupacks:            0      
+     max # retrans:             1           max # retrans:             0      
+     min retr time:           9.3 ms        min retr time:           0.0 ms   
+     max retr time:          18.2 ms        max retr time:           0.0 ms   
+     avg retr time:          12.9 ms        avg retr time:           0.0 ms   
+     sdv retr time:           1.6 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 5:
+	host i:        132.235.1.184:35655
+	host j:        132.235.201.18:9
+	complete conn: no	(SYNs: 2)  (FINs: 1)
+	first packet:  Thu Aug  4 16:48:21.933818 1994
+	last packet:   Thu Aug  4 16:48:35.611666 1994
+	elapsed time:  0:00:13.677847
+	total packets: 126
+	filename:      discard.solaris.dmp.gz
+   i->j:			      j->i:
+     total packets:            88           total packets:            38      
+     ack pkts sent:            86           ack pkts sent:            38      
+     pure acks sent:            2           pure acks sent:           37      
+     unique bytes sent:     28884           unique bytes sent:         0      
+     actual data pkts:         84           actual data pkts:          0      
+     actual data bytes:    114688           actual data bytes:         0      
+     rexmt data pkts:          64           rexmt data pkts:           0      
+     rexmt data bytes:      85806           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:         12           pushed data pkts:          0      
+     SYN/FIN pkts sent:       2/2           SYN/FIN pkts sent:       1/0      
+     mss requested:          1460 bytes     mss requested:          1436 bytes
+     max segm size:          1436 bytes     max segm size:             0 bytes
+     min segm size:          1012 bytes     min segm size:             0 bytes
+     avg segm size:          1365 bytes     avg segm size:             0 bytes
+     max win adv:           10052 bytes     max win adv:            8192 bytes
+     min win adv:            8760 bytes     min win adv:            8192 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           10255 bytes     avg win adv:            8192 bytes
+     initial window:         1436 bytes     initial window:            0 bytes
+     initial window:            1 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:       111160 bytes     truncated data:            0 bytes
+     truncated packets:        84 pkts      truncated packets:         0 pkts 
+     data xmit time:       12.652 secs      data xmit time:        0.000 secs 
+     idletime max:         1027.7 ms        idletime max:          640.3 ms   
+     hardware dups:            44 segs      hardware dups:             0 segs 
+       ** WARNING: presence of hardware duplicates makes these figures suspect!
+     throughput:             2112 Bps       throughput:                0 Bps  
+
+     RTT samples:               0           RTT samples:               1      
+     RTT min:                 0.0 ms        RTT min:                43.7 ms   
+     RTT max:                 0.0 ms        RTT max:                43.7 ms   
+     RTT avg:                 0.0 ms        RTT avg:                43.7 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            1           post-loss acks:            0      
+	  For the following 5 RTT statistics, only ACKs for
+	  multiply-transmitted segments (ambiguous ACKs) were
+	  considered.  Times are taken from the last instance
+	  of a segment.
+     ambiguous acks:           19           ambiguous acks:            0      
+     RTT min (last):         19.0 ms        RTT min (last):          0.0 ms   
+     RTT max (last):       1112.7 ms        RTT max (last):          0.0 ms   
+     RTT avg (last):        359.2 ms        RTT avg (last):          0.0 ms   
+     RTT sdv (last):        239.9 ms        RTT sdv (last):          0.0 ms   
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:           18           duplicate acks:           85      
+     triple dupacks:            4           triple dupacks:            0      
+     max # retrans:             5           max # retrans:             0      
+     min retr time:           1.0 ms        min retr time:           0.0 ms   
+     max retr time:        2898.0 ms        max retr time:           0.0 ms   
+     avg retr time:         406.1 ms        avg retr time:           0.0 ms   
+     sdv retr time:         746.0 ms        sdv retr time:           0.0 ms   

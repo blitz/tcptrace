@@ -1,0 +1,118 @@
+1 arg remaining, starting with 'badsyns.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+17 packets seen, 17 TCP packets traced
+trace file elapsed time: 0:03:23.788559
+TCP connection info:
+2 TCP connections traced:
+TCP connection 1:
+	host a:        132.235.67.36:1700
+	host b:        132.235.67.21:9080
+	complete conn: no	(SYNs: 1)  (FINs: 0)
+	first packet:  Wed Nov 25 09:29:23.422612 1998
+	last packet:   Wed Nov 25 09:30:05.298931 1998
+	elapsed time:  0:00:41.876319
+	total packets: 4
+	filename:      badsyns.dmp.gz
+   a->b:			      b->a:
+     total packets:             4           total packets:             0      
+     ack pkts sent:             0           ack pkts sent:             0      
+     pure acks sent:            0           pure acks sent:            0      
+     unique bytes sent:         0           unique bytes sent:         0      
+     actual data pkts:          0           actual data pkts:          0      
+     actual data bytes:         0           actual data bytes:         0      
+     rexmt data pkts:           3           rexmt data pkts:           0      
+     rexmt data bytes:          3           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          0           pushed data pkts:          0      
+     SYN/FIN pkts sent:       4/0           SYN/FIN pkts sent:       0/0      
+     req 1323 ws/ts:          Y/Y           req 1323 ws/ts:          N/N      
+     adv wind scale:            0           adv wind scale:            0      
+     mss requested:          1460 bytes     mss requested:             0 bytes
+     max segm size:             0 bytes     max segm size:             0 bytes
+     min segm size:             0 bytes     min segm size:             0 bytes
+     avg segm size:             0 bytes     avg segm size:             0 bytes
+     max win adv:           16384 bytes     max win adv:               0 bytes
+     min win adv:           16384 bytes     min win adv:               0 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:               0 bytes     avg win adv:               0 bytes
+     initial window:            0 bytes     initial window:            0 bytes
+     initial window:            0 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.000 secs 
+     idletime max:       161912.2 ms        idletime max:             NA ms   
+     throughput:                0 Bps       throughput:                0 Bps  
+
+     RTT samples:               0           RTT samples:               0      
+     RTT min:                 0.0 ms        RTT min:                 0.0 ms   
+     RTT max:                 0.0 ms        RTT max:                 0.0 ms   
+     RTT avg:                 0.0 ms        RTT avg:                 0.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             3           max # retrans:             0      
+     min retr time:        5869.8 ms        min retr time:           0.0 ms   
+     max retr time:       24005.4 ms        max retr time:           0.0 ms   
+     avg retr time:       13958.3 ms        avg retr time:           0.0 ms   
+     sdv retr time:        9225.0 ms        sdv retr time:           0.0 ms   
+================================
+TCP connection 2:
+	host c:        132.235.67.36:1700
+	host d:        132.235.67.21:9080
+	complete conn: yes
+	first packet:  Wed Nov 25 09:32:40.470421 1998
+	last packet:   Wed Nov 25 09:32:47.211172 1998
+	elapsed time:  0:00:06.740751
+	total packets: 13
+	filename:      badsyns.dmp.gz
+   c->d:			      d->c:
+     total packets:             9           total packets:             4      
+     ack pkts sent:             8           ack pkts sent:             4      
+     pure acks sent:            2           pure acks sent:            2      
+     unique bytes sent:      6231           unique bytes sent:         0      
+     actual data pkts:          6           actual data pkts:          0      
+     actual data bytes:      7679           actual data bytes:         0      
+     rexmt data pkts:           1           rexmt data pkts:           0      
+     rexmt data bytes:       1448           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          1           pushed data pkts:          0      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     req 1323 ws/ts:          Y/Y           req 1323 ws/ts:          Y/Y      
+     adv wind scale:            0           adv wind scale:            0      
+     mss requested:          1460 bytes     mss requested:          1460 bytes
+     max segm size:          1448 bytes     max segm size:             0 bytes
+     min segm size:           439 bytes     min segm size:             0 bytes
+     avg segm size:          1279 bytes     avg segm size:             0 bytes
+     max win adv:           17520 bytes     max win adv:           65535 bytes
+     min win adv:           16384 bytes     min win adv:           16384 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           19568 bytes     avg win adv:           52885 bytes
+     initial window:         1448 bytes     initial window:            0 bytes
+     initial window:            1 pkts      initial window:            0 pkts 
+     ttl stream length:      6231 bytes     ttl stream length:         0 bytes
+     missed data:               0 bytes     missed data:               0 bytes
+     truncated data:         7355 bytes     truncated data:            0 bytes
+     truncated packets:         6 pkts      truncated packets:         0 pkts 
+     data xmit time:        3.873 secs      data xmit time:        0.000 secs 
+     idletime max:         1918.7 ms        idletime max:         3732.7 ms   
+     throughput:              924 Bps       throughput:                0 Bps  
+
+     RTT samples:               3           RTT samples:               2      
+     RTT min:               939.6 ms        RTT min:                 0.1 ms   
+     RTT max:              1035.0 ms        RTT max:                 0.2 ms   
+     RTT avg:               998.3 ms        RTT avg:                 0.2 ms   
+     RTT stdev:              51.4 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            1           post-loss acks:            0      
+     segs cum acked:            2           segs cum acked:            0      
+     duplicate acks:            0           duplicate acks:            6      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             1           max # retrans:             0      
+     min retr time:        1812.4 ms        min retr time:           0.0 ms   
+     max retr time:        1812.4 ms        max retr time:           0.0 ms   
+     avg retr time:        1812.2 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

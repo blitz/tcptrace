@@ -1,0 +1,61 @@
+1 arg remaining, starting with 'http.epeek7.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+33 packets seen, 33 TCP packets traced
+trace file elapsed time: 0:00:01.834824
+TCP connection info:
+1 TCP connection traced:
+TCP connection 1:
+	host a:        132.235.67.34:3759
+	host b:        132.235.67.19:80
+	complete conn: no	(SYNs: 0)  (FINs: 0)
+	first packet:  Tue Dec 16 07:10:34.457621 1997
+	last packet:   Tue Dec 16 07:10:36.292446 1997
+	elapsed time:  0:00:01.834824
+	total packets: 33
+	filename:      http.epeek7.gz
+   a->b:			      b->a:
+     total packets:             9           total packets:            24      
+     ack pkts sent:             9           ack pkts sent:            24      
+     pure acks sent:            6           pure acks sent:            2      
+     unique bytes sent:       403           unique bytes sent:     29194      
+     actual data pkts:          3           actual data pkts:         22      
+     actual data bytes:       403           actual data bytes:     29194      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          3           pushed data pkts:          1      
+     SYN/FIN pkts sent:       0/0           SYN/FIN pkts sent:       0/0      
+     req 1323 ws/ts:          N/Y           req 1323 ws/ts:          N/Y      
+     mss requested:             0 bytes     mss requested:             0 bytes
+     max segm size:           268 bytes     max segm size:          1448 bytes
+     min segm size:            35 bytes     min segm size:            48 bytes
+     avg segm size:           134 bytes     avg segm size:          1326 bytes
+     max win adv:           49640 bytes     max win adv:           17520 bytes
+     min win adv:           49640 bytes     min win adv:           17520 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           49640 bytes     avg win adv:           17520 bytes
+     initial window:            0 bytes     initial window:            0 bytes
+     initial window:            0 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.580 secs      data xmit time:        1.833 secs 
+     idletime max:          554.9 ms        idletime max:          554.1 ms   
+     throughput:              220 Bps       throughput:            15911 Bps  
+
+     RTT samples:               3           RTT samples:               5      
+     RTT min:                 1.0 ms        RTT min:               586.9 ms   
+     RTT max:                 2.0 ms        RTT max:               597.7 ms   
+     RTT avg:                 1.4 ms        RTT avg:               592.9 ms   
+     RTT stdev:               0.5 ms        RTT stdev:               4.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            9      
+     duplicate acks:           18           duplicate acks:            2      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

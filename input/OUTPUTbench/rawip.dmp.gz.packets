@@ -1,0 +1,375 @@
+1 arg remaining, starting with 'rawip.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+Packet 1
+	Packet Length: 44
+	Collected: Sat Apr 11 11:42:32.518726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 208.200.110.46 
+	IP  Dest: 207.110.0.206 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 44
+	      ID: 1524
+	   CKSUM: 0x65a5
+	  OFFSET: 0x0000
+	TCP SPRT: 1351 
+	    DPRT: 80 
+	     FLG:   ----S- (0x02)
+	     SEQ: 0xa73351a0
+	     ACK: 0x00000000
+	     WIN: 512
+	    HLEN: 24
+	   CKSUM: 0x8888
+	    DLEN: 0
+	    OPTS: 4 bytes	 MSS(1460)
+Packet 2
+	Packet Length: 44
+	Collected: Sat Apr 11 11:42:33.898726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 207.110.0.206 
+	IP  Dest: 208.200.110.46 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 57
+	     LEN: 44
+	      ID: 47947
+	   CKSUM: 0xb74d
+	  OFFSET: 0x0000
+	TCP SPRT: 80 
+	    DPRT: 1351 
+	     FLG:   -A--S- (0x12)
+	     SEQ: 0xe46a822b
+	     ACK: 0xa73351a1
+	     WIN: 32736
+	    HLEN: 24
+	   CKSUM: 0xa400
+	    DLEN: 0
+	    OPTS: 4 bytes	 MSS(1460)
+Packet 3
+	Packet Length: 40
+	Collected: Sat Apr 11 11:42:33.898726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 208.200.110.46 
+	IP  Dest: 207.110.0.206 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 40
+	      ID: 1530
+	   CKSUM: 0x25a3
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1351 
+	    DPRT: 80 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xa73351a1
+	     ACK: 0xe46a822c
+	     WIN: 32120
+	    HLEN: 20
+	   CKSUM: 0xbe25
+	    DLEN: 0
+Packet 4
+	Packet Length: 430 (saved length 68)
+	Collected: Sat Apr 11 11:42:33.898726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 208.200.110.46 
+	IP  Dest: 207.110.0.206 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 430
+	      ID: 1531
+	   CKSUM: 0x241c
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1351 
+	    DPRT: 80 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xa73351a1
+	     ACK: 0xe46a822c
+	     WIN: 32120
+	    HLEN: 20
+	   CKSUM: 0x4177
+	    DLEN: 390 (only 229 bytes in dump file)
+	    data: 390 bytes
+Packet 5
+	Packet Length: 40
+	Collected: Sat Apr 11 11:42:34.578726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 207.110.0.206 
+	IP  Dest: 208.200.110.46 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 57
+	     LEN: 40
+	      ID: 47962
+	   CKSUM: 0x7742
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 1351 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xe46a822c
+	     ACK: 0xa7335327
+	     WIN: 32736
+	    HLEN: 20
+	   CKSUM: 0xba37
+	    DLEN: 0
+Packet 6
+	Packet Length: 1500 (saved length 68)
+	Collected: Sat Apr 11 11:42:34.998726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 207.110.0.206 
+	IP  Dest: 208.200.110.46 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 57
+	     LEN: 1500
+	      ID: 47963
+	   CKSUM: 0x718d
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 1351 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xe46a822c
+	     ACK: 0xa7335327
+	     WIN: 32736
+	    HLEN: 20
+	   CKSUM: 0x83af
+	    DLEN: 1460 (only 229 bytes in dump file)
+	    data: 1460 bytes
+Packet 7
+	Packet Length: 1500 (saved length 68)
+	Collected: Sat Apr 11 11:42:35.258726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 207.110.0.206 
+	IP  Dest: 208.200.110.46 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 57
+	     LEN: 1500
+	      ID: 47964
+	   CKSUM: 0x718c
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 1351 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xe46a87e0
+	     ACK: 0xa7335327
+	     WIN: 32736
+	    HLEN: 20
+	   CKSUM: 0xab99
+	    DLEN: 1460 (only 229 bytes in dump file)
+	    data: 1460 bytes
+Packet 8
+	Packet Length: 40
+	Collected: Sat Apr 11 11:42:35.268726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 208.200.110.46 
+	IP  Dest: 207.110.0.206 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 40
+	      ID: 1534
+	   CKSUM: 0x259f
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1351 
+	    DPRT: 80 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xa7335327
+	     ACK: 0xe46a8d94
+	     WIN: 30660
+	    HLEN: 20
+	   CKSUM: 0xb6eb
+	    DLEN: 0
+Packet 9
+	Packet Length: 1216 (saved length 68)
+	Collected: Sat Apr 11 11:42:35.748726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 207.110.0.206 
+	IP  Dest: 208.200.110.46 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 57
+	     LEN: 1216
+	      ID: 47969
+	   CKSUM: 0x72a3
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 1351 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xe46a8d94
+	     ACK: 0xa7335327
+	     WIN: 32736
+	    HLEN: 20
+	   CKSUM: 0x755e
+	    DLEN: 1176 (only 229 bytes in dump file)
+	    data: 1176 bytes
+Packet 10
+	Packet Length: 40
+	Collected: Sat Apr 11 11:42:35.768726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 208.200.110.46 
+	IP  Dest: 207.110.0.206 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 40
+	      ID: 1535
+	   CKSUM: 0x259e
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1351 
+	    DPRT: 80 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xa7335327
+	     ACK: 0xe46a922c
+	     WIN: 32120
+	    HLEN: 20
+	   CKSUM: 0xac9f
+	    DLEN: 0
+Packet 11
+	Packet Length: 700 (saved length 68)
+	Collected: Sat Apr 11 11:42:35.858726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 207.110.0.206 
+	IP  Dest: 208.200.110.46 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 57
+	     LEN: 700
+	      ID: 47970
+	   CKSUM: 0x74a6
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 80 
+	    DPRT: 1351 
+	     FLG:   -AP--- (0x18)
+	     SEQ: 0xe46a922c
+	     ACK: 0xa7335327
+	     WIN: 32736
+	    HLEN: 20
+	   CKSUM: 0xf0ad
+	    DLEN: 660 (only 229 bytes in dump file)
+	    data: 660 bytes
+Packet 12
+	Packet Length: 40
+	Collected: Sat Apr 11 11:42:35.878726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 208.200.110.46 
+	IP  Dest: 207.110.0.206 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 40
+	      ID: 1536
+	   CKSUM: 0x259d
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1351 
+	    DPRT: 80 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xa7335327
+	     ACK: 0xe46a94c0
+	     WIN: 32120
+	    HLEN: 20
+	   CKSUM: 0xaa0b
+	    DLEN: 0
+Packet 13
+	Packet Length: 40
+	Collected: Sat Apr 11 11:42:49.318726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 207.110.0.206 
+	IP  Dest: 208.200.110.46 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 57
+	     LEN: 40
+	      ID: 48084
+	   CKSUM: 0xb6c8
+	  OFFSET: 0x0000
+	TCP SPRT: 80 
+	    DPRT: 1351 
+	     FLG:   -A---F (0x11)
+	     SEQ: 0xe46a94c0
+	     ACK: 0xa7335327
+	     WIN: 32736
+	    HLEN: 20
+	   CKSUM: 0xa7a2
+	    DLEN: 0
+Packet 14
+	Packet Length: 40
+	Collected: Sat Apr 11 11:42:49.318726 1998
+	ETH Srce: 00:00:00:00:00:00
+	ETH Dest: 00:00:00:00:00:00
+	    Type: 0x800 (IP)
+	IP  VERS: 4
+	IP  Srce: 208.200.110.46 
+	IP  Dest: 207.110.0.206 
+	    Type: 0x6 (TCP)
+	    HLEN: 20
+	     TTL: 64
+	     LEN: 40
+	      ID: 1539
+	   CKSUM: 0x259a
+	  OFFSET: 0x4000  Don't Fragment
+
+	TCP SPRT: 1351 
+	    DPRT: 80 
+	     FLG:   -A---- (0x10)
+	     SEQ: 0xa7335327
+	     ACK: 0xe46a94c1
+	     WIN: 32120
+	    HLEN: 20
+	   CKSUM: 0xaa0a
+	    DLEN: 0
+14 packets seen, 14 TCP packets traced
+trace file elapsed time: 0:00:16.800000
+TCP connection info:
+  1: 208.200.110.46:1351 - 207.110.0.206:80 (a2b)    7>    7<

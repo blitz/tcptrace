@@ -1,0 +1,60 @@
+1 arg remaining, starting with 'rawip.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+14 packets seen, 14 TCP packets traced
+trace file elapsed time: 0:00:16.800000
+TCP connection info:
+1 TCP connection traced:
+TCP connection 1:
+	host a:        208.200.110.46:1351
+	host b:        207.110.0.206:80
+	complete conn: no	(SYNs: 2)  (FINs: 1)
+	first packet:  Sat Apr 11 11:42:32.518726 1998
+	last packet:   Sat Apr 11 11:42:49.318726 1998
+	elapsed time:  0:00:16.800000
+	total packets: 14
+	filename:      rawip.dmp.gz
+   a->b:			      b->a:
+     total packets:             7           total packets:             7      
+     ack pkts sent:             6           ack pkts sent:             7      
+     pure acks sent:            5           pure acks sent:            1      
+     unique bytes sent:       390           unique bytes sent:      4756      
+     actual data pkts:          1           actual data pkts:          4      
+     actual data bytes:       390           actual data bytes:      4756      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          1           pushed data pkts:          2      
+     SYN/FIN pkts sent:       1/0           SYN/FIN pkts sent:       1/1      
+     mss requested:          1460 bytes     mss requested:          1460 bytes
+     max segm size:           390 bytes     max segm size:          1460 bytes
+     min segm size:           390 bytes     min segm size:           660 bytes
+     avg segm size:           389 bytes     avg segm size:          1188 bytes
+     max win adv:           32120 bytes     max win adv:           32736 bytes
+     min win adv:             512 bytes     min win adv:           32736 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           31962 bytes     avg win adv:           32736 bytes
+     initial window:          390 bytes     initial window:         2920 bytes
+     initial window:            1 pkts      initial window:            2 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:          161 bytes     truncated data:         3840 bytes
+     truncated packets:         1 pkts      truncated packets:         4 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.860 secs 
+     idletime max:        13440.0 ms        idletime max:        13460.0 ms   
+     throughput:               23 Bps       throughput:              283 Bps  
+
+     RTT samples:               2           RTT samples:               5      
+     RTT min:               680.0 ms        RTT min:                 0.0 ms   
+     RTT max:              1380.0 ms        RTT max:                20.0 ms   
+     RTT avg:              1029.9 ms        RTT avg:                10.0 ms   
+     RTT stdev:               0.0 ms        RTT stdev:              10.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            1      
+     duplicate acks:            5           duplicate acks:            1      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

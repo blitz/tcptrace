@@ -1,0 +1,61 @@
+1 arg remaining, starting with 'reno.epeek.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+996 packets seen, 996 TCP packets traced
+trace file elapsed time: 0:00:08.000000
+TCP connection info:
+1 TCP connection traced:
+TCP connection 1:
+	host a:        132.235.3.145:3999
+	host b:        132.235.3.157:1031
+	complete conn: no	(SYNs: 0)  (FINs: 0)
+	first packet:  Wed Jul 16 04:14:44.000000 1997
+	last packet:   Wed Jul 16 04:14:52.000000 1997
+	elapsed time:  0:00:08.000000
+	total packets: 996
+	filename:      reno.epeek.gz
+   a->b:			      b->a:
+     total packets:           261           total packets:           735      
+     ack pkts sent:           261           ack pkts sent:           735      
+     pure acks sent:          261           pure acks sent:            0      
+     unique bytes sent:         0           unique bytes sent:    338100      
+     actual data pkts:          0           actual data pkts:        735      
+     actual data bytes:         0           actual data bytes:    338100      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          0           pushed data pkts:          0      
+     SYN/FIN pkts sent:       0/0           SYN/FIN pkts sent:       0/0      
+     req 1323 ws/ts:          N/Y           req 1323 ws/ts:          N/Y      
+     mss requested:             0 bytes     mss requested:             0 bytes
+     max segm size:             0 bytes     max segm size:           460 bytes
+     min segm size:             0 bytes     min segm size:           460 bytes
+     avg segm size:             0 bytes     avg segm size:           459 bytes
+     max win adv:           43188 bytes     max win adv:           43188 bytes
+     min win adv:           42958 bytes     min win adv:           43188 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           43177 bytes     avg win adv:           43188 bytes
+     initial window:            0 bytes     initial window:            0 bytes
+     initial window:            0 pkts      initial window:            0 pkts 
+     ttl stream length:        NA           ttl stream length:        NA      
+     missed data:              NA           missed data:              NA      
+     truncated data:            0 bytes     truncated data:       313110 bytes
+     truncated packets:         0 pkts      truncated packets:       735 pkts 
+     data xmit time:        0.000 secs      data xmit time:        8.000 secs 
+     idletime max:          500.0 ms        idletime max:          500.0 ms   
+     throughput:                0 Bps       throughput:            42262 Bps  
+
+     RTT samples:               0           RTT samples:             241      
+     RTT min:                 0.0 ms        RTT min:               500.0 ms   
+     RTT max:                 0.0 ms        RTT max:              1000.0 ms   
+     RTT avg:                 0.0 ms        RTT avg:               597.5 ms   
+     RTT stdev:               0.0 ms        RTT stdev:             198.5 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:          437      
+     duplicate acks:            0           duplicate acks:            0      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

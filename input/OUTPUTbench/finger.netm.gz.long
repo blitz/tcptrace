@@ -1,0 +1,60 @@
+1 arg remaining, starting with 'finger.netm.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+9 packets seen, 9 TCP packets traced
+trace file elapsed time: 0:00:00.318940
+TCP connection info:
+1 TCP connection traced:
+TCP connection 1:
+	host a:        132.235.1.184:40491
+	host b:        132.235.3.130:79
+	complete conn: yes
+	first packet:  Fri Dec  3 17:47:05.621339 1993
+	last packet:   Fri Dec  3 17:47:05.940279 1993
+	elapsed time:  0:00:00.318940
+	total packets: 9
+	filename:      finger.netm.gz
+   a->b:			      b->a:
+     total packets:             4           total packets:             5      
+     ack pkts sent:             3           ack pkts sent:             5      
+     pure acks sent:            1           pure acks sent:            2      
+     unique bytes sent:         2           unique bytes sent:       117      
+     actual data pkts:          1           actual data pkts:          1      
+     actual data bytes:         2           actual data bytes:       117      
+     rexmt data pkts:           0           rexmt data pkts:           0      
+     rexmt data bytes:          0           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          1           pushed data pkts:          1      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     mss requested:          1460 bytes     mss requested:          1460 bytes
+     max segm size:             2 bytes     max segm size:           117 bytes
+     min segm size:             2 bytes     min segm size:           117 bytes
+     avg segm size:             1 bytes     avg segm size:           116 bytes
+     max win adv:            8760 bytes     max win adv:           16384 bytes
+     min win adv:            8760 bytes     min win adv:           16384 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:           11680 bytes     avg win adv:           16384 bytes
+     initial window:            2 bytes     initial window:          117 bytes
+     initial window:            1 pkts      initial window:            1 pkts 
+     ttl stream length:         2 bytes     ttl stream length:       117 bytes
+     missed data:               0 bytes     missed data:               0 bytes
+     truncated data:            0 bytes     truncated data:            0 bytes
+     truncated packets:         0 pkts      truncated packets:         0 pkts 
+     data xmit time:        0.000 secs      data xmit time:        0.000 secs 
+     idletime max:          298.8 ms        idletime max:          162.9 ms   
+     throughput:                6 Bps       throughput:              367 Bps  
+
+     RTT samples:               3           RTT samples:               2      
+     RTT min:                 1.4 ms        RTT min:                 0.4 ms   
+     RTT max:               134.6 ms        RTT max:                 4.6 ms   
+     RTT avg:                46.2 ms        RTT avg:                 2.5 ms   
+     RTT stdev:              76.6 ms        RTT stdev:               0.0 ms   
+     post-loss acks:            0           post-loss acks:            0      
+     segs cum acked:            0           segs cum acked:            1      
+     duplicate acks:            2           duplicate acks:            1      
+     triple dupacks:            0           triple dupacks:            0      
+     max # retrans:             0           max # retrans:             0      
+     min retr time:           0.0 ms        min retr time:           0.0 ms   
+     max retr time:           0.0 ms        max retr time:           0.0 ms   
+     avg retr time:           0.0 ms        avg retr time:           0.0 ms   
+     sdv retr time:           0.0 ms        sdv retr time:           0.0 ms   

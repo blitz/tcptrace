@@ -1,0 +1,73 @@
+1 arg remaining, starting with 'psc.fddi.dmp.gz'
+Ostermann's tcptrace -- version 5.2.5(caida) -- Wed Mar 29, 2000
+
+529 packets seen, 529 TCP packets traced
+trace file elapsed time: 0:00:00.878610
+TCP connection info:
+1 TCP connection traced:
+TCP connection 1:
+	host a:        128.182.40.126:1034
+	host b:        128.182.61.120:1066
+	complete conn: yes
+	first packet:  Thu Mar 27 13:38:45.317135 1997
+	last packet:   Thu Mar 27 13:38:46.195745 1997
+	elapsed time:  0:00:00.878610
+	total packets: 529
+	filename:      psc.fddi.dmp.gz
+   a->b:			      b->a:
+     total packets:           240           total packets:           289      
+     ack pkts sent:           239           ack pkts sent:           289      
+     pure acks sent:           67           pure acks sent:          150      
+     unique bytes sent:    200026           unique bytes sent:    200003      
+     actual data pkts:        171           actual data pkts:        138      
+     actual data bytes:    246746           actual data bytes:    200003      
+     rexmt data pkts:          32           rexmt data pkts:           0      
+     rexmt data bytes:      46720           rexmt data bytes:          0      
+     outoforder pkts:           0           outoforder pkts:           0      
+     pushed data pkts:          3           pushed data pkts:          2      
+     SYN/FIN pkts sent:       1/1           SYN/FIN pkts sent:       1/1      
+     req 1323 ws/ts:          Y/Y           req 1323 ws/ts:          Y/N      
+     adv wind scale:            2           adv wind scale:            2      
+     req sack:                  Y           req sack:                  Y      
+     sacks sent:                0           sacks sent:               77      
+     mss requested:          1460 bytes     mss requested:          4312 bytes
+     max segm size:          1460 bytes     max segm size:          1460 bytes
+     min segm size:            26 bytes     min segm size:             3 bytes
+     avg segm size:          1442 bytes     avg segm size:          1449 bytes
+     max win adv:          200020 bytes     max win adv:          200020 bytes
+     min win adv:           65535 bytes     min win adv:           65535 bytes
+     zero win adv:              0 times     zero win adv:              0 times
+     avg win adv:          200282 bytes     avg win adv:          199241 bytes
+     initial window:           26 bytes     initial window:            3 bytes
+     initial window:            1 pkts      initial window:            1 pkts 
+     ttl stream length:    200026 bytes     ttl stream length:    200003 bytes
+     missed data:               0 bytes     missed data:               0 bytes
+     truncated data:       200310 bytes     truncated data:       162599 bytes
+     truncated packets:       170 pkts      truncated packets:       137 pkts 
+     data xmit time:        0.807 secs      data xmit time:        0.834 secs 
+     idletime max:          535.0 ms        idletime max:          501.9 ms   
+     throughput:           227662 Bps       throughput:           227636 Bps  
+
+     RTT samples:              71           RTT samples:              67      
+     RTT min:                 0.0 ms        RTT min:                 1.0 ms   
+     RTT max:                38.0 ms        RTT max:                10.7 ms   
+     RTT avg:                17.3 ms        RTT avg:                 4.7 ms   
+     RTT stdev:              11.1 ms        RTT stdev:               3.2 ms   
+     post-loss acks:           20           post-loss acks:            0      
+	  For the following 5 RTT statistics, only ACKs for
+	  multiply-transmitted segments (ambiguous ACKs) were
+	  considered.  Times are taken from the last instance
+	  of a segment.
+     ambiguous acks:            9           ambiguous acks:            0      
+     RTT min (last):          2.9 ms        RTT min (last):          0.0 ms   
+     RTT max (last):          4.9 ms        RTT max (last):          0.0 ms   
+     RTT avg (last):          3.3 ms        RTT avg (last):          0.0 ms   
+     RTT sdv (last):          0.7 ms        RTT sdv (last):          0.0 ms   
+     segs cum acked:           41           segs cum acked:           72      
+     duplicate acks:          189           duplicate acks:          172      
+     triple dupacks:            1           triple dupacks:            0      
+     max # retrans:             1           max # retrans:             0      
+     min retr time:          41.9 ms        min retr time:           0.0 ms   
+     max retr time:         625.9 ms        max retr time:           0.0 ms   
+     avg retr time:         586.1 ms        avg retr time:           0.0 ms   
+     sdv retr time:         100.6 ms        sdv retr time:           0.0 ms   
