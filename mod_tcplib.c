@@ -19,12 +19,12 @@
  * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  * 
- * Author:	Eric Helvey
+ * Original Author: Eric Helvey
  * 		School of Electrical Engineering and Computer Science
  * 		Ohio University
  * 		Athens, OH
  *		ehelvey@cs.ohiou.edu
- * Modified:    Shawn Ostermann
+ * Extensively Modified:    Shawn Ostermann
  */
 static char const rcsid[] =
    "$Header$";
@@ -45,8 +45,12 @@ static char const rcsid[] =
 #include "dyncounter.h"
 
 
-
 /* Local global variables */
+
+/* different types of connections */
+#define NUM_TCB_TYPES 4
+enum t_statsix {LOCAL = 0, INCOMING = 1, OUTGOING = 2, REMOTE = 3};
+static char *ttype_names[NUM_TCB_TYPES] = {"local","incoming","outgoing", "remote"};
 
 /* structure to keep track of "inside" */
 struct insidenode {
@@ -57,26 +61,47 @@ struct insidenode {
 #define LOCAL_ONLY (inside_head == NULL)
 
 
+
+/* for VM efficiency, we pull the info that we want out of the tcptrace
+   structures into THIS structure (or large files thrash) */
+typedef struct module_conninfo_tcb {
+    /* cached connection type (incoming, remote, etc) */
+    enum t_statsix ttype;
+
+    /* breakdown type */
+    short btype;
+
+    /* cached address info */
+    portnum	port;
+    ipaddr	ipaddr;
+
+    /* cached data bytes */
+    u_llong	data_bytes;
+
+    /* previous connection of same type */
+    struct module_conninfo *prev_ttype;
+} module_conninfo_tcb;
+
+
 /* structure that this module keeps for each connection */
-struct module_conninfo {
-    /* previous connection */
-    struct module_conninfo *prev;
+typedef struct module_conninfo {
+    /* cached info */
+    struct module_conninfo_tcb tcb_cache_a2b;
+    struct module_conninfo_tcb tcb_cache_b2a;
 
     /* link back to the tcb's */
     tcp_pair *ptp;
 
-    /* time of last packet */
-    struct timeval last_packet;
-
     /* time of connection start */
-    struct timeval start_time;
-};
-struct module_conninfo *module_conninfo_tail = NULL;
+    timeval	first_time;
+    timeval	last_time;
+
+    /* previous connection in linked list of all connections */
+    struct module_conninfo *prev;
+} module_conninfo;
+module_conninfo *module_conninfo_tail = NULL;
 
 
-#define NUM_DATA_FILES 4
-enum t_statsix {LOCAL = 0, INCOMING = 1, OUTGOING = 2, REMOTE = 3};
-static char *data_prefixes[4] = {"local","incoming","outgoing", "remote"};
 static struct tcplibstats {
     /* telnet packet sizes */
     dyn_counter telnet_pktsize;
@@ -98,13 +123,13 @@ static struct tcplibstats {
     /* telnet packet sizes */
     dyn_counter throughput;
     int throughput_bytes;
-} *global_pstats[NUM_DATA_FILES] = {NULL};
+} *global_pstats[NUM_TCB_TYPES] = {NULL};
 
 /* local debugging flag */
 static int ldebug = 0;
 
 /* offset for all ports */
-static int ipport_offset = IPPORT_OFFSET;
+static int ipport_offset = 0;
 
 /* the name of the directory (prefix) for the output */
 static char *output_dir = DEFAULT_TCPLIB_DATADIR;
@@ -117,31 +142,57 @@ static const char breakdown_hash_char[] = { 'S', 'N', 'T', 'F', 'H' };
 
 
 /* internal types */
-typedef Bool (*f_testinside) (tcb *);
+typedef Bool (*f_testinside) (module_conninfo *pmc,
+			      module_conninfo_tcb *ptcbc);
+
+/* various statistics and counters */
+static u_long newconn_counter;	/* total conns */
+static u_long newconn_badport;	/* a port we don't want */
+static u_long newconn_goodport;	/* we want the port */
+/* conns by type */
+static u_long conntype_counter[NUM_TCB_TYPES];
+/* both flows have data */
+static u_long conntype_duplex_counter[NUM_TCB_TYPES];
+/* this flow has data, twin is empty */
+static u_long conntype_uni_counter[NUM_TCB_TYPES];
+/* this flow has NO data, twin is NOT empty */
+static u_long conntype_nodata_counter[NUM_TCB_TYPES];
+/* neither this flow OR its twin has data */
+static u_long conntype_noplex_counter[NUM_TCB_TYPES];
 
 
 
 /* Function Prototypes */
 static void ParseArgs(char *argstring);
-static int breakdown_type(int port);
+static int breakdown_type(portnum port);
 static void do_final_breakdown(char* filename, f_testinside p_tester,
 			       struct tcplibstats *pstats);
 static void do_all_final_breakdowns(void);
 static void do_all_conv_arrivals(void);
 static void do_tcplib_final_converse(char *filename,
 				     dyn_counter psizes);
-static void do_tcplib_next_converse(tcb *ptcb, struct module_conninfo *pmc);
-static Bool is_ftp_control_conn(tcp_pair *ptp);
-static Bool is_ftp_data_conn(tcp_pair *ptp);
-static Bool is_http_conn(tcp_pair *ptp);
-static Bool is_nntp_conn(tcp_pair *ptp);
-static Bool is_smtp_conn(tcp_pair *ptp);
-static Bool is_telnet_conn(tcp_pair *ptp);
-static Bool is_telnet_port(int port);
+static void do_tcplib_next_converse(module_conninfo_tcb *ptcbc,
+				    module_conninfo *pmc);
+
+/* prototypes for connection-type determination */
+static Bool is_ftp_control_conn(module_conninfo *pmc);
+static Bool is_ftp_control_port(portnum port);
+static Bool is_ftp_data_conn(module_conninfo *pmc);
+static Bool is_ftp_data_port(portnum port);
+static Bool is_http_conn(module_conninfo *pmc);
+static Bool is_http_port(portnum port);
+static Bool is_nntp_conn(module_conninfo *pmc);
+static Bool is_nntp_port(portnum port);
+static Bool is_smtp_conn(module_conninfo *pmc);
+static Bool is_smtp_port(portnum port);
+static Bool is_telnet_conn(module_conninfo *pmc);
+static Bool is_telnet_port(portnum port);
+
+
 static char* namedfile(char *localsuffix, char * file);
 static void setup_breakdown(void);
 static void tcplib_add_telnet_interarrival(tcp_pair *ptp,
-					   struct timeval *ptp_saved,
+					   module_conninfo *pmc,
 					   dyn_counter *psizes);
 static void tcplib_add_telnet_packetsize(struct tcplibstats *pstats,
 					 int length);
@@ -159,23 +210,28 @@ static void tcplib_do_telnet_packetsize(char *filename,
 					f_testinside p_tester);
 static void tcplib_init_setup(void);
 static void update_breakdown(tcp_pair *ptp, struct tcplibstats *pstats);
-struct module_conninfo *FindPrevConnection(struct module_conninfo *pmc,
+module_conninfo *FindPrevConnection(module_conninfo *pmc,
 					   enum t_statsix ttype);
+static char *FormatBrief(tcp_pair *ptp);
+static void ModuleConnFillcache(void);
 
 
 /* prototypes for determining "insideness" */
 static void DefineInside(char *iplist);
 static Bool IsInside(ipaddr *pipaddr);
-static Bool TestOutgoing(tcb *ptcb);
-static Bool TestIncoming(tcb *ptcb);
-static Bool TestLocal(tcb *ptcb);
-static Bool TestRemote(tcb *ptcb);
-static int InsideBytes(tcp_pair *, f_testinside);
-static enum t_statsix WhichTrafficType(tcb *ptcb);
+
+static Bool TestOutgoing(module_conninfo*, module_conninfo_tcb *ptcbc);
+static Bool TestIncoming(module_conninfo*, module_conninfo_tcb *ptcbc);
+static Bool TestLocal(module_conninfo*, module_conninfo_tcb *ptcbc);
+static Bool TestRemote(module_conninfo*, module_conninfo_tcb *ptcbc);
+
+static int InsideBytes(module_conninfo*, f_testinside);
+static enum t_statsix traffic_type(module_conninfo *pmc,
+				   module_conninfo_tcb *ptcbc);
 
 /* various helper routines used by many others -- sdo */
 static void tcplib_do_GENERIC_itemsize(
-    char *filename, Bool (*f_whichport)(tcp_pair *),
+    char *filename, Bool (*f_whichport)(module_conninfo *),
     f_testinside p_tester, int bucketsize);
 static void StoreCounters(char *filename, char *header1, char *header2,
 		       int bucketsize, dyn_counter psizes);
@@ -368,65 +424,65 @@ IsInside(
 }
 
 static Bool
-TestOutgoing(tcb *ptcb)
+TestOutgoing(
+    module_conninfo *pmc,
+    module_conninfo_tcb *ptcbc)
 {
-    struct stcp_pair *ptp = ptcb->ptp;
-
-    if (ptcb == &ptp->a2b)
-	return(IsInside(&ptp->addr_pair.a_address) &&
-	       !IsInside(&ptp->addr_pair.b_address));
+    if (ptcbc == &pmc->tcb_cache_a2b)
+	return( IsInside(&pmc->tcb_cache_a2b.ipaddr) &&
+	       !IsInside(&pmc->tcb_cache_b2a.ipaddr));
     else
-	return(IsInside(&ptp->addr_pair.b_address) &&
-	       !IsInside(&ptp->addr_pair.a_address));
+	return( IsInside(&pmc->tcb_cache_b2a.ipaddr) &&
+	       !IsInside(&pmc->tcb_cache_a2b.ipaddr));
 }
 
 static Bool
-TestIncoming(tcb *ptcb)
+TestIncoming(
+    module_conninfo *pmc,
+    module_conninfo_tcb *ptcbc)
 {
-    struct stcp_pair *ptp = ptcb->ptp;
-
-    if (ptcb == &ptp->a2b)
-	return(!IsInside(&ptp->addr_pair.a_address) &&
-	       IsInside(&ptp->addr_pair.b_address));
+    if (ptcbc == &pmc->tcb_cache_a2b)
+	return(!IsInside(&pmc->tcb_cache_a2b.ipaddr) &&
+	        IsInside(&pmc->tcb_cache_b2a.ipaddr));
     else
-	return(!IsInside(&ptp->addr_pair.b_address) &&
-	       IsInside(&ptp->addr_pair.a_address));
+	return(!IsInside(&pmc->tcb_cache_b2a.ipaddr) &&
+	        IsInside(&pmc->tcb_cache_a2b.ipaddr));
 }
 
 
 static Bool
-TestLocal(tcb *ptcb)
+TestLocal(
+    module_conninfo *pmc,
+    module_conninfo_tcb *ptcbc)
 {
-    struct stcp_pair *ptp = ptcb->ptp;
-
-    return(IsInside(&ptp->addr_pair.a_address) &&
-	   IsInside(&ptp->addr_pair.b_address));
+    return(IsInside(&pmc->tcb_cache_a2b.ipaddr) &&
+	   IsInside(&pmc->tcb_cache_b2a.ipaddr));
 }
 
 
 static Bool
-TestRemote(tcb *ptcb)
+TestRemote(
+    module_conninfo *pmc,
+    module_conninfo_tcb *ptcbc)
 {
-    struct stcp_pair *ptp = ptcb->ptp;
-
-    return(!IsInside(&ptp->addr_pair.a_address) &&
-	   !IsInside(&ptp->addr_pair.b_address));
+    return(!IsInside(&pmc->tcb_cache_a2b.ipaddr) &&
+	   !IsInside(&pmc->tcb_cache_b2a.ipaddr));
 }
 
 
 static int InsideBytes(
-    tcp_pair *ptp,		/* The tcp pair */
+    module_conninfo *pmc,
     f_testinside p_tester)	/* function to test "insideness" */
 {
     int temp = 0;
 
     /* if "p_tester" likes this side of the connection, count the bytes */
-    if ((*p_tester)(&ptp->a2b))
-	temp += ptp->a2b.data_bytes;
+    if ((*p_tester)(pmc, &pmc->tcb_cache_a2b))
+	temp += pmc->tcb_cache_a2b.data_bytes;
 
     /* if "p_tester" likes this side of the connection, count the bytes */
-    if ((*p_tester)(&ptp->b2a))
-	temp += ptp->b2a.data_bytes;
+    if ((*p_tester)(pmc, &pmc->tcb_cache_b2a))
+	temp += pmc->tcb_cache_b2a.data_bytes;
 
     return(temp);
 }
@@ -571,8 +627,16 @@ RunAllFour(
 void tcplib_done()
 {
     char *filename;
+    int i;
+
+    /* fill the info cache */
+    if (ldebug)
+	printf("tcplib: completing data structure\n");
+    ModuleConnFillcache();
     
     /* do TELNET */
+    if (ldebug)
+	printf("tcplib: running telnet\n");
     RunAllFour(tcplib_do_telnet_packetsize,TCPLIB_TELNET_PACKETSIZE_FILE);
     RunAllFour(tcplib_do_telnet_interarrival,TCPLIB_TELNET_INTERARRIVAL_FILE);
     RunAllFour(tcplib_do_telnet_duration,TCPLIB_TELNET_DURATION_FILE);
@@ -580,6 +644,8 @@ void tcplib_done()
 
 
     /* do FTP */
+    if (ldebug)
+	printf("tcplib: running ftp\n");
     RunAllFour(tcplib_do_ftp_control_size,TCPLIB_FTP_CTRLSIZE_FILE);
     RunAllFour(tcplib_do_ftp_itemsize,TCPLIB_FTP_ITEMSIZE_FILE);
     tcplib_do_ftp_num_items();     /* Not Done */
@@ -587,41 +653,59 @@ void tcplib_done()
 
 
     /* do SMTP */
+    if (ldebug)
+	printf("tcplib: running smtp\n");
     RunAllFour(tcplib_do_smtp_itemsize,TCPLIB_SMTP_ITEMSIZE_FILE);
 
 
 
     /* do NNTP */
+    if (ldebug)
+	printf("tcplib: running nntp\n");
     RunAllFour(tcplib_do_nntp_itemsize,TCPLIB_NNTP_ITEMSIZE_FILE);
     tcplib_do_nntp_numitems();	/* Not Done */
 
 
     /* do HTTP */
+    if (ldebug)
+	printf("tcplib: running http\n");
     RunAllFour(tcplib_do_http_itemsize,TCPLIB_HTTP_ITEMSIZE_FILE);
 
 
     /* do the breakdown stuff */
+    if (ldebug)
+	printf("tcplib: running breakdowns\n");
     do_all_final_breakdowns();
 
 
     /* do the conversation interrival time */
+    printf("tcplib: running conversation interarrival times\n");
     do_all_conv_arrivals();
-    filename = namedfile("local",TCPLIB_NEXT_CONVERSE_FILE);
-    do_tcplib_final_converse(filename,
-			     global_pstats[LOCAL]->conv_interarrival);
+    for (i=0; i < NUM_TCB_TYPES; ++i) {
+	if (ldebug>1)
+	    printf("tcplib: running conversation arrivals (%s)\n",
+		   ttype_names[i]);
+	filename = namedfile(ttype_names[i],TCPLIB_NEXT_CONVERSE_FILE);
+	do_tcplib_final_converse(filename,
+				 global_pstats[i]->conv_interarrival);
 
-    if (LOCAL_ONLY)
-	return;
+	if (LOCAL_ONLY)
+	    return;
+    }
 
-    filename = namedfile("incoming",TCPLIB_NEXT_CONVERSE_FILE);
-    do_tcplib_final_converse(filename,
-			     global_pstats[INCOMING]->conv_interarrival);
-    filename = namedfile("outgoing",TCPLIB_NEXT_CONVERSE_FILE);
-    do_tcplib_final_converse(filename,
-			     global_pstats[OUTGOING]->conv_interarrival);
-    filename = namedfile("remote",TCPLIB_NEXT_CONVERSE_FILE);
-    do_tcplib_final_converse(filename,
-			     global_pstats[REMOTE]->conv_interarrival);
+    /* print stats */
+    printf("tcplib: total connections seen: %lu (%lu accepted, %lu bad port)\n",
+	   newconn_counter, newconn_goodport, newconn_badport);
+    for (i=0; i < NUM_TCB_TYPES; ++i) {
+	printf("  Flows of type %-8s %5lu (%lu duplex, %lu noplex, %lu unidir, %lu nodata)\n",
+	       ttype_names[i],
+	       conntype_counter[i],
+	       conntype_duplex_counter[i],
+	       conntype_noplex_counter[i],
+	       conntype_uni_counter[i],
+	       conntype_nodata_counter[i]);
+    }
+    
 
     return;
 }
@@ -660,12 +744,18 @@ void tcplib_read(
     int data_len = 0;    /* Length of the data cargo in the packet, and
 			  * the period of time between the last two packets
 			  * in a conversation */
-    int a2b_type=-1;      /* The type of traffic associated with a's port # */
-    int b2a_type=-1;      /* The type of traffic associated with b's port # */
     tcb *ptcb;
+    module_conninfo_tcb *ptcbc;
     struct tcplibstats *pstats;
-    struct module_conninfo *pmconn = pmodstruct;
-    
+    module_conninfo *pmc = pmodstruct;
+    enum t_statsix ttype;
+
+    /* first, discard any connections that we aren't interested in. */
+    /* That means that pmodstruct is NULL */
+    if (pmc == NULL) {
+	return;
+    }
+
 
     /* Setting a pointer to the beginning of the TCP header */
     tcp = (struct tcphdr *) ((char *)pip + (4 * pip->ip_hl));
@@ -677,15 +767,18 @@ void tcplib_read(
 
 
     /* see which of the 2 TCB's this goes with */
-    if (ptp->addr_pair.a_port == ntohs(tcp->th_dport))
+    if (ptp->addr_pair.a_port == ntohs(tcp->th_sport)) {
 	ptcb = &ptp->a2b;
-    else
+	ptcbc = &pmc->tcb_cache_a2b;
+    } else {
 	ptcb = &ptp->b2a;
+	ptcbc = &pmc->tcb_cache_b2a;
+    }
 
 
     /* see where to keep the stats */
-    pstats = global_pstats[WhichTrafficType(ptcb)];
-
+    ttype = traffic_type(pmc,ptcbc);
+    pstats = global_pstats[ttype];
 
     /* Let's do the telnet packet sizes.  Telnet packets are the only
      * ones where we actually care about the sizes of individual packets.
@@ -693,9 +786,13 @@ void tcplib_read(
      * kind of setup where the packet sizes are always optimal.  Because
      * of this, we need the size of each and every telnet packet that 
      * comes our way. */
-    if (is_telnet_conn(ptp)) {
-	if (data_len > 0)
+    if (is_telnet_conn(pmc)) {
+	if (data_len > 0) {
+	    if (ldebug>2)
+		printf("read: adding %d byte telnet packet to %s\n",
+		       data_len, ttype_names[ttype]);
 	    tcplib_add_telnet_packetsize(pstats,data_len);
+	}
     }
 
 
@@ -705,11 +802,12 @@ void tcplib_read(
      * to be able to model how long the "stops" are.  So we measure
      * the time in between successive packets in a single telnet
      * conversation. */
-    if (is_telnet_conn(ptp)) {
+    if (is_telnet_conn(pmc)) {
 	tcplib_add_telnet_interarrival(
-	    ptp, &pmconn->last_packet,
-	    &pstats->telnet_interarrival);
+	    ptp, pmc, &pstats->telnet_interarrival);
     }
+    pmc->last_time = current_time;
+
 
     /* keep track of bytes/second too */
     if (data_len > 0) {
@@ -736,21 +834,21 @@ void tcplib_read(
     /* create data for traffic breakdown over time file */
     /* (sdo - only count packets with DATA) */
     if (data_len > 0) {
-	if ((a2b_type = breakdown_type(ptp->addr_pair.a_port)) != -1) {
-	    pstats->tcplib_breakdown_interval[a2b_type] +=
+	int a2b_btype = pmc->tcb_cache_a2b.btype;
+	int b2a_btype = pmc->tcb_cache_b2a.btype;
+
+	if (a2b_btype != TCPLIBPORT_NONE) {
+	    pstats->tcplib_breakdown_interval[a2b_btype] +=
 		ptp->a2b.data_bytes;
 	}
 
 
 	else /* ?? sdo */
 
-	if ((b2a_type = breakdown_type(ptp->addr_pair.b_port)) != -1) {
-	    pstats->tcplib_breakdown_interval[b2a_type] +=
+	if (b2a_btype != TCPLIBPORT_NONE) {
+	    pstats->tcplib_breakdown_interval[b2a_btype] +=
 		ptp->b2a.data_bytes;
 	}
-
-/* 	printf("a2b_type(%d): %d\n", ptp->addr_pair.a_port, a2b_type); */
-/* 	printf("b2a_type(%d): %d\n", ptp->addr_pair.b_port, b2a_type); */
     }
 
     /* This is just a sanity check to make sure that we've got at least
@@ -768,6 +866,117 @@ void tcplib_read(
 
 
 
+
+/******************************************************************
+ *
+ * fill the tcb cache, make the 'previous' linked lists
+ *
+ ******************************************************************/
+static void
+ModuleConnFillcache(
+    void)
+{
+    module_conninfo *pmc;
+    enum t_statsix ttype;
+    int i;
+
+    /* fill the cache */
+    for (pmc = module_conninfo_tail; pmc ; pmc=pmc->prev) {
+	tcp_pair *ptp = pmc->ptp;	/* shorthand */
+	int a2b_bytes = ptp->a2b.data_bytes;
+	int b2a_bytes = ptp->b2a.data_bytes;
+
+	/* both sides byte counters */
+	pmc->tcb_cache_a2b.data_bytes = a2b_bytes;
+	pmc->tcb_cache_b2a.data_bytes = b2a_bytes;
+
+	/* debugging stats */
+	if ((a2b_bytes == 0) && (b2a_bytes == 0)) {
+	    /* no bytes at all */
+	    ++conntype_noplex_counter[pmc->tcb_cache_a2b.ttype];
+	    ++conntype_noplex_counter[pmc->tcb_cache_b2a.ttype];
+	} else if ((a2b_bytes != 0) && (b2a_bytes == 0)) {
+	    /* only A2B has bytes */
+	    ++conntype_uni_counter[pmc->tcb_cache_a2b.ttype];
+	    ++conntype_nodata_counter[pmc->tcb_cache_b2a.ttype];
+	} else if ((a2b_bytes == 0) && (b2a_bytes != 0)) {
+	    /* only B2A has bytes */
+	    ++conntype_nodata_counter[pmc->tcb_cache_a2b.ttype];
+	    ++conntype_uni_counter[pmc->tcb_cache_b2a.ttype];
+	} else {
+	    /* both sides have bytes */
+	    ++conntype_duplex_counter[pmc->tcb_cache_a2b.ttype];
+	    ++conntype_duplex_counter[pmc->tcb_cache_b2a.ttype];
+	}
+
+	    
+	/* globals */
+	pmc->last_time = ptp->last_time;
+    }
+
+
+    for (ttype = LOCAL; ttype <= REMOTE; ++ttype) {
+	/* do the A sides, then the B sides */
+	for (i=1; i <= 2; ++i) {
+	    if (ldebug>1)
+		printf("  Making previous for %s, side %s\n",
+		       ttype_names[i], (i==1)?"A":"B");
+	    for (pmc = module_conninfo_tail; pmc ; ) {
+		module_conninfo_tcb *ptcbc;
+
+		if (i==1) {
+		    ptcbc = &pmc->tcb_cache_a2b;
+		} else {
+		    ptcbc = &pmc->tcb_cache_b2a;
+		}
+
+		if (ptcbc->ttype == ttype) {
+		    module_conninfo *prev
+			= FindPrevConnection(pmc,ttype);
+		    ptcbc->prev_ttype = prev;
+		    pmc = prev;
+		} else {
+		    pmc = pmc->prev;
+		}
+	    }
+	}
+    }
+}
+
+
+
+/******************************************************************
+ *
+ * to improve efficiency, we try to keep all of these on the
+ * same virual pages
+ *
+ ******************************************************************/
+static module_conninfo *
+NewModuleConn()
+{
+#define CACHE_SIZE 128
+    static module_conninfo *pcache[CACHE_SIZE];
+    static int num_cached = 0;
+    module_conninfo *p;
+
+    if (num_cached == 0) {
+	int i;
+	char *ptmp;
+
+	ptmp = MallocZ(CACHE_SIZE*sizeof(module_conninfo));
+
+	for (i=0; i < CACHE_SIZE; ++i) {
+	    pcache[i] = (module_conninfo *)ptmp;
+	    ptmp += sizeof(module_conninfo);
+	}
+
+	num_cached = CACHE_SIZE;
+    }
+
+    /* grab one from the cache and return it */
+    p = pcache[--num_cached];
+    return(p);
+}
 
 
 
@@ -788,26 +997,54 @@ void *
 tcplib_newconn(
     tcp_pair *ptp)   /* This conversation */
 {
-    struct module_conninfo *pmodstruct;
+    module_conninfo *pmc;
                                   /* Pointer to a timeval structure.  The
 				   * timeval structure becomes the time of
-				   * the last connection.  The pmodstruct
+				   * the last connection.  The pmc
 				   * is tcptrace's way of allowing modules
 				   * to keep track of information about
 				   * connections */
 
+    /* verify that it's a connection we're interested in! */
+    ++newconn_counter;
+    if ((breakdown_type(ptp->addr_pair.a_port) == TCPLIBPORT_NONE) &&
+	(breakdown_type(ptp->addr_pair.b_port) == TCPLIBPORT_NONE)) {
+	++newconn_badport;
+	return(NULL); /* so we won't get it back in tcplib_read() */
+    } else {
+	/* else, it's acceptable, count it */
+	++newconn_goodport;
+    }
+
 
     /* create the connection-specific data structure */
-    pmodstruct = MallocZ(sizeof(struct module_conninfo));
-    pmodstruct->last_packet = current_time;
-    pmodstruct->start_time = current_time;
-    pmodstruct->ptp = ptp;
+    pmc = NewModuleConn();
+    pmc->first_time = current_time;
+    pmc->ptp = ptp;
+
+    /* remember the ports */
+    pmc->tcb_cache_a2b.port = ptp->addr_pair.a_port;
+    pmc->tcb_cache_b2a.port = ptp->addr_pair.b_port;
+
+    /* remember the IP addresses */
+    pmc->tcb_cache_a2b.ipaddr = ptp->addr_pair.a_address;
+    pmc->tcb_cache_b2a.ipaddr = ptp->addr_pair.b_address;
+
+    /* determine its "insideness" */
+    pmc->tcb_cache_a2b.ttype = traffic_type(pmc, &pmc->tcb_cache_a2b);
+    pmc->tcb_cache_b2a.ttype = traffic_type(pmc, &pmc->tcb_cache_b2a);
+    ++conntype_counter[pmc->tcb_cache_a2b.ttype];
+    ++conntype_counter[pmc->tcb_cache_b2a.ttype];
+
+    /* determine the breakdown type */
+    pmc->tcb_cache_a2b.btype = breakdown_type(ptp->addr_pair.a_port);
+    pmc->tcb_cache_b2a.btype = breakdown_type(ptp->addr_pair.b_port);
 
     /* chain it in */
-    pmodstruct->prev = module_conninfo_tail;
-    module_conninfo_tail = pmodstruct;
+    pmc->prev = module_conninfo_tail;
+    module_conninfo_tail = pmc;
 
-    return (pmodstruct);
+    return (pmc);
 }
 
 
@@ -967,7 +1204,7 @@ static void setup_breakdown(void)
     
     for (ix = LOCAL; ix <= REMOTE; ++ix) {
 	struct tcplibstats *pstats = global_pstats[ix];
-	char *prefix = data_prefixes[ix];
+	char *prefix = ttype_names[ix];
 	char *filename = namedfile(prefix,TCPLIB_BREAKDOWN_GRAPH_FILE);
 
 	if (!(pstats->hist_file = fopen(filename, "w"))) {
@@ -1088,7 +1325,7 @@ namedfile(
 	    perror(directory);
 	    exit(-1);
 	}
-	if (ldebug)
+	if (ldebug>1)
 	    printf("Created directory '%s'\n", directory);
     }
 
@@ -1120,9 +1357,10 @@ static void do_final_breakdown(
     f_testinside p_tester,
     struct tcplibstats *pstats)
 {
-    int i;            /* Looping variable */
+    module_conninfo *pmc;
     FILE* fil;        /* File descriptor for the traffic breakdown file */
     long file_pos;    /* Offset within the traffic breakdown file */
+    int i;
 
 
     /* This is the header for the traffic breakdown file.  It follows the
@@ -1166,36 +1404,35 @@ static void do_final_breakdown(
 	fprintf(fil, "%s", current_file);
 
 	/* count the connections of each protocol type */
-	for(i = 0; i < num_tcp_pairs; i++) {
-	    tcp_pair *ptp = ttp[i];
+	for (pmc = module_conninfo_tail; pmc ; pmc = pmc->prev) {
 	    int protocol_type;
-	    tcb *ptcb;
+	    module_conninfo_tcb *ptcbc;
 
 	    /* check the protocol type */
-	    protocol_type = breakdown_type(ptp->addr_pair.a_port);
-	    if (protocol_type == -1) {
-		protocol_type = breakdown_type(ptp->addr_pair.b_port);
-		if (protocol_type == -1) {
+	    protocol_type = pmc->tcb_cache_a2b.btype;
+	    if (protocol_type == TCPLIBPORT_NONE) {
+		protocol_type = pmc->tcb_cache_b2a.btype;
+		if (protocol_type == TCPLIBPORT_NONE) {
 		    ++bad_port;
 		    continue;	/* not interested, loop to next conn */
 		}
 	    }
 
 	    /* see if we want A->B */
-	    ptcb = &ptp->a2b;
-	    if ((*p_tester)(ptcb)) {
+	    ptcbc = &pmc->tcb_cache_a2b;
+	    if ((*p_tester)(pmc, ptcbc)) {
 		/* count it if there's data */
-		if (ptcb->data_bytes > 0) {
+		if (ptcbc->data_bytes > 0) {
 		    ++breakdown_protocol[protocol_type];
 		} else {
 		    ++no_data;
 		}
 	    } else {
 		/* see if we want B->A */
-		ptcb = &ptp->b2a;
-		if ((*p_tester)(ptcb)) {
+		ptcbc = &pmc->tcb_cache_b2a;
+		if ((*p_tester)(pmc, ptcbc)) {
 		    /* count it if there's data */
-		    if (ptcb->data_bytes > 0) {
+		    if (ptcbc->data_bytes > 0) {
 			++breakdown_protocol[protocol_type];
 		    } else {
 			++no_data;
@@ -1209,7 +1446,6 @@ static void do_final_breakdown(
 	/* Print out the ratio of conversations of each traffic type
 	 * to total number of converstaions observed in the trace file
 	 */
-	printf("File: %s  ttl:%d\n", filename, num_tcp_pairs);
 	for(i = 0; i < NUM_APPS; i++) {
 	    fprintf(fil, "\t%.4f",
 		    ((float)breakdown_protocol[i])/
@@ -1292,51 +1528,30 @@ static void do_all_final_breakdowns(void)
  * 
  ****************************************************************************/
 static int breakdown_type(
-    int port)   /* What real port to examine */
+    portnum port)   /* What real port to examine */
 {
-    /* This was added in order to handle generating statistics from traffic
-     * that was created by the traffic generator.  Since the traffic from the
-     * the traffic generator is usually sent to non-standard ports, we need
-     * be able to pick out that traffic for analysis.  This is where the
-     * ipport_offset comes in.  We know what the offset is, so we just 
-     * subtract it.  Big Bubba, No Trubba. */
-    port -= ipport_offset;
 
-    switch(port) {
-      case IPPORT_LOGIN:
-      case IPPORT_KLOGIN:
-      case IPPORT_OLDLOGIN:
-      case IPPORT_FLN_SPX:
-      case IPPORT_UUCP_LOGIN:
-      case IPPORT_KLOGIN2:
-      case IPPORT_NLOGIN:
-      case IPPORT_TELNET:
-	return TCPLIBPORT_TELNET;
-	break;
+    if (is_telnet_port(port))
+	return(TCPLIBPORT_TELNET);
 
-      case IPPORT_FTP_CONTROL:
-/*      case IPPORT_FTP_DATA: */
+    if (is_ftp_control_port(port))
+	return(TCPLIBPORT_FTP);
+
+/* Old Eric comment that I don't understand: */
 /* We take out FTP data port because the control connections will be the 
  * deciding factors for the FTP connections */
-	return TCPLIBPORT_FTP;
-	break;
+    if (is_ftp_data_port(port))
+	return(TCPLIBPORT_FTP);
 
-      case IPPORT_SMTP:
-	return TCPLIBPORT_SMTP;
-	break;
+    if (is_smtp_port(port))
+	return(TCPLIBPORT_SMTP);
 
-      case IPPORT_NNTP:
-	return TCPLIBPORT_NNTP;
-	break;
+    if (is_nntp_port(port))
+	return(TCPLIBPORT_NNTP);
 
-      case IPPORT_HTTP:
-	return TCPLIBPORT_HTTP;
-	break;
+    if (is_http_port(port))
+	return(TCPLIBPORT_HTTP);
     
-      default:
-	return TCPLIBPORT_NONE;
-    }
-
     return TCPLIBPORT_NONE;
 }
 
@@ -1368,11 +1583,11 @@ static int breakdown_type(
  * 
  ****************************************************************************/
 static void do_tcplib_next_converse(
-    tcb *ptcb,    /* This conversation */
-    struct module_conninfo *pmc)
+    module_conninfo_tcb *ptcbc,
+    module_conninfo *pmc)
 {
     struct tcplibstats *pstats;
-    struct module_conninfo *pmc_previous;
+    module_conninfo *pmc_previous;
     enum t_statsix ttype;
     int etime;   /* Time difference between the first packet in this
 		  * conversation and the first packet in the previous
@@ -1380,8 +1595,13 @@ static void do_tcplib_next_converse(
 		  * new conversations. */
 
     /* see where to keep the stats */
-    ttype = WhichTrafficType(ptcb);
+    ttype = traffic_type(pmc, ptcbc);
     pstats = global_pstats[ttype];
+
+    if (ldebug>1) {
+	printf("do_tcplib_next_converse: %s, %s\n",
+	       FormatBrief(pmc->ptp), ttype_names[ttype]);
+    }
 
 
     /* sdo - Wed Jun 16, 1999 */
@@ -1389,19 +1609,28 @@ static void do_tcplib_next_converse(
     /* data flowing in the same "direction" and then use the difference */
     /* between the starting times of those two connections as the conn */
     /* interrival time */
-    pmc_previous = FindPrevConnection(pmc,ttype);
+    /* sdo - Fri Jul  9, 1999 (information already computed in Fillcache) */
+    pmc_previous = ptcbc->prev_ttype;
 
 
     if (pmc_previous == NULL) {
 	/* no previous connection, this must be the FIRST in */
 	/* this direction */
+	if (ldebug>1) {
+	    printf("    do_tcplib_next_converse: no previous\n");
+	}
 	return;
     }
 
 
     /* elapsed time since that previous connection started */
-    etime = (int)(elapsed(pmc_previous->start_time,
-			  pmc->start_time)/1000.0); /* convert us to ms */
+    etime = (int)(elapsed(pmc_previous->first_time,
+			  pmc->first_time)/1000.0); /* convert us to ms */
+
+    if (ldebug>1) {
+	printf("   prev: %s, etime: %d ms\n",
+	       FormatBrief(pmc_previous->ptp), etime);
+    }
 
     /* keep stats */
     AddToCounter(&pstats->conv_interarrival, etime, 1);
@@ -1414,32 +1643,38 @@ static void do_tcplib_next_converse(
 
 /* return the previous connection that passes data in the direction */
 /* given in "ttype" */
-struct module_conninfo *
+module_conninfo *
 FindPrevConnection(
-    struct module_conninfo *pmc,
+    module_conninfo *pmc,
     enum t_statsix ttype)
 {
-    tcb *ptcb;
+    module_conninfo_tcb *ptcbc;
+    int count = 0;
 
     /* loop back further in time */
     for (pmc = pmc->prev; pmc; pmc = pmc->prev) {
-	ptcb = &pmc->ptp->a2b;
-	if (WhichTrafficType(ptcb) == ttype) {
-	    if (ptcb->data_bytes != 0)
+	ptcbc = &pmc->tcb_cache_a2b;
+	if (ptcbc->ttype == ttype) {
+	    if (ptcbc->data_bytes != 0)
 		return(pmc);
 	}
 
-	ptcb = &pmc->ptp->a2b;
-	if (WhichTrafficType(ptcb) == ttype) {
-	    if (ptcb->data_bytes != 0)
+	ptcbc = &pmc->tcb_cache_b2a;
+	if (ptcbc->ttype == ttype) {
+	    if (ptcbc->data_bytes != 0)
 		return(pmc);
 	}
+
+	if (ldebug)
+	    ++count;
     }
+
+    if (ldebug > 1)
+	printf("FindPrevConnection %s returned NULL, took %d searches\n",
+	       ttype_names[ttype], count);
 
     return(NULL);
 }
-
-
 
 
 
@@ -1473,6 +1708,7 @@ do_tcplib_final_converse(
     /* Now, dump out the combined data */
     StoreCounters(filename,"Conversation Interval Time (ms)",
 		  "% Interarrivals", bucketsize, psizes);
+
     return;
 }
 
@@ -1504,8 +1740,10 @@ do_tcplib_final_converse(
  * 
  ****************************************************************************/
 Bool is_telnet_port(
-    int port)       /* The port we're looking at */
+    portnum port)       /* The port we're looking at */
 {
+    port -= ipport_offset;
+
     switch(port) {
       case IPPORT_LOGIN:
       case IPPORT_KLOGIN:
@@ -1515,6 +1753,7 @@ Bool is_telnet_port(
       case IPPORT_KLOGIN2:
       case IPPORT_NLOGIN:
       case IPPORT_TELNET:
+      case IPPORT_SSH:
 	return TRUE;
 	break;
 
@@ -1524,12 +1763,10 @@ Bool is_telnet_port(
 }
 static Bool
 is_telnet_conn(
-    tcp_pair *ptp)
+    module_conninfo *pmc)
 {
-    tcp_pair_addrblock *paddr = &ptp->addr_pair;
-
-    return(is_telnet_port(paddr->a_port-ipport_offset) ||
-	   is_telnet_port(paddr->b_port-ipport_offset));
+    return(is_telnet_port(pmc->tcb_cache_a2b.port) ||
+	   is_telnet_port(pmc->tcb_cache_b2a.port));
 }
 
 
@@ -1558,9 +1795,9 @@ void tcplib_do_telnet_duration(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    int i;                   /* Looping variable */
     dyn_counter psizes = NULL;
     const int bucketsize = 10;	/* 10 millisecond buckets */
+    module_conninfo *pmc;
     
 
     /* This section reads in the data from the existing telnet duration
@@ -1569,15 +1806,18 @@ void tcplib_do_telnet_duration(
 
 
     /* Fill the array with the current data */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	tcp_pair *ptp = ttp[i];
+    for (pmc = module_conninfo_tail; pmc; pmc=pmc->prev) {
+	/* if there wasn't data flowing in this direction, skip it */
+	if (InsideBytes(pmc,p_tester) == 0)
+	    continue;
 
+	
 	/* Only work this for telnet connections */
-	if (is_telnet_conn(ptp)) {
+	if (is_telnet_conn(pmc)) {
 	    /* convert the time difference to ms */
 	    int temp = (int)(
-		elapsed(ptp->first_time,
-			ptp->last_time)/1000.0); /* convert us to ms */
+		elapsed(pmc->first_time,
+			pmc->last_time)/1000.0); /* convert us to ms */
 
 	    /* increment the number of instances at this time. */
 	    AddToCounter(&psizes, temp/bucketsize, 1);
@@ -1587,8 +1827,7 @@ void tcplib_do_telnet_duration(
 
     /* Output data to the file */
     StoreCounters(filename,"Duration (ms)", "% Conversations",
-	       bucketsize,psizes);
-
+		  bucketsize,psizes);
 
     /* free the dynamic memory */
     DestroyCounters(&psizes);
@@ -1610,16 +1849,28 @@ void tcplib_do_telnet_duration(
  ****************************************************************************/
 void do_all_conv_arrivals()
 {
-    struct module_conninfo *pmc;
+    module_conninfo *pmc;
+
+    if (ldebug>1)
+	printf("do_all_conv_arrivals: there are %d tcp pairs\n",
+	       num_tcp_pairs);
 
     /* process each connection */
     for (pmc = module_conninfo_tail; pmc; pmc=pmc->prev) {
 
+	if (ldebug>2) {
+	    static int count = 0;
+	    printf("do_all_conv_arrivals: processing pmc %d: %p\n",
+		   ++count, pmc);
+	}
+
 	/* A --> B */
-	do_tcplib_next_converse(&pmc->ptp->a2b, pmc);
+	if (pmc->tcb_cache_a2b.data_bytes != 0)
+	    do_tcplib_next_converse(&pmc->tcb_cache_a2b, pmc);
 
 	/* B --> A */
-	do_tcplib_next_converse(&pmc->ptp->b2a, pmc);
+	if (pmc->tcb_cache_b2a.data_bytes != 0)
+	    do_tcplib_next_converse(&pmc->tcb_cache_b2a, pmc);
     }
 }
 
@@ -1648,8 +1899,7 @@ void do_all_conv_arrivals()
  ****************************************************************************/
 void tcplib_add_telnet_interarrival(
     tcp_pair *ptp,              /* This conversation */
-    struct timeval* ptp_saved,  /* The time of the last packet in the
-				   conversation */
+    module_conninfo *pmc,
     dyn_counter *psizes)
 {
     int temp = 0;    /* time differential between packets */
@@ -1666,17 +1916,14 @@ void tcplib_add_telnet_interarrival(
 
     /* First packet has no interarrival time */
     if (tv_same(ptp->last_time,ptp->first_time)) {
-	/* If this is the first packet we've seen, then all we need
-	 * to do is store this time in the ptp_saved structure and
-	 * throw it back.  We'll be able to get some data the next
+	/* If this is the first packet we've seen, nothing to do.
+	 * We'll be able to get some data the next
 	 * time. */
-	*ptp_saved = ptp->last_time;
-
 	return;
     }
 	
     /* Determining the time difference in ms */
-    temp = (int)(elapsed(*ptp_saved, current_time)/1000.0); /* us to ms */
+    temp = (int)(elapsed(pmc->last_time, current_time)/1000.0); /* us to ms */
 
     /* We're going to set an artificial maximum for telnet interarrivals
      * for the case when someone (like me) would open a telnet session
@@ -1692,11 +1939,6 @@ void tcplib_add_telnet_interarrival(
      * temp that larger than the array, so we just increment the count
      */
     (void) AddToCounter(psizes, temp, 1);
-
-    /* now we just want to record this time and store it with TCPTrace
-     * until we need it - which will be the next time that this 
-     * conversation receives a packet. */
-    *ptp_saved = ptp->last_time;
 
     return;
 }
@@ -1727,7 +1969,7 @@ void tcplib_do_telnet_interarrival(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* stuck with the interface :-(  */
 {
-    const int bucketsize = 1;
+    const int bucketsize = 1;	/* 1 ms buckets */
     dyn_counter psizes = NULL;
 
     /* ugly interface conversion :-( */
@@ -1753,7 +1995,7 @@ void tcplib_do_telnet_interarrival(
 
     /* Dumping the data out to the data file */
     StoreCounters(filename, "Interarrival Time (ms)", "% Interarrivals",
-	       bucketsize,psizes);
+		  bucketsize,psizes);
 }
 
 
@@ -1778,7 +2020,7 @@ void tcplib_do_telnet_packetsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* stuck with the interface :-(  */
 {
-    const int bucketsize = 1;
+    const int bucketsize = 1;	/* 10 byte buckets */
     dyn_counter psizes = NULL;
 
     /* ugly interface conversion :-( */
@@ -1806,7 +2048,7 @@ void tcplib_do_telnet_packetsize(
 
     /* Dumping the data out to the data file */
     StoreCounters(filename, "Packet Size (bytes)", "% Packets",
-	       bucketsize,psizes);
+		  bucketsize,psizes);
 }
 
 
@@ -1863,12 +2105,17 @@ void tcplib_add_telnet_packetsize(
  * Called by: tcplib_do_ftp_itemsize() in mod_tcplib.c
  * 
  ****************************************************************************/
-Bool is_ftp_data_conn(
-    tcp_pair *ptp)		/* connection information */
+Bool is_ftp_data_port(
+    portnum port)
 {
-    tcp_pair_addrblock *paddr = &ptp->addr_pair;
-    return ((paddr->a_port-ipport_offset == IPPORT_FTP_DATA) ||
-	    (paddr->b_port-ipport_offset == IPPORT_FTP_DATA));
+    port -= ipport_offset;
+    return (port == IPPORT_FTP_DATA);
+}
+Bool is_ftp_data_conn(
+    module_conninfo *pmc)
+{
+    return (is_ftp_data_port(pmc->tcb_cache_a2b.port) ||
+	    is_ftp_data_port(pmc->tcb_cache_b2a.port));
 }
 
 
@@ -1887,12 +2134,17 @@ Bool is_ftp_data_conn(
  * Called by: tcplib_do_ftp_control_size() in mod_tcplib.c
  * 
  ****************************************************************************/
-Bool is_ftp_control_conn(
-    tcp_pair *ptp)		/* connection information */
+Bool is_ftp_control_port(
+    portnum port)
 {
-    tcp_pair_addrblock *paddr = &ptp->addr_pair;
-    return ((paddr->a_port-ipport_offset == IPPORT_FTP_CONTROL) ||
-	    (paddr->b_port-ipport_offset == IPPORT_FTP_CONTROL));
+    port -= ipport_offset;
+    return (port == IPPORT_FTP_CONTROL);
+}
+Bool is_ftp_control_conn(
+    module_conninfo *pmc)
+{
+    return (is_ftp_control_port(pmc->tcb_cache_a2b.port) ||
+	    is_ftp_control_port(pmc->tcb_cache_b2a.port));
 }
 	    
 
@@ -1915,7 +2167,7 @@ void tcplib_do_ftp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 5;	/* scale bucket by 5 bytes */
+    const int bucketsize = 10;	/* 10 byte buckets */
 
     tcplib_do_GENERIC_itemsize(filename, is_ftp_data_conn,
 			       p_tester, bucketsize);
@@ -1934,7 +2186,7 @@ static void tcplib_do_ftp_control_size(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 1;
+    const int bucketsize = 10;	/* 10 byte buckets */
 
     tcplib_do_GENERIC_itemsize(filename, is_ftp_control_conn,
 			       p_tester, bucketsize);
@@ -1945,19 +2197,25 @@ static void tcplib_do_ftp_control_size(
 
 
 /* Begin SMTP Stuff */
-Bool is_smtp_conn(
-    tcp_pair *ptp)		/* connection information */
+static Bool
+is_smtp_port(
+    portnum port)
 {
-    tcp_pair_addrblock *paddr = &ptp->addr_pair;
-    return ((paddr->a_port-ipport_offset == IPPORT_SMTP) ||
-	    (paddr->b_port-ipport_offset == IPPORT_SMTP));
+    port -= ipport_offset;
+    return (port == IPPORT_SMTP);
+}
+Bool is_smtp_conn(
+    module_conninfo *pmc)
+{
+    return (is_smtp_port(pmc->tcb_cache_a2b.port) ||
+	    is_smtp_port(pmc->tcb_cache_b2a.port));
 }
 
 static void tcplib_do_smtp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 5;	/* scale bucket by 5 bytes */
+    const int bucketsize = 10;	/* 10 byte buckets */
 
     tcplib_do_GENERIC_itemsize(filename, is_smtp_conn,
 			       p_tester, bucketsize);
@@ -1968,12 +2226,19 @@ static void tcplib_do_smtp_itemsize(
 
 
 /* Begin NNTP Stuff */
-Bool is_nntp_conn(
-    tcp_pair *ptp)		/* connection information */
+static Bool
+is_nntp_port(
+    portnum port)
 {
-    tcp_pair_addrblock *paddr = &ptp->addr_pair;
-    return ((paddr->a_port-ipport_offset == IPPORT_NNTP) ||
-	    (paddr->b_port-ipport_offset == IPPORT_NNTP));
+    port -= ipport_offset;
+    return (port == IPPORT_NNTP);
+}
+static Bool
+is_nntp_conn(
+    module_conninfo *pmc)
+{
+    return (is_nntp_port(pmc->tcb_cache_a2b.port) ||
+	    is_nntp_port(pmc->tcb_cache_b2a.port));
 }
 
 
@@ -1981,7 +2246,7 @@ static void tcplib_do_nntp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 5;	/* scale everything by 5 bytes */
+    const int bucketsize = 10;	/* 10 byte buckets */
 
     tcplib_do_GENERIC_itemsize(filename, is_nntp_conn,
 			       p_tester, bucketsize);
@@ -2001,12 +2266,20 @@ tcplib_do_nntp_numitems(void)
 
 
 /* Begin HTTP Stuff */
-Bool is_http_conn(
-    tcp_pair *ptp)		/* connection information */
+static Bool
+is_http_port(
+    portnum port)
 {
-    tcp_pair_addrblock *paddr = &ptp->addr_pair;
-    return ((paddr->a_port-ipport_offset == IPPORT_HTTP) ||
-	    (paddr->b_port-ipport_offset == IPPORT_HTTP));
+    port -= ipport_offset;
+    return ((port == IPPORT_HTTP) ||
+	    (port == IPPORT_HTTPS));
+}
+static Bool
+is_http_conn(
+    module_conninfo *pmc)
+{
+    return (is_http_port(pmc->tcb_cache_a2b.port) ||
+	    is_http_port(pmc->tcb_cache_b2a.port));
 }
 
 
@@ -2014,7 +2287,7 @@ static void tcplib_do_http_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 10;  /* sdo - changed from Eric */
+    const int bucketsize = 10;  /* 10 byte buckets */
 
     tcplib_do_GENERIC_itemsize(filename, is_http_conn,
 			       p_tester, bucketsize);
@@ -2038,8 +2311,9 @@ StoreCounters(
 {
     FILE *fil;
     int running_total = 0;
+    int lines = 0;
 
-    if (ldebug)
+    if (ldebug>1)
 	printf("Saving data for file '%s'\n", filename);
 
     if (!(fil = fopen(filename, "w"))) {
@@ -2050,8 +2324,8 @@ StoreCounters(
     fprintf(fil, "%s\t%s\tRunning Sum\tCounts\n", header1, header2);
 
     if (psizes == NULL) {
-	if (ldebug)
-	    printf("No data for file '%s'\n", filename);
+	if (ldebug>1)
+	    printf("  (No data for file '%s')\n", filename);
     } else {
 	int cookie = 0;
 	while (1) {
@@ -2071,11 +2345,16 @@ StoreCounters(
 			(((float)running_total)/((float)TotalCounter(psizes))),
 			running_total,
 			count);
+		++lines;
 	    }
 	}
     }
 
     fclose(fil);
+
+    if (ldebug)
+	printf("  Stored %d values into %d lines of '%s'\n",
+	       running_total, lines, filename);
 }
 
 
@@ -2116,7 +2395,7 @@ ReadOldFile(
 	    AddToCounter(&psizes, (((int)bytes)/bucketsize), count);
 	}
 
-	if (ldebug) {
+	if (ldebug>2) {
 	    if (psizes && (linesread > 0))
 		printf("Read data from old file '%s' (%lu values)\n",
 		       filename, TotalCounter(psizes));
@@ -2135,13 +2414,13 @@ ReadOldFile(
 static void
 tcplib_do_GENERIC_itemsize(
     char *filename,		/* where to store the output */
-    Bool (*f_whichport)(tcp_pair *),
+    Bool (*f_whichport)(module_conninfo *),
     f_testinside p_tester,	/* functions to test "insideness" */
     int bucketsize)		/* how much data to group together */
 {
-    int i;                    /* Looping variables */
+    module_conninfo *pmc;
     dyn_counter psizes = NULL;
-
+    
 
     /* If an old data file exists, open it, read in its contents
      * and store them until they are integrated with the current
@@ -2150,12 +2429,10 @@ tcplib_do_GENERIC_itemsize(
 
 
     /* fill out the array with data from the current connections */
-    for(i = 0; i < num_tcp_pairs; i++) {
-	tcp_pair *ptp = ttp[i];
-
+    for (pmc = module_conninfo_tail; pmc; pmc = pmc->prev) {
 	/* We only need the stats if it's the right port */
-	if ((*f_whichport)(ptp)) {
-	    int nbytes = InsideBytes(ptp,p_tester);
+	if ((*f_whichport)(pmc)) {
+	    int nbytes = InsideBytes(pmc,p_tester);
 
 	    /* if there's no DATA, don't count it!  (sdo change!) */
 	    if (nbytes != 0)
@@ -2166,8 +2443,7 @@ tcplib_do_GENERIC_itemsize(
 
     /* store all the data (old and new) into the file */
     StoreCounters(filename,"Article Size (bytes)", "% Articles",
-	       bucketsize,psizes);
-
+		  bucketsize,psizes);
 
     /* free the dynamic memory */
     DestroyCounters(&psizes);
@@ -2175,23 +2451,37 @@ tcplib_do_GENERIC_itemsize(
 
 
 static enum t_statsix
-WhichTrafficType(
-    tcb *ptcb)
+traffic_type(
+    module_conninfo *pmc,
+    module_conninfo_tcb *ptcbc)
 {
-    if (TestLocal(ptcb))
+    if (TestLocal(pmc,ptcbc))
 	return(LOCAL);
 
-    if (TestIncoming(ptcb))
+    if (TestIncoming(pmc,ptcbc))
 	return(INCOMING);
 
-    if (TestOutgoing(ptcb))
+    if (TestOutgoing(pmc,ptcbc))
 	return(OUTGOING);
 
-    if (TestRemote(ptcb))
+    if (TestRemote(pmc,ptcbc))
 	return(REMOTE);
 
-    fprintf(stderr,"Internal error in WhichTrafficType\n");
+    fprintf(stderr,"Internal error in traffic_type\n");
     exit(-1);
 }
 
+static char *
+FormatBrief(
+    tcp_pair *ptp)
+{
+    tcb *pab = &ptp->a2b;
+    tcb *pba = &ptp->b2a;
+    static char infobuf[100];
+
+    sprintf(infobuf,"%s - %s (%s2%s)",
+	    ptp->a_endpoint, ptp->b_endpoint,
+	    pab->host_letter, pba->host_letter);
+    return(infobuf);
+}
 #endif /* LOAD_MODULE_TCPLIB */
