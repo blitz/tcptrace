@@ -124,7 +124,7 @@ static int callback(
     }
 
     return(0);
-};
+}
 
 
 /* currently only works for ETHERNET and FDDI */
