@@ -2094,7 +2094,9 @@ case "$target_os" in
   *inux*)	V_INCLS="$V_INCLS -Ilinux-include";;
 esac
 
-
+if [ -f /lib/libc-2.2* ]; then
+ V_DEFINES="$V_DEFINES -D_BSD_SOURCE"
+fi
 
 
 
