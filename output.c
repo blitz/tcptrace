@@ -381,13 +381,10 @@ PrintTrace(
 			  pab->last_data_time); /* in usecs */
     etime_data2 = elapsed(pba->first_data_time,
 			  pba->last_data_time); /* in usecs */
-    StatLineP("data xmit time","secs","%s",
-	      (sprintf(bufl,"%lu.%03lu",
-		       (u_long)etime_data1 / 1000000,
-		       ((u_long)etime_data1%1000000)/1000), bufl),
-	      (sprintf(bufr,"%lu.%03lu",
-		       (u_long)etime_data2 / 1000000,
-		       ((u_long)etime_data2%1000000)/1000), bufr));
+    /* fix from Rob Austein */
+    StatLineF("data xmit time","secs","%7.3f",
+	      etime_data1 / 1000000.0,
+	      etime_data2 / 1000000.0);
 
     /* do the throughput calcs */
     etime /= 1000000.0;  /* convert to seconds */
