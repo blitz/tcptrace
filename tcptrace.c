@@ -669,10 +669,12 @@ Formats(void)
 	fprintf(stderr,"\t%-15s  %s\n",
 		file_formats[i].format_name,
 		file_formats[i].format_descr);
-   fprintf(stderr, "If this file format is understood by tethereal\n"
-	   "then it can be read by tehereal and written back in tcpdump\n"
-	   "format, which then can be read by tcptrace.\n"
-	   "command to do this is:\n tehereal -r 'infile' -w 'outfile'\n");
+   fprintf(stderr, 
+	   "Try the tethereal program from the ethereal project to see if\n"
+	   "it can understand this capture format. If so, you may use \n"
+	   "tethereal to convert it to a tcpdump format file as in :\n"
+	   "\t tethereal -r inputfile -w outputfile\n"
+	   "and feed the outputfile to tcptrace\n");
 }
 
 
