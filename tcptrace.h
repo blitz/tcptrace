@@ -567,6 +567,12 @@ struct tcp_options {
 /* name of file to store filtered output into */
 #define PASS_FILTER_FILENAME		"PF"
 
+/* name of the resource file */
+#define TCPTRACE_RC_FILE ".tcptracerc"
+
+/* name of the argument envariable */
+#define TCPTRACE_ENVARIABLE "TCPTRACEOPTS"
+
 /* packet-reading options... */
 /* the type for a packet reading routine */
 typedef int pread_f(struct timeval *, int *, int *, void **,

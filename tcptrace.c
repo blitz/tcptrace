@@ -55,10 +55,12 @@ static void Hints(void);
 static void ListModules(void);
 static void UsageModules(void);
 static void LoadModules(int argc, char *argv[]);
-static void ParseArgs(int *pargc, char *argv[]);
+static void CheckArguments(int *pargc, char *argv[]);
+static void ParseArgs(char *argsource, int *pargc, char *argv[]);
 static void ProcessFile(char *filename);
 static void QuitSig(int signum);
-static void Usage(char *prog);
+static void Usage(void);
+static void BadArg(char *argsource, char *format, ...);
 static void Version(void);
 
 
@@ -96,8 +98,9 @@ char *ColorNames[NCOLORS] =
 
 /* locally global variables */
 static u_long filesize = -1;
-char **filenames;
+char **filenames = NULL;
 char *cur_filename;
+static char *progname;
 
 
 
@@ -135,11 +138,34 @@ For help on specific topics, try:  \n\
 }
 
 
+
 static void
-Usage(
-    char *prog)
+BadArg(
+    char *argsource,
+    char *format,
+    ...)
 {
-    fprintf(stderr,"usage: %s [args...]* dumpfile [more files]*\n", prog);
+    va_list ap;
+
+    fprintf(stderr,"Argument error");
+    if (argsource)
+	fprintf(stderr," (from %s)", argsource);
+    fprintf(stderr,": ");
+    
+    va_start(ap,format);
+    vfprintf(stderr,format,ap);
+    va_end(ap);
+    
+    Usage();
+}
+
+
+
+static void
+Usage(void)
+{
+    fprintf(stderr,"usage: %s [args...]* dumpfile [more files]*\n",
+	    progname);
 
     Help(NULL);
 
@@ -286,13 +312,21 @@ Make sure the snap length in the packet grabber is big enough.\n\
    I'm not sure, I usually use 128 bytes.  If you're SURE that there are no\n\
    options (TCP usually has some), you still need at least 54 bytes.\n\
 Compress trace files using gzip, I can uncompress them on the fly\n\
-");
+Stuff arguments that you always use into either the tcptrace resource file\n\
+   ($HOME/%s) or the envariable %s.  If you need to turn them off again\n\
+   from the command line, you can use the \"+\" option flag.\n\
+", TCPTRACE_RC_FILE, TCPTRACE_ENVARIABLE);
 }
 
 
 static void
 Args(void)
 {
+    fprintf(stderr,"\n\
+Note: these options are first read from the file $HOME/'%s'\n\
+  (if it exists), and then from the environment variable '%s'\n\
+  (if it exists), and finally from the command line\n\
+", TCPTRACE_RC_FILE, TCPTRACE_ENVARIABLE);
     fprintf(stderr,"\n\
 Output format options\n\
   -b      brief output format\n\
@@ -414,7 +448,7 @@ main(
     LoadModules(argc,argv);
 
     /* parse the flags */
-    ParseArgs(&argc,argv);
+    CheckArguments(&argc,argv);
 
     printf("%d args remaining, starting with '%s'\n",
 	   argc, filenames[0]);
@@ -736,14 +770,14 @@ ReallocZ(
 
 static void
 GrabOnly(
-    char *progname,
+    char *argsource,
     char *opt)
 {
     char *o_arg;
 		      
     /* next part of arg is a filename or number list */
     if (*opt == '\00') {
-	Usage(progname);
+	BadArg(argsource,"Expected filename or number list\n");
     }
 
     /* option is a list of connection numbers separated by commas */
@@ -762,7 +796,7 @@ GrabOnly(
 	if ((f = fopen(filename,"r")) == NULL) {
 	    fprintf(stderr,"Open of '%s' failed\n", filename);
 	    perror(filename);
-	    Usage(progname);
+	    Usage();
 	}
 
 	/* determine the file length */
@@ -789,8 +823,8 @@ GrabOnly(
 	int num;
 	
 	if (sscanf(o_arg,"%d",&num) != 1) {
-	    fprintf(stderr,"Don't understand conn number starting at '%s'\n", o_arg);
-	    Usage(progname);
+	    BadArg(argsource,
+		   "Don't understand conn number starting at '%s'\n", o_arg);
 	}
 	if (debug)
 	    printf("setting OnlyConn(%d)\n", num);
@@ -804,8 +838,129 @@ GrabOnly(
 }
 
 
+/* convert a buffer to an argc,argv[] pair */
+static void
+StringToArgv(
+    char *buf,
+    int *pargc,
+    char ***pargv)
+{
+    char **argv;
+    int nargs = 0;
+
+    /* (very pessimistically) make the argv array */
+    argv = malloc(sizeof(char *) * ((strlen(buf)/2)+1));
+
+    for (nargs = 1; *buf != '\00'; ++nargs) {
+	char *stringend;
+	argv[nargs] = buf;
+
+	/* search for separator */
+	while ((*buf != '\00') && (!isspace((int)*buf))) {
+	    if (debug > 10)
+		printf("'%c' (%d) is NOT a space\n", *buf, (int)*buf);	    
+	    ++buf;
+	}
+	stringend = buf;
+
+	/* skip spaces */
+	while ((*buf != '\00') && (isspace((int)*buf))) {
+	    if (debug > 10)
+		printf("'%c' (%d) IS a space\n", *buf, (int)*buf);	    
+	    ++buf;
+	}
+
+	*stringend = '\00';  /* terminate the previous string */
+
+	if (debug)
+	    printf("  argv[%d] = '%s'\n", nargs, argv[nargs]);
+    }
+
+    *pargc = nargs;
+    *pargv = argv;
+}
+
+
+static void
+CheckArguments(
+    int *pargc,
+    char *argv[])
+{
+    char *home;
+    char *envariable;
+
+    /* remember the name of the program for errors... */
+    progname = argv[0];
+
+    /* first, we read from the config file, "~/.tcptracerc" */
+    if ((home = getenv("HOME")) != NULL) {
+	char *path;
+	struct stat statbuf;
+
+	path = malloc(strlen(home)+strlen(TCPTRACE_RC_FILE)+2);
+
+	sprintf(path, "%s/%s", home, TCPTRACE_RC_FILE);
+	if (debug>1)
+	    printf("Looking for resource file '%s'\n", path);
+
+	if (stat(path,&statbuf) == 0) {
+	    int argc;
+	    char **argv;
+	    FILE *f;
+	    char *buf = malloc(statbuf.st_size+1);
+
+	    if (debug>1)
+		printf("resource file %s exists\n", path);
+
+	    if ((f = fopen(path,"r")) != NULL) {
+		if (fread(buf,statbuf.st_size,1,f) != 1) {
+		    perror(path);
+		    exit(-1);
+		}
+
+		/* terminate the string */
+		buf[statbuf.st_size] = '\00';
+
+		if (debug)
+		    printf("resource file %s contains:\n\t'%s'\n",
+			   path, buf);
+
+		StringToArgv(buf,&argc,&argv);
+		ParseArgs(TCPTRACE_RC_FILE, &argc, argv);
+
+		fclose(f);
+	    }
+	    free(buf);
+	}
+    }
+
+    /* next, we read from the environment variable "TCPTRACEOPTS" */
+    if ((envariable = getenv(TCPTRACE_ENVARIABLE)) != NULL) {
+	int argc;
+	char **argv;
+
+	if (debug)
+	    printf("envariable %s contains:\n\t'%s'\n",
+		   TCPTRACE_ENVARIABLE, envariable);
+
+	StringToArgv(envariable,&argc,&argv);
+	ParseArgs(TCPTRACE_ENVARIABLE, &argc, argv);
+    }
+
+    /* lastly, we read the command line arguments */
+    ParseArgs("command line",pargc,argv);
+
+    /* make sure we found the files */
+    if (filenames == NULL) {
+	BadArg(NULL,"must specify at least one file name\n");
+    }
+
+}
+
+
 static void
 ParseArgs(
+    char *argsource,
     int *pargc,
     char *argv[])
 {
@@ -820,7 +975,7 @@ ParseArgs(
 
 	if (*argv[i] == '-') {
 	    if (argv[i][1] == '\00') /* just a '-' */
-		Usage(argv[0]);
+		Usage();
 
 	    while (*(++argv[i]))
 		switch (*argv[i]) {
@@ -859,9 +1014,7 @@ ParseArgs(
 			*(argv[i]+1) = '\00';
 		    } else {
 			/* -f EXPR */
-			fprintf(stderr,
-				"-f requires a filter\n");
-			Usage(argv[0]);
+			BadArg(argsource, "-f requires a filter\n");
 		    }
 		    break;
 		  case 'i':
@@ -870,7 +1023,7 @@ ParseArgs(
 		    *(argv[i]+1) = '\00'; break;
 		  case 'o':
 		    ++saw_i_or_o;
-		    GrabOnly(argv[0],argv[i]+1);
+		    GrabOnly(argsource,argv[i]+1);
 		    *(argv[i]+1) = '\00'; break;
 		  case 'B':
 		    beginpnum = atoi(argv[i]+1);
@@ -881,27 +1034,25 @@ ParseArgs(
 		  case 'A':
 		    thru_interval = atoi(argv[i]+1);
 		    if (thru_interval <= 0) {
-			fprintf(stderr, "-A  must be > 1\n");
-			Usage(argv[0]);
+			BadArg(argsource, "-A  must be > 1\n");
 		    }
 		    *(argv[i]+1) = '\00'; break;
 		  case 'm':
-		    fprintf(stderr,
-			    "-m option is obsolete (no longer necessary)\n");
+		    BadArg(argsource,
+			   "-m option is obsolete (no longer necessary)\n");
 		    *(argv[i]+1) = '\00'; break;
 		    break;
 		  case 'x':
-		    fprintf(stderr,
-			    "unknown module option (-x...)\n");
-		    Usage(argv[0]);
+		    BadArg(argsource,
+			   "unknown module option (-x...)\n");
 		  default:
-		    fprintf(stderr, "option '%c' not understood\n", *argv[i]);
-		    Usage(argv[0]);
+		    BadArg(argsource,
+			   "option '%c' not understood\n", *argv[i]);
 		}
 	} else if (*argv[i] == '+') {
 	    /* a few of them have a REVERSE flag too */
 	    if (argv[i][1] == '\00') /* just a '+' */
-		Usage(argv[0]);
+		Usage();
 
 	    while (*(++argv[i]))
 		switch (*argv[i]) {
@@ -928,7 +1079,7 @@ ParseArgs(
 		  case 'q': printsuppress = !TRUE; break;
 		  case 'z': graph_time_zero = !TRUE; break;
 		  default:
-		    Usage(argv[0]);
+		    Usage();
 		}
 	} else {
 	    filenames = &argv[i];
@@ -937,11 +1088,7 @@ ParseArgs(
 	}
     }
 
-    /* if we got here, we didn't find a file name */
-    fprintf(stderr,"must specify at least one file name\n");
-    Usage(argv[0]);
-
-    /* NOTREACHED */
+    return;
 }
 
 
