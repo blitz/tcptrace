@@ -488,3 +488,7 @@ and UDP connections - Mani
 
 Added options --csv, --tsv, --sv=<SP> for comma/tab/<SP>-separated values to be
 printed with the long output - Avinash
+
+6.4.1 : 26 APR 2003 Mani
+-----
+Fixed a bug in the processing of IPv6 extension headers in ipv6.c:findheader()
