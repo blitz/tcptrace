@@ -817,7 +817,15 @@ dotrace(
     }
 
     /* "ONLY" bug fix - Wed Feb 24, 1999 */
+    /* the tcp-splicing heuristic needs "windowend", which was only being */
+    /* calculated BELOW the "only" point below.  Move that part of the */
+    /* calculation up here! */
 
+	thisdir->windowend = th_ack + eff_win;
+	unsigned int win = th_win << thisdir->window_scale;
+
+	thisdir->windowend = th_ack + win;
+    /* end bugfix */
 
 
     /***********************************************************************/
@@ -1245,7 +1253,7 @@ dotrace(
 	thisdir->time = current_time;
 	thisdir->ack = ack;
 
-	thisdir->windowend = winend;
+/* 	thisdir->windowend = winend; (moved above "only" point) */
 
     /* do stats for initial window (first slow start) */
     /* (if there's data in this and we've NEVER seen */
