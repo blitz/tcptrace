@@ -65,7 +65,6 @@ struct comp_formats supported_comp_formats[] = {
 #ifdef UNCOMPRESS
     {".Z",  "Unix compress format", UNCOMPRESS, {"uncompress","-c","%s",NULL}},
 #endif /* UNCOMPRESS */
-
-    {NULL,NULL,NULL,{NULL}},	/* You must NOT remove this entry */
 };
+#define NUM_COMP_FORMATS (sizeof(supported_comp_formats) / sizeof(struct comp_formats))
 
