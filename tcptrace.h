@@ -259,6 +259,9 @@ struct stcp_pair {
     tcb			a2b;
     tcb			b2a;
 
+    /* module-specific structures, if requested */
+    void		**pmod_info;
+
     /* linked list of usage */
     struct stcp_pair *next;
 };
@@ -283,6 +286,7 @@ extern Bool nonames;
 extern Bool print_rtt;
 extern Bool print_cwin;
 extern Bool printbrief;
+extern Bool printsuppress;
 extern Bool printem;
 extern Bool printticks;
 extern Bool printtrunc;
