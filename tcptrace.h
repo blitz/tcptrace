@@ -228,7 +228,7 @@ typedef struct tcb {
     /* added for (estimated) congestions window stats (for Mallman) */
     u_long	cwin_max;
     u_long	cwin_min;
-    u_long	cwin_tot;
+    u_llong	cwin_tot;
 
     /* RTT stats for singly-transmitted segments */
     double	rtt_last;	/* RTT as of last good ACK (microseconds) */
