@@ -511,3 +511,7 @@ Added dsack counter to long output format and dsack sample input and output
 -----
 Fixed bug in the calculation of the "avg win adv" field, so that now avg.
 falls in between min and max.
+
+6.4.6 :  1 JUL 2003 Mani
+-----
+Changes made to make gcc-3.3 make lesser warnings with tcptrace.
