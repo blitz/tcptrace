@@ -65,7 +65,7 @@ struct traffic_info {
 };
 static struct traffic_info *traffichead = NULL;
 #define NUM_PORTS 65536
-static struct traffic_info *ports[NUM_PORTS] = {NULL,NULL /* ... */ };
+static struct traffic_info **ports;  /* [NUM_PORTS] */
 #define EXCLUDE_PORT ((void *)(-1))
 #define INCLUDE_PORT (NULL)
 
@@ -246,6 +246,9 @@ traffic_init(
 
     /* init the graphs and etc... */
     AgeTraffic();
+
+    /* init the data storage structure */
+    ports = MallocZ(NUM_PORTS*sizeof(struct traffic_info *));
 
     return(1);	/* TRUE means call traffic_read and traffic_done later */
 }
