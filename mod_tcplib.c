@@ -42,8 +42,11 @@ static char const rcsid[] =
  ****************************************************************************/
 #include "tcptrace.h"
 #include "mod_tcplib.h"
+#include "dyncounter.h"
 
 
+
+/* Local global variables */
 
 /* structure to keep track of "inside" */
 struct insidenode {
@@ -51,52 +54,69 @@ struct insidenode {
     ipaddr max;
     struct insidenode *next;
 } *inside_head = NULL;
+#define LOCAL_ONLY (inside_head == NULL)
 
 
+/* structure that this module keeps for each connection */
+struct module_conninfo {
+    /* previous connection */
+    struct module_conninfo *prev;
 
+    /* link back to the tcb's */
+    tcp_pair *ptp;
 
-/* Local global variables */
+    /* time of last packet */
+    struct timeval last_packet;
 
-/* generic size list */
-struct sizes {
-    int maxix;
-    int arraysize;
-    int total_count;
-    int *size_list;
+    /* time of connection start */
+    struct timeval start_time;
 };
+struct module_conninfo *module_conninfo_tail = NULL;
 
-/* global data */
 
+#define NUM_DATA_FILES 4
+enum t_statsix {LOCAL = 0, INCOMING = 1, OUTGOING = 2, REMOTE = 3};
+static char *data_prefixes[4] = {"local","incoming","outgoing", "remote"};
 static struct tcplibstats {
     /* telnet packet sizes */
-    struct sizes *telnet_pktsize;
+    dyn_counter telnet_pktsize;
 
     /* telnet interarrival times */
-    struct sizes *telnet_interarrival;
+    dyn_counter telnet_interarrival;
 
     /* conversation interarrival times */
-    struct sizes *conv_interarrival;
+    dyn_counter conv_interarrival;
 
-    int tcplib_breakdown_total[NUM_APPS];
+    /* for the interval breakdowns */
+    int interval_count;
+    timeval last_interval;
     int tcplib_breakdown_interval[NUM_APPS];
 
     /* histogram files */
-    FILE* hist_file;
+    FILE *hist_file;
 
-    int interval_count;
-    timeval last_converse;
-    timeval last_interval;
-} *global_pstats[3] = {NULL};
-enum t_statsix {LOCAL = 0, INCOMING = 1, OUTGOING = 2};
-static char *data_prefixes[3] = {"local","incoming","outgoing"};
+    /* telnet packet sizes */
+    dyn_counter throughput;
+    int throughput_bytes;
+} *global_pstats[NUM_DATA_FILES] = {NULL};
 
-static int debug;
-static const char breakdown_hash_char[] = { 'S', 'N', 'T', 'F', 'H' };
+/* local debugging flag */
+static int ldebug = 0;
+
+/* offset for all ports */
 static int ipport_offset = IPPORT_OFFSET;
-static char *current_file = NULL;
+
+/* the name of the directory (prefix) for the output */
 static char *output_dir = DEFAULT_TCPLIB_DATADIR;
 
+/* the name of the current tcptrace input file */
+static char *current_file = NULL;
 
+/* characters to print in interval breakdown file */
+static const char breakdown_hash_char[] = { 'S', 'N', 'T', 'F', 'H' };
+
+
+/* internal types */
 typedef Bool (*f_testinside) (tcb *);
 
 
@@ -104,10 +124,13 @@ typedef Bool (*f_testinside) (tcb *);
 /* Function Prototypes */
 static void ParseArgs(char *argstring);
 static int breakdown_type(int port);
-static void do_final_breakdown(char* filename, struct tcplibstats *pstats);
+static void do_final_breakdown(char* filename, f_testinside p_tester,
+			       struct tcplibstats *pstats);
 static void do_all_final_breakdowns(void);
-static void do_tcplib_final_converse(char *filename, struct sizes *psizes);
-static void do_tcplib_next_converse(tcb *ptcb);
+static void do_all_conv_arrivals(void);
+static void do_tcplib_final_converse(char *filename,
+				     dyn_counter psizes);
+static void do_tcplib_next_converse(tcb *ptcb, struct module_conninfo *pmc);
 static Bool is_ftp_control_conn(tcp_pair *ptp);
 static Bool is_ftp_data_conn(tcp_pair *ptp);
 static Bool is_http_conn(tcp_pair *ptp);
@@ -117,8 +140,11 @@ static Bool is_telnet_conn(tcp_pair *ptp);
 static Bool is_telnet_port(int port);
 static char* namedfile(char *localsuffix, char * file);
 static void setup_breakdown(void);
-static void tcplib_add_telnet_interarrival(tcp_pair *ptp, struct timeval *ptp_saved, struct sizes *psizes);
-static void tcplib_add_telnet_packetsize(struct tcplibstats *pstats, int length);
+static void tcplib_add_telnet_interarrival(tcp_pair *ptp,
+					   struct timeval *ptp_saved,
+					   dyn_counter *psizes);
+static void tcplib_add_telnet_packetsize(struct tcplibstats *pstats,
+					 int length);
 static void tcplib_do_ftp_control_size(char *filename, f_testinside p_tester);
 static void tcplib_do_ftp_itemsize(char *filename, f_testinside p_tester);
 static void tcplib_do_ftp_num_items(void);
@@ -127,10 +153,15 @@ static void tcplib_do_nntp_itemsize(char *filename, f_testinside p_tester);
 static void tcplib_do_nntp_numitems(void);
 static void tcplib_do_smtp_itemsize(char *filename, f_testinside p_tester);
 static void tcplib_do_telnet_duration(char *filename, f_testinside p_tester);
-static void tcplib_do_telnet_interarrival(char *filename, f_testinside p_tester);
-static void tcplib_do_telnet_packetsize(char *filename, f_testinside p_tester);
+static void tcplib_do_telnet_interarrival(char *filename,
+					  f_testinside p_tester);
+static void tcplib_do_telnet_packetsize(char *filename,
+					f_testinside p_tester);
 static void tcplib_init_setup(void);
 static void update_breakdown(tcp_pair *ptp, struct tcplibstats *pstats);
+struct module_conninfo *FindPrevConnection(struct module_conninfo *pmc,
+					   enum t_statsix ttype);
+
 
 /* prototypes for determining "insideness" */
 static void DefineInside(char *iplist);
@@ -138,18 +169,18 @@ static Bool IsInside(ipaddr *pipaddr);
 static Bool TestOutgoing(tcb *ptcb);
 static Bool TestIncoming(tcb *ptcb);
 static Bool TestLocal(tcb *ptcb);
+static Bool TestRemote(tcb *ptcb);
 static int InsideBytes(tcp_pair *, f_testinside);
+static enum t_statsix WhichTrafficType(tcb *ptcb);
 
 /* various helper routines used by many others -- sdo */
 static void tcplib_do_GENERIC_itemsize(
     char *filename, Bool (*f_whichport)(tcp_pair *),
     f_testinside p_tester, int bucketsize);
-static struct sizes *AddToSizeArray(struct sizes *psizes, int ix, int val);
-static void StoreSizes(char *filename, char *header1, char *header2,
-		       int bucketsize, struct sizes *psizes);
-static struct sizes *ReadOldFile(char *filename, int bucketsize,
-				 int maxlegal, struct sizes *psizes);
-static struct sizes *MakeSizes(int nelem);
+static void StoreCounters(char *filename, char *header1, char *header2,
+		       int bucketsize, dyn_counter psizes);
+static dyn_counter ReadOldFile(char *filename, int bucketsize,
+				 int maxlegal, dyn_counter psizes);
 
 
 
@@ -231,7 +262,7 @@ DefineInsideRange(
     struct insidenode *pnode;
     ipaddr *paddr;
 
-    if (debug>2)
+    if (ldebug>2)
 	printf("DefineInsideRange('%s') called\n", ip_pair);
 
     pdash = strchr(ip_pair,'-');
@@ -291,12 +322,12 @@ DefineInside(
     char *iplist)
 {
     
-    if (debug>2)
+    if (ldebug>2)
 	printf("DefineInside(%s) called\n", iplist);
 
     inside_head = DefineInsideRecurse(iplist);
 
-    if (debug) {
+    if (ldebug) {
 	struct insidenode *phead;
 	printf("DefineInside: result:\n  ");
 	for (phead=inside_head; phead; phead=phead->next) {
@@ -317,7 +348,7 @@ IsInside(
     struct insidenode *phead;
 
     /* if use didn't specify "inside", then EVERYTHING is "inside" */
-    if (inside_head == NULL)
+    if (LOCAL_ONLY)
 	return(TRUE);
 
     for (phead = inside_head; phead; phead=phead->next) {
@@ -370,6 +401,16 @@ TestLocal(tcb *ptcb)
 
     return(IsInside(&ptp->addr_pair.a_address) &&
 	   IsInside(&ptp->addr_pair.b_address));
+}
+
+
+static Bool
+TestRemote(tcb *ptcb)
+{
+    struct stcp_pair *ptp = ptcb->ptp;
+
+    return(!IsInside(&ptp->addr_pair.a_address) &&
+	   !IsInside(&ptp->addr_pair.b_address));
 }
 
 
@@ -429,16 +470,25 @@ Must be integer value greater than 0.\n");
 
 
 	/* The "-iIPs" gives the definition of "inside".  When it's used,
-	 * we divide the the data into three sets:
+	 * we divide the the data into four sets:
 	 * data.incoming:
 	 *    for all data flowing from "inside" to "outside"
 	 * data.outgoing:
 	 *    for all data flowing from "outside" to "inside"
 	 * data.local:
 	 *    for all data flowing from "inside" to "inside"
+	 * data.remote:
+	 *    for all data flowing from "outside" to "outside"
+	 *        (probably an error)
 	 */
 	else
 	if (argv[i] && !strncmp(argv[i], "-i", 2)) {
+	    if (!isdigit((int)*(argv[i]+2))) {
+		fprintf(stderr,"-i requires IP address list\n");
+		tcplib_usage();
+		exit(-1);
+	    }
+		
 	    DefineInside(argv[i]+2);
 	}
 
@@ -446,7 +496,7 @@ Must be integer value greater than 0.\n");
 	/* local debugging flag */
 	else
 	if (argv[i] && !strncmp(argv[i], "-d", 2)) {
-	    ++debug;
+	    ++ldebug;
 	}
 
 
@@ -496,7 +546,7 @@ Must be integer value greater than 0.\n");
  * 
  ****************************************************************************/
 static void
-RunAllThree(
+RunAllFour(
     void (*f_runme) (char *,f_testinside),
     char *thefile)
 {
@@ -505,7 +555,7 @@ RunAllThree(
     filename = namedfile("local",thefile);
     (*f_runme)(filename,TestLocal);
 
-    if (inside_head == NULL)
+    if (LOCAL_ONLY)
 	return;  /* none of the rest will match anyway */
 
     filename = namedfile("incoming",thefile);
@@ -514,37 +564,40 @@ RunAllThree(
     filename = namedfile("outgoing",thefile);
     (*f_runme)(filename,TestOutgoing);
 
+    filename = namedfile("remote",thefile);
+    (*f_runme)(filename,TestRemote);
+
 }
 void tcplib_done()
 {
     char *filename;
     
     /* do TELNET */
-    RunAllThree(tcplib_do_telnet_packetsize,TCPLIB_TELNET_PACKETSIZE_FILE);
-    RunAllThree(tcplib_do_telnet_interarrival,TCPLIB_TELNET_INTERARRIVAL_FILE);
-    RunAllThree(tcplib_do_telnet_duration,TCPLIB_TELNET_DURATION_FILE);
+    RunAllFour(tcplib_do_telnet_packetsize,TCPLIB_TELNET_PACKETSIZE_FILE);
+    RunAllFour(tcplib_do_telnet_interarrival,TCPLIB_TELNET_INTERARRIVAL_FILE);
+    RunAllFour(tcplib_do_telnet_duration,TCPLIB_TELNET_DURATION_FILE);
 
 
 
     /* do FTP */
-    RunAllThree(tcplib_do_ftp_control_size,TCPLIB_FTP_CTRLSIZE_FILE);
-    RunAllThree(tcplib_do_ftp_itemsize,TCPLIB_FTP_ITEMSIZE_FILE);
+    RunAllFour(tcplib_do_ftp_control_size,TCPLIB_FTP_CTRLSIZE_FILE);
+    RunAllFour(tcplib_do_ftp_itemsize,TCPLIB_FTP_ITEMSIZE_FILE);
     tcplib_do_ftp_num_items();     /* Not Done */
 
 
 
     /* do SMTP */
-    RunAllThree(tcplib_do_smtp_itemsize,TCPLIB_SMTP_ITEMSIZE_FILE);
+    RunAllFour(tcplib_do_smtp_itemsize,TCPLIB_SMTP_ITEMSIZE_FILE);
 
 
 
     /* do NNTP */
-    RunAllThree(tcplib_do_nntp_itemsize,TCPLIB_NNTP_ITEMSIZE_FILE);
+    RunAllFour(tcplib_do_nntp_itemsize,TCPLIB_NNTP_ITEMSIZE_FILE);
     tcplib_do_nntp_numitems();	/* Not Done */
 
 
     /* do HTTP */
-    RunAllThree(tcplib_do_http_itemsize,TCPLIB_HTTP_ITEMSIZE_FILE);
+    RunAllFour(tcplib_do_http_itemsize,TCPLIB_HTTP_ITEMSIZE_FILE);
 
 
     /* do the breakdown stuff */
@@ -552,15 +605,23 @@ void tcplib_done()
 
 
     /* do the conversation interrival time */
+    do_all_conv_arrivals();
+    filename = namedfile("local",TCPLIB_NEXT_CONVERSE_FILE);
+    do_tcplib_final_converse(filename,
+			     global_pstats[LOCAL]->conv_interarrival);
+
+    if (LOCAL_ONLY)
+	return;
+
     filename = namedfile("incoming",TCPLIB_NEXT_CONVERSE_FILE);
     do_tcplib_final_converse(filename,
 			     global_pstats[INCOMING]->conv_interarrival);
     filename = namedfile("outgoing",TCPLIB_NEXT_CONVERSE_FILE);
     do_tcplib_final_converse(filename,
 			     global_pstats[OUTGOING]->conv_interarrival);
-    filename = namedfile("local",TCPLIB_NEXT_CONVERSE_FILE);
+    filename = namedfile("remote",TCPLIB_NEXT_CONVERSE_FILE);
     do_tcplib_final_converse(filename,
-			     global_pstats[LOCAL]->conv_interarrival);
+			     global_pstats[REMOTE]->conv_interarrival);
 
     return;
 }
@@ -592,22 +653,28 @@ void tcplib_read(
     tcp_pair *ptp,     /* The pair of hosts - basically the conversation */
     void *plast,       /* Unused here */
     void *pmodstruct   /* Nebulous structure used to hold data that the module
-			* feels is important.  In this case, we store the time
-			* of the last packet in the conversation to arrive. */
+			* feels is important. */
     )
 {
     struct tcphdr *tcp;  /* TCP header information */
     int data_len = 0;    /* Length of the data cargo in the packet, and
 			  * the period of time between the last two packets
 			  * in a conversation */
-    int a2b_len;         /* The type of traffic associated with a's port # */
-    int b2a_len;         /* The type of traffic associated with b's port # */
+    int a2b_type=-1;      /* The type of traffic associated with a's port # */
+    int b2a_type=-1;      /* The type of traffic associated with b's port # */
     tcb *ptcb;
     struct tcplibstats *pstats;
+    struct module_conninfo *pmconn = pmodstruct;
     
 
     /* Setting a pointer to the beginning of the TCP header */
     tcp = (struct tcphdr *) ((char *)pip + (4 * pip->ip_hl));
+
+    /* calculate the amount of user data */
+    data_len = pip->ip_len -	/* size of entire IP packet (and IP header) */
+	(4 * pip->ip_hl) -	/* less the IP header */
+	(4 * tcp->th_off);	/* less the TCP header */
+
 
     /* see which of the 2 TCB's this goes with */
     if (ptp->addr_pair.a_port == ntohs(tcp->th_dport))
@@ -617,23 +684,7 @@ void tcplib_read(
 
 
     /* see where to keep the stats */
-    if (TestLocal(ptcb))
-	pstats = global_pstats[LOCAL];
-    else if (TestIncoming(ptcb))
-	pstats = global_pstats[INCOMING];
-    else if (TestOutgoing(ptcb))
-	pstats = global_pstats[OUTGOING];
-    else {
-	/* external? */
-	static int warned = FALSE;
-	if (!warned) {
-	    warned = TRUE;
-	    fprintf(stderr,"
-\n\nWarning: I'm seeing 'external' traffic according to the definition\n\
-of 'inside' that you provided, that might be bad...\n\n");
-	}
-	return;
-    }
+    pstats = global_pstats[WhichTrafficType(ptcb)];
 
 
     /* Let's do the telnet packet sizes.  Telnet packets are the only
@@ -643,11 +694,8 @@ of 'inside' that you provided, that might be bad...\n\n");
      * of this, we need the size of each and every telnet packet that 
      * comes our way. */
     if (is_telnet_conn(ptp)) {
-	data_len = pip->ip_len - 
-	    (4 * pip->ip_hl) -	/* less the IP header */
-	    (4 * tcp->th_off);	/* less the TCP header */
-
-	tcplib_add_telnet_packetsize(pstats,data_len);
+	if (data_len > 0)
+	    tcplib_add_telnet_packetsize(pstats,data_len);
     }
 
 
@@ -659,16 +707,51 @@ of 'inside' that you provided, that might be bad...\n\n");
      * conversation. */
     if (is_telnet_conn(ptp)) {
 	tcplib_add_telnet_interarrival(
-	    ptp, (struct timeval *)pmodstruct,
-	    pstats->telnet_interarrival);
+	    ptp, &pmconn->last_packet,
+	    &pstats->telnet_interarrival);
+    }
+
+    /* keep track of bytes/second too */
+    if (data_len > 0) {
+	static timeval last_time = {0,0};
+	unsigned etime;
+
+	/* accumulate total bytes */
+	pstats->throughput_bytes += data_len;
+
+	/* elapsed time in milliseconds */
+	etime = (int)(elapsed(last_time, ptp->last_time)/1000.0);
+
+	/* every 15 seconds, gather throughput stats */
+	if (etime > 15000) {
+	    AddToCounter(&pstats->throughput,
+			 pstats->throughput_bytes/1024, etime);
+	    pstats->throughput_bytes = 0;
+	    last_time = ptp->last_time;
+	}
+
     }
 
 
-    if ((a2b_len = breakdown_type(ptp->addr_pair.a_port)) != -1)
-	pstats->tcplib_breakdown_interval[a2b_len] += ptp->a2b.data_bytes;
+    /* create data for traffic breakdown over time file */
+    /* (sdo - only count packets with DATA) */
+    if (data_len > 0) {
+	if ((a2b_type = breakdown_type(ptp->addr_pair.a_port)) != -1) {
+	    pstats->tcplib_breakdown_interval[a2b_type] +=
+		ptp->a2b.data_bytes;
+	}
 
-    if ((b2a_len = breakdown_type(ptp->addr_pair.b_port)) != -1)
-	pstats->tcplib_breakdown_interval[b2a_len] += ptp->b2a.data_bytes;
+
+	else /* ?? sdo */
+
+	if ((b2a_type = breakdown_type(ptp->addr_pair.b_port)) != -1) {
+	    pstats->tcplib_breakdown_interval[b2a_type] +=
+		ptp->b2a.data_bytes;
+	}
+
+/* 	printf("a2b_type(%d): %d\n", ptp->addr_pair.a_port, a2b_type); */
+/* 	printf("b2a_type(%d): %d\n", ptp->addr_pair.b_port, b2a_type); */
+    }
 
     /* This is just a sanity check to make sure that we've got at least
      * one time, and that our breakdown section is working on the same
@@ -705,22 +788,26 @@ void *
 tcplib_newconn(
     tcp_pair *ptp)   /* This conversation */
 {
-    tcb *ptcb;
-    struct timeval *pmodstruct;   /* Pointer to a timeval structure.  The
+    struct module_conninfo *pmodstruct;
+                                  /* Pointer to a timeval structure.  The
 				   * timeval structure becomes the time of
 				   * the last connection.  The pmodstruct
 				   * is tcptrace's way of allowing modules
 				   * to keep track of information about
 				   * connections */
 
-    /* it's a new connections, the the tcb is for host A */
-    ptcb = &ptp->a2b;
 
-    do_tcplib_next_converse(ptcb);
+    /* create the connection-specific data structure */
+    pmodstruct = MallocZ(sizeof(struct module_conninfo));
+    pmodstruct->last_packet = current_time;
+    pmodstruct->start_time = current_time;
+    pmodstruct->ptp = ptp;
 
-    pmodstruct = MallocZ(sizeof(struct timeval));
+    /* chain it in */
+    pmodstruct->prev = module_conninfo_tail;
+    module_conninfo_tail = pmodstruct;
 
-    return (void *)pmodstruct;
+    return (pmodstruct);
 }
 
 
@@ -844,19 +931,13 @@ static void tcplib_init_setup(void)
     save_tcp_data = FALSE;
 
 
-    for (ix = LOCAL; ix <= OUTGOING; ++ix) {
+    for (ix = LOCAL; ix <= REMOTE; ++ix) {
 	/* create the big data structure */
 	global_pstats[ix] = pstats = MallocZ(sizeof(struct tcplibstats));
 
-	pstats->telnet_pktsize = MakeSizes(0);
-	pstats->telnet_interarrival = MakeSizes(0);
-	pstats->conv_interarrival = MakeSizes(0);
-
-	for(i = 0; i < NUM_APPS; i++){
-	    pstats->tcplib_breakdown_total[i] = 0;
+	for(i = 0; i < NUM_APPS; i++) {
 	    pstats->tcplib_breakdown_interval[i] = 0;
 	}
-
     }
 
     setup_breakdown();
@@ -884,7 +965,7 @@ static void setup_breakdown(void)
 {
     int ix;
     
-    for (ix = LOCAL; ix <= OUTGOING; ++ix) {
+    for (ix = LOCAL; ix <= REMOTE; ++ix) {
 	struct tcplibstats *pstats = global_pstats[ix];
 	char *prefix = data_prefixes[ix];
 	char *filename = namedfile(prefix,TCPLIB_BREAKDOWN_GRAPH_FILE);
@@ -952,12 +1033,8 @@ static void update_breakdown(
     /* After we've done all the applications, end the line */
     fprintf(pstats->hist_file, "\n");
 
-    /* Move the data for this breakdown interval into the total breakdown
-     * data area.  We'll be using this stuff at the end, so we need to
-     * keep track of it now. */
+    /* Zero out the counters */
     for(i = 0; i < NUM_APPS; i++) {
-	pstats->tcplib_breakdown_total[i] +=
-	    pstats->tcplib_breakdown_interval[i]/1000;
 	pstats->tcplib_breakdown_interval[i] = 0;
     }
 
@@ -965,7 +1042,7 @@ static void update_breakdown(
     pstats->interval_count++;
 
     /* Update the time that the last breakdown interval occurred. */
-    pstats->last_interval = ptp->last_time;
+    pstats->last_interval = current_time;
 }
 
 
@@ -1000,7 +1077,7 @@ namedfile(
     char directory[256];
     static char buffer[256];    /* Buffer to store the full file name */
 
-    if (inside_head != NULL)
+    if (!LOCAL_ONLY)
 	sprintf(directory, "%s_%s", output_dir, localsuffix);
     else
 	sprintf(directory, "%s", output_dir);
@@ -1011,7 +1088,7 @@ namedfile(
 	    perror(directory);
 	    exit(-1);
 	}
-	if (debug)
+	if (ldebug)
 	    printf("Created directory '%s'\n", directory);
     }
 
@@ -1040,14 +1117,13 @@ namedfile(
  ****************************************************************************/
 static void do_final_breakdown(
     char *filename,
+    f_testinside p_tester,
     struct tcplibstats *pstats)
 {
     int i;            /* Looping variable */
     FILE* fil;        /* File descriptor for the traffic breakdown file */
     long file_pos;    /* Offset within the traffic breakdown file */
-    int a2b_len;      /* What kind of port is A's port? */
-    int b2a_len;      /* What kind of port is B's port? */
-    tcp_pair *ptp;    /* A pointer to a conversation struct */
+
 
     /* This is the header for the traffic breakdown file.  It follows the
      * basic format of the original TCPLib breakdown file, but has been
@@ -1077,36 +1153,82 @@ static void do_final_breakdown(
      * all trace files.  At this point, a NULL file name has no useful
      * purpose, so we ignore it completely. */
     if (current_file) {
+	int bad_port = 0;
+	int no_data = 0;
+	int bad_dir = 0;
+
+	/* for protocol breakdowns */
+	int breakdown_protocol[NUM_APPS] = {0};
+
 	/* The breakdown file line associated with each trace file is
 	 * prefaced with the trace file's name.  This was part of the
 	 * original TCPLib format. */
 	fprintf(fil, "%s", current_file);
 
-	/* Here, we're both setting up the tpclib_breakdown_totals, and
-	 * also removing the breakdown totals from the previous file
-	 */
-    	for(i = 0; i < NUM_APPS; i++)
-	    pstats->tcplib_breakdown_total[i] = 0;
-
-	/* Scan through the entire set of conversations, and pull out
-	 * the number of conversations for each traffic type */
+	/* count the connections of each protocol type */
 	for(i = 0; i < num_tcp_pairs; i++) {
-	    ptp = ttp[i];
+	    tcp_pair *ptp = ttp[i];
+	    int protocol_type;
+	    tcb *ptcb;
 
-	    if ((a2b_len = breakdown_type(ptp->addr_pair.a_port)) != -1)
-		pstats->tcplib_breakdown_total[a2b_len]++;
-	    
-	    if ((b2a_len = breakdown_type(ptp->addr_pair.b_port)) != -1)
-		pstats->tcplib_breakdown_total[b2a_len]++;
+	    /* check the protocol type */
+	    protocol_type = breakdown_type(ptp->addr_pair.a_port);
+	    if (protocol_type == -1) {
+		protocol_type = breakdown_type(ptp->addr_pair.b_port);
+		if (protocol_type == -1) {
+		    ++bad_port;
+		    continue;	/* not interested, loop to next conn */
+		}
+	    }
+
+	    /* see if we want A->B */
+	    ptcb = &ptp->a2b;
+	    if ((*p_tester)(ptcb)) {
+		/* count it if there's data */
+		if (ptcb->data_bytes > 0) {
+		    ++breakdown_protocol[protocol_type];
+		} else {
+		    ++no_data;
+		}
+	    } else {
+		/* see if we want B->A */
+		ptcb = &ptp->b2a;
+		if ((*p_tester)(ptcb)) {
+		    /* count it if there's data */
+		    if (ptcb->data_bytes > 0) {
+			++breakdown_protocol[protocol_type];
+		    } else {
+			++no_data;
+		    }
+		} else {
+		    ++bad_dir;
+		}
+	    }
 	}
 
 	/* Print out the ratio of conversations of each traffic type
 	 * to total number of converstaions observed in the trace file
 	 */
+	printf("File: %s  ttl:%d\n", filename, num_tcp_pairs);
 	for(i = 0; i < NUM_APPS; i++) {
 	    fprintf(fil, "\t%.4f",
-		    ((float)pstats->tcplib_breakdown_total[i])/num_tcp_pairs);
+		    ((float)breakdown_protocol[i])/
+		    num_tcp_pairs);
+#ifdef DEBUG
+	    printf("letter[%c]: %d (%2f%%)\n",
+		   breakdown_hash_char[i],
+		   breakdown_protocol[i],
+		   (100.0*(float)breakdown_protocol[i])/
+		    num_tcp_pairs);
+#endif DEBUG
 	}
+
+#ifdef DEBUG
+	printf("Bad_port: %d\n", bad_port);
+	printf("no_data: %d\n", no_data);
+	printf("bad_dir: %d\n", bad_dir);
+#endif DEBUG
+
 
 	/* Place holders for phone and converstation intervals.  The
 	 * phone type was never fully developed in the original TCPLib
@@ -1131,12 +1253,24 @@ static void do_all_final_breakdowns(void)
 {
     char *filename;
     
-    filename = namedfile("incoming",TCPLIB_BREAKDOWN_FILE);
-    do_final_breakdown(filename, global_pstats[INCOMING]);
-    filename = namedfile("outgoing",TCPLIB_BREAKDOWN_FILE);
-    do_final_breakdown(filename, global_pstats[OUTGOING]);
     filename = namedfile("local",TCPLIB_BREAKDOWN_FILE);
-    do_final_breakdown(filename, global_pstats[LOCAL]);
+    do_final_breakdown(filename, TestLocal,
+		       global_pstats[LOCAL]);
+
+    if (LOCAL_ONLY)
+	return;  /* none of the rest will match anyway */
+
+    filename = namedfile("incoming",TCPLIB_BREAKDOWN_FILE);
+    do_final_breakdown(filename, TestIncoming,
+		       global_pstats[INCOMING]);
+
+    filename = namedfile("outgoing",TCPLIB_BREAKDOWN_FILE);
+    do_final_breakdown(filename, TestOutgoing,
+		       global_pstats[OUTGOING]);
+
+    filename = namedfile("remote",TCPLIB_BREAKDOWN_FILE);
+    do_final_breakdown(filename, TestRemote,
+		       global_pstats[REMOTE]);
 }
 
 
@@ -1234,62 +1368,76 @@ static int breakdown_type(
  * 
  ****************************************************************************/
 static void do_tcplib_next_converse(
-    tcb *ptcb)    /* This conversation */
+    tcb *ptcb,    /* This conversation */
+    struct module_conninfo *pmc)
 {
     struct tcplibstats *pstats;
+    struct module_conninfo *pmc_previous;
+    enum t_statsix ttype;
     int etime;   /* Time difference between the first packet in this
 		  * conversation and the first packet in the previous
 		  * conversation.  Basically, this is the time between
 		  * new conversations. */
 
     /* see where to keep the stats */
-    if (TestLocal(ptcb))
-	pstats = global_pstats[LOCAL];
-    else if (TestIncoming(ptcb))
-	pstats = global_pstats[INCOMING];
-    else if (TestOutgoing(ptcb))
-	pstats = global_pstats[OUTGOING];
-    else {
-	/* external? */
+    ttype = WhichTrafficType(ptcb);
+    pstats = global_pstats[ttype];
+
+
+    /* sdo - Wed Jun 16, 1999 */
+    /* new method, search backward to find the previous connection that had */
+    /* data flowing in the same "direction" and then use the difference */
+    /* between the starting times of those two connections as the conn */
+    /* interrival time */
+    pmc_previous = FindPrevConnection(pmc,ttype);
+
+
+    if (pmc_previous == NULL) {
+	/* no previous connection, this must be the FIRST in */
+	/* this direction */
 	return;
     }
 
-    /* The time 0.0 is what we'll get if this is the first conversation 
-     * we've seen in this data file. */
-    if (ZERO_TIME(&pstats->last_converse)) {
-	/* All we do is store the time for this conversation as the
-	 * baseline and go on.  There's really no data here. */
-	pstats->last_converse = current_time;
-	return;
-    }
 
+    /* elapsed time since that previous connection started */
+    etime = (int)(elapsed(pmc_previous->start_time,
+			  pmc->start_time)/1000.0); /* convert us to ms */
 
-    /* We want the time difference in milliseconds.  Perhaps this will
-     * get changed to microseconds. */
-    etime = (int)(elapsed(pstats->last_converse,
-			  current_time)/1000.0); /* convert us to ms */
-
-    /* sdo note */
-    /* Eric originally was very worried about a huge sparse array to maintain */
-    /* these things.  I'm not so worried, so I'll just use the dynamic array stuff */
-    /* from above to keep track of it, burning memory but saving time */
-    pstats->conv_interarrival =
-	AddToSizeArray(pstats->conv_interarrival, etime, 1);
-
+    /* keep stats */
+    AddToCounter(&pstats->conv_interarrival, etime, 1);
     
-    /* Updating the last conversation timer */
-    pstats->last_converse = current_time;
-
     return;
 }
 
 /* End of the breakdown section */
 
 
+/* return the previous connection that passes data in the direction */
+/* given in "ttype" */
+struct module_conninfo *
+FindPrevConnection(
+    struct module_conninfo *pmc,
+    enum t_statsix ttype)
+{
+    tcb *ptcb;
 
+    /* loop back further in time */
+    for (pmc = pmc->prev; pmc; pmc = pmc->prev) {
+	ptcb = &pmc->ptp->a2b;
+	if (WhichTrafficType(ptcb) == ttype) {
+	    if (ptcb->data_bytes != 0)
+		return(pmc);
+	}
 
+	ptcb = &pmc->ptp->a2b;
+	if (WhichTrafficType(ptcb) == ttype) {
+	    if (ptcb->data_bytes != 0)
+		return(pmc);
+	}
+    }
 
-
+    return(NULL);
+}
 
 
 
@@ -1312,7 +1460,7 @@ static void do_tcplib_next_converse(
 static void
 do_tcplib_final_converse(
     char *filename,
-    struct sizes *psizes)
+    dyn_counter psizes)
 {
     const int bucketsize = 1;
 
@@ -1323,8 +1471,8 @@ do_tcplib_final_converse(
 
 
     /* Now, dump out the combined data */
-    StoreSizes(filename,"Conversation Interval Time (ms)",
-	       "% Interarrivals", bucketsize,psizes);
+    StoreCounters(filename,"Conversation Interval Time (ms)",
+		  "% Interarrivals", bucketsize, psizes);
     return;
 }
 
@@ -1411,8 +1559,8 @@ void tcplib_do_telnet_duration(
     f_testinside p_tester)	/* functions to test "insideness" */
 {
     int i;                   /* Looping variable */
-    struct sizes *psizes = NULL;
-    const int bucketsize = 100;	/* 100 millisecond buckets */
+    dyn_counter psizes = NULL;
+    const int bucketsize = 10;	/* 10 millisecond buckets */
     
 
     /* This section reads in the data from the existing telnet duration
@@ -1427,25 +1575,51 @@ void tcplib_do_telnet_duration(
 	/* Only work this for telnet connections */
 	if (is_telnet_conn(ptp)) {
 	    /* convert the time difference to ms */
-	    int temp = (int)(elapsed(ptp->first_time,
-				     ptp->last_time)/1000.0); /* convert us to ms */
-
+	    int temp = (int)(
+		elapsed(ptp->first_time,
+			ptp->last_time)/1000.0); /* convert us to ms */
 
 	    /* increment the number of instances at this time. */
-	    psizes = AddToSizeArray(psizes,temp/bucketsize, 1);
+	    AddToCounter(&psizes, temp/bucketsize, 1);
 	}
     }
 
 
     /* Output data to the file */
-    StoreSizes(filename,"Duration (ms)", "% Conversations",
+    StoreCounters(filename,"Duration (ms)", "% Conversations",
 	       bucketsize,psizes);
 
 
     /* free the dynamic memory */
-    if (psizes) {
-	free(psizes->size_list);
-	free(psizes);
+    DestroyCounters(&psizes);
+}
+
+
+
+/***************************************************************************
+ * 
+ * Function Name: do_all_conv_arrivals
+ * 
+ * Returns: Nothing
+ *
+ * Purpose: collect all the conversation interarrival times
+ *
+ * Called by: tcplib_done mod_tcplib.c
+ * 
+ * 
+ ****************************************************************************/
+void do_all_conv_arrivals()
+{
+    struct module_conninfo *pmc;
+
+    /* process each connection */
+    for (pmc = module_conninfo_tail; pmc; pmc=pmc->prev) {
+
+	/* A --> B */
+	do_tcplib_next_converse(&pmc->ptp->a2b, pmc);
+
+	/* B --> A */
+	do_tcplib_next_converse(&pmc->ptp->b2a, pmc);
     }
 }
 
@@ -1476,7 +1650,7 @@ void tcplib_add_telnet_interarrival(
     tcp_pair *ptp,              /* This conversation */
     struct timeval* ptp_saved,  /* The time of the last packet in the
 				   conversation */
-    struct sizes *psizes)
+    dyn_counter *psizes)
 {
     int temp = 0;    /* time differential between packets */
 
@@ -1493,7 +1667,7 @@ void tcplib_add_telnet_interarrival(
     /* First packet has no interarrival time */
     if (tv_same(ptp->last_time,ptp->first_time)) {
 	/* If this is the first packet we've seen, then all we need
-	 * to do is store this tiem in the ptp_saved structure and
+	 * to do is store this time in the ptp_saved structure and
 	 * throw it back.  We'll be able to get some data the next
 	 * time. */
 	*ptp_saved = ptp->last_time;
@@ -1502,7 +1676,7 @@ void tcplib_add_telnet_interarrival(
     }
 	
     /* Determining the time difference in ms */
-    temp = (int)(elapsed(*ptp_saved, current_time)/1000.0); /* convert us to ms */
+    temp = (int)(elapsed(*ptp_saved, current_time)/1000.0); /* us to ms */
 
     /* We're going to set an artificial maximum for telnet interarrivals
      * for the case when someone (like me) would open a telnet session
@@ -1517,8 +1691,7 @@ void tcplib_add_telnet_interarrival(
     /* In this case, we know for a fact that we don't have a value of
      * temp that larger than the array, so we just increment the count
      */
-/*     printf("temp is %d, elapsed was %f\n", temp, elapsed(*ptp_saved, current_time)); */
-    (void) AddToSizeArray(psizes, temp, 1);
+    (void) AddToCounter(psizes, temp, 1);
 
     /* now we just want to record this time and store it with TCPTrace
      * until we need it - which will be the next time that this 
@@ -1555,7 +1728,7 @@ void tcplib_do_telnet_interarrival(
     f_testinside p_tester)	/* stuck with the interface :-(  */
 {
     const int bucketsize = 1;
-    struct sizes *psizes = NULL;
+    dyn_counter psizes = NULL;
 
     /* ugly interface conversion :-( */
     if (p_tester == TestIncoming)
@@ -1564,6 +1737,8 @@ void tcplib_do_telnet_interarrival(
 	psizes = global_pstats[OUTGOING]->telnet_interarrival;
     else if (p_tester == TestLocal)
 	psizes = global_pstats[LOCAL]->telnet_interarrival;
+    else if (p_tester == TestRemote)
+	psizes = global_pstats[REMOTE]->telnet_interarrival;
     else {
 	fprintf(stderr,
 		"tcplib_do_telnet_interarrival: internal inconsistancy!\n");
@@ -1577,7 +1752,7 @@ void tcplib_do_telnet_interarrival(
 
 
     /* Dumping the data out to the data file */
-    StoreSizes(filename, "Interarrival Time (ms)", "% Interarrivals",
+    StoreCounters(filename, "Interarrival Time (ms)", "% Interarrivals",
 	       bucketsize,psizes);
 }
 
@@ -1604,7 +1779,7 @@ void tcplib_do_telnet_packetsize(
     f_testinside p_tester)	/* stuck with the interface :-(  */
 {
     const int bucketsize = 1;
-    struct sizes *psizes = NULL;
+    dyn_counter psizes = NULL;
 
     /* ugly interface conversion :-( */
     if (p_tester == TestIncoming)
@@ -1613,6 +1788,8 @@ void tcplib_do_telnet_packetsize(
 	psizes = global_pstats[OUTGOING]->telnet_pktsize;
     else if (p_tester == TestLocal)
 	psizes = global_pstats[LOCAL]->telnet_pktsize;
+    else if (p_tester == TestRemote)
+	psizes = global_pstats[REMOTE]->telnet_pktsize;
     else {
 	fprintf(stderr,
 		"tcplib_do_telnet_packetsize: internal inconsistancy!\n");
@@ -1628,7 +1805,7 @@ void tcplib_do_telnet_packetsize(
 
 
     /* Dumping the data out to the data file */
-    StoreSizes(filename, "Packet Size (bytes)", "% Packets",
+    StoreCounters(filename, "Packet Size (bytes)", "% Packets",
 	       bucketsize,psizes);
 }
 
@@ -1660,8 +1837,7 @@ void tcplib_add_telnet_packetsize(
     int length)  /* The length of the packet to be added to the table */
 {
     /* Incrementing the table */
-    pstats->telnet_pktsize = AddToSizeArray(pstats->telnet_pktsize,
-					    length, 1);
+    AddToCounter(&pstats->telnet_pktsize, length, 1);
 }
 
 
@@ -1805,7 +1981,7 @@ static void tcplib_do_nntp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = 1024;	/* scale everything by 1024 */
+    const int bucketsize = 5;	/* scale everything by 5 bytes */
 
     tcplib_do_GENERIC_itemsize(filename, is_nntp_conn,
 			       p_tester, bucketsize);
@@ -1851,54 +2027,19 @@ static void tcplib_do_http_itemsize(
  **
  ***************************************************************************/
 
-/* populate the size array, one entry at a time */
-static struct sizes *
-AddToSizeArray(
-    struct sizes *psizes,
-    int ix,
-    int val)
-{
-    /* if the array doesn't exist yet, make it some big size */
-    if (psizes == NULL) {
-	psizes = MakeSizes(ix);
-    }
-
-    /* if the array is too small, quadruple it */
-    if (ix > psizes->arraysize) {
-	int oldarraysize = psizes->arraysize;
-	while (ix > psizes->arraysize)
-	    psizes->arraysize *= 4;
-
-	/* reallocate the array (REALLY expensive!) */
-	psizes->size_list = ReallocZ(psizes->size_list,
-				     sizeof(int) * oldarraysize, 
-				     sizeof(int) * psizes->arraysize);
-    }
-
-    /* OK, finally, all is safe */
-    psizes->size_list[ix] += val;
-    psizes->total_count += val;
-    if (ix > psizes->maxix)
-	psizes->maxix = ix;
-
-    /* return the (possibly modified) structure */
-    return(psizes);
-}
-
 
 static void
-StoreSizes(
+StoreCounters(
     char *filename,
     char *header1,
     char *header2,
     int bucketsize,
-    struct sizes *psizes)
+    dyn_counter psizes)
 {
     FILE *fil;
-    int i;
     int running_total = 0;
 
-    if (debug)
+    if (ldebug)
 	printf("Saving data for file '%s'\n", filename);
 
     if (!(fil = fopen(filename, "w"))) {
@@ -1909,19 +2050,27 @@ StoreSizes(
     fprintf(fil, "%s\t%s\tRunning Sum\tCounts\n", header1, header2);
 
     if (psizes == NULL) {
-	if (debug)
+	if (ldebug)
 	    printf("No data for file '%s'\n", filename);
     } else {
-	for(i = 0; i <= psizes->maxix; i++) {
-	    int value = i * bucketsize;
-	    running_total += psizes->size_list[i];
+	int cookie = 0;
+	while (1) {
+	    u_long ix;
+	    int value;
+	    u_long count;
 
-	    if (psizes->size_list[i]) {
-		fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
+	    if (NextCounter(&psizes, &cookie, &ix, &count) == 0)
+		break;
+
+	    value = ix * bucketsize;
+	    running_total += count;
+
+	    if (count) {
+		fprintf(fil, "%.3f\t%.4f\t%d\t%lu\n",
 			(float)value, /* sdo bugfix */
-			(((float)running_total)/((float)psizes->total_count)),
+			(((float)running_total)/((float)TotalCounter(psizes))),
 			running_total,
-			psizes->size_list[i]);
+			count);
 	    }
 	}
     }
@@ -1930,12 +2079,12 @@ StoreSizes(
 }
 
 
-static struct sizes *
+static dyn_counter 
 ReadOldFile(
     char *filename,
     int bucketsize,
     int maxlegal,		/* upper limit on array IX (or 0) */
-    struct sizes *psizes)
+    dyn_counter psizes)
 {
     FILE* old;                /* File pointer for old data file */
     float bytes;
@@ -1964,15 +2113,13 @@ ReadOldFile(
 	    ++linesread;
 	    if ((maxlegal != 0) && (bytes > maxlegal))
 		bytes = maxlegal;
-	    psizes = AddToSizeArray(psizes,
-				    (((int)bytes)/bucketsize),
-				    count);
+	    AddToCounter(&psizes, (((int)bytes)/bucketsize), count);
 	}
 
-	if (debug) {
+	if (ldebug) {
 	    if (psizes && (linesread > 0))
-		printf("Read data from old file '%s' (%d values)\n",
-		       filename, psizes->total_count);
+		printf("Read data from old file '%s' (%lu values)\n",
+		       filename, TotalCounter(psizes));
 	    else
 		printf("Old data file '%s' had no data\n", filename);
 	}
@@ -1993,7 +2140,7 @@ tcplib_do_GENERIC_itemsize(
     int bucketsize)		/* how much data to group together */
 {
     int i;                    /* Looping variables */
-    struct sizes *psizes = NULL;
+    dyn_counter psizes = NULL;
 
 
     /* If an old data file exists, open it, read in its contents
@@ -2010,45 +2157,41 @@ tcplib_do_GENERIC_itemsize(
 	if ((*f_whichport)(ptp)) {
 	    int nbytes = InsideBytes(ptp,p_tester);
 
-	    /* if there's no DATA, don't count it! */
+	    /* if there's no DATA, don't count it!  (sdo change!) */
 	    if (nbytes != 0)
-		psizes = AddToSizeArray(psizes,nbytes/bucketsize, 1);
+		AddToCounter(&psizes, nbytes/bucketsize, 1);
 	}
     }
 
 
     /* store all the data (old and new) into the file */
-    StoreSizes(filename,"Article Size (bytes)", "% Articles",
+    StoreCounters(filename,"Article Size (bytes)", "% Articles",
 	       bucketsize,psizes);
 
 
     /* free the dynamic memory */
-    if (psizes) {
-	free(psizes->size_list);
-	free(psizes);
-    }
+    DestroyCounters(&psizes);
 }
 
 
-static struct sizes *
-MakeSizes(
-    int nelem)
+static enum t_statsix
+WhichTrafficType(
+    tcb *ptcb)
 {
-    int default_size = 1024;
-    struct sizes *psizes;
+    if (TestLocal(ptcb))
+	return(LOCAL);
 
-    while (nelem >= default_size)
-	default_size *= 2;
+    if (TestIncoming(ptcb))
+	return(INCOMING);
 
-    psizes = MallocZ(sizeof(struct sizes));
-    psizes->arraysize = default_size;
-    psizes->size_list = MallocZ(psizes->arraysize*sizeof(int));
+    if (TestOutgoing(ptcb))
+	return(OUTGOING);
 
-    return(psizes);
+    if (TestRemote(ptcb))
+	return(REMOTE);
+
+    fprintf(stderr,"Internal error in WhichTrafficType\n");
+    exit(-1);
 }
-
-
-
-    
 
 #endif /* LOAD_MODULE_TCPLIB */
