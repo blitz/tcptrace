@@ -1,0 +1,202 @@
+.TH tcptrace 1
+.SH NAME
+tcptrace - a TCP connection analysis tool
+.SH SYNOPSIS
+.B tcptrace [options] filename
+.SH DESCRIPTION
+tcptrace
+takes a tcpdump file specified on the command line (or from standard input)
+and produces a summarization of the connections.
+.SH "Options"
+.br
+Output format options
+.TP 5
+.B \-b
+brief output format
+.TP 5
+.B \-l
+long output format
+.TP 5
+.B \-r
+print rtt statistics (slower for large files)
+.TP 5
+.B \-W
+report on estimated congestion window (not generally useful)
+.TP 5
+.B \-q
+no output (if you just want modules output)
+.PP
+Graphing options
+.TP 5
+.B \-T
+create throughput graph[s], (average over 10 segments, see -A)
+.TP 5
+.B \-R
+create rtt sample graph[s]
+.TP 5
+.B \-S
+create time sequence graph[s]
+.TP 5
+.B \-N
+create cwin graph[s] (data on _N_etwork)
+.TP 5
+.B \-F
+create segsize graph[s]
+.TP 5
+.B \-G
+create ALL graphs
+.PP
+Output format detail options
+.TP 5
+.B \-D
+print in decimal
+.TP 5
+.B \-X
+print in hexidecimal
+.TP 5
+.B \-n
+don't resolve host or service names (much faster)
+.TP 5
+.B \-s
+use short names (list "picard.cs.ohiou.edu" as just "picard")
+.PP
+Connection filtering options
+.TP 5
+.B \-iN
+ignore connection N (can use multiple times)
+.TP 5
+.B \-oN
+only connection N (can use multiple times)
+(if N is not a number but a file, read list from file instead)
+.TP 5
+.B \-c
+ignore non-complete connections (didn't see syn's and fin's)
+.TP 5
+.B \-BN
+first segment number to analyze (default 1)
+.TP 5
+.B \-EN
+last segment number to analyze (default last in file)
+.PP
+Graphing detail options
+.TP 5
+.B \-C
+produce color plot[s]
+.TP 5
+.B \-M
+produce monochrome (b/w) plot[s]
+.TP 5
+.B \-AN
+Average N segments for throughput graphs, default is 10
+.TP 5
+.B \-z
+zero axis options:
+.TP 5
+.B \-z
+plot time axis from 0 rather than wall clock time (backward compat)
+.TP 5
+.B \-zx
+plot time axis from 0 rather than wall clock time
+.TP 5
+.B \-zy
+plot sequence numbers from 0 (time sequence graphs only)
+.TP 5
+.B \-zxy
+plot both axes from 0
+.TP 5
+.B \-y
+omit the (yellow) instantaneous throughput points in tput graph
+.PP
+Misc options
+.TP 5
+.B \-Z
+dump raw rtt sample times to file[s]
+.TP 5
+.B \-p
+print all packet contents (can be very long)
+.TP 5
+.B \-P
+print packet contents for selected connections
+.TP 5
+.B \-t
+\'tick' off the packet numbers as a progress indication
+.TP 5
+.B \-fEXPR
+output filtering (see -hfilter)
+.TP 5
+.B \-v
+print version information and exit
+.TP 5
+.B \-w
+print various warning messages
+.TP 5
+.B \-d
+whistle while you work (enable debug, use -d -d for more output)
+.TP 5
+.B \-e
+extract contents of each TCP stream into file
+.TP 5
+.B \-h
+print help messages
+.TP 5
+.B \-u
+print minimal UDP information too
+.TP 5
+.B \-Ofile
+dump matched packets to tcpdump file 'file'
+.TP 5
+.B \+[v]
+reverse the setting of the -[v] flag (for booleans)
+.PP
+Obscure Options
+.TP 5
+.B \--showsacks
+show SACK blocks on time sequence graphs
+.TP 5
+.B \--noshowsacks
+DON'T show SACK blocks on time sequence graphs
+.TP 5
+.B \--showrexmit
+mark retransmits on time sequence graphs
+.TP 5
+.B \--noshowrexmit
+DON'T mark retransmits on time sequence graphs
+.TP 5
+.B \--showoutorder
+mark out-of-order on time sequence graphs
+.TP 5
+.B \--noshowoutorder
+DON'T mark out-of-order on time sequence graphs
+.TP 5
+.B \--showzerowindow
+mark zero windows on time sequence graphs
+.TP 5
+.B \--noshowzerowindow
+DON'T mark zero windows on time sequence graphs
+.PP
+Module options
+.TP 5
+.B \-xMODULE_SPECIFIC
+(see -hxargs for details)
+.PP
+.SH ENVIRONMENT
+Options are first read from the file $HOME/.tcptracerc
+(if it exists), and then from the environment variable TCPTRACEOPTS
+(if it exists), and finally from the command line.
+.SH AUTHOR
+Shawn Ostermann
+ostermann@cs.ohiou.edu
+.SH CREDITS
+Thanks to Mark Foster for writing this manual page
+.SH FILES
+Dump File Names
+.br
+Trailing (unrecognized) arguments are taken to be one or more filenames.
+The files can be compressed, see compress.h for configuration.
+If the dump file name is 'stdin', then we read from standard input
+rather than from a file.
+.SH SEE ALSO
+.TP 8
+.B xplot
+an interactive tool for examining .xpl files output by tcptrace.
+
