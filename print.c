@@ -43,14 +43,15 @@ void
 printeth(pep)
      struct ether_header *pep;
 {
-	printf("\tETH From: %s\n", ether_ntoa(pep->ether_shost));
-	printf("\t    Dest: %s\n", ether_ntoa(pep->ether_dhost));
+    printf("\tETH From: %s\n", ether_ntoa(pep->ether_shost));
+    printf("\t    Dest: %s\n", ether_ntoa(pep->ether_dhost));
 
-	printf("\t    Type: 0x%x %s\n",
-	       pep->ether_type,
-	       (pep->ether_type == ETHERTYPE_IP)?"(IP)":
-	       (pep->ether_type == ETHERTYPE_ARP)?"(ARP)":
-	       "");
+    printf(
+	hex?"\t    Type: 0x%x %s\n":"\t    Type: %d %s\n",
+	pep->ether_type,
+	(pep->ether_type == ETHERTYPE_IP)?"(IP)":
+	(pep->ether_type == ETHERTYPE_ARP)?"(ARP)":
+	"");
 }
 
 
@@ -61,7 +62,8 @@ printip(pip)
 	printf("\tIP From: %s\n", inet_ntoa(pip->ip_src));
 	printf("\t   Dest: %s\n", inet_ntoa(pip->ip_dst));
 
-	printf("\t   Type: 0x%x %s\n",
+	printf(
+	    hex?"\t   Type: 0x%x %s\n":"\t   Type: %d %s\n",
 	       ntohs(pip->ip_p), 
 	       (ntohs(pip->ip_p) == IPPROTO_UDP)?"(UDP)":
 	       (ntohs(pip->ip_p) == IPPROTO_TCP)?"(TCP)":
@@ -73,23 +75,35 @@ void
 printtcp(pip)
      struct ip *pip;
 {
-	struct tcphdr *ptcp;
+    unsigned tcp_length;
+    unsigned tcp_data_length;
+    struct tcphdr *ptcp;
 
-	ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
+    ptcp = (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
 
-	printf("\tTCP SPORT: %u\n", ntohs(ptcp->th_sport));
-	printf("\t    DPORT: %u\n", ntohs(ptcp->th_dport));
-	printf("\t    FLG:   %c%c%c%c%c%c\n",
-	       (ptcp->th_flags & TH_FIN)?'F':'-',
-	       (ptcp->th_flags & TH_SYN)?'S':'-',
-	       (ptcp->th_flags & TH_RST)?'R':'-',
-	       (ptcp->th_flags & TH_PUSH)?'P':'-',
-	       (ptcp->th_flags & TH_ACK)?'A':'-',
-	       (ptcp->th_flags & TH_URG)?'U':'-');
-	printf("\t    SEQ:   0x%08x\n", ntohl(ptcp->th_seq));
-	printf("\t    ACK:   0x%08x\n", ntohl(ptcp->th_ack));
-	printf("\t    WIN:   %u\n", ntohs(ptcp->th_win));
-	printf("\t    OFF:   %u\n", ptcp->th_off);
+    /* calculate data length */
+    tcp_length = ntohs(pip->ip_len) - (4 * pip->ip_hl);
+    tcp_data_length = tcp_length - (4 * ptcp->th_off);
+
+    printf("\tTCP SPORT: %u\n", ntohs(ptcp->th_sport));
+    printf("\t    DPORT: %u\n", ntohs(ptcp->th_dport));
+    printf("\t    FLG:   %c%c%c%c%c%c\n",
+	   (ptcp->th_flags & TH_FIN)?'F':'-',
+	   (ptcp->th_flags & TH_SYN)?'S':'-',
+	   (ptcp->th_flags & TH_RST)?'R':'-',
+	   (ptcp->th_flags & TH_PUSH)?'P':'-',
+	   (ptcp->th_flags & TH_ACK)?'A':'-',
+	   (ptcp->th_flags & TH_URG)?'U':'-');
+    printf(
+	hex?"\t    SEQ:   0x%08x\n":"\t    SEQ:   %d\n",
+	   ntohl(ptcp->th_seq));
+    printf(
+	hex?"\t    ACK:   0x%08x\n":"\t    ACK:   %d\n",
+	   ntohl(ptcp->th_ack));
+    printf("\t    WIN:   %u\n", ntohs(ptcp->th_win));
+    printf("\t    OFF:   %u\n", ptcp->th_off);
+    if (tcp_data_length > 0)
+	printf("\t    data:  %u bytes\n", tcp_data_length);
 }
 
 
