@@ -134,11 +134,7 @@ pread_ns(
 		      &ipb->ip_dst.s_addr,
 		      &tcpb->th_dport,
 		      &seq,
-		      &ipb->ip_id,
-			  &junk, /*don't care since it is not FullTCP */
-		      &junk,
-			  &junk,
-		      &junk);
+		      &ipb->ip_id);
 
     /* if we reach the End Of File we stop */
 	if (rlen == EOF) {
@@ -254,7 +250,7 @@ pread_ns(
     }
 }
 
-pread_ns_fulltcp(
+int pread_ns_fulltcp(
     struct timeval	*ptime,
     int		 	*plen,
     int		 	*ptlen,
@@ -285,7 +281,7 @@ pread_ns_fulltcp(
 
 	/* correct NS output line would have 14 fields if show_tcphdr_ is 0: */
 	/* For Full TCP this changes to 18 fields when show_tcp is 1*/
-	rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %d %d 0x%x %u %hu\n",
+	rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu %d 0x%x %u %hu\n",
 		      &tt,
 		      &timestamp,
 		      &junk,
@@ -303,7 +299,7 @@ pread_ns_fulltcp(
 			  &ackno,
 			  &pflags,
 			  &hdrlen,
-			  &junk);
+			  (unsigned short *)&junk);
 
 	/* if we reach the End of File we stop */
 	if (rlen == EOF) {
@@ -417,7 +413,7 @@ pread_f *is_ns(char *filename)
     }
 #endif /* __WIN32 */   
 
-    rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %d %d 0x%x %u %hu\n", &tt, &junkd, &junk, &junks, &junk, &junks, &junk, &junk, &junk, &junk, &junk, &junk, &junk, &junk, &junk, &pflags, &hdrlen, &junk);
+    rlen = fscanf(stdin, "%c %lg %d %d %s %d %s %d %d.%hu %d.%hu %d %hu %d 0x%x %u %hu\n", &tt, &junkd, &junk, &junk, (char *)&junks, &junk, (char *)&junks, &junk, &junk, (short *)&junk, &junk, (short *)&junk, &junk, (short *)&junk, &junk, &pflags, &hdrlen, (short *)&junk);
 
     if ((rlen = getc(stdin)) == EOF) {
 	return(NULL);
