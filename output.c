@@ -303,11 +303,13 @@ PrintTrace(
     StatLineI("avg win adv","bytes","%8lu",
 	      pab->ack_pkts==0?0:pab->win_tot/pab->ack_pkts,
 	      pba->ack_pkts==0?0:pba->win_tot/pba->ack_pkts);
-    StatLineI("max cwin","bytes","%8lu", pab->cwin_max, pba->cwin_max);
-    StatLineI("min cwin","bytes","%8lu", pab->cwin_min, pba->cwin_min);
-    StatLineI("avg cwin","bytes","%8lu",
-	      pab->ack_pkts==0?0:pab->cwin_tot/pab->ack_pkts,
-	      pba->ack_pkts==0?0:pba->cwin_tot/pba->ack_pkts);
+    if (print_cwin) {
+	StatLineI("max cwin","bytes","%8lu", pab->cwin_max, pba->cwin_max);
+	StatLineI("min cwin","bytes","%8lu", pab->cwin_min, pba->cwin_min);
+	StatLineI("avg cwin","bytes","%8lu",
+		  pab->ack_pkts==0?0:pab->cwin_tot/pab->ack_pkts,
+		  pba->ack_pkts==0?0:pba->cwin_tot/pba->ack_pkts);
+    }
     StatLineI("initial window","bytes","%8lu",
 	      pab->initialwin_bytes, pba->initialwin_bytes);
     StatLineI("initial window","pkts","%8lu",
