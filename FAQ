@@ -419,5 +419,21 @@ that what it's plotting is similar to the sender's congestion window,
 but in fact it is just a heuristic that plots the amount of non-acked
 data on the network (the different between the highest byte sent and
 the highest byte ACKed).
+============================================================
+Tue Mar  9, 1999
 
+>> Can I use the program in "real-time" mode?
 
+Sort of, but it depends on what you're trying to do.  For example:
+
+	tcpdump -s4096 -w- | tcptrace -e stdin
+
+will create data files for all connections as they're opened.  For
+functions that give answers WHILE processing, this works fine.  For
+functions that don't answer until they're done, this will require a
+little more fiddling.  For example:
+
+	tcpdump -c100 -s4096 -w- | tcptrace -e -l stdin
+
+for grab the next 100 packets and then stop, while extracting the
+contents and then doing a "long" output listing.
