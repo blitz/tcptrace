@@ -364,7 +364,7 @@ plotter_done(void)
 		}
 	}
 
-    for (pl = 0; pl < plotter_ix; ++pl) {
+    for (pl = 0; pl <= plotter_ix; ++pl) {
 	struct plotter_info *ppi = &pplotters[pl];
 	
 
