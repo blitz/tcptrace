@@ -2707,7 +2707,7 @@ tcp_cksum(
 {
     u_long sum = 0;
     unsigned tcp_length = 0;
-    unsigned tcp_length;
+
     /* verify version */
     if (!PIP_ISV4(pip) && !PIP_ISV6(pip)) {
 	fprintf(stderr,"Internal error, tcp_cksum: neither IPv4 nor IPv6\n");
@@ -2743,24 +2743,73 @@ tcp_cksum(
 	sum += (u_short) tcp_length;
     } else /* if (PIP_ISV6(pip))*/  {
               
-	static Bool warned = FALSE;
-        int total_length = 0;  /* Total length of the extension headers */
-	/* wow, this gets ugly with pseudo headers, sounds like a good
-	   job for another day :-(  */
-	   /* Searching for the routing header */
-	if (!warned) {
-	    fprintf(stderr,"\nWarning: IPv6 TCP checksums not verified\n\n");
-	    warned = TRUE;
-       
-	return(0);		/* pretend it's valid */
-   
+        /* Support for IPv6 checksums has been added on Aug31, 2001 
+	 * and has not been thoroughly tested. - Avinash 
+	 */
 
+        int total_length = 0;  /* Total length of the extension headers */
+        struct ipv6 *pip6 = (struct ipv6 *)pip;
+       
+        /* quick sanity check, it the packet is truncated,
+	 * pertend it is valid.
+	 */ 
+        if(gettcp(pip, &ptcp, &plast) != 0)
+	 return(0);
+       
+        /* Forming the pseudo-header */
+        /* source address */
+        sum += cksum(&pip6->ip6_saddr,16);
+       
+        /* Looking for the destination address.
+	 * May be in the IPv6 header or the last address in the 
+	 * routing header (if present)
+	 */
+       
+        /* No extension headers, hence, routing header not present */
+        if(pip6->ip6_nheader == IPPROTO_TCP) {
+	   sum += cksum(&pip6->ip6_daddr,16);
+	}
+        /* Some extension headers present. Searching for routing header */
+        else {
+	   /* find the first header */
+	   struct ipv6_ext *pipv6_ext = (struct ipv6_ext *)(pip6+1);
+
+	   /* Searching for the routing header */
+	   int ret = getroutingheader(pip, &pipv6_ext, &plast);
+	   
+	   if(!ret) {  /* Found the routing header */
+	      if(pipv6_ext->ip6ext_len >= 2) { /* Sanity check */
+		 char *daddr = (char *)((char *)pipv6_ext + 8 + ((pipv6_ext->ip6ext_len - 2) * 8));
+		 sum += cksum(&daddr,16);
+	      }
+	      else {  /* Not a valid routing header */
+		 return(-1);
+	      }
+	   }
+	   else {  /* Routing header not found */
+	      sum += cksum(&pip6->ip6_daddr,16);
+	   }
+	}
+       
+       /* Upper-Layer Packet Length */
+       total_length = total_length_ext_headers(pip6);
+       if(total_length >= 0)
+	 tcp_length = pip6->ip6_lngth - total_length;
+       else /* Unknown extension header seen */ 
+	 return(-1);
+       sum += (u_short) tcp_length;
+       
+       /* Next Header (Type) */
+       sum += (u_short) IPPROTO_TCP;
+    }
+   
+      
+    /* quick sanity check, if the packet is truncated, pretend it's valid */
     if ((char *)plast < (char *)((char *)ptcp+tcp_length-1)) {
 	return(0);
     }
 
     /* checksum the TCP header and data */
-
     sum += cksum(ptcp,tcp_length);
 
     /* roll down into a 16-bit number */
@@ -2810,22 +2859,66 @@ udp_cksum(
 	sum += htons(pudp->uh_ulen);
     } else /* if (PIP_ISV6(pip))*/  {
               
-	static Bool warned = FALSE;
-        struct ipv6 *pip6 = (struct ipv6 *)pip;
-	/* wow, this gets ugly with pseudo headers, sounds like a good
-	   job for another day :-(  */
-	   /* Searching for the routing header */
-	if (!warned) {
-	    fprintf(stderr,"\nWarning: IPv6 UDP checksums not verified\n\n");
-	    warned = TRUE;
-       
-	return(0);		/* pretend it's valid */
-   
+        /* Support for IPv6 checksums has been added on Aug31, 2001 
+	 * and has not been thoroughly tested. - Avinash 
+	 */
 
+        struct ipv6 *pip6 = (struct ipv6 *)pip;
+             
+        /* quick sanity check, it the packet is truncated,
+	 * pertend it is valid.
+	 */ 
+        if(getudp(pip, &pudp, &plast) != 0)
+	 return(0);
+       
+        /* Forming the pseudo-header */
+        /* source address */
+        sum += cksum(&pip6->ip6_saddr,16);
+       
+        /* Looking for the destination address.
+	 * May be in the IPv6 header or the last address in the 
+	 * routing header (if present)
+	 */
+       
+        /* No extension headers, hence, routing header not present */
+        if(pip6->ip6_nheader == IPPROTO_UDP) {
+	   sum += cksum(&pip6->ip6_daddr,16);
+	}
+        /* Some extension headers present. Searching for routing header */
+        else {
+	   /* find the first header */
+	   struct ipv6_ext *pipv6_ext = (struct ipv6_ext *)(pip6+1);
+
+	   /* Searching for the routing header */
+	   int ret = getroutingheader(pip, &pipv6_ext, &plast);
+	   
+	   if(!ret) {  /* Found the routing header */
+	      if(pipv6_ext->ip6ext_len >= 2) { /* Sanity check */
+		 char *daddr = (char *)((char *)pipv6_ext + 8 + ((pipv6_ext->ip6ext_len - 2) * 8));
+		 sum += cksum(&daddr,16);
+	      }
+	      else {  /* Not a valid routing header */
+		 return(-1);
+	      }
+	   }
+	   else {  /* Routing header not found */
+	      sum += cksum(&pip6->ip6_daddr,16);
+	   }
+	}
+       
+       /* Upper-Layer Packet Length */
+	udp_length = ntohs(pudp->uh_ulen);
+	sum += htons(pudp->uh_ulen);
+
+       /* Next Header (Type) */
+        sum += (u_short) IPPROTO_UDP;
+    }
+   
+ 
+    /* quick sanity check, if the packet is truncated, pretend it's valid */
     if ((char *)plast < (char *)((char *)pudp+udp_length-1)) {
 	return(0);
     }
-
 
     /* checksum the UDP header and data */
     sum += cksum(pudp,udp_length);

@@ -276,6 +276,21 @@ findheader(
     return (-1);
 }
 
+/* Added Aug 31, 2001 -- Avinash.
+ * getroutingheader:  return a pointer to the routing header in an ipv6 packet.
+ * Looks through all the IPv6 extension headers for the routing header.
+ * Used while computing the IPv6 checksums.
+ */
+int
+getroutingheader(
+    struct ip *pip,
+    struct ipv6_ext **ppipv6_ext,
+    void **pplast)
+{
+    int ret_val = findheader(IPPROTO_ROUTING, pip, (void **)ppipv6_ext, pplast);
+    return (ret_val);
+}
+
 
 /*
  * gettcp:  return a pointer to a tcp header.
@@ -610,3 +625,49 @@ int IPcmp(
     /* if we got here, they're the same */
     return(0);
 }
+
+
+/* Added Aug 31, 2001 -- Avinash
+ * computes the total length of all the extension headers
+ */ 
+int total_length_ext_headers(
+	struct ipv6 *pip6)
+{  
+    char nextheader;
+    struct ipv6_ext *pheader;
+    u_int total_length = 0;
+    
+    /* find the first header */
+    nextheader = pip6->ip6_nheader;
+    pheader = (struct ipv6_ext *)(pip6+1);
+
+   
+   while(1) {
+      switch(nextheader) {
+       case IPPROTO_HOPOPTS:
+       case IPPROTO_ROUTING:
+       case IPPROTO_DSTOPTS:
+	 total_length = 8 + (pheader->ip6ext_len * 8);
+	 nextheader = pheader->ip6ext_nheader;
+	 pheader = (struct ipv6_ext *)
+	   ((char *)pheader + 8 + (pheader->ip6ext_len)*8);
+	 break;
+	 
+       case IPPROTO_FRAGMENT:
+	 total_length += 8;
+	 nextheader = pheader->ip6ext_nheader;
+	 pheader = (struct ipv6_ext *)((char *)pheader + 8);
+	 break;
+       
+       case IPPROTO_NONE: /* End of extension headers */
+	 return(total_length);
+	 
+       case IPPROTO_TCP:  /* No extension headers */
+	 return(0);
+	 
+       default:           /* Unknown type */
+	 return(-1);
+      }
+   }
+}
+

@@ -108,8 +108,8 @@ typedef struct in6_addr {
  */
 struct ipv6 {
     u_int ip6_ver_tc_flabel;	/* first 4  bits = version #, 
-                                   next  4  bits = Trafic class,
-				   next  24 bits = flow label */
+                                   next  8  bits = Trafic class,
+				   next  20 bits = flow label */
     u_short	ip6_lngth;	/* Payload length */
     u_char	ip6_nheader;	/* Next Header */
     u_char	ip6_hlimit;	/* Hop Limit */
@@ -122,7 +122,7 @@ struct ipv6 {
 struct ipv6_ext {
     u_char	ip6ext_nheader;	/* Next Header */
     u_char	ip6ext_len;	/* number of bytes in this header */
-    u_char	ip6ext_data[1];	/* optional data */
+    u_char	ip6ext_data[2];	/* optional data */
 };
 
 
@@ -138,8 +138,11 @@ struct ipv6_ext_frag {
 /* tcptrace's IPv6 access routines */
 int gettcp(struct ip *pip, struct tcphdr **pptcp, void **pplast);
 int getudp(struct ip *pip, struct udphdr **ppudp, void **pplast);
+int getroutingheader(struct ip *pip, struct ipv6_ext **ppipv6_ext, void **pplast);
 int gethdrlength (struct ip *pip, void *plast);
 int getpayloadlength (struct ip *pip, void *plast);
 struct ipv6_ext *ipv6_nextheader(void *pheader0, u_char *pnextheader);
 char *ipv6_header_name(u_char nextheader);
 char *my_inet_ntop(int af, const char *src, char *dst, size_t size);
+int total_length_ext_headers(struct ipv6 *pip6);
+  
