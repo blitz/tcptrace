@@ -90,7 +90,8 @@ DEFINES += -DGROK_NETM
 DEFINES += -DGROK_ETHERPEEK
 # define GROK_NLANR if you want tcptrace to understand the output
 # format of the various NLANL tools
-DEFINES += -DGROK_NLANR
+# (this doesn't work well yet, not recommended - Sat Dec 19, 1998)
+# DEFINES += -DGROK_NLANR
 
 
 ################################################################## 
