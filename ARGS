@@ -9,6 +9,7 @@ In Use Options
 -EN     last segment number to analyze (default last in file)
 -G	  create ALL 3 graphs
 -M      produce monochrome (b/w) plot[s]
+-O file output packets to tcpdump file
 -R      create rtt sample graph[s]
 -S      create time sequence graph[s]
 -T      create throughput graph[s], (average over 10 segments, see -A)
