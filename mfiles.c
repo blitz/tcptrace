@@ -94,8 +94,8 @@ Mfopen(
 {
     MFILE *pmf;
 
-    if (strcmp(mode,"w") != 0) {
-	fprintf(stderr,"Sorry, Mfopen works only for mode \"w\"\n");
+    if ((strcmp(mode,"w") != 0) && (strcmp(mode,"a") != 0)){
+	fprintf(stderr,"Sorry, Mfopen works only for mode \"w\" or \"a\"\n");
 	exit(-1);
     }
 
@@ -118,7 +118,14 @@ Mfopen(
 	    output_file_prefix,
 	    fname);
 
-    Mfopen_internal(pmf,"w+");
+    if (strcmp(mode,"w") != 0)
+	Mfopen_internal(pmf,"w+");
+    else if (strcmp(mode,"a") != 0)
+	Mfopen_internal(pmf,"r+");
+    else {
+	fprintf(stderr,"Mfopen: internal file mode inconsistancy\n");
+	exit(10);
+    }
 
     /* put at the tail of the LRU list */
     Mf_totail(pmf,&mf_tail);
@@ -223,7 +230,7 @@ Mfseek(
 
 int
 Mfwrite(
-    char *buf,
+    void *buf,
     u_long size,
     u_long nitems,
     MFILE *pmf)
