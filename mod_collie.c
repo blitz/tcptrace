@@ -286,11 +286,11 @@ static char *collie_dots(
     ipaddr ipaddress)
 {
     char *pch;
-    int map = nonames;
+    int map = resolve_ipaddresses;
 
-    nonames = 1;
+    resolve_ipaddresses = 0;
     pch = HostName(ipaddress);
-    nonames = map;
+    resolve_ipaddresses = map;
 
     return(pch);
 }
@@ -301,11 +301,11 @@ static char *collie_name(
     ipaddr ipaddress)
 {
     char *pch;
-    int map = nonames;
+    int map = resolve_ipaddresses;
 
-    nonames = 0;
+    resolve_ipaddresses = 1;
     pch = HostName(ipaddress);
-    nonames = map;
+    resolve_ipaddresses = map;
 
     return(pch);
 }

@@ -55,7 +55,7 @@ ServiceName(
     static char port_buf[20];
     char *sb_port;
 
-    if (nonames) {
+    if (!resolve_ports) {
 	sprintf(port_buf,"%hu",port);
 	return(port_buf);
     }
@@ -124,7 +124,7 @@ HostName(
 	adr = inet_ntoa(ipaddress.un.ip4);
     }
         
-    if (nonames) {
+    if (!resolve_ipaddresses) {
 	return(adr);
     }
 	
