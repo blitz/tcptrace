@@ -65,8 +65,13 @@ DEFINES += -DLOAD_MODULE_SLICE
 DEFINES += -DLOAD_MODULE_RTTGRAPH
 # 
 # Experimental tcplib-data generating module
-# 
-DEFINES += -DLOAD_MODULE_TCPLIB
+#
+# We are not going to compile in the antiquated TCPLIB module by default 
+# anymore.
+# It seems to have quite some bugs, and being antiquated as it is, we thought
+# it is not worth the time fixing them. Uncomment this line and ./configure
+# and make again,  if you really need the module. - Mani, 15 Aug 2003.
+# DEFINES += -DLOAD_MODULE_TCPLIB
 # 
 # Experimental module for a friend
 # 
