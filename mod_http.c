@@ -228,14 +228,70 @@ ts2d(timeval *pt)
 }
 
 
+static void
+http_printone(
+    MFILE *pmf,
+    struct http_info *ph)
+{
+    tcp_pair *ptp = ph->ptp;
+    double etime;
+
+    if (!ptp)
+	return;
+	
+    printf("%s ==> %s (%s2%s)\n",
+	   ptp->a_endpoint, ptp->b_endpoint,
+	   ptp->a2b.host_letter, ptp->b2a.host_letter);
+
+    printf("\tSyn Time:      %s (%.3f)\n",
+	   ts2ascii(&ph->syn_time),
+	   ts2d(&ph->syn_time));
+    printf("\tGet Time:      %s (%.3f)\n",
+	   ts2ascii(&ph->get_time),
+	   ts2d(&ph->get_time));
+    printf("\tLastack Time:  %s (%.3f)\n",
+	   ts2ascii(&ph->lastack_time),
+	   ts2d(&ph->lastack_time));
+    printf("\tFin Time:      %s (%.3f)\n",
+	   ts2ascii(&ph->fin_time),
+	   ts2d(&ph->fin_time));
+    printf("\tGet string:    %s\n", ph->path);
+    printf("\tContent len:   %d bytes (server string)\n", ph->content_length);
+    printf("\tByte count:    %d bytes (by count)\n", ph->byte_count);
+    etime = elapsed(ph->get_time,ph->lastack_time);
+    etime /= 1000000;  /* us to secs */
+    printf("\tElapsed time:  %.3f seconds (GET to LASTACK)\n", etime);
+    printf("\tPersist count: %d\n", ph->persist_count);
+
+    Mfprintf(pmf,"%.3f %.3f %.3f %.3f %d %s\n",
+	     ts2d(&ph->syn_time),
+	     ts2d(&ph->get_time),
+	     ts2d(&ph->lastack_time),
+	     ts2d(&ph->fin_time),
+	     ph->content_length,
+	     ph->path);
+}
+
+
+/* print the linked list, recursively, in reverse order (for Mark) */
+static void
+http_print(
+    MFILE *pmf,
+    struct http_info *ph)
+{
+    if (ph == NULL)
+	return;
+
+    http_print(pmf,ph->pnext);
+
+    http_printone(pmf,ph);
+}
+
+
 
 void
 http_done(void)
 {
-    struct http_info *ph;
-    tcp_pair *ptp;
-    int i;
-    double etime;
     MFILE *pmf;
 
     /* just return if we didn't grab anything */
@@ -246,44 +302,7 @@ http_done(void)
 
     printf("Http module output:\n");
 
-    for (i=1,ph=httphead; ph; ph=ph->pnext,++i) {
-	ptp = ph->ptp;
-
-	if (!ptp)
-	    continue;
-	
-	printf("%s ==> %s (%s2%s)\n",
-	       ptp->a_endpoint, ptp->b_endpoint,
-	       ptp->a2b.host_letter, ptp->b2a.host_letter);
-
-	printf("\tSyn Time:      %s (%.3f)\n",
-	       ts2ascii(&ph->syn_time),
-	       ts2d(&ph->syn_time));
-	printf("\tGet Time:      %s (%.3f)\n",
-	       ts2ascii(&ph->get_time),
-	       ts2d(&ph->get_time));
-	printf("\tLastack Time:  %s (%.3f)\n",
-	       ts2ascii(&ph->lastack_time),
-	       ts2d(&ph->lastack_time));
-	printf("\tFin Time:      %s (%.3f)\n",
-	       ts2ascii(&ph->fin_time),
-	       ts2d(&ph->fin_time));
-	printf("\tGet string:    %s\n", ph->path);
-	printf("\tContent len:   %d bytes (server string)\n", ph->content_length);
-	printf("\tByte count:    %d bytes (by count)\n", ph->byte_count);
-	etime = elapsed(ph->get_time,ph->lastack_time);
-	etime /= 1000000;  /* us to secs */
-	printf("\tElapsed time:  %.3f seconds (GET to LASTACK)\n", etime);
-	printf("\tPersist count: %d\n", ph->persist_count);
-
-	Mfprintf(pmf,"%.3f %.3f %.3f %.3f %d %s\n",
-		 ts2d(&ph->syn_time),
-		 ts2d(&ph->get_time),
-		 ts2d(&ph->lastack_time),
-		 ts2d(&ph->fin_time),
-		 ph->content_length,
-		 ph->path);
-    }
+    http_print(pmf,httphead);
 
     Mfclose(pmf);
 }
