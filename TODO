@@ -1,0 +1,4 @@
+make printing for with the "only" flag
+add .tcptracerc file and envariable for common options
+add module call for non-tcp packets
+add "-Woutfile" to create tcpdump binary file
