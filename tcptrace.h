@@ -93,7 +93,17 @@ typedef struct pl_line *PLINE;
 
 
 /* type for a TCP sequence number, ACK, FIN, or SYN */
+/* This type MUST be a 32-bit unsigned number */
+#if SIZEOF_UNSIGNED_LONG_INT == 4
 typedef u_long seqnum;
+#else
+#if SIZEOF_UNSIGNED_INT == 4
+typedef u_int seqnum;
+#else
+OOPS: Please insert an appropriate 32-bit unsigned type here!
+#endif /* SIZEOF_UNSIGNED_INT == 4 */
+#endif /* SIZEOF_UNSIGNED_LONG_INT == 4 */
+
 
 /* length of a segment */
 typedef u_long seglen;
