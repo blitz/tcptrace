@@ -1,17 +1,34 @@
 #include "tcptrace.h"
 #include <varargs.h>
 
-#define MAX_PLOTTERS (2*MAX_TCP_PAIRS)
+
+int max_plotters;
 
 
-#define NO_PLOTTER -1
-
-static FILE *fplot[MAX_PLOTTERS] = {NULL};
-static struct last *p2plast[MAX_PLOTTERS] = {NULL};
+static FILE **fplot;
+static struct last **p2plast;
 static PLOTTER plotter_ix = NO_PLOTTER;
 
 
-#define PLOT if(plotem) DoPlot
+
+void plot_init()
+{
+	max_plotters = 2*max_tcp_pairs;
+
+	fplot = (FILE **) malloc(max_plotters * sizeof(FILE *));
+	if (!fplot) {
+		perror("fplot malloc");
+		exit(-1);
+	}
+
+	p2plast = (struct last **) malloc(max_plotters * sizeof(struct last *));
+	if (!p2plast) {
+		perror("p2plast malloc");
+		exit(-1);
+	}
+	bzero(fplot,  max_plotters * sizeof(FILE *));
+	bzero(p2plast,max_plotters * sizeof(struct last *));
+}
 
 
 
@@ -63,6 +80,9 @@ static void DoPlot(pl, fmt, va_alist)
 
 	va_start(ap);
 
+	if (!plotem)
+	    return;
+
 	if (pl == NO_PLOTTER)
 	    return;
 
@@ -84,7 +104,7 @@ static void DoPlot(pl, fmt, va_alist)
 
 
 int
-plotter_init(plast,title)
+new_plotter(plast,title)
      struct last *plast;
      char *title;
 {
@@ -93,7 +113,7 @@ plotter_init(plast,title)
 	char *filename;
 
 	++plotter_ix;
-	if (plotter_ix >= MAX_PLOTTERS) {
+	if (plotter_ix >= max_plotters) {
 		fprintf(stderr,"No more plotters\n");
 		return(NO_PLOTTER);
 	}
@@ -153,7 +173,7 @@ plotter_line(pl,t1,x1,t2,x2)
      struct timeval	t1,t2;
      unsigned long	x1,x2;
 {
-	PLOT(pl,"line %u.%06u %u %u.%06u %u",
+	DoPlot(pl,"line %u.%06u %u %u.%06u %u",
 	     t1.tv_sec, t1.tv_usec,
 	     x1,
 	     t2.tv_sec, t2.tv_usec,
@@ -167,7 +187,7 @@ plotter_darrow(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	PLOT(pl,"darrow %u.%06u %u",
+	DoPlot(pl,"darrow %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
 
@@ -178,7 +198,7 @@ plotter_uarrow(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	PLOT(pl,"uarrow %u.%06u %u",
+	DoPlot(pl,"uarrow %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
 
@@ -189,7 +209,7 @@ plotter_dtick(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	PLOT(pl,"dtick %u.%06u %u",
+	DoPlot(pl,"dtick %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
 
@@ -200,7 +220,7 @@ plotter_utick(pl,t,x)
      struct timeval	t;
      unsigned long	x;
 {
-	PLOT(pl,"utick %u.%06u %u",
+	DoPlot(pl,"utick %u.%06u %u",
 	     t.tv_sec, t.tv_usec,x);
 }
 
@@ -213,7 +233,7 @@ plotter_text(pl,t,x,where,str)
      char		*where;
      char		*str;
 {
-	PLOT(pl,"%stext %u.%06u %u\n%s",
+	DoPlot(pl,"%stext %u.%06u %u\n%s",
 	     where,
 	     t.tv_sec, t.tv_usec,x,
 	     str);

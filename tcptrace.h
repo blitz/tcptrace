@@ -15,10 +15,15 @@
 
 
 /* maximum number of TCP pairs to maintain */
-#define MAX_TCP_PAIRS 256
+#define DEFAULT_MAX_TCP_PAIRS 256
+extern int max_tcp_pairs;
 
+/* number of plotters to use */
+#define DEFAULT_MAX_PLOTTERS (2*MAX_TCP_PAIRS)
+extern int max_plotters;
 
 typedef int PLOTTER;
+#define NO_PLOTTER -1
 
 
 struct last {
@@ -80,6 +85,10 @@ struct stcp_pair {
 	u_long		packets;
 	struct last	a2b;
 	struct last	b2a;
+
+	/* linked list of usage */
+	struct stcp_pair *next;
+	struct stcp_pair *prev;
 };
 typedef struct stcp_pair tcp_pair;
 
@@ -93,6 +102,7 @@ extern int show_rexmit;
 extern int ignore_non_comp;
 extern int printbrief;
 extern int printticks;
+extern int nonames;
 
 
 #define MAX_NAME 20
@@ -103,8 +113,10 @@ extern int printticks;
 
 
 /* external routine decls */
+char *malloc();
 char *ether_ntoa();
 void bzero();
+
 
 /* global routine decls */
 char *ts();
@@ -116,7 +128,7 @@ void dotrace();
 void plotter_darrow();
 void plotter_done();
 void plotter_dtick();
-PLOTTER plotter_init();
+PLOTTER new_plotter();
 void plotter_line();
 void plotter_text();
 void plotter_uarrow();
@@ -126,8 +138,17 @@ void printpacket();
 void printtcp();     
 void trace_done();
 void trace_init();
+void plot_init();
 void OnlyConn();
 void IgnoreConn();
 int Complete();
 char *HostLetter();
+char *EndpointName();
+
+
+/* common defines */
+#define TRUE 1
+#define FALSE 0
+#define OK 0     
+#define SYSERR -1
 
