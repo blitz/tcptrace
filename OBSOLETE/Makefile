@@ -7,7 +7,7 @@
 #
 # User-configurable constants
 #
-OPTIM	= -O2 -g -Wall -Wno-implicit
+OPTIM	= -O2 -g -Wall
 INCS	= -I/usr/local/include
 CC	= gcc
 LDFLAGS = -L/usr/local/lib
