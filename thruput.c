@@ -22,27 +22,17 @@ DoThru(
 
     /* init, if not already done */
     if (ptcb->thru_firsttime.tv_sec == 0) {
-	MFILE *f;
-	static char filename[15];
+	char title[210];
 
 	ptcb->thru_firsttime = current_time;
 	ptcb->thru_pkts = 1;
 	ptcb->thru_bytes = nbytes;
 
-	/* open the output file */
-	sprintf(filename,"%s2%s.tput",
-		ptcb->host_letter, ptcb->ptwin->host_letter);
+	/* create the plotter file */
+	sprintf(title,"%s_==>_%s",
+		ptcb->ptp->a_endpoint, ptcb->ptp->b_endpoint);
+	ptcb->thru_plotter = new_plotter(ptcb,title,"tput");
 
-	if ((f = Mfopen(filename,"w")) == NULL) {
-	    perror(filename);
-	    ptcb->thru_dump_file = (MFILE *) -1;
-	}
-
-	if (debug)
-	    fprintf(stderr,"Throughput Sample file is '%s'\n", filename);
-
-	ptcb->thru_dump_file = f;
-	
 	return;
     }
 
@@ -53,15 +43,15 @@ DoThru(
 	etime = elapsed(ptcb->thru_firsttime,current_time);
 	thruput = (double) ptcb->thru_bytes / ((double) etime / 1000000.0);
 
-	Mfprintf(ptcb->thru_dump_file, "%lu.%06lu %d\n",
-	       current_time.tv_sec,
-	       current_time.tv_usec,
-	       (int) thruput);
+	plotter_line(ptcb->thru_plotter,
+		     ptcb->thru_firsttime, (int) ptcb->thru_lastthru,
+		     current_time, (int) thruput);
 
 	/* reset stats for this interval */
 	ptcb->thru_firsttime = current_time;
 	ptcb->thru_pkts = 0;
 	ptcb->thru_bytes = 0;
+	ptcb->thru_lastthru = (int) thruput;
     }
 
     /* add in the latest packet */

@@ -50,7 +50,7 @@ clean:
 	rm -f *.o tcptrace core *.xpl *.rtt *.tput *.PS.?
 
 tidy:
-	rm -f core [a-z]2[a-z].xpl [a-z][a-z]2[a-z][a-z].xpl *.PS.?
+	rm -f core *2*.xpl *2*.rtt *2*.tput *.PS.?
 
 depend:
 #	mkdep *.c

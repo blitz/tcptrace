@@ -22,7 +22,7 @@ static char *temp_color = NULL;
 
 /* local routine declarations */
 static char *xp_timestamp(struct timeval time);
-static char *TSGPlotName(tcb *plast, PLOTTER);
+static char *TSGPlotName(tcb *plast, PLOTTER, char *suffix);
 static void DoPlot(PLOTTER pl, char *fmt, ...);
 
 
@@ -55,7 +55,7 @@ xp_timestamp(
 void
 plot_init()
 {
-    max_plotters = 2*max_tcp_pairs;
+    max_plotters = 4*max_tcp_pairs;
 
     fplot = (MFILE **) MallocZ(max_plotters * sizeof(MFILE *));
     p2plast = (tcb **) MallocZ(max_plotters * sizeof(tcb *));
@@ -102,12 +102,13 @@ HostLetter(
 static char *
 TSGPlotName(
     tcb *plast,
-    PLOTTER pl)
+    PLOTTER pl,
+    char *suffix)
 {
-    static char filename[15];
+    static char filename[25];
 
-    sprintf(filename,"%s2%s.xpl",
-	    plast->host_letter, plast->ptwin->host_letter);
+    sprintf(filename,"%s2%s.%s",
+	    plast->host_letter, plast->ptwin->host_letter, suffix);
 
     return(filename);
 }
@@ -156,7 +157,8 @@ DoPlot(
 PLOTTER
 new_plotter(
      tcb *plast,
-     char *title)
+     char *title,
+     char *suffix)
 {
     PLOTTER pl;
     MFILE *f;
@@ -170,7 +172,7 @@ new_plotter(
 
     pl = plotter_ix;
 
-    filename = TSGPlotName(plast,pl);
+    filename = TSGPlotName(plast,pl,suffix);
 
     if (debug)
 	fprintf(stderr,"Plotter %d file is '%s'\n", pl, filename);

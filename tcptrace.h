@@ -150,7 +150,8 @@ typedef struct tcb {
     struct	timeval	thru_firsttime;	/* time of first packet this interval */
     u_long	thru_pkts;	/* number of packets this interval */
     u_long	thru_bytes;	/* number of bytes this interval */
-    MFILE	*thru_dump_file;/* throughput data dump file name */
+    u_long	thru_lastthru;	/* last throughput value (for graph) */
+    PLOTTER	thru_plotter;	/* throughput data dump file */
     
     /* Time Sequence Graph info for this one */
     PLOTTER	tsg_plotter;
@@ -282,7 +283,7 @@ char *ServiceName(portnum);
 char *HostName(ipaddr);
 char *HostLetter(u_int);
 char *EndpointName(ipaddr,portnum);
-PLOTTER new_plotter(tcb *plast, char *title);
+PLOTTER new_plotter(tcb *plast, char *title, char *suffix);
 int rexmit(tcb *, seqnum, seglen, Bool *);
 void ack_in(tcb *, seqnum);
 void DoThru(tcb *ptcb, int nbytes);
