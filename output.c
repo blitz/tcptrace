@@ -324,10 +324,10 @@ PrintTrace(
 
 	if (pab->rtt_amback || pba->rtt_amback) {
 	    fprintf(stdout, "\
-\t  For the following 5 RTT statistics, only ACKs for \n \
-\t  multiply-transmitted segments (ambiguous ACKs) were \n \
-\t  considered.  Times are taken from the last instance \n \
-\t  of a segment. \n \
+\t  For the following 5 RTT statistics, only ACKs for\n\
+\t  multiply-transmitted segments (ambiguous ACKs) were\n\
+\t  considered.  Times are taken from the last instance\n\
+\t  of a segment.\n\
 ");
 	    StatlineI("ambiguous acks","","%8lu",
 		      pab->rtt_amback, pba->rtt_amback);
