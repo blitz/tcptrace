@@ -67,7 +67,7 @@ static int addseg(tcb *, quadrant *, seglen, seqnum, Bool *);
 static void rtt_retrans(tcb *, segment *);
 static void rtt_ackin(tcb *, segment *);
 static void freequad(quadrant **);
-static void dump_rtt_sample(tcb *, segment *, unsigned long);
+static void dump_rtt_sample(tcb *, segment *, double);
 static void graph_rtt_sample(tcb *, segment *, unsigned long);
 
 
@@ -381,7 +381,7 @@ rtt_ackin(
     tcb *ptcb,
     segment *pseg)
 {
-    unsigned long etime_rtt;
+    double etime_rtt;
 
     /* how long did it take */
     etime_rtt = elapsed(pseg->time,current_time);
@@ -394,7 +394,7 @@ rtt_ackin(
 	    ptcb->rtt_max = etime_rtt;
 
 	ptcb->rtt_sum += etime_rtt;
-	ptcb->rtt_sum2 += (double)etime_rtt * (double)etime_rtt;
+	ptcb->rtt_sum2 += etime_rtt * etime_rtt;
 	++ptcb->rtt_count;
     } else {
 	/* retrans, can't use it */
@@ -405,7 +405,7 @@ rtt_ackin(
 	    ptcb->rtt_max_last = etime_rtt;
 
 	ptcb->rtt_sum_last += etime_rtt;
-	ptcb->rtt_sum2_last += (double)etime_rtt * (double)etime_rtt;
+	ptcb->rtt_sum2_last += etime_rtt * etime_rtt;
 	++ptcb->rtt_count_last;
 
 	++ptcb->rtt_amback;  /* ambiguous ACK */
@@ -429,7 +429,7 @@ rtt_retrans(
     tcb *ptcb,
     segment *pseg)
 {
-    u_long etime;
+    double etime;
 
     if (!pseg->acked) {
 	/* if it was acked, then it's been collapsed and these */
@@ -444,7 +444,7 @@ rtt_retrans(
 	    ptcb->retr_min_tm = etime;
 
 	ptcb->retr_tm_sum += etime;
-	ptcb->retr_tm_sum2 += (double)etime*(double)etime;
+	ptcb->retr_tm_sum2 += etime*etime;
 	++ptcb->retr_tm_count;
     }
 
@@ -532,7 +532,7 @@ static void
 dump_rtt_sample(
     tcb *ptcb,
     segment *pseg,
-    unsigned long etime_rtt)
+    double etime_rtt)
 {
     /* if the FILE is "-1", couldn't open file */
     if (ptcb->rtt_dump_file == (MFILE *) -1) {

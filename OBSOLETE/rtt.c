@@ -86,7 +86,7 @@ ack_in(
     struct tcphdr *ptcp,
     struct ip *pip)
 {
-    unsigned long etime;
+    double etime;
     unsigned ack = ntohl(ptcp->th_ack);
     seg_rec *pseg;
     int found = 0;
@@ -116,7 +116,7 @@ ack_in(
 		    ptcb->rtt_max = etime;
 
 		ptcb->rtt_sum += etime;
-		ptcb->rtt_sum2 += (double)etime * (double)etime;
+		ptcb->rtt_sum2 += etime * etime;
 		++ptcb->rtt_count;
 	    } else {
 		/* retrans, can't use it */

@@ -39,7 +39,7 @@ DoThru(
     tcb *ptcb,
     int nbytes)
 {
-    u_long etime;
+    double etime;
     double thruput;
 
     /* init, if not already done */
