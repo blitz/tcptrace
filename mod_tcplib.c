@@ -82,6 +82,20 @@ struct burstkey {
 
 
 
+#ifdef BROKEN
+char *BREAKDOWN_APPS_NAMES[] = {
+    "app 1",
+    "app 2",
+    "app 3",
+    "app 4",
+    "app 5",
+    "app 6",
+    "app 7",
+    "app 8"
+};
+#endif /* BROKEN */
+
+
 /* for VM efficiency, we pull the info that we want out of the tcptrace
    structures into THIS structure (or large files thrash) */
 typedef struct module_conninfo_tcb {
@@ -982,7 +996,7 @@ RunAllFour(
 void tcplib_done()
 {
     char *filename;
-    int i,j;
+    int i;
 
     /* fill the info cache */
     if (ldebug)
@@ -1051,6 +1065,7 @@ void tcplib_done()
 	do_tcplib_final_converse(filename, "total",
 				 global_pstats[i]->conv_interarrival_all);
 
+#ifdef BROKEN
 	/* do the application-specific tables for Mark */
 	for (j=0; j < NUM_APPS; ++j) {
 	    char new_filename[128];
@@ -1060,6 +1075,7 @@ void tcplib_done()
 	    do_tcplib_final_converse(new_filename, app_name,
 				     global_pstats[i]->conv_interarrival_byapp[j]);
 	}
+#endif /* BROKEN */
 
 	/* do conversation durations */
 	filename = namedfile(dtype_names[i],TCPLIB_CONV_DURATION_FILE);
@@ -2111,7 +2127,7 @@ static void do_final_breakdown(
 	 * utmost importance, especially as far as the scalability of
 	 * traffic is concerned. */
 	fprintf(fil, "%.4f\t%.4f", (float)0, (float)0);
-#endif INCLUDE_PHONE_CONV
+#endif /* INCLUDE_PHONE_CONV */
 	fprintf(fil, "\n");
 
     }
