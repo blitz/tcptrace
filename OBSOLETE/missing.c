@@ -13,12 +13,12 @@
  * According to Rich Jones at HP, there is no ether_ntoa under HPUX.
  */
 #ifdef __hpux
-#define NEED_ETHER_NTOA
+#undef HAVE_ETHER_NTOA
 #endif /* __hpux */
 
 
 
-#ifdef NEED_ETHER_NTOA
+#ifndef HAVE_ETHER_NTOA
 /* ether_ntoa doesn't exist on at least some HP machines. */
 /* how about: */
 
@@ -33,4 +33,4 @@ ether_ntoa (struct ether_addr *e)
 	    pe[0], pe[1], pe[2], pe[3], pe[4], pe[5]);
     return(buf);
 }
-#endif /* NEED_ETHER_NTOA */
+#endif /* !HAVE_ETHER_NTOA */

@@ -1,4 +1,3 @@
-static int debug = 1;
 /*
  * Copyright (c) 1994, 1995, 1996, 1997
  *	Ohio University.  All rights reserved.
@@ -28,6 +27,8 @@ static int debug = 1;
  */
 static char const rcsid_traffic[] =
    "$Id$";
+
+#ifdef LOAD_MODULE_TRAFFIC
 
 #include "tcptrace.h"
 #include "mod_traffic.h"
@@ -544,3 +545,4 @@ traffic_newconn(
     
     return(pci);
 }
+#endif /* LOAD_MODULE_TRAFFIC */

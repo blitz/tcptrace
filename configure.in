@@ -1,0 +1,56 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(tcptrace.c)
+
+AC_CANONICAL_SYSTEM
+
+AC_LBL_C_INIT(V_CCOPT, V_INCLS)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_MAKE_SET
+
+dnl Checks for libraries.
+dnl Replace `main' with a function in -lm:
+AC_CHECK_LIB(m, main)
+
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(sys/time.h unistd.h)
+
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_OFF_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+
+dnl include additional checking if developing
+AC_MSG_CHECKING(for development environment)
+AC_LBL_DEVEL(V_CCOPT)
+
+
+dnl check for needed network libraries
+AC_LBL_LIBRARY_NET()
+
+
+dnl Checks for sometime-missing ether_ntoa function
+AC_CHECK_FUNCS(ether_ntoa)
+
+
+
+dnl Grab standard includes under weird versions
+case "$target_os" in
+  linux*)	V_INCLS="$V_INCLS -Ilinux-include";;
+esac
+
+
+
+AC_SUBST(V_CCOPT)
+AC_SUBST(V_INCLS)
+AC_SUBST(V_DEFINES)
+
+
+AC_OUTPUT(Makefile)

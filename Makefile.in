@@ -1,0 +1,211 @@
+#
+# Makefile for tcptrace
+#
+
+
+################################################################## 
+#
+# tcptrace supports reading compressed files with a little help...
+# 1) If your system has "gunzip", then uncomment the following line to
+#    support on-the-fly decompression of ".gz" and ".Z" files...
+DEFINES += -DGUNZIP="\"gunzip\""
+# 2) Otherwise, if your system supports standard Unix "uncompress",
+#    then uncomment the following line to support on-the-fly
+#    decompression of ".Z" files...
+#DEFINES += -DUNCOMPRESS="\"uncompress\""
+# - we'll do path search on the string you specify.  If the program
+#    isn't in your path, you'll need to give the absolute path name.
+# - if you want other formats, see the "compress.h" file.
+
+
+
+
+################################################################## 
+#
+# If you want to read tcpdump output (which you probably do),
+# you'll need the LBL PCAP library.  I've just listed a bunch
+# of places that it might be (other than the standard
+# location).  If it's somewhere else, just add it into the
+# list.
+# 
+################################################################## 
+PCAP_LDLIBS = -lpcap
+PCAP_INCS    = -I/usr/local/include -I. -I../pcap
+PCAP_LDFLAGS = -L/usr/local/lib -Llib -Lpcap -L../pcap
+
+
+
+################################################################## 
+# 
+# Plug-in modules.
+# There's no reason that I can think of to remove them, but
+# here they are.  Just comment them out to omit them from
+# the binary.
+# 
+################################################################## 
+# 
+# Experimental HTTP analysis module
+# 
+DEFINES += -DLOAD_MODULE_HTTP
+# 
+# Experimental averall traffic by port module
+# 
+DEFINES += -DLOAD_MODULE_TRAFFIC
+
+
+
+################################################################## 
+# 
+# File formats that we understand.
+# The only reason that I can see to remove one is if you don't
+# have the PCAP library, in which case you can comment out
+# GROK_TCPDUMP and still compile, but then you can't read the
+# output from tcpdump.
+# 
+################################################################## 
+# define GROK_SNOOP if you want tcptrace to understand the output
+# format of Sun's "snoop" packet sniffer.
+DEFINES += -DGROK_SNOOP
+# define GROK_TCPDUMP if you want tcptrace to understand the output
+# format format of the LBL tcpdump program (see the file README.tcpdump
+# for other options)
+DEFINES += -DGROK_TCPDUMP
+# define GROK_NETM if you want tcptrace to understand the output
+# format of HP's "netm" monitoring system's packet sniffer.
+DEFINES += -DGROK_NETM
+# define GROK_ETHERPEEK if you want tcptrace to understand the output
+# format of the Macintosh program Etherpeek
+DEFINES += -DGROK_ETHERPEEK
+
+
+
+
+################################################################## 
+################################################################## 
+################################################################## 
+# 
+# You shouldn't need to change anything below this point
+# 
+################################################################## 
+################################################################## 
+################################################################## 
+
+CC = @CC@
+CCOPT = @V_CCOPT@
+INCLS = -I. @V_INCLS@ ${PCAP_INCS}
+
+# Standard CFLAGS
+# Probably want full optimization
+#   Warning, without -fno-builtin, a bug in gcc 2.7.2 forces an
+#   alignment error on my Sparc when it re-writes memcpy()...
+# FreeBSD needs	-Ae
+# HP needs	-Ae
+CFLAGS = $(CCOPT) $(DEFINES) @V_DEFINES@ $(INCLS)
+
+# Standard LIBS
+LDLIBS = @LIBS@ ${PCAP_LDLIBS}
+# for solaris, you probably want:
+#	LDLIBS = -lpcap -lnsl -lsocket -lm
+# for HP, I'm told that you need:
+#	LDLIBS = -lpcap -lstr -lm
+# everybody else (that I know of) just needs:
+#	LDLIBS = -lpcap -lm
+# 
+LDFLAGS += ${PCAP_LDFLAGS}
+
+
+
+# for profiling (under Solaris, at least)
+#CFLAGS	+= -pg
+#LDFLAGS += /usr/lib/libdl.so.1
+
+# for testing "cleanness" before distribution
+#CFLAGS	+= -pedantic -Wall
+
+
+
+
+# Standard files
+CFILES= etherpeek.c gcache.c tcptrace.c mfiles.c names.c netm.c output.c \
+	plotter.c print.c snoop.c tcpdump.c thruput.c trace.c rexmit.c \
+	missing.c compress.c version.c
+OFILES= ${CFILES:.c=.o} ${MODULES:.c=.o}
+
+
+
+tcptrace: ${OFILES}
+	${CC} ${LDFLAGS} ${CFLAGS} ${OFILES} -o tcptrace ${LDLIBS}
+
+#
+# special rule for version.c
+# needs to be recompiled EVERY time
+#
+# If you have problems getting "whoami", "hostname", or "date" to run on
+# your machine, just hack in a quick string below in place of the command.
+version.o: ${CFILES} Makefile
+	${CC} ${CFLAGS} -o version.o -c version.c \
+	-DBUILT_USER="\"`whoami`\"" -DBUILT_HOST="\"`hostname`\"" -DBUILT_DATE="\"`date`\""
+
+
+#
+# obvious dependencies
+#
+${OFILES}: tcptrace.h
+
+
+#
+# just for RCS
+ci:
+	ci -u -q -t-initial -mlatest Makefile README* CHANGES *.h *.c
+
+#
+# for cleaning up
+clean:
+	rm -f *.o tcptrace core *.xpl *.dat .devel
+noplots:
+	rm -f *.xpl *.dat
+
+#
+# for making distribution
+tarfile:
+	cd ..; /usr/sbin/tar -FFcfv $$HOME/tcptrace.tar tcptrace
+	gzip $$HOME/tcptrace.tar
+#
+# similar, but include RCS directory and etc
+bigtarfile:
+	cd ..; /usr/sbin/tar -cfv $$HOME/tcptrace.tar tcptrace
+
+
+#
+# static file dependencies
+#
+etherpeek.o: tcptrace.h 
+gcache.o: tcptrace.h  gcache.h
+mfiles.o: tcptrace.h 
+mod_http.o: tcptrace.h  mod_http.h
+names.o: tcptrace.h  gcache.h
+netm.o: tcptrace.h 
+output.o: tcptrace.h  gcache.h
+plotter.o: tcptrace.h 
+print.o: tcptrace.h 
+rexmit.o: tcptrace.h 
+rtt.o: tcptrace.h 
+snoop.o: tcptrace.h 
+tcpdump.o: tcptrace.h tcpdump.h 
+tcptrace.o: tcptrace.h  file_formats.h modules.h mod_http.h version.h
+thruput.o: tcptrace.h 
+trace.o: tcptrace.h  gcache.h
+compress.o: tcptrace.h  compress.h
+mod_http.o: tcptrace.h 
+mod_traffic.o: tcptrace.h  mod_traffic.h
+
+#
+# make development version
+develop devel:
+	touch .devel
+
+
+#
+# generate dependencies
+depend:
+	makedepend ${INCS} -w 10 *.c

@@ -13,18 +13,23 @@ Step 1: Get pcap library
   need to have already installed the pcap library (see README.pcap).
   If tcpdump was installed correctly, then you're probably all set.
   If you don't HAVE this package and don't CARE about it, then comment
-  "GROK_TCPDUMP" out of "config.h" and we'll just skip it in the
+  "GROK_TCPDUMP" out of Makefile.in and we'll just skip it in the
   compilation. 
 
-Step 2: Edit Makefile
-  Make some simple changes to the Makefile (look for comments for
-  your target) and then just typing "make".
+Step 2: Edit Makefile.in
+  Make some simple changes to the Makefile.in (it's commented)
 
-Step 3: Install
+Step 3: run "./configure"
+  that should build a Makefile that'll work on your machine
+
+Step 4: run "make"
+  that should create tcptrace
+
+Step 5: Install
   The program doesn't need to be setuid or anything, so once you get
   the "tcptrace" binary, just stuff it wherever you keep such things
   and you're all set.
 
 Shawn
 
-Wed Aug 20, 1997
+Wed Dec 10, 1997

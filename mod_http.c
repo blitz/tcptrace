@@ -28,6 +28,8 @@
 static char const rcsid_http[] =
    "$Id$";
 
+#ifdef LOAD_MODULE_HTTP
+
 #include "tcptrace.h"
 #include <sys/mman.h>
 
@@ -963,3 +965,4 @@ http_newconn(
 
     return(ph);
 }
+#endif /* LOAD_MODULE_HTTP */
