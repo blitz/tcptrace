@@ -177,6 +177,14 @@ HostLetter(
 }
 
 
+char *
+NextHostLetter(void)
+{
+    static int count = 0;
+    return(HostLetter(++count));
+}
+
+
 
 static char *
 TSGPlotName(
