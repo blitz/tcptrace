@@ -459,4 +459,31 @@ controls the maximum amount of data saved from each packet.  A
 Because some of the analysis from various modules and features
 requires full packet data, tcptrace counts and prints the truncated
 segments ("truncated packets") and the amount of missing data
-("truncated data"). 
+("truncated data").
+============================================================
+Wed Apr 28, 1999
+
+>> I was wondering if you could please explan what the following actually
+>> mean in the detailed output:
+>> 
+>> data xmit time:        1.377 secs
+
+That's the elapsed time of the connection from the first segment
+containing data to the last segment containing data.  It discounts the
+SYN and FIN handshaking.
+
+
+>> idletime max:         126384.9 ms
+
+That's the longest period during which no packets were sent (data or ACK)
+from that side of the connection.
+============================================================
+Thu May 20, 1999
+
+>> Is there a version of tcpdump for wintel machines?
+
+I'm told that there's one here:
+
+  http://netgroup-serv.polito.it/analyzer/install/windump/default.htm
+
+but I've never used it.
