@@ -11,10 +11,11 @@
 
 #include "tcptrace.h"
 #include "file_formats.h"
+#include "version.h"
 
 
 /* version information */
-char *tcptrace_version = "2.2.2 beta -- Thu Jun 22, 1995";
+char *tcptrace_version = VERSION;
 
 
 /* local routines */
