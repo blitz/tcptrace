@@ -88,9 +88,9 @@ DEFINES += -DGROK_NETM
 # define GROK_ETHERPEEK if you want tcptrace to understand the output
 # format of the Macintosh program Etherpeek
 DEFINES += -DGROK_ETHERPEEK
-# define GROK_TSH if you want tcptrace to understand the output
-# format of the NLANL file format tsh
-DEFINES += -DGROK_TSH
+# define GROK_NLANR if you want tcptrace to understand the output
+# format of the various NLANL tools
+# DEFINES += -DGROK_NLANR
 
 
 ################################################################## 
@@ -142,7 +142,7 @@ LDFLAGS += ${PCAP_LDFLAGS}
 
 # Source Files
 CFILES=compress.c etherpeek.c gcache.c mfiles.c missing.c names.c \
-	netm.c output.c plotter.c print.c rexmit.c snoop.c tsh.c \
+	netm.c output.c plotter.c print.c rexmit.c snoop.c nlanr.c \
 	tcpdump.c tcptrace.c thruput.c trace.c ipv6.c	\
 	filt_scanner.c filt_parser.c filter.c udp.c \
 	version.c
@@ -247,6 +247,7 @@ print.o: tcptrace.h
 rexmit.o: tcptrace.h 
 rtt.o: tcptrace.h 
 snoop.o: tcptrace.h 
+nlanr.o: tcptrace.h 
 tcpdump.o: tcptrace.h tcpdump.h 
 tcptrace.o: tcptrace.h  file_formats.h modules.h mod_http.h version.h
 thruput.o: tcptrace.h 
