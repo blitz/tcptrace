@@ -86,6 +86,8 @@ int ctrunc = 0;
 /* globals */
 struct timeval current_time;
 int num_modules = 0;
+char *ColorNames[NCOLORS] =
+{"green", "red", "blue", "yellow", "purple", "orange", "magenta", "pink"};
 
 
 /* locally global variables */
@@ -317,6 +319,8 @@ Misc options  \n\
   -e      extract contents of each TCP stream into file  \n\
   -h      print help messages  \n\
   +[v]    reverse the setting of the -[v] flag (for booleans)  \n\
+Module options  \n\
+  -xMODULE_SPECIFIC\n\
 ");
 }
 
@@ -370,6 +374,10 @@ main(
     if (argc == 1)
 	Help(NULL);
 
+    /* initialize internals */
+    trace_init();
+    plot_init();
+
     /* let modules start first */
     LoadModules(argc,argv);
 
@@ -386,9 +394,6 @@ main(
     /* knock, knock... */
     printf("%s\n\n", VERSION);
 
-    trace_init();
-    plot_init();
-
     /* read each file in turn */
     for (i=0; i < argc; ++i) {
 	printf("Running file '%s'\n", filenames[i]);
@@ -399,9 +404,9 @@ main(
 
 
     /* close files, cleanup, and etc... */
-    plotter_done();
     trace_done();
     FinishModules();
+    plotter_done();
 
     exit(0);
 }
@@ -421,13 +426,21 @@ ProcessFile(
     int len;
     int tlen;
     void *plast;
-    struct stat stat;
+    struct stat str_stat;
+    long int location = 0;
 
 
     /* open the file header */
     if (CompOpenHeader(filename) == NULL) {
 	exit(-1);
     }
+
+    /* see how big the file is */
+    if (stat(filename,&str_stat) != 0) {
+	perror("stat");
+	exit(1);
+    }
+    filesize = str_stat.st_size;
 
     /* determine which input file format it is... */
     fix = 0;
@@ -459,21 +472,17 @@ ProcessFile(
 	exit(1);
     }
 
-    /* check file size */
-    if (fstat(fileno(stdin),&stat) != 0) {
-	perror("fstat");
-	exit(1);
-    }
-    filesize = stat.st_size;
-    if (debug) {
-	/* print file size */
-	printf("Trace file size: %lu bytes\n", filesize);
-    }
-
     /* open the file for processing */
     if (CompOpenFile(filename) == NULL) {
 	exit(-1);
     }
+
+    /* how big is it.... (possibly compressed) */
+    if (debug) {
+	/* print file size */
+	printf("Trace file size: %lu bytes\n", filesize);
+    }
+    location = 0;
 
     /* inform the modules, if they care... */
     ModulesPerFile(filename);
@@ -496,15 +505,27 @@ ProcessFile(
 
 	/* progress counters */
 	if (!printem && printticks) {
+	    if (CompIsCompressed())
+		location += tlen;  /* just guess... */
 	    if (((pnum <    100) && (pnum %    10 == 0)) ||
 		((pnum <   1000) && (pnum %   100 == 0)) ||
 		((pnum <  10000) && (pnum %  1000 == 0)) ||
 		((pnum >= 10000) && (pnum % 10000 == 0))) {
-		if (CompIsCompressed())
-		    fprintf(stderr ,"%d NA%%\r", pnum);
-		else
-		    fprintf(stderr ,"%d %lu%%\r",
-			    pnum, (ftell(stdin)/(filesize/100)));
+
+		unsigned frac;
+
+		if (CompIsCompressed()) {
+		    frac = location/(filesize/100);
+		    if (frac <= 100)
+			fprintf(stderr ,"%d ~%u%% (compressed)\r", pnum, frac);
+		    else
+			fprintf(stderr ,"%d ~100%% + %u%% (compressed)\r", pnum, frac-100);
+		} else {
+		    location = ftell(stdin);
+		    frac = location/(filesize/100);
+
+		    fprintf(stderr ,"%d %u%%\r", pnum, frac);
+		}
 	    }
 	    fflush(stderr);
 	}
@@ -725,6 +746,10 @@ ParseArgs(
 			    "-m option is obsolete (no longer necessary)\n");
 		    *(argv[i]+1) = '\00'; break;
 		    break;
+		  case 'x':
+		    fprintf(stderr,
+			    "unknown module option (-x...)\n");
+		    Usage(argv[0]);
 		  default:
 		    fprintf(stderr, "option '%c' not understood\n", *argv[i]);
 		    Usage(argv[0]);
@@ -927,6 +952,6 @@ ModulesPerFile(
 	    fprintf(stderr,"Calling newfile routine for module \"%s\"\n",
 		    modules[i].module_name);
 
-	(*modules[i].module_newfile)(filename);
+	(*modules[i].module_newfile)(filename,filesize,CompIsCompressed());
     }
 }
