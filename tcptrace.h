@@ -153,6 +153,16 @@ typedef struct tcb {
     u_long	out_order_pkts;	/* out of order packets */
     u_long	sacks_sent;	/* sacks returned */
 
+    /* added for initial window stats (for Mallman) */
+    u_long	initialwin_bytes;	/* initial window (in bytes) */
+    u_long	initialwin_segs;	/* initial window (in segments) */
+    Bool	data_acked;	/* has any non-SYN data been acked? */
+
+    /* added for (estimated) congestions window stats (for Mallman) */
+    u_long	cwin_max;
+    u_long	cwin_min;
+    u_long	cwin_tot;
+
     /* RTT stats for singly-transmitted segments */
     u_long	rtt_min;
     u_long	rtt_max;
