@@ -1123,14 +1123,14 @@ dotrace(
 			       hw_dup?hw_dup_color:
 			       retrans_num_bytes>0?retrans_color:
 			       synfin_color);
-	    plotter_box(from_tsgpl, current_time, SeqRep(thisdir,end));
 			 SeqRep(thisdir,end+1), "a",
 			 hw_dup?"HD FIN":
 			 retrans_num_bytes>0?"R FIN":
 			 "FIN");
 	   
 
-	    plotter_uarrow(from_tsgpl, current_time, SeqRep(thisdir,end+1));
+	    plotter_box(from_tsgpl, current_time, SeqRep(thisdir,end+1));
+	    plotter_darrow(from_tsgpl, current_time, SeqRep(thisdir,end));
 	    plotter_line(from_tsgpl,
 			 current_time, SeqRep(thisdir,end),
 			 current_time, SeqRep(thisdir,end+1));
