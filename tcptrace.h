@@ -481,6 +481,9 @@ typedef struct tcb {
     u_long	max_sack_blocks;
     u_long	num_dsacks;
 
+    /* for computing LEAST (see FAQ) */
+    enum tcp_strains { TCP_RENO, TCP_SACK, TCP_DSACK } tcp_strain;
+
     /* host name letter(s) */
     char	*host_letter;
 } tcb;
