@@ -1,0 +1,24 @@
+#
+# Shawn's ~/.tcptracerc tcptrace resource file
+#
+# you can put anything in here that you can put on the command line, plus
+# comments.
+#
+# the order of argument parsing is very important:
+#
+# 1) ~/.tcptracerc is read first
+# 2) next, we read from the envariable TCPTRACEOPTS
+# 3) finally, we read from the command line 
+#
+
+# always tick off packets graphically so I know how long it will take
+-t
+
+# I LIKE the little RTT dongles!
+# oh, no, on second thought, I guess I don't
+#--showrttdongles
+
+#
+# Please drop all output files into a subdirectory
+# (the %f stands for the basename of the input filename)
+--output_dir=output_%f
