@@ -28,6 +28,58 @@
 
 #include "tcptrace.h"
 
+/* the names of IPv6 extensions that we understand */
+char *
+ipv6_header_name(
+    u_char nextheader)
+{
+    switch (nextheader) {
+      case IPV6HDR_DSTOPTS: return("Destinations options");
+      case IPV6HDR_FRAGMENT: return("Fragment header");
+      case IPV6HDR_HOPBYHOP: return("Hop by hop");
+      case IPV6HDR_NONXTHDR: return("No next header");
+      case IPV6HDR_ROUTING: return("Routing header");
+      case IPPROTO_ICMPV6: return("IPv6 ICMP");
+      case IPPROTO_TCP: return("TCP");
+      case IPPROTO_UDP: return("UDP");
+      default:	return("<unknown>");
+    }
+}
+
+
+/* given a next header type and a pointer to the header, return a pointer
+   to the next extension header and type */
+struct ipv6_ext *
+ipv6_nextheader(
+    void *pheader0,
+    u_char *pnextheader)
+{
+    struct ipv6_ext *pheader = pheader0;
+    
+    switch (*pnextheader) {
+	/* nothing follows these... */
+      case IPPROTO_TCP:
+      case IPV6HDR_NONXTHDR:
+      case IPPROTO_ICMPV6:
+      case IPPROTO_UDP:
+	return(NULL);
+
+	/* somebody follows these */
+      case IPV6HDR_HOPBYHOP:
+      case IPV6HDR_ROUTING:
+      case IPV6HDR_DSTOPTS:
+	*pnextheader = pheader->ip6ext_nheader;
+	return((struct ipv6_ext *)
+	       ((char *)pheader + pheader->ip6ext_len));
+
+	/* I don't understand them.  Just save the type and return a NULL */
+      default:
+	*pnextheader = pheader->ip6ext_nheader;
+	return(NULL);
+    }
+}
+
+
 
 /*
  * gettcp:  return a pointer to a tcp header.
@@ -38,50 +90,105 @@ gettcp(
     struct ip *pip,
     void *plast)
 {
-    
+    struct ipv6 *pip6 = (struct ipv6 *)pip;
     char nextheader;
-    char *pheader;
+    struct ipv6_ext *pheader;
 
+    /* IPv4 is easy */
     if (PIP_ISV4(pip)) {
 	/* make sure it's TCP */
 	if (pip->ip_p != IPPROTO_TCP)
 	    return(NULL);
+
+	/* check the fragment field, if it's not the first fragment,
+	   it's useless */
+	if ((pip->ip_off&0xfc) != 0) {
+	    if (debug>1)
+		printf("gettcp: Skipping IPv4 non-initial fragment\n");
+	    return(NULL);
+	}
+
 	return (struct tcphdr *) ((char *)pip + 4*pip->ip_hl);
     }
 
+    /* otherwise, we only understand IPv6 */
     if (!PIP_ISV6(pip))
 	return(NULL);
-    
-    pheader = (char *) pip;
-    nextheader = *(pheader + 6);  /* location of next header in ipv6 header */
-    pheader = pheader + 40;    /* point to the next header */
-  
-    while (1)
-    {
-	if (nextheader == IPV6HDR_NONXTHDR)
-	    return NULL;
-	    
-	if (nextheader == IPPROTO_TCP) {
-	    return ((struct tcphdr *) pheader);
+
+    /* find the first header */
+    nextheader = pip6->ip6_nheader;
+    pheader = (struct ipv6_ext *)(pip6+1);
+
+    /* loop until we find a TCP header or give up */
+    while (1) {
+	/* sanity check, if we're reading bogus header, the length might */
+	/* be wonky, so make sure before you dereference anything!! */
+	if ((void *)pheader < (void *)pip) {
+	    if (debug>1)
+		printf("gettcp: bad extension header math, skipping packet\n");
+	    return(NULL);
+	}
+	
+	/* make sure we're still within the packet */
+	/* might be truncated, or might be bad header math */
+	if ((void *)pheader > plast) {
+	    if (debug>3)
+		printf("gettcp: packet truncated before TCP header\n");
+	    return(NULL);
 	}
 
-	/* skip the next header */
-	if (nextheader == IPV6HDR_FRAGMENT)
-	{
-	    nextheader = *pheader;
-	    pheader += 8;
-	    
-	}
-	if ((nextheader == IPV6HDR_HOPBYHOP)
-	    || (nextheader == IPV6HDR_ROUTING)
-	    || (nextheader == IPV6HDR_DSTOPTS)) {
-	    nextheader = *pheader;
-	    pheader += *(pheader + 1);
-	}
+	switch (nextheader) {
+	    /* this is what we want */
+	  case IPPROTO_TCP:
+	    return((struct tcphdr *) pheader);
 
-	if (pheader > (char *)plast)
-	    break;
-    }
+	    /* non-tcp protocols */
+	  case IPV6HDR_NONXTHDR:
+	  case IPPROTO_ICMPV6:
+	  case IPPROTO_UDP:
+	    return(NULL);
+
+	    /* fragmentation */
+	  case IPV6HDR_FRAGMENT:
+	  {
+	      struct ipv6_ext_frag *pfrag = (struct ipv6_ext_frag *)pheader;
+
+	      /* if this isn't the FIRST fragment, there won't be a TCP header
+		 anyway */
+	      if ((pfrag->ip6ext_fr_offset&0xfc) != 0) {
+		  /* the offset is non-zero */
+		  if (debug>1)
+		      printf("gettcp: Skipping IPv6 non-initial fragment\n");
+		  return(NULL);
+	      }
+
+	      /* otherwise it's either an entire segment or the first fragment */
+	      nextheader = pheader->ip6ext_nheader;
+	      pheader = (struct ipv6_ext *)
+		  ((char *)pheader + pheader->ip6ext_len);
+	      break;
+	  }
+
+	  /* headers we just skip over */
+	  case IPV6HDR_HOPBYHOP:
+	  case IPV6HDR_ROUTING:
+	  case IPV6HDR_DSTOPTS:
+	      nextheader = pheader->ip6ext_nheader;
+	      pheader = (struct ipv6_ext *)
+		  ((char *)pheader + pheader->ip6ext_len);
+	      break;
+
+	  /* I "think" that we can just skip over it, but better be careful */
+	  default:
+	      nextheader = pheader->ip6ext_nheader;
+	      pheader = (struct ipv6_ext *)
+		  ((char *)pheader + pheader->ip6ext_len);
+	      break;
+
+	} /* end switch */
+    }  /* end loop */
+
+    /* shouldn't get here, but just in case :-) */
     return NULL;
 }
 
