@@ -635,25 +635,18 @@ graph_rtt_sample(
 					"time","rtt (ms)",
 					RTT_GRAPH_FILE_EXTENSION);
 	plotter_perm_color(ptcb->rtt_plotter,"red");
+
+	if (graph_time_zero) {
+	    /* set graph zero points */
+	    plotter_nothing(ptcb->rtt_plotter, current_time);
+	}
+	ptcb->rtt_line =
+	    new_line(ptcb->rtt_plotter, "rtt", "red");
     }
 
     if (etime_rtt <= 1)
 	return;
 
-    if (ptcb->rtt_lastrtt == 0) {
-	/* prime the pump */
-	ptcb->rtt_lastrtt = etime_rtt;
-	ptcb->rtt_lasttime = current_time;
-
-	return;
-    }
-
-    plotter_line(ptcb->rtt_plotter,
-		 ptcb->rtt_lasttime, (int) (ptcb->rtt_lastrtt / 1000),
-		 current_time, (int) (etime_rtt / 1000));
-    plotter_temp_color(ptcb->rtt_plotter,"yellow");
-    plotter_dot(ptcb->rtt_plotter, current_time, (int) (etime_rtt / 1000));
-
-    ptcb->rtt_lastrtt = etime_rtt;
-    ptcb->rtt_lasttime = current_time;
+    extend_line(ptcb->rtt_line,
+		current_time, (int) (etime_rtt / 1000));
 }

@@ -262,12 +262,12 @@ typedef struct tcb {
 
     /* Instantaneous throughput info */
     timeval	thru_firsttime;	/* time of first packet this interval */
-    double	thru_lastthru_i; /* last instantaneous throughput value */
     u_long	thru_bytes;	/* number of bytes this interval */
     u_long	thru_pkts;	/* number of packets this interval */
-    double	thru_lastthru_t; /* last average throughput value */
     PLOTTER	thru_plotter;	/* throughput data dump file */
     timeval	thru_lasttime;	/* time of previous segment */
+    PLINE	thru_avg_line;	/* average throughput line */
+    PLINE	thru_inst_line;	/* instantaneous throughput line */
 
     /* data transfer time stamps - mallman */
     timeval	first_data_time;
@@ -289,8 +289,7 @@ typedef struct tcb {
 
     /* RTT Graph info for this one */
     PLOTTER	rtt_plotter;
-    u_long	rtt_lastrtt;
-    timeval	rtt_lasttime;
+    PLINE	rtt_line;
 
     /* Segment size graph */
     PLOTTER	segsize_plotter;
