@@ -88,6 +88,9 @@ DEFINES += -DGROK_NETM
 # define GROK_ETHERPEEK if you want tcptrace to understand the output
 # format of the Macintosh program Etherpeek
 DEFINES += -DGROK_ETHERPEEK
+# define GROK_TSH if you want tcptrace to understand the output
+# format of the NLANL file format tsh
+DEFINES += -DGROK_TSH
 
 
 ################################################################## 
