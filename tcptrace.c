@@ -1035,7 +1035,10 @@ ReallocZ(
 
 	ptr = realloc(oldptr,nbytes);
 	if (ptr == NULL) {
-		fprintf(stderr,"Realloc failed, fatal\n");
+		fprintf(stderr,
+			"Realloc failed (%d bytes --> %d bytes), fatal\n",
+			obytes, nbytes);
+		perror("realloc");
 		exit(2);
 	}
 	if (obytes < nbytes) {
