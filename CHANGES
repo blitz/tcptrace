@@ -107,3 +107,11 @@
   Added more module interface routines
   Allow modules to have per-connection data structures
   Fixed some compression bugs
+4.1.3
+  Added "percent done" for compressed files, just a guess but better than N/A
+  Passed filesize and compressed state to modules
+  Added mod_traffic
+  fixed bug in extract_contents (for mod_http) that caused it to fail if the first segment
+    seen was not the first segment of the connection (oops!)
+  Added -z flag to plot time axis from 0 rather than wallclock time
+
