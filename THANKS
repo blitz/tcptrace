@@ -63,4 +63,8 @@ or ported the program to other architectures:
 		feature enhancements and bug fixes.
          Daikichi Osuga (osuga@mml.yrp.nttdocomo.co.jp) for helping figure
 	 	out how to get ns2 trace files to work with tcptrace, and for
-		providing a useful script for the same.
+		providing a useful script for the same. Also for providing 
+		helpful bug reports.
+	 Matt Muggeridge (Matt.Muggeridge@compaq.com) for porting tcptrace to
+	        OpenVMS and providing us with detailed documentation for the 
+		same.

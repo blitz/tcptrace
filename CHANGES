@@ -399,5 +399,19 @@ This is the version we'll release
 Also, added support with --print_seq_zero for printing sequence numbers
   as relative to the SYN rather than absolute.  NOTE: this only works for
   "-P" which uses connection records, but NOT for "-p" (which doesn't)
-  Also fixed the SACK-printing code to print in decimal if requested
+  Also fixed the SACK-printing code to print in decimal if requested.
 
+Updated the manual page and made the necessary change to Makefile.in so
+that the manual page gets installed when tcptrace is installed.
+
+Fixed a bug with with the statistics for average window advertisement.
+Average was showing more than max.
+
+Fixed a bug with ACK sequence comparisons in the HTTP module. Many thanks to
+Daikichi Osuga for pointing out the error.
+
+Fixed a divide-by-zero error in PlotHist() in mod_rttgraph.c.
+
+Matt Muggeridge has been very kind in providing detailed information regarding
+porting tcptrace to OpenVMS. Please read the new file README.OpenVMS if you
+are interested in running tcptrace on OpenVMS.

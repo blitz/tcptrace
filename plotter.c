@@ -198,17 +198,9 @@ HostLetter(
 	if (ix == 0)
 	    return(pname+1);
     }
-   fprintf(stderr,"Fatal, too many hosts to name (max length %d)\n
-NOTE:
-If you are using gcc version 2.95.3, then this may be a compiler bug. This particular version
-is known to generate incorrect assembler code when used with CCOPT=-O2.\nSuggested fixes are:
-   1. Update gcc to the latest version and recompile tcptrace.
-   2. Use the same version of gcc, but edit the tcptrace Makefile, setting CCOPT=-O instead of
-      CCOPT=-O2, and then recompile tcptrace.
-Either of these steps should hopefully fix the problem.\n",
-	    MAX_HOSTLETTER_LEN);
-    exit(-1);
-    return(NULL);  /* NOTREACHED */
+   fprintf(stderr,"Fatal, too many hosts to name (max length %d)\n\nNOTE:\nIf you are using gcc version 2.95.3, then this may be a compiler bug. This particular version\nis known to generate incorrect assembly code when used with CCOPT=-O2.\nSuggested fixes are:\n   1. Update gcc to the latest version and recompile tcptrace.\n   2. Use the same version of gcc, but edit the tcptrace Makefile, setting CCOPT=-O instead of\n      CCOPT=-O2, and then recompile tcptrace.\nEither of these steps should hopefully fix the problem.\n\n", MAX_HOSTLETTER_LEN);
+   exit(-1);
+   return(NULL);  /* NOTREACHED */
 }
 
 

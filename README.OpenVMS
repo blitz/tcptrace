@@ -1,0 +1,146 @@
+Wed May 22, 2002
+
+Matt Muggeridge
+Matt.Muggeridge@hp.com
+
+The information contained in this document describes the OpenVMS port
+of the tcptrace tool, written by Shawn Ostermann.  Refer to the
+"README" file for more information on tcptrace.
+
+This document contains:
+
+   A) Running tcptrace
+   B) Build and Install
+   C) Code Changes to Support OpenVMS
+
+
+A) Running tcptrace
+-------------------
+
+OpenVMS applications that parse command-line arguments, such as
+tcptrace, must be invoked with a foreign command.  A foreign command
+can be manually created by declaring a DCL symbol, or automatically
+created by defining the DCL$PATH logical to include the directory
+path of your application. The examples below use a DCL symbol.
+
+There is a name-space clash with "tcptrace".  TCP/IP Services V5.0 and
+later ship an application named TCPTRACE.EXE which is used to capture
+trace information, similar to "tcpdump".  To avoid this name-space
+clash, it is recommended that this "tcptrace" program is invoked by a
+different name.  In the examples below, the name used is "tcpanal",
+for TCP Analysis.
+
+The steps for running tcpanal are as follows:
+
+  1) Creating the foreign command
+   This is created for you in the DCL command procedure MAKE_VMS.COM.
+   If desired, modify MAKE_VMS.COM to change the name of the foreign
+   command.  By default, a command similar to the following is used in
+   MAKE_VMS.COM:
+     $ tcpanal :== $<directory path>tcptrace.exe
+
+  2) Execute the foreign command
+     $ tcpanal
+
+
+B) Build and Install
+--------------------
+tcptrace on OpenVMS was built and tested using:
+
+  Compaq C V6.4-006 on OpenVMS Alpha V7.2-2 and OpenVMS Alpha V7.3,
+  Compaq C V6.2-009 on OpenVMS Alpha V7.2-2
+  No VAX testing has been attempted.
+
+Step 1: Get pcap library
+  If you don't want to analyse dump files that were created using the
+  PCAP library, such as tcpdump, WinDump, Ethereal, then you should
+  comment out "GROK_TCPDUMP" from the MAKE_VMS.COM procedure and it
+  will be skipped in the compilation.
+
+Step 2: Edit MAKE_VMS.COM
+  Only necessary if you want to change the file formats supported,
+  the modules compiled in, compiler flags, etc (it's commented)
+
+Step 3: Run "$ @MAKE_VMS"
+  That should create tcptrace and define the foreign symbol for
+  invoking it.  The foreign symbol is needed due to the name-space
+  clash (see README_VMS.TXT).  It is suggested you use the name
+  "tcpanal".
+
+  To manually create a foreign command use syntax similar to:
+
+  $ tcpanal :== $<directory path>tcptrace.exe
+
+  For automatic foreign commands, copy tcptrace.exe to a directory
+  specified in the DCL$PATH logical.  E.g. assuming DCL$PATH logical
+  has been created as:
+
+  $ define DCL$PATH disk$tools:[bin]
+  $ copy tcptrace.exe disk$tools:[bin]tcpanal.exe
+
+
+C) Code Changes to Support OpenVMS
+----------------------------------
+
+New Files
+====================================================================
+readme.OpenVMS   - this file
+make_vms.com	 - DCL command procedure to build tcptrace
+snprintf_vms.c	 - replacement for snprintf()
+includes_vms.tlb - library of include files not shipped with OpenVMS
+tcptrace.opt     - linker options file
+
+Missing Header Files - includes_vms.tlb
+---------------------------------------
+  The following header files are not supplied with the current version
+  of OpenVMS compilers nor TCP/IP.  They have been built into a text
+  library "includes_vms.tlb" which is referenced during compilation.
+
+	 netinet/in_systm.h
+	 machine/endian.h
+	 netinet/if_ether.h
+	 netinet/ip.h
+	 netinet/udp.h
+	 netinet/tcp.h (newer version needed than in tcpip$examples)
+	 pcap.h (from PCAP distribution)
+	 net/bpf.h
+	
+  The command used to build this library was:
+
+      $ libr/create/text includes_vms in_systm.h, endian.h, -
+        if_ether.h, ip.h, udp.h, tcp.h, pcap.h, bpf.h
+
+
+Missing snprintf() - snprintf_vms()
+-----------------------------------
+The current version of the CRTL does not support snprintf().  An
+OpenVMS specific module was created "snprintf_vms.c" to resolve this.
+The redefinition was made in tcptrace.h (see below).
+
+Modified Files
+====================================================================
+
+compress.c
+----------
+The current release of OpenVMS does not support fork().  These
+occurrences were changed to vfork().
+
+filter_parser.c
+---------------
+OpenVMS uses a builtin function for alloca().  The necessary
+redefinitions were made.
+
+gcache.c
+--------
+Check if bzero or bcopy are defined before redefining them.  On
+OpenVMS bzero and bcopy are defined to use the C builtins which are
+supposed to be higher performing.
+
+tcptrace.h
+----------
+Define snprintf() to point to OpenVMS declaration snprintf_vms()
+
+
+Matt.
+
+--- end ---

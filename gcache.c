@@ -68,8 +68,12 @@ static char const rcsid[] =
 
 
 /* Let's use ANSI C rather than old BSD calls... */
+#ifndef bzero
 #define bzero(ptr,nbytes) memset(ptr,0,nbytes)
+#endif
+#ifndef bcopy
 #define bcopy(from_ptr,to_ptr,nbytes) memcpy(to_ptr,from_ptr,nbytes)
+#endif
 
 
 

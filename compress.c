@@ -417,7 +417,11 @@ CompOpenPipe(
 	exit(-1);
     }
 
+#ifdef __VMS
+    child_pid = vfork();
+#else
     child_pid = fork();
+#endif
     if (child_pid == -1) {
 	perror("fork");
 	exit(-1);
@@ -542,7 +546,11 @@ PipeHelper(void)
     }
     /* remember: fdpipe[0] is for reading, fdpipe[1] is for writing */
 
+#ifdef __VMS
+    child_pid = vfork();
+#else
     child_pid = fork();
+#endif
     if (child_pid == -1) {
 	perror("fork");
 	exit(-1);

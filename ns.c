@@ -162,8 +162,13 @@ pread_ns(
 	}
 
 	/* make up a reasonable IPv4 packet header */
+#ifdef __VMS
+	ipb->ip_vhl = 0x0405; /* no options, normal length of 20 */
+#else
 	ipb->ip_hl = 5; /* no options, normal length of 20 */
 	ipb->ip_v = 4;  /* IPv4 */
+#endif
+	
 	ipb->ip_tos = 0;
 	ipb->ip_off = 0;
 	ipb->ip_ttl = 64;  /* nice round number */
@@ -180,9 +185,13 @@ pread_ns(
 	    ipb->ip_tos |= IPTOS_CE;
 
 	/* make up a reasonable TCP segment header */
+#ifdef __VMS
+	tcpb->th_xoff = 0x50;  /* no options, normal length of 20 */
+#else
 	tcpb->th_off = 5;  /* no options, normal length of 20 */
-	tcpb->th_flags = TH_ACK; /* sdo: what about first SYN?? */
 	tcpb->th_x2 = 0;
+#endif
+	tcpb->th_flags = TH_ACK; /* sdo: what about first SYN?? */
 	tcpb->th_sum = 0;
 	tcpb->th_urp = 0;
 	tcpb->th_win = htons(65535);
@@ -190,9 +199,17 @@ pread_ns(
 	/* x2 *was* reserved, now used for ECN bits */
 
 	if (strchr(flags, 'C') != NULL)
+#ifdef __VMS
+	    tcpb->th_xoff |= TH_ECN_ECHO;
+#else
 	    tcpb->th_x2 |= TH_ECN_ECHO;
+#endif
 	if (strchr(flags, 'A') != NULL)
+#ifdef __VMS
+	    tcpb->th_xoff |= TH_CWR;
+#else
 	    tcpb->th_x2 |= TH_CWR;
+#endif
 
 	/* convert floating point timestamp to (tv_sec,tv_usec) */
 	c = floor(timestamp);

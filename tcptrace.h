@@ -193,6 +193,7 @@ typedef struct ipaddr {
     } un;
 } ipaddr;
 
+#ifndef __VMS
 
 /* some machines (TRUE64 for one) handle the 4-bit TCP/IP fields
    differently, so this macro simplifies life */
@@ -201,17 +202,19 @@ typedef struct ipaddr {
 #define TH_X2(ptcp)  ((ptcp)->th_x2)
 #define TH_OFF(ptcp) ((ptcp)->th_off)
 /* some systems (darwin at least) use this for something else */
-#undef TH_FLAGS
-#define TH_FLAGS(ptcp) ((ptcp)->th_flags)
 
-/* One alternative looks like this:
+#else
+
+/* One alternative looks like this: */
 #define IP_HL(pip)   ((pip)->ip_vhl&0xf)
 #define IP_V(pip)    ((pip)->ip_vhl>>4)
 #define TH_X2(ptcp)  ((ptcp)->th_xoff&0xf)
 #define TH_OFF(ptcp) ((ptcp)->th_xoff>>4)
- */
 
+#endif
 
+#undef TH_FLAGS
+#define TH_FLAGS(ptcp) ((ptcp)->th_flags)
 
 /* type for a timestamp */
 typedef struct timeval timeval;
@@ -1019,12 +1022,17 @@ typedef int pread_f(struct timeval *, int *, int *, void **,
 	pread_f *is_netscout(void);
 #endif /* GROK_NETSCOUT */
 
-
+#ifndef __VMS
 /* I've had problems with the memcpy function that gcc stuffs into the program
    and alignment problems.  This should fix it! */
 void *MemCpy(void *p1, void *p2, size_t n); /* in tcptrace.c */
 #define memcpy(p1,p2,n) MemCpy(p1,p2,n)
+#endif /* __VMS */
 
+#ifdef __VMS
+#define snprintf snprintf_vms
+int snprintf_vms(char *str, size_t len, const char *fmt, ...);
+#endif
 
 /*
  * timeval compare macros
