@@ -38,7 +38,7 @@ TCP connection 1:
      min segm size:            26 bytes     min segm size:             3 bytes
      avg segm size:          1442 bytes     avg segm size:          1449 bytes
      max win adv:          200020 bytes     max win adv:          200020 bytes
-     min win adv:           65535 bytes     min win adv:           65535 bytes
+     min win adv:          198580 bytes     min win adv:          194160 bytes
      zero win adv:              0 times     zero win adv:              0 times
      avg win adv:          200282 bytes     avg win adv:          199241 bytes
      max owin:              89061 bytes     max owin:              64241 bytes
