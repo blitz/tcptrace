@@ -743,7 +743,7 @@ HttpDoPlot()
 	/* find the plotter for this client */
 	if (p==NO_PLOTTER) {
 	    char title[256];
-	    sprintf(title, "Client %s HTTP trace\n", ph->pclient->clientname);
+	    snprintf(title, sizeof(title),"Client %s HTTP trace\n", ph->pclient->clientname);
 	    p = ph->pclient->plotter =
 		new_plotter(&ptp->a2b,
 			    ph->pclient->clientname,	/* file name prefix */
@@ -765,7 +765,7 @@ HttpDoPlot()
 
 	/* label the connection */
 	plotter_text(p,ph->ptp->first_time,y_axis,"b",
-		     (sprintf(buf,"%s ==> %s",
+		     (snprintf(buf,sizeof(buf),"%s ==> %s",
 			      ph->ptp->a_endpoint, ph->ptp->b_endpoint), buf));
 
 	/* mark the data packets */
@@ -814,7 +814,7 @@ HttpDoPlot()
 			 pget->lastbyte_time, y_axis);
 	    plotter_temp_color(p,"white");
 	    plotter_text(p, pget->lastbyte_time, y_axis, "r",
-			 (sprintf(buf,"%d",pget->content_length),buf));
+			 (snprintf(buf,sizeof(buf),"%d",pget->content_length),buf));
 	    plotter_diamond(p, pget->ack_time, y_axis);
 #ifdef CLUTTERED
 	    plotter_temp_color(p,"white");

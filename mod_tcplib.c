@@ -1096,7 +1096,7 @@ void tcplib_done()
 	for (j=0; j < NUM_APPS; ++j) {
 	    char new_filename[128];
 	    char *app_name = BREAKDOWN_APPS_NAMES[j];
-	    sprintf(new_filename,"%s_%s", filename, app_name);
+	    snprintf(new_filename,sizeof(new_filename),"%s_%s", filename, app_name);
 	    
 	    do_tcplib_final_converse(new_filename, app_name,
 				     global_pstats[i]->conv_interarrival_byapp[j]);
@@ -1966,9 +1966,9 @@ namedfile(
     static char buffer[256];    /* Buffer to store the full file name */
 
     if (!LOCAL_ONLY)
-	sprintf(directory, "%s_%s", output_dir, localsuffix);
+	snprintf(directory,sizeof(directory),"%s_%s", output_dir, localsuffix);
     else
-	sprintf(directory, "%s", output_dir);
+	snprintf(directory,sizeof(directory),"%s", output_dir);
 
     /* try to CREATE the directory if it doesn't exist */
     if (access(directory,F_OK) != 0) {
@@ -1980,7 +1980,7 @@ namedfile(
 	    printf("Created directory '%s'\n", directory);
     }
 
-    sprintf(buffer, "%s/%s", directory, real);
+    snprintf(buffer,sizeof(buffer),"%s/%s", directory, real);
 
     return buffer;
 }
@@ -2399,7 +2399,7 @@ do_tcplib_final_converse(
 #endif /* READ_OLD_FILES */
 
     /* generate the graph title of the table */
-    sprintf(title,"Conversation Interval Time (ms) - %s", protocol);
+    snprintf(title,sizeof(title),"Conversation Interval Time (ms) - %s", protocol);
 
     /* Now, dump out the combined data */
     StoreCounters(filename,title, "% Interarrivals", bucketsize, psizes);
@@ -3339,11 +3339,11 @@ FormatBrief(
     static char infobuf[100];
 
     if (ptcb == pba)
-	sprintf(infobuf,"%s - %s (%s2%s)",
+	snprintf(infobuf,sizeof(infobuf),"%s - %s (%s2%s)",
 		ptp->b_endpoint, ptp->a_endpoint,
 		pba->host_letter, pab->host_letter);
     else
-	sprintf(infobuf,"%s - %s (%s2%s)",
+	snprintf(infobuf,sizeof(infobuf),"%s - %s (%s2%s)",
 		ptp->a_endpoint, ptp->b_endpoint,
 		pab->host_letter, pba->host_letter);
 
@@ -3358,9 +3358,9 @@ FormatAddrBrief(
     char infobuf1[100];
     char infobuf2[100];
 
-    sprintf(infobuf1,"%s", HostName(paddr_pair->a_address));
-    sprintf(infobuf2,"%s", HostName(paddr_pair->b_address));
-    sprintf(infobuf,"%s - %s", infobuf1, infobuf2);
+    snprintf(infobuf1,sizeof(infobuf1),"%s", HostName(paddr_pair->a_address));
+    snprintf(infobuf2,sizeof(infobuf2),"%s", HostName(paddr_pair->b_address));
+    snprintf(infobuf,sizeof(infobuf),"%s - %s", infobuf1, infobuf2);
 
     return(infobuf);
 }
@@ -3834,7 +3834,7 @@ IsNewBurst(
 	if ((last_rtt_usecs != 0) && (etime_usecs < last_rtt_usecs)) {
 	    if (graph_tsg) {
 		char buf[100];
-		sprintf(buf,"short (%ld < %ld)", etime_usecs, last_rtt_usecs);
+		snprintf(buf,sizeof(buf),"short (%ld < %ld)", etime_usecs, last_rtt_usecs);
 		plotter_text(ptcb->tsg_plotter, current_time, seq, "b", buf);
 	    }
 	    return(FALSE);

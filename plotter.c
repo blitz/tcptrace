@@ -138,7 +138,7 @@ increasing time order.  Try without the '-z' flag\n",
     bufix = (bufix+1)%4;
     pbuf = bufs[bufix];
 
-    sprintf(pbuf,"%u.%06u",secs,decimal);
+    snprintf(pbuf,sizeof(bufs[bufix]),"%u.%06u",secs,decimal);
 
     return(pbuf);
 }
@@ -220,7 +220,7 @@ TSGPlotName(
 {
     static char filename[25];
 
-    sprintf(filename,"%s2%s%s",
+    snprintf(filename,sizeof(filename),"%s2%s%s",
 	    plast->host_letter, plast->ptwin->host_letter, suffix);
 
     return(filename);
@@ -298,7 +298,7 @@ new_plotter(
 	filename = TSGPlotName(plast,pl,suffix);
     else if (suffix != NULL) {
 	char buf[100];
-	sprintf(buf,"%s%s", filename, suffix);
+	snprintf(buf,sizeof(buf),"%s%s", filename, suffix);
 	filename = buf;
     }
 

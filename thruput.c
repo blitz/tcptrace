@@ -88,7 +88,7 @@ DoThru(
 	    hisname = ptcb->ptp->a_endpoint;
 	}
 	/* create the plotter file */
-	sprintf(title,"%s_==>_%s (throughput)",
+	snprintf(title,sizeof(title),"%s_==>_%s (throughput)",
 		myname, hisname);
 	ptcb->thru_plotter = new_plotter(ptcb,NULL,title,
 					 "time","thruput (bytes/sec)",

@@ -400,14 +400,14 @@ NewTTP(
     ptp->a2b.tsg_plotter = ptp->b2a.tsg_plotter = NO_PLOTTER;
     if (graph_tsg && !ptp->ignore_pair) {
 	if (!ignore_non_comp || (SYN_SET(ptcp))) {
-	    sprintf(title,"%s_==>_%s (time sequence graph)",
+	    snprintf(title,sizeof(title),"%s_==>_%s (time sequence graph)",
 		    ptp->a_endpoint, ptp->b_endpoint);
 	    ptp->a2b.tsg_plotter =
 		new_plotter(&ptp->a2b,NULL,title,
 			    graph_time_zero?"relative time":"time",
 			    graph_seq_zero?"sequence offset":"sequence number",
 			    PLOT_FILE_EXTENSION);
-	    sprintf(title,"%s_==>_%s (time sequence graph)",
+	    snprintf(title,sizeof(title),"%s_==>_%s (time sequence graph)",
 		    ptp->b_endpoint, ptp->a_endpoint);
 	    ptp->b2a.tsg_plotter =
 		new_plotter(&ptp->b2a,NULL,title,
@@ -426,14 +426,14 @@ NewTTP(
     ptp->a2b.owin_plotter = ptp->b2a.owin_plotter = NO_PLOTTER;
     if (graph_owin && !ptp->ignore_pair) {
 	if (!ignore_non_comp || (SYN_SET(ptcp))) {
-	    sprintf(title,"%s_==>_%s (outstanding data)",
+	    snprintf(title,sizeof(title),"%s_==>_%s (outstanding data)",
 		    ptp->a_endpoint, ptp->b_endpoint);
 	    ptp->a2b.owin_plotter =
 		new_plotter(&ptp->a2b,NULL,title,
 			    graph_time_zero?"relative time":"time",
 			    "Outstanding Data (bytes)",
 			    OWIN_FILE_EXTENSION);
-	    sprintf(title,"%s_==>_%s (outstanding data)",
+	    snprintf(title,sizeof(title),"%s_==>_%s (outstanding data)",
 		    ptp->b_endpoint, ptp->a_endpoint);
 	    ptp->b2a.owin_plotter =
 		new_plotter(&ptp->b2a,NULL,title,
@@ -463,14 +463,14 @@ NewTTP(
     /* init segment size graphs */
     ptp->a2b.segsize_plotter = ptp->b2a.segsize_plotter = NO_PLOTTER;
     if (graph_segsize && !ptp->ignore_pair) {
-	sprintf(title,"%s_==>_%s (segment size graph)",
+	snprintf(title,sizeof(title),"%s_==>_%s (segment size graph)",
 		ptp->a_endpoint, ptp->b_endpoint);
 	ptp->a2b.segsize_plotter =
 	    new_plotter(&ptp->a2b,NULL,title,
 			graph_time_zero?"relative time":"time",
 			"segment size (bytes)",
 			SEGSIZE_FILE_EXTENSION);
-	sprintf(title,"%s_==>_%s (segment size graph)",
+	snprintf(title,sizeof(title),"%s_==>_%s (segment size graph)",
 		ptp->b_endpoint, ptp->a_endpoint);
 	ptp->b2a.segsize_plotter =
 	    new_plotter(&ptp->b2a,NULL,title,
@@ -1806,7 +1806,7 @@ dotrace(
 		if (ptcpo->sack_count > 1) {
 		    char buf[5]; /* can't be more than 1 digit! */
 		    snprintf(buf,sizeof(buf),"%u",scount+1);	/* 1-base, rather than 0-base */
-		    sprintf(buf,"%u",scount+1);	/* 1-base, rather than 0-base */
+		    plotter_text(to_tsgpl,
 				 current_time,
 				 SeqRep(otherdir,ptcpo->sacks[scount].sack_right),
 				 "r", buf);
@@ -2404,7 +2404,7 @@ ExtractContents(
 
     /* if the FILE is NULL, open file */
     snprintf(filename,sizeof(filename),"%s2%s%s", ptcb->host_letter, ptcb->ptwin->host_letter,
-    sprintf(filename,"%s2%s%s", ptcb->host_letter, ptcb->ptwin->host_letter,
+	    CONTENTS_FILE_EXTENSION);
     if (ptcb->extr_contents_file == (MFILE *) NULL) {
 	MFILE *f;
 

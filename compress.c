@@ -133,7 +133,7 @@ static char *FindBinary(
 	if (pch_colon)
 	    *pch_colon = '\00';
 
-	sprintf(abspath,"%s/%s",pch,binname);
+	snprintf(abspath,sizeof(abspath),"%s/%s",pch,binname);
 
 	if (debug>1)
 	    fprintf(stderr,"Checking for binary '%s'\n", abspath);

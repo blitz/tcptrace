@@ -102,7 +102,7 @@ ts2ascii(
 	decimal = ptime->tv_usec;  /* for 6 digits */
 
 	now[24] = '\00';	/* nuke the newline */
-	sprintf(buf, "%s.%06d %s", now, decimal, &now[20]);
+	snprintf(buf,sizeof(buf), "%s.%06d %s", now, decimal, &now[20]);
 
 	return(buf);
 }
@@ -126,7 +126,7 @@ ts2ascii_date(
 
 /* 	decimal = (ptime->tv_usec + 50) / 100;*/  /* for 4 digits */
 	decimal = ptime->tv_usec;  /* for 6 digits */
-	sprintf(buf, "%s.%06d", now, decimal);
+	snprintf(buf,sizeof(buf), "%s.%06d", now, decimal);
 
 	return(buf);
 }
@@ -608,7 +608,7 @@ ParenServiceName(
     if (!pname || isdigit((int)(*pname)))
 	return("");
 
-    sprintf(buf,"(%s)",pname);
+    snprintf(buf,sizeof(buf),"(%s)",pname);
     return(buf);
 }
 
@@ -624,7 +624,7 @@ ParenHostName(
     if (!pname || isdigit((int)(*pname)))
 	return("");
 
-    sprintf(buf,"(%s)",pname);
+    snprintf(buf,sizeof(buf),"(%s)",pname);
     return(buf);
 }
 
@@ -735,7 +735,7 @@ ipv6addr2str(
 {
     static char adr[INET6_ADDRSTRLEN];
     my_inet_ntop(AF_INET6, (char *)&addr, (char *)adr, INET6_ADDRSTRLEN);
-    sprintf(adr,"%s", adr);
+    snprintf(adr,sizeof(adr),"%s", adr);
     return(adr);
 }
 
@@ -751,7 +751,7 @@ Ether_Ntoa (struct ether_addr *e)
     static char buf[30];
 
     pe = (unsigned char *) e;
-    sprintf(buf,"%02x:%02x:%02x:%02x:%02x:%02x",
+    snprintf(buf,sizeof(buf),"%02x:%02x:%02x:%02x:%02x:%02x",
 	    pe[0], pe[1], pe[2], pe[3], pe[4], pe[5]);
     return(buf);
 }

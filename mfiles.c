@@ -122,6 +122,7 @@ Mfopen(
     MFILE *pmf;
     char *directory;
     char *prefix;
+	int len;
 
     if ((strcmp(mode,"w") != 0) && (strcmp(mode,"a") != 0)){
 	fprintf(stderr,"Sorry, Mfopen works only for mode \"w\" or \"a\"\n");
@@ -145,11 +146,12 @@ Mfopen(
 	prefix = ExpandFormat(output_file_prefix);
 
 
-    pmf->fname = MallocZ(strlen(fname)
-			 + strlen(directory)
-			 + strlen(prefix)
-			 + 2);  /* 2: for the slash and null */
-    sprintf(pmf->fname,"%s%s%s%s",
+	len=strlen(fname)+strlen(directory)+strlen(prefix)+2;
+			/* 2: for the slash and null */
+
+    pmf->fname = MallocZ(len);
+
+    snprintf(pmf->fname,len,"%s%s%s%s",
 	    directory,
 	    (*directory)?"/":"",
 	    prefix,

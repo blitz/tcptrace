@@ -595,34 +595,34 @@ PrintConst(
     switch (pf->vartype) {
       case V_ULLONG:
 	if (debug)
-	    sprintf(buf,"ULLONG(%" FS_ULL ")",
+	    snprintf(buf,sizeof(buf),"ULLONG(%" FS_ULL ")",
 		    pf->un.constant.u_longint);
 	else
-	    sprintf(buf,"%" FS_ULL,pf->un.constant.u_longint);
+	    snprintf(buf,sizeof(buf),"%" FS_ULL,pf->un.constant.u_longint);
 	break;
       case V_LLONG:
 	if (debug)
-	    sprintf(buf,"LLONG(%" FS_LL ")", pf->un.constant.longint);
+	    snprintf(buf,sizeof(buf),"LLONG(%" FS_LL ")", pf->un.constant.longint);
 	else
-	    sprintf(buf,"%" FS_LL, pf->un.constant.longint);
+	    snprintf(buf,sizeof(buf),"%" FS_LL, pf->un.constant.longint);
 	break;
       case V_STRING:
 	if (debug)
-	    sprintf(buf,"STRING(%s)",pf->un.constant.string);
+	    snprintf(buf,sizeof(buf),"STRING(%s)",pf->un.constant.string);
 	else
-	    sprintf(buf,"%s",pf->un.constant.string);
+	    snprintf(buf,sizeof(buf),"%s",pf->un.constant.string);
 	break;
       case V_BOOL:
 	if (debug)
-	    sprintf(buf,"BOOL(%s)",  BOOL2STR(pf->un.constant.bool));
+	    snprintf(buf,sizeof(buf),"BOOL(%s)",  BOOL2STR(pf->un.constant.bool));
 	else
-	    sprintf(buf,"%s", BOOL2STR(pf->un.constant.bool));
+	    snprintf(buf,sizeof(buf),"%s", BOOL2STR(pf->un.constant.bool));
 	break;
       case V_IPADDR:
 	if (debug)
-	    sprintf(buf,"IPADDR(%s)", HostAddr(*pf->un.constant.pipaddr));
+	    snprintf(buf,sizeof(buf),"IPADDR(%s)", HostAddr(*pf->un.constant.pipaddr));
 	else
-	    sprintf(buf,"%s", HostAddr(*pf->un.constant.pipaddr));
+	    snprintf(buf,sizeof(buf),"%s", HostAddr(*pf->un.constant.pipaddr));
 	break;
       default: {
 	    fprintf(stderr,"PrintConst: unknown constant type %d (%s)\n",
@@ -644,14 +644,14 @@ PrintVar(
 
 
     if (debug)
-	sprintf(buf,"VAR(%s,'%s%s',%lu,%c)",
+	snprintf(buf,sizeof(buf),"VAR(%s,'%s%s',%lu,%c)",
 		Vartype2Str(pf->vartype),
 		pf->un.variable.fclient?"c_":"s_",
 		pf->un.variable.name,
 		pf->un.variable.offset,
 		pf->conjunction?'c':'d');
     else
-	sprintf(buf,"%s%s",
+	snprintf(buf,sizeof(buf),"%s%s",
 		pf->un.variable.fclient?"c_":"s_",
 		pf->un.variable.name);
 
@@ -703,10 +703,10 @@ Res2Str(
     
     /* for constants */
     switch (pres->vartype) {
-      case V_ULLONG:	sprintf(buf,"ULLONG(%" FS_ULL ")",pres->val.u_longint); break;
-      case V_LLONG:	sprintf(buf,"LLONG(%"  FS_LL  ")",pres->val.longint); break;
-      case V_STRING:	sprintf(buf,"STRING(%s)",pres->val.string); break;
-      case V_BOOL:	sprintf(buf,"BOOL(%s)",  BOOL2STR(pres->val.bool)); break;
+      case V_ULLONG:	snprintf(buf,sizeof(buf),"ULLONG(%" FS_ULL ")",pres->val.u_longint); break;
+      case V_LLONG:	snprintf(buf,sizeof(buf),"LLONG(%"  FS_LL  ")",pres->val.longint); break;
+      case V_STRING:	snprintf(buf,sizeof(buf),"STRING(%s)",pres->val.string); break;
+      case V_BOOL:	snprintf(buf,sizeof(buf),"BOOL(%s)",  BOOL2STR(pres->val.bool)); break;
       default: {
 	  fprintf(stderr,"Res2Str: unknown constant type %d (%s)\n",
 		  pres->vartype, Vartype2Str(pres->vartype));
@@ -747,11 +747,11 @@ PrintFilterInternal(
 
     switch(pf->op) {
       case OP_CONSTANT:
-	sprintf(buf,"%s", PrintConst(pf));
+	snprintf(buf,sizeof(buf),"%s", PrintConst(pf));
 	return(strdup(buf));
 
       case OP_VARIABLE:
-	sprintf(buf,"%s", PrintVar(pf));
+	snprintf(buf,sizeof(buf),"%s", PrintVar(pf));
 	return(strdup(buf));
 
       case OP_AND:
@@ -769,19 +769,19 @@ PrintFilterInternal(
       case OP_MOD:
       case OP_BAND:
       case OP_BOR:
-	sprintf(buf,"(%s%s%s)",
+	snprintf(buf,sizeof(buf),"(%s%s%s)",
 		PrintFilterInternal(pf->un.binary.left),
 		Op2Str(pf->op),
 		PrintFilterInternal(pf->un.binary.right));
 	return(strdup(buf));
 
       case OP_NOT:
-	sprintf(buf," NOT(%s)",
+	snprintf(buf,sizeof(buf)," NOT(%s)",
 	       PrintFilterInternal(pf->un.unary.pf));
 	return(strdup(buf));
 
       case OP_SIGNED:
-	sprintf(buf," SIGNED(%s)",
+	snprintf(buf,sizeof(buf)," SIGNED(%s)",
 	       PrintFilterInternal(pf->un.unary.pf));
 	return(strdup(buf));
 

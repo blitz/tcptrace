@@ -626,7 +626,7 @@ dump_rtt_sample(
 	MFILE *f;
 	static char filename[15];
 
-	sprintf(filename,"%s2%s%s",
+	snprintf(filename,sizeof(filename),"%s2%s%s",
 		ptcb->host_letter, ptcb->ptwin->host_letter,
 		RTT_DUMP_FILE_EXTENSION);
 
@@ -667,7 +667,7 @@ graph_rtt_sample(
 	    name_from = ptcb->ptp->b_endpoint;
 	    name_to   = ptcb->ptp->a_endpoint;
 	}
-	sprintf(title,"%s_==>_%s (rtt samples)", name_from, name_to);
+	snprintf(title,sizeof(title),"%s_==>_%s (rtt samples)", name_from, name_to);
 	ptcb->rtt_plotter = new_plotter(ptcb,NULL,title,
 					"time","rtt (ms)",
 					RTT_GRAPH_FILE_EXTENSION);

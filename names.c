@@ -82,13 +82,13 @@ ServiceName(
     char *sb_port;
 
     if (!resolve_ports) {
-	sprintf(port_buf,"%hu",port);
+	snprintf(port_buf,sizeof(port_buf),"%hu",port);
 	return(port_buf);
     }
 
     /* only small numbers have names */
     if (port > 1023) {
-	sprintf(port_buf,"%hu",port);
+	snprintf(port_buf,sizeof(port_buf),"%hu",port);
 	return(port_buf);
     }
 
@@ -116,7 +116,7 @@ ServiceName(
     if (pse != NULL) {
 	sb_port = pse->s_name;
     } else {
-	sprintf(port_buf,"%d",port);
+	snprintf(port_buf,sizeof(port_buf),"%d",port);
 	sb_port = port_buf;
     }
     if (debug > 2)
@@ -232,7 +232,7 @@ EndpointName(
     sb_host = HostName(ipaddress);
     sb_port = ServiceName(port);
 
-    sprintf(name_buf,"%s:%s", sb_host, sb_port);
+    snprintf(name_buf,sizeof(name_buf),"%s:%s", sb_host, sb_port);
 
     return(name_buf);
 }

@@ -181,7 +181,7 @@ FormatBrief(
     tcb *pba = &ptp->b2a;
     static char infobuf[100];
 
-    sprintf(infobuf,"%s - %s (%s2%s)",
+    snprintf(infobuf,sizeof(infobuf),"%s - %s (%s2%s)",
 	    ptp->a_endpoint, ptp->b_endpoint,
 	    pab->host_letter, pba->host_letter);
     return(infobuf);
@@ -212,9 +212,9 @@ PrintTrace(
     u_long pab_last, pba_last;
     
     fprintf(stdout,"\thost %-4s      %s\n",
-	    (sprintf(bufl,"%s:", host1),bufl), ptp->a_endpoint);
+	    (snprintf(bufl,sizeof(bufl),"%s:", host1),bufl), ptp->a_endpoint);
     fprintf(stdout,"\thost %-4s      %s\n",
-	    (sprintf(bufl,"%s:", host2),bufl), ptp->b_endpoint);
+	    (snprintf(bufl,sizeof(bufl),"%s:", host2),bufl), ptp->b_endpoint);
     fprintf(stdout,"\tcomplete conn: %s",
 	    ConnReset(ptp)?"RESET":(
 		ConnComplete(ptp)?"yes":"no"));
@@ -261,15 +261,15 @@ PrintTrace(
 	      pab->out_order_pkts, pba->out_order_pkts);
     StatLineI("pushed data pkts","", pab->data_pkts_push, pba->data_pkts_push);
     StatLineP("SYN/FIN pkts sent","","%s",
-	      (sprintf(bufl,"%d/%d",
+	      (snprintf(bufl,sizeof(bufl),"%d/%d",
 		       pab->syn_count, pab->fin_count),bufl),
-	      (sprintf(bufr,"%d/%d",
+	      (snprintf(bufr,sizeof(bufr),"%d/%d",
 		       pba->syn_count, pba->fin_count),bufr));
     if (pab->f1323_ws || pba->f1323_ws || pab->f1323_ts || pba->f1323_ts) {
 	StatLineP("req 1323 ws/ts","","%s",
-		  (sprintf(bufl,"%c/%c",
+		  (snprintf(bufl,sizeof(bufl),"%c/%c",
 		      pab->f1323_ws?'Y':'N',pab->f1323_ts?'Y':'N'),bufl),
-		  (sprintf(bufr,"%c/%c",
+		  (snprintf(bufr,sizeof(bufr),"%c/%c",
 		      pba->f1323_ws?'Y':'N',pba->f1323_ts?'Y':'N'),bufr));
     }
     if (pab->f1323_ws || pba->f1323_ws) {
@@ -423,9 +423,9 @@ PrintTrace(
 	      etime_data2 / 1000000.0);
     StatLineP("idletime max","ms","%s",
 	      ZERO_TIME(&pab->last_time)?"NA":
-	      (sprintf(bufl,"%8.1f",(double)pab->idle_max/1000.0),bufl),
+	      (snprintf(bufl,sizeof(bufl),"%8.1f",(double)pab->idle_max/1000.0),bufl),
 	      ZERO_TIME(&pba->last_time)?"NA":
-	      (sprintf(bufr,"%8.1f",(double)pba->idle_max/1000.0),bufr));
+	      (snprintf(bufr,sizeof(bufr),"%8.1f",(double)pba->idle_max/1000.0),bufr));
 
     if ((pab->num_hardware_dups != 0) || (pba->num_hardware_dups != 0)) {
 	StatLineI("hardware dups","segs",
@@ -605,9 +605,9 @@ UDPPrintTrace(
     char bufl[40];
 
     fprintf(stdout,"\thost %-4s      %s\n",
-	    (sprintf(bufl,"%s:", host1),bufl), pup->a_endpoint);
+	    (snprintf(bufl,sizeof(bufl),"%s:", host1),bufl), pup->a_endpoint);
     fprintf(stdout,"\thost %-4s      %s\n",
-	    (sprintf(bufl,"%s:", host2),bufl), pup->b_endpoint);
+	    (snprintf(bufl,sizeof(bufl),"%s:", host2),bufl), pup->b_endpoint);
     fprintf(stdout,"\n");
 
     fprintf(stdout,"\tfirst packet:  %s\n", ts2ascii(&pup->first_time));
@@ -697,7 +697,7 @@ StatLineFieldL(
     char valbuf[21];
     
     /* determine the value to print */
-    sprintf(valbuf,format,arg);
+    snprintf(valbuf,sizeof(valbuf),format,arg);
 
     /* print the field */
     printf("     ");
@@ -734,7 +734,7 @@ StatLineField(
     char valbuf[20];
     
     /* determine the value to print */
-    sprintf(valbuf,format,arg);
+    snprintf(valbuf,sizeof(valbuf),format,arg);
 
     /* print the field */
     printf("     ");
@@ -761,7 +761,7 @@ StatLineFieldF(
     
     /* determine the value to print */
     if (printable)
-	sprintf(valbuf,format,arg);
+	snprintf(valbuf,sizeof(valbuf),format,arg);
 
     /* print the field */
     printf("     ");
@@ -783,7 +783,7 @@ StatLineOne(
     char labbuf[20];
     
     /* format the label */
-    sprintf(labbuf, "%s:", label);
+    snprintf(labbuf,sizeof(labbuf), "%s:", label);
 
     /* print the field */
     printf("%-18s %9s %-5s", labbuf, value, units);
@@ -800,7 +800,7 @@ elapsed2str(
 
     etime_secs = etime / 1000000.0;
     etime_usecs = 1000000 * (etime/1000000.0 - (double)etime_secs);
-    sprintf(buf,"%lu:%02lu:%02lu.%06lu",
+    snprintf(buf,sizeof(buf),"%lu:%02lu:%02lu.%06lu",
 	    etime_secs / (60 * 60),
 	    etime_secs % (60 * 60) / 60,
 	    (etime_secs % (60 * 60)) % 60,
@@ -853,7 +853,7 @@ UDPFormatBrief(
     ucb *pba = &pup->b2a;
     static char infobuf[100];
 
-    sprintf(infobuf,"%s - %s (%s2%s)",
+    snprintf(infobuf,sizeof(infobuf),"%s - %s (%s2%s)",
 	    pup->a_endpoint, pup->b_endpoint,
 	    pab->host_letter, pba->host_letter);
     return(infobuf);

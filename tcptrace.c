@@ -1332,9 +1332,11 @@ CheckArguments(
     if ((home = getenv("HOME")) != NULL) {
 	struct stat statbuf;
 
-	rc_path = malloc(strlen(home)+strlen(TCPTRACE_RC_FILE)+2);
+	int rc_len=strlen(home)+strlen(TCPTRACE_RC_FILE)+2;
 
-	sprintf(rc_path, "%s/%s", home, TCPTRACE_RC_FILE);
+	rc_path = malloc(rc_len);
+
+	snprintf(rc_path,rc_len, "%s/%s", home, TCPTRACE_RC_FILE);
 	if (debug>1)
 	    printf("Looking for resource file '%s'\n", rc_path);
 
@@ -1997,7 +1999,7 @@ DumpFlags(void)
     for (i=0; i < NUM_EXTENDED_BOOLS; ++i) {
 	struct ext_bool_op *pbop = &extended_bools[i];
 	char buf[100];
-	sprintf(buf,"%s:", pbop->bool_optname);
+	snprintf(buf,sizeof(buf),"%s:", pbop->bool_optname);
 	fprintf(stderr,"%-18s%s\n", buf, BOOL2STR(*pbop->bool_popt));
     }
 
@@ -2005,7 +2007,7 @@ DumpFlags(void)
     for (i=0; i < NUM_EXTENDED_VARS; ++i) {
 	struct ext_var_op *bvop = &extended_vars[i];
 	char buf[100];
-	sprintf(buf,"%s:", bvop->var_optname);
+	snprintf(buf,sizeof(buf),"%s:", bvop->var_optname);
 	fprintf(stderr,"%-18s%s\n", buf,
 		(*bvop->var_popt)?*bvop->var_popt:"<NULL>");
     }
@@ -2373,7 +2375,7 @@ ExpandFormat(const char *format)
 	    time(&now);
 	    ptm = localtime(&wallclock_start.tv_sec);
 
-	    sprintf(buf,"%d-%d-%d",
+	    snprintf(buf,sizeof(buf),"%d-%d-%d",
 		    ptm->tm_mon+1,
 		    ptm->tm_mday,
 		    1900 + ptm->tm_year);

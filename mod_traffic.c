@@ -434,7 +434,7 @@ traffic_init(
 
     if (doplot_long) {
 	char title[100];
-	sprintf(title,"connections still open after %d seconds\n",
+	snprintf(title,sizeof(title),"connections still open after %d seconds\n",
 		longconn_duration);
 	plotter_long =
 	    new_plotter(NULL,
@@ -754,7 +754,7 @@ PortName(
     if (port == 0)
 	return("total");
 
-    sprintf(buf,"%d",port);
+    snprintf(buf,sizeof(buf),"%d",port);
     return(buf);
 }
 
