@@ -194,7 +194,7 @@ int tcplib_init(
 	    }
 
 	    if(output_dir[0]) {
-		sprintf(output_dir,"");
+		*output_dir = '\00';
 	    }
 
 	    dirlen = strlen(argv[i+1]);
@@ -457,8 +457,7 @@ void tcplib_newfile(
  * ***************************************************************************/
 void tcplib_usage()
 {
-
-    printf("Something goes here.\n");
+    printf("\t-xtcplib\tgenerate tcplib-format data files from packets\n");
 }
 
 /* End of the tcptrace standard function section */
@@ -678,7 +677,6 @@ static void do_final_breakdown(
     int a2b_len;      /* What kind of port is A's port? */
     int b2a_len;      /* What kind of port is B's port? */
     tcp_pair *ptp;    /* A pointer to a conversation struct */
-    char filbuf[256]; /* Buffer to handle file name */
 
     /* This is the header for the traffic breakdown file.  It follows the
      * basic format of the original TCPLib breakdown file, but has been

@@ -89,6 +89,11 @@ struct module {
 #endif /* LOAD_MODULE_HTTP */
 
 
+#ifdef LOAD_MODULE_TCPLIB
+#include "mod_tcplib.h"		/* for the TCPLIB package */
+#endif /* LOAD_MODULE_TCPLIB */
+
+
 #ifdef LOAD_MODULE_TRAFFIC
 #include "mod_traffic.h"	/* for the traffic package */
 #endif /* LOAD_MODULE_TRAFFIC */
@@ -119,6 +124,19 @@ struct module modules[] = {
 #endif /* LOAD_MODULE_HTTP */
 
     /* list other modules here ... */
+#ifdef LOAD_MODULE_TCPLIB
+    /* this example is for the TCPLIB module */
+    {TRUE,			/* make FALSE if you don't want to call it at all */
+     "tcplib",			/* name of the module */
+     "TCPLib analysis package",	/* description of the module */
+     tcplib_init,			/* routine to call to init the module */
+     tcplib_read,			/* routine to pass each TCP segment */
+     tcplib_done,			/* routine to call at program end */
+     tcplib_usage,		/* routine to call to print module usage */
+     tcplib_newfile,		/* routine to call on each new file */
+     tcplib_newconn},		/* routine to call on each new connection */
+#endif /* LOAD_MODULE_TCPLIB */
+
 
 #ifdef LOAD_MODULE_TRAFFIC
     /* ttl traffic analysis */
