@@ -91,6 +91,9 @@ typedef struct module_conninfo_tcb {
     u_long	burst_bytes;	/* size of the current burst */
     struct burstdata *pburst;
 
+    /* was the last segment PUSHed? */
+    Bool last_seg_pushed;	/* Thu Aug 26, 1999 - not used  */
+
     /* last time new data was sent */
     timeval	last_data_time;
 
@@ -227,6 +230,11 @@ static struct tcplibstats {
 /* local debugging flag */
 static int ldebug = 0;
 
+/* window hack for our TRAFGEN files */
+static Bool trafgen_data_hack = FALSE;
+static int trafgen_data_hack_excluded = 0;
+static int trafgen_data_hack_included = 0;
+
 /* offset for all ports */
 static int ipport_offset = 0;
 
@@ -357,7 +365,8 @@ static void AddEndpointPair(endpoint_pair *hashtable[],
 static endpoint_pair *FindEndpointPair(endpoint_pair *hashtable[],
 				       tcp_pair_addrblock *paddr_pair);
 static Bool IsNewBurst(module_conninfo *pmc, tcb *ptcb,
-		       module_conninfo_tcb *ptcbc, seqnum seq);
+		       module_conninfo_tcb *ptcbc,
+		       struct tcphdr *tcp);
 
 
 /* various helper routines used by many others -- sdo */
@@ -699,6 +708,12 @@ Must be integer value greater than 0.\n");
 	}
 
 
+	/* window hack */
+	else
+	if (argv[i] && !strncmp(argv[i], "-H", 2)) {
+	    trafgen_data_hack = TRUE;
+	}
+
 	/* local debugging flag */
 	else
 	if (argv[i] && !strncmp(argv[i], "-d", 2)) {
@@ -778,23 +793,19 @@ tcplib_save_bursts()
 		
 		/* count the max connections */
 		AddToCounter(&global_pstats[dtype]->http_P_maxconns,
-			     pp->maxparallel, 1);
+			     pp->maxparallel, 1, 1);
 
 		/* count the ttl items in the parallel group */
 		AddToCounter(&global_pstats[dtype]->http_P_ttlitems,
-			     pp->ttlitems[dir] / BUCKETSIZE_NUMITEMS,
-			     1);
+			     pp->ttlitems[dir],
+			     1, GRAN_NUMITEMS);
 
-		/* binary counter, one sample of either 0 or 1 */
-		/* to make this work right, we must bump up the */
-		/* numbers so it looks like: */
-		/* Num Items	% Conns	Running Sum	Counts	*/
-		/* 0.000	0.0000	    0	    	0	*/
-		/* 1.000	0.7927	25484		25484	*/
-		/* 2.000	1.0000	32150		6666	*/
+		/* binary counter, one sample of either: */
+		/*  1: NOT persistant */
+		/*  2: persistant */
 		AddToCounter(&global_pstats[dtype]->http_P_persistant,
 			     pp->persistant[dir]?2:1,
-			     1);
+			     1, 1);
 
 		/* don't count it again! */
 		pmc->pparallelism->counted[dtype] = TRUE;
@@ -802,7 +813,8 @@ tcplib_save_bursts()
 	}
 
 	/* add the NON-parallel HTTP to the counter */
-	AddToCounter(&global_pstats[dtype]->http_P_maxconns, 1, non_parallel);
+	AddToCounter(&global_pstats[dtype]->http_P_maxconns, 1,
+		     non_parallel, 1);
     }
 
 
@@ -875,8 +887,6 @@ tcplib_save_bursts()
 				     global_pstats[dtype]->http_P_maxconns);
 	
 	/* store the persistance */
-	/* (placeholder required for boolean distribution */
-	AddToCounter(&global_pstats[dtype]->http_P_persistant, 0, 1);
 	filename = namedfile(dtype_names[dtype],TCPLIB_HTTP_P_PERSIST_FILE);
 	tcplib_do_GENERIC_nitems(filename,
 				 global_pstats[dtype]->http_P_persistant);
@@ -1011,6 +1021,9 @@ void tcplib_done()
 	   newconn_ftp_data_heuristic);
     printf("tcplib: %lu parallel HTTP connections seen\n",
 	   newconn_http_parallel);
+    if (trafgen_data_hack)
+	printf("tcplib: used window hack (%d excluded, %d accepted)\n",
+	       trafgen_data_hack_excluded, trafgen_data_hack_included);
     for (i=0; i < NUM_DIRECTION_TYPES; ++i) {
 	printf("  Flows of type %-8s %5lu (%lu duplex, %lu noplex, %lu unidir, %lu nodata)\n",
 	       dtype_names[i],
@@ -1123,7 +1136,6 @@ void tcplib_read(
 	tcplib_add_telnet_interarrival(
 	    ptp, pmc, &pstats->telnet_interarrival);
     }
-    pmc->last_time = current_time;
 
 
     /* keep track of bytes/second too */
@@ -1135,14 +1147,14 @@ void tcplib_read(
 	pstats->throughput_bytes += data_len;
 
 	/* elapsed time in milliseconds */
-	etime = (int)(elapsed(last_time, ptp->last_time)/1000.0);
+	etime = (int)(elapsed(last_time, current_time)/1000.0);
 
 	/* every 15 seconds, gather throughput stats */
 	if (etime > 15000) {
 	    AddToCounter(&pstats->throughput,
-			 pstats->throughput_bytes/1024, etime);
+			 pstats->throughput_bytes, etime, 1024);
 	    pstats->throughput_bytes = 0;
-	    last_time = ptp->last_time;
+	    last_time = current_time;
 	}
 
     }
@@ -1162,10 +1174,8 @@ void tcplib_read(
     /* DATA Burst checking (NNTP and HTTP only) */
     if ((data_len > 0) &&
 	(is_nntp_conn(pmc) || is_http_conn(pmc))) {
-	seqnum seq = ntohl(tcp->th_seq);
-
 	/* see if it's a new burst */
-	if (IsNewBurst(pmc, ptcb, ptcbc, seq)) {
+	if (IsNewBurst(pmc, ptcb, ptcbc, tcp)) {
 	    int etime;
 
 	    if (ldebug > 1)
@@ -1181,8 +1191,9 @@ void tcplib_read(
 	    if (is_http_conn(pmc) && pmc->pparallelism) {
 		struct parallelism *pp = pmc->pparallelism;
 
-		if (ptcbc->numitems > 1)
+		if (ptcbc->numitems > 1) {
 		    pp->persistant[dir] = TRUE;
+		}
 
 		/* add to total bursts in parallel group */
 		++pp->ttlitems[dir];
@@ -1194,8 +1205,8 @@ void tcplib_read(
 		       ptcbc->burst_bytes,
 		       FormatBrief(pmc->ptp,ptcb));
 	    AddToCounter(&ptcbc->pburst->size,
-			 ptcbc->burst_bytes/BUCKETSIZE_BURSTSIZE,
-			 1);
+			 ptcbc->burst_bytes,
+			 1, GRAN_BURSTSIZE);
 
 	    /* reset counter for next burst */
 	    ptcbc->burst_bytes = 0;
@@ -1205,9 +1216,21 @@ void tcplib_read(
 				  current_time)/1000.0);
 
 	    /* accumulate idletime stats */
-	    AddToCounter(&ptcbc->pburst->idletime,
-			 etime / BUCKETSIZE_BURSTIDLETIME,
-			 1);
+
+	    /* version 2.0 - Thu Aug 26, 1999, subtract the RTT */
+	    /* use rtt_last, RTT of last "good ack" */
+	    if (ptcb->rtt_last > 0.0) {
+		int last_good_rtt = ptcb->rtt_last / 1000.0;
+#ifdef OLD
+		printf("last_good: %d (%f), etime_0: %d  etime_1: %d\n",
+		       last_good_rtt, ptcb->rtt_last, etime, etime-last_good_rtt);
+#endif /* OLD */
+		etime -= last_good_rtt;
+
+		if (etime >= 0)
+		    AddToCounter(&ptcbc->pburst->idletime,
+				 etime, 1, GRAN_BURSTIDLETIME);
+	    }
 	}
 
 	/* accumulate size of current burst */
@@ -1220,11 +1243,15 @@ void tcplib_read(
     /* This is just a sanity check to make sure that we've got at least
      * one time, and that our breakdown section is working on the same
      * file that we are. */
-    data_len = (ptp->last_time.tv_sec - pstats->last_interval.tv_sec);
+    data_len = (current_time.tv_sec - pstats->last_interval.tv_sec);
     
     if (data_len >= TIMER_VAL) {
 	update_breakdown(ptp, pstats);
     }
+
+    /* analysis done, remember the last packet and PUSH status */
+    pmc->last_time = current_time;
+    ptcbc->last_seg_pushed = PUSH_SET(tcp);
 
     return;
 }
@@ -1371,6 +1398,16 @@ tcplib_newconn(
 				   * is tcptrace's way of allowing modules
 				   * to keep track of information about
 				   * connections */
+
+    /* trafgen only uses a few ports... */
+    if (trafgen_data_hack) {
+	u_short server_port = ptp->addr_pair.b_port;
+
+	if (server_port < ipport_offset+IPPORT_FTP_DATA)
+	    return(NULL);
+	if (server_port > ipport_offset+IPPORT_NNTP)
+	    return(NULL);
+    }
 
     /* verify that it's a connection we're interested in! */
     ++newconn_counter;
@@ -1520,6 +1557,7 @@ void tcplib_usage()
 \t           ranges and commas, as in:\n\
 \t               -i128.1.0.0-128.2.255.255\n\
 \t               -i128.1.0.0-128.2.255.255,192.10.1.0-192.10.2.240\n\
+\t  -H       use hacks to find data from trafgen-generated files\n\
 \t  -DDIR    store the results in directory DIR, default is \"data\"\n\
 ");
 }
@@ -2058,7 +2096,7 @@ static void do_tcplib_next_converse(
     }
 
     /* keep stats */
-    AddToCounter(&pstats->conv_interarrival, etime, 1);
+    AddToCounter(&pstats->conv_interarrival, etime, 1, 1);
     
     return;
 }
@@ -2124,7 +2162,7 @@ do_tcplib_final_converse(
     char *filename,
     dyn_counter psizes)
 {
-    const int bucketsize = BUCKETSIZE_CONVARRIVAL;
+    const int bucketsize = GRAN_CONVARRIVAL;
 
 
 #ifdef READ_OLD_FILES
@@ -2146,7 +2184,7 @@ do_tcplib_conv_duration(
     char *filename,
     dyn_counter psizes)
 {
-    const int bucketsize = BUCKETSIZE_CONVDURATION;
+    const int bucketsize = GRAN_CONVDURATION;
 
 #ifdef READ_OLD_FILES
     psizes = ReadOldFile(filename, bucketsize, 0, psizes);
@@ -2183,7 +2221,7 @@ static void do_tcplib_next_duration(
 			  pmc->last_time)/1000.0); /* convert us to ms */
 
     /* keep stats */
-    AddToCounter(&pstats->conv_duration, etime, 1);
+    AddToCounter(&pstats->conv_duration, etime, 1, GRAN_CONVDURATION);
     
     return;
 }
@@ -2264,7 +2302,7 @@ void tcplib_do_telnet_duration(
     f_testinside p_tester)	/* functions to test "insideness" */
 {
     dyn_counter psizes = NULL;
-    const int bucketsize = BUCKETSIZE_TELNET_DURATION;
+    const int bucketsize = GRAN_TELNET_DURATION;
     module_conninfo *pmc;
     
 
@@ -2290,7 +2328,7 @@ void tcplib_do_telnet_duration(
 			pmc->last_time)/1000.0); /* convert us to ms */
 
 	    /* increment the number of instances at this time. */
-	    AddToCounter(&psizes, temp/bucketsize, 1);
+	    AddToCounter(&psizes, temp, 1, bucketsize);
 	}
     }
 
@@ -2408,7 +2446,7 @@ void tcplib_add_telnet_interarrival(
     /* In this case, we know for a fact that we don't have a value of
      * temp that larger than the array, so we just increment the count
      */
-    (void) AddToCounter(psizes, temp, 1);
+    (void) AddToCounter(psizes, temp, 1, 1);
 
     return;
 }
@@ -2439,7 +2477,7 @@ void tcplib_do_telnet_interarrival(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* stuck with the interface :-(  */
 {
-    const int bucketsize = BUCKETSIZE_TELNET_ARRIVAL;
+    const int bucketsize = GRAN_TELNET_ARRIVAL;
     dyn_counter psizes = NULL;
 
     /* ugly interface conversion :-( */
@@ -2492,7 +2530,7 @@ void tcplib_do_telnet_packetsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* stuck with the interface :-(  */
 {
-    const int bucketsize = BUCKETSIZE_TELNET_PACKETSIZE;
+    const int bucketsize = GRAN_TELNET_PACKETSIZE;
     dyn_counter psizes = NULL;
 
     /* ugly interface conversion :-( */
@@ -2553,7 +2591,7 @@ void tcplib_add_telnet_packetsize(
     int length)  /* The length of the packet to be added to the table */
 {
     /* Incrementing the table */
-    AddToCounter(&pstats->telnet_pktsize, length, 1);
+    AddToCounter(&pstats->telnet_pktsize, length, 1, 1);
 }
 
 
@@ -2613,7 +2651,7 @@ void tcplib_do_ftp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = BUCKETSIZE_FTP_ITEMSIZE;
+    const int bucketsize = GRAN_FTP_ITEMSIZE;
 
     tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_FTPDATA,
 			       p_tester, bucketsize);
@@ -2624,7 +2662,7 @@ void tcplib_do_ftp_numitems(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    int bucketsize = BUCKETSIZE_NUMITEMS;
+    int bucketsize = GRAN_NUMITEMS;
     module_conninfo *pmc;
     dyn_counter psizes = NULL;
     
@@ -2645,7 +2683,8 @@ void tcplib_do_ftp_numitems(
 		if (ldebug && (pmc->tcb_cache[TCB_CACHE_A2B].numitems == 0))
 			printf("numitems: control %s has NONE\n",
 			       FormatBrief(pmc->ptp, NULL));
-		AddToCounter(&psizes, pmc->tcb_cache[TCB_CACHE_A2B].numitems, 1);
+		AddToCounter(&psizes, pmc->tcb_cache[TCB_CACHE_A2B].numitems,
+			     1, 1);
 	    }
 	}
     }
@@ -2664,7 +2703,7 @@ static void tcplib_do_ftp_control_size(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = BUCKETSIZE_FTP_CTRLSIZE;
+    const int bucketsize = GRAN_FTP_CTRLSIZE;
 
     tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_FTPCTRL,
 			       p_tester, bucketsize);
@@ -2688,7 +2727,7 @@ static void tcplib_do_smtp_itemsize(
     char *filename,		/* where to store the output */
     f_testinside p_tester)	/* functions to test "insideness" */
 {
-    const int bucketsize = BUCKETSIZE_SMTP_ITEMSIZE;
+    const int bucketsize = GRAN_SMTP_ITEMSIZE;
 
     tcplib_do_GENERIC_itemsize(filename, TCPLIBPORT_SMTP,
 			       p_tester, bucketsize);
@@ -2731,6 +2770,43 @@ is_http_port(
  ***************************************************************************/
 
 
+/***************************************************************************
+ *
+ * StoreCounters -- store a dyncounter structure into a file
+ *   this get's a little interesting because of the way tcplib works
+ *   for example, given the simple table
+ *	1 0.3333
+ *	2 0.6667
+ *	3 1.0000
+ *   tcplib will generate integer samples (from a random test):
+ *	1	66756	0.6676	0.6676
+ *	2	33244	0.3324	1.0000
+ *
+ *   as another example, given the simple table (same as before except
+ *   for the first line)
+ *	0 0.0000
+ *	1 0.3333
+ *	2 0.6667
+ *	3 1.0000
+ *   tcplib will generate integer samples (from a random test):
+ *	0	33609	0.3361	0.3361
+ *	1	33044	0.3304	0.6665
+ *	2	33347	0.3335	1.0000
+ *   SO... if we really want 1/3 1's, 2's, and 3's, we need the table:
+ *	1 0.0000
+ *	2 0.3333
+ *	3 0.6667
+ *	4 1.0000
+ *    and a random test gives us
+ *	1	33609	0.3361	0.3361
+ *	2	33044	0.3304	0.6665
+ *	3	33347	0.3335	1.0000
+ *    which is exactly what we wanted.
+ *
+ *    ... therefore, for each counter, we store counter+GRANULARITY
+ *    in the table, and also store a 0.0000 value for the FIRST entry
+ * 
+ **************************************************************************/
 static void
 StoreCounters(
     char *filename,
@@ -2746,6 +2822,16 @@ StoreCounters(
     if (ldebug>1)
 	printf("Saving data for file '%s'\n", filename);
 
+    /* verify bucketsize, but not needed anymore */
+    if (bucketsize != GetGran(psizes)) {
+	/* probably because the counter was never used */
+	if (GetTotalCounter(psizes) != 0) {
+	    fprintf(stderr,"StoreCounters: bad bucketsize (%s)\n",
+		    filename);
+	    exit(-1);
+	}
+    }
+
     if (!(fil = fopen(filename, "w"))) {
 	perror(filename);
 	exit(1);
@@ -2758,21 +2844,30 @@ StoreCounters(
 	    printf("  (No data for file '%s')\n", filename);
     } else {
 	int cookie = 0;
+	int first = TRUE;
 	while (1) {
 	    u_long ix;
 	    int value;
 	    u_long count;
+	    u_long total_counter = GetTotalCounter(psizes);
+	    u_long gran = GetGran(psizes);
 
 	    if (NextCounter(&psizes, &cookie, &ix, &count) == 0)
 		break;
 
-	    value = ix * bucketsize;
+	    value = ix;
 	    running_total += count;
 
 	    if (count) {
+		if (first) {
+		    /* see comments above! */
+		    fprintf(fil, "%.3f\t%.4f\t%d\t%d\n",
+			    (float)(value), 0.0, 0, 0);
+		    first = FALSE;
+		}
 		fprintf(fil, "%.3f\t%.4f\t%d\t%lu\n",
-			(float)value, /* sdo bugfix */
-			(((float)running_total)/((float)TotalCounter(psizes))),
+			(float)(value+gran),
+			(float)running_total/(float)total_counter,
 			running_total,
 			count);
 		++lines;
@@ -2870,7 +2965,7 @@ tcplib_do_GENERIC_itemsize(
 
 	    /* if there's no DATA, don't count it!  (sdo change!) */
 	    if (nbytes != 0)
-		AddToCounter(&psizes, nbytes/bucketsize, 1);
+		AddToCounter(&psizes, nbytes, 1, bucketsize);
 	}
     }
 
@@ -2920,12 +3015,14 @@ tcplib_cleanup_bursts()
 
 	    if (ptcbc->burst_bytes != 0) {
 		AddToCounter(&ptcbc->pburst->size,
-			     ptcbc->burst_bytes/BUCKETSIZE_BURSTSIZE, 1);
+			     ptcbc->burst_bytes,
+			     1, GRAN_BURSTSIZE);
 	    }
 
 	    if (ptcbc->numitems != 0) {
 		AddToCounter(&ptcbc->pburst->nitems,
-			     ptcbc->numitems/BUCKETSIZE_NUMITEMS, 1);
+			     ptcbc->numitems,
+			     1,GRAN_NUMITEMS);
 	    }
 	}
     }
@@ -2936,7 +3033,7 @@ tcplib_do_GENERIC_burstsize(
     char *filename,		/* where to store the output */
     dyn_counter counter)
 {
-    int bucketsize = BUCKETSIZE_BURSTSIZE;
+    int bucketsize = GRAN_BURSTSIZE;
 
 
     /* store all the data (old and new) into the file */
@@ -2948,7 +3045,7 @@ tcplib_do_GENERIC_P_maxconns(
     char *filename,		/* where to store the output */
     dyn_counter counter)
 {
-    int bucketsize = BUCKETSIZE_MAXCONNS;
+    int bucketsize = GRAN_MAXCONNS;
 
     /* store all the data (old and new) into the file */
     StoreCounters(filename,"Max Conns", "% Streams",
@@ -2959,7 +3056,7 @@ tcplib_do_GENERIC_nitems(
     char *filename,		/* where to store the output */
     dyn_counter counter)
 {
-    int bucketsize = BUCKETSIZE_NUMITEMS;
+    int bucketsize = GRAN_NUMITEMS;
 
     /* store all the data (old and new) into the file */
     StoreCounters(filename,"Num Items", "% Conns",
@@ -2971,7 +3068,7 @@ tcplib_do_GENERIC_idletime(
     char *filename,		/* where to store the output */
     dyn_counter counter)
 {
-    int bucketsize = BUCKETSIZE_BURSTIDLETIME;
+    int bucketsize = GRAN_BURSTIDLETIME;
 
     /* store all the data (old and new) into the file */
     StoreCounters(filename,"Idle Time", "% Bursts",
@@ -3135,7 +3232,7 @@ IsParallelHttp(
     for (pmc = pep->pmchead; pmc; pmc = pmc->next_pair) {
 
 	/* for efficiency, as we search we remove old, inactive entries */
-	/* that that this is the NEXT entry, not current */
+	/* NOTE that this is the NEXT entry, not current */
 	if (pmc->next_pair) {
 	    if (!RecentlyActiveConn(pmc->next_pair)) {
 		/* remove it (by linking around it) */
@@ -3146,6 +3243,22 @@ IsParallelHttp(
 	/* if it's ME or it's not ACTIVE, skip it */
 	if ((pmc_new == pmc) || !RecentlyActiveConn(pmc))
 	    continue;
+
+	if (trafgen_data_hack) {
+	    /* recv window sizes for client side must also be the same */
+	    if (pmc_new->ptp->a2b.win_max != pmc->ptp->a2b.win_max) {
+		++trafgen_data_hack_excluded;
+		if (0)
+		printf("%ld(%f) != %ld(%f)\n",
+		       pmc_new->ptp->a2b.win_max,
+		       (float)pmc_new->ptp->a2b.win_max/1460.0,
+		       pmc->ptp->a2b.win_max,
+		       (float)pmc->ptp->a2b.win_max/1460.0);
+		continue;	/* skip it */
+	    }
+	    ++trafgen_data_hack_included;
+	}
+
 
 	/* OK, it's ACTIVE */
 
@@ -3390,37 +3503,76 @@ SameEndpoints(
 
 
 /* Data is considered a NEW burst if:
- *  1) There was intervening data in the other direction
- *  2) All previous data was ACKed
+ *  1) All previous data was ACKed
+ *  2) There was intervening data in the other direction
+ *  3) idletime > RTT
  */
 static Bool
 IsNewBurst(
     module_conninfo *pmc,
     tcb *ptcb,
     module_conninfo_tcb *ptcbc,
-    seqnum seq)
+    struct tcphdr *tcp)
 {
+    seqnum seq = ntohl(tcp->th_seq);
+    tcb *orig_lastdata;
+
     tcb *ptcb_otherdir = ptcb->ptwin;
 
-    /* it's only a NEW burst if there was a PREVIOUS burst */
-    if (ptcbc->burst_bytes == 0)
-	return(FALSE);
 
-    /* check for intervening data */
-    if (ptcb == pmc->tcb_lastdata) {
-	/* no intervening data */
+    /* remember the last direction the data flowed */
+    orig_lastdata = pmc->tcb_lastdata;
+    pmc->tcb_lastdata = ptcb;
+
+
+    if (graph_tsg) {
+	plotter_perm_color(ptcb->tsg_plotter, "green");
+	plotter_text(ptcb->tsg_plotter, current_time, seq, "a", "?");
+    }
+
+    /* it's only a NEW burst if there was a PREVIOUS burst */
+    if (ptcbc->burst_bytes == 0) {
+	if (graph_tsg)
+	    plotter_text(ptcb->tsg_plotter, current_time, seq, "b", "==0");
 	return(FALSE);
     }
-    pmc->tcb_lastdata = ptcb;
 
     /* check for old data ACKed */
     if (SEQ_LESSTHAN(ptcb_otherdir->ack,seq)) {
 	/* not ACKed */
+	if (graph_tsg)
+	    plotter_text(ptcb->tsg_plotter, current_time, seq, "b", "noack");
+	return(FALSE);
+    }
+
+    /* check for idletime > RTT */
+    {
+	u_long etime_usecs = elapsed(ptcbc->last_data_time, current_time);
+	u_long last_rtt_usecs = ptcb->rtt_last;
+	if ((last_rtt_usecs != 0) && (etime_usecs < last_rtt_usecs)) {
+	    if (graph_tsg) {
+		char buf[100];
+		sprintf(buf,"short (%ld < %ld)", etime_usecs, last_rtt_usecs);
+		plotter_text(ptcb->tsg_plotter, current_time, seq, "b", buf);
+	    }
+	    return(FALSE);
+	}
+    }
+
+    /* check for intervening data */
+    if (ptcb == orig_lastdata) {
+	/* no intervening data */
+	if (graph_tsg)
+	    plotter_text(ptcb->tsg_plotter, current_time, seq, "b", "!data");
 	return(FALSE);
     }
 
     /* ... else, it's a new burst */
 
+    if (graph_tsg) {
+	plotter_perm_color(ptcb->tsg_plotter, "magenta");
+	plotter_text(ptcb->tsg_plotter, current_time, seq, "r", "YES!!");
+    }
     return(TRUE);
 }
 
