@@ -334,9 +334,6 @@ typedef struct tcb {
     u_long     urg_data_bytes;
     u_long     urg_data_pkts;
    
-   /* stats on sequence numbers */
-
-								
    /* Statistics to store the number of Zero window probes
       seen and the total number of bytes spent for it. */
     u_long      num_zwnd_probes;  
