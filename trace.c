@@ -386,14 +386,14 @@ NewTTP(
     ptp->a2b.cwin_plotter = ptp->b2a.cwin_plotter = NO_PLOTTER;
     if (graph_cwin && !ptp->ignore_pair) {
 	if (!ignore_non_comp || (SYN_SET(ptcp))) {
-	    sprintf(title,"%s_==>_%s (congestion window)",
+	    sprintf(title,"%s_==>_%s (outstanding data)",
 		    ptp->a_endpoint, ptp->b_endpoint);
 	    ptp->a2b.cwin_plotter =
 		new_plotter(&ptp->a2b,NULL,title,
 			    graph_time_zero?"relative time":"time",
 			    "Outstanding Data (bytes)",
 			    CWIN_FILE_EXTENSION);
-	    sprintf(title,"%s_==>_%s (congestions window)",
+	    sprintf(title,"%s_==>_%s (outstanding data)",
 		    ptp->b_endpoint, ptp->a_endpoint);
 	    ptp->b2a.cwin_plotter =
 		new_plotter(&ptp->b2a,NULL,title,
@@ -1586,7 +1586,7 @@ ParseOptions: packet %lu too short to parse remaining options\n", pnum);
                                            pnum,opt); \
               pnum,opt); \
 	      popt = pdata; break;} \
-	if ((unsigned)popt > (unsigned)(plast)) { \
+	if ((unsigned)popt + *plen - 1 > (unsigned)(plast)) { \
 		fprintf(stderr, "\
 ParseOptions: packet %lu %s option truncated, skipping other options\n", \
               pnum,opt); \
