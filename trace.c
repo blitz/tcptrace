@@ -144,6 +144,71 @@ char *b2a_seg_color     = "yellow";
 char *ackdongle_nosample_color	= "blue";
 char *ackdongle_ambig_color	= "red";
 
+
+
+/* 
+ * ipcopyaddr: copy an IPv4 or IPv6 address  
+ */
+static inline void IP_COPYADDR (ipaddr *ptoaddr, ipaddr *pfromaddr)
+{
+    if (ADDR_ISV6(pfromaddr)) {
+	memcpy(ptoaddr->un.ip6.s6_addr, pfromaddr->un.ip6.s6_addr, 16);
+	ptoaddr->addr_vers = 6;
+    } else {
+	ptoaddr->un.ip4.s_addr = pfromaddr->un.ip4.s_addr;
+	ptoaddr->addr_vers = 4;
+    }
+}
+
+
+
+/*
+ * ipsameaddr: test for equality of two IPv4 or IPv6 addresses
+ */
+static inline int IP_SAMEADDR (ipaddr *paddr1, ipaddr *paddr2)
+{
+    int ret = 0;
+    if (ADDR_ISV4(paddr1)) {
+	if (ADDR_ISV4(paddr2))
+	    ret = (paddr1->un.ip4.s_addr == paddr2->un.ip4.s_addr);
+    } else {
+	/* already know ADDR_ISV6(paddr1) */
+	if (ADDR_ISV6(paddr2))
+	    ret = (memcmp(paddr1->un.ip6.s6_addr,
+			  paddr2->un.ip6.s6_addr,16) == 0);
+    }
+    if (debug > 3)
+	printf("SameAddr(%s(%d),%s(%d)) returns %d\n",
+	       HostName(*paddr1), ADDR_VERSION(paddr1),
+	       HostName(*paddr2), ADDR_VERSION(paddr2),
+	       ret);
+    return ret;
+}
+
+/*  
+ *  iplowaddr: test if one IPv4 or IPv6 address is lower than the second one
+ */
+static inline int IP_LOWADDR (ipaddr *paddr1, ipaddr *paddr2)
+{
+    int ret = 0;
+    if (ADDR_ISV6(paddr1)) {
+	if (ADDR_ISV6(paddr2))
+	    ret = (memcmp(paddr1->un.ip6.s6_addr,
+			  paddr2->un.ip6.s6_addr,16) < 0);
+    } else {
+	/* already know ADDR_ISV4(paddr1) */
+	if (ADDR_ISV4(paddr2))
+	    ret = (paddr1->un.ip4.s_addr < paddr2->un.ip4.s_addr);
+    }
+    if (debug > 3)
+	printf("LowAddr(%s(%d),%s(%d)) returns %d\n",
+	       HostName(*paddr1), ADDR_VERSION(paddr1),
+	       HostName(*paddr2), ADDR_VERSION(paddr2),
+	       ret);
+    return ret;
+}
+
+
 /* return elapsed time in microseconds */
 /* (time2 - time1) */
 double

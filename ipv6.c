@@ -403,6 +403,7 @@ int getpayloadlength (struct ip *pip, void *plast)
 
 
 
+#ifdef OLD_THESE_MOVED_TO_TRACE_C
 /* 
  * ipcopyaddr: copy an IPv4 or IPv6 address  
  * (note - this is obsolete in favor of the inline-able
@@ -469,6 +470,7 @@ int ip_lowaddr (ipaddr *paddr1, ipaddr *paddr2)
 	       ret);
     return ret;
 }
+#endif /* OLD_THESE_MOVED_TO_TRACE_C */
 
 
 #ifndef HAVE_INET_PTON
