@@ -79,3 +79,7 @@
   Added '-W' option to turn off Mark's estimated Cwin stuff, it's not
     generally useful
   Added raw packet printing to mod_http
+
+4.0.3 - Thu Jul 24, 1997
+  Fixed tcpdump.c to work with lastest libpcap
+   (can no longer assume that header is aligned :-(  )
