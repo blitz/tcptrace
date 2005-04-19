@@ -2,6 +2,8 @@
 PLATFORM=`uname -smr | sed 's/[ \.]/_/g'`
 OUTDIR=OUTPUT_${PLATFORM}
 BINDIR=BINARY_${PLATFORM}
+CWD=`pwd`
+SUPPORTED_FILES=
 #
 # the good True64 folks are smarter than the rest of us and use a
 # different checksum algorithm.  Let's see if we can get them to
@@ -20,9 +22,20 @@ rm -rf ${OUTDIR} ${DIFFS} *.xpl
 echo "Preparing output directory..."
 mkdir ${OUTDIR}
 #
-echo "Running each regression trace file"
-for FILE in *.*; do
+echo "Detecting supported file formats..."
+../tcptrace -hconfig 2>&1 | awk "/^\t[a-zA-Z]+/ { gsub(/^\t([a-zA-Z]+).*/,\$1); print }" | grep -v Suffix > file_formats
+for TYPE in `cat file_formats`; do
+  SUPPORTED_FILES="$SUPPORTED_FILES `cat ${TYPE}_files`"
+done
+echo "Creating supported file format verification directory..."
+rm file_formats
+rm -rf OUTPUTbench_current
+mkdir OUTPUTbench_current
+#
+echo "Running each supported regression trace file"
+for FILE in $SUPPORTED_FILES; do
   echo -n "  ${FILE}:	"
+  ln -s $CWD/OUTPUTbench/${FILE}.* OUTPUTbench_current
   # short output format
   echo -n " short"
   ../tcptrace +t -nr ${FILE} 2>&1 | bin/cleanup > ${OUTDIR}/$FILE.short
@@ -43,6 +56,6 @@ for FILE in *.*; do
 done
 #
 echo "Testing for differences from benchmark output"
-diff -r OUTPUTbench ${OUTDIR} | tee ${DIFFS}
+diff -r OUTPUTbench_current ${OUTDIR} | tee ${DIFFS}
 #
 exit 0

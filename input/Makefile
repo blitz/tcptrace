@@ -13,4 +13,4 @@ newbench: ${NEWBENCH}
 all: regress binary
 
 clean:
-	rm -rf DIFFS core *.core BINARY_* OUTPUT_* *.xpl
+	rm -rf DIFFS core *.core BINARY_* OUTPUT_* OUTPUTbench_current *.xpl

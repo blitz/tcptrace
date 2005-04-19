@@ -1,0 +1,5 @@
+To add a file to the regression tests, please add the file to the input/
+directory and then create an entry for the test file in the appropriate
+format file; for instance, if adding a tcpdump file, create a line in
+tcpdump_files that contains the filename of the new input file.  This
+will allow tcptrace to only test file formats that are compiled in.
