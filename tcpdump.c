@@ -100,6 +100,8 @@ static int callback(
     iplen = phdr->caplen;
     if (iplen > IP_MAXPACKET)
 	iplen = IP_MAXPACKET;
+    if (iplen < sizeof(struct ether_header) + sizeof(struct ip))
+      return(-1);
 
     type = pcap_datalink(pcap);
 
