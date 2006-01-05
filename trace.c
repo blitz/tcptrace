@@ -1836,6 +1836,7 @@ dotrace(
     if (ACK_SET(ptcp)) {
 	ack_type = ack_in(otherdir,th_ack,tcp_data_length,eff_win,0);
 
+#ifdef EXPERIMENTAL_ONLY
 	/* check first SACK block too to see if there's good rtt info in it */
 	if (ptcpo->sack_count > 0) {
 	    tcp_seq sack = ptcpo->sacks[0].sack_right;
@@ -1844,6 +1845,7 @@ dotrace(
 		(void) ack_in(otherdir,sack,tcp_data_length,eff_win,1);
 	    }
 	}
+#endif
 	
 
 	if ( (th_ack == (otherdir->syn+1)) &&
