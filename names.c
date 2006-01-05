@@ -270,7 +270,7 @@ EndpointName(
     sb_host = HostName(ipaddress);
     sb_port = ServiceName(port);
 
-    snprintf(name_buf,sizeof(name_buf),"%s:%s", sb_host, sb_port);
+    snprintf(name_buf,SIZEOF_NAME_BUF,"%s:%s", sb_host, sb_port);
 
     return(name_buf);
 }
