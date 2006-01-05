@@ -106,7 +106,8 @@ xp_timestamp(
     PLOTTER pl,
     struct timeval time)
 {
-    static char bufs[4][20];	/* several of them for multiple calls in one printf */
+#define NUM_BUFS 4
+    static char bufs[NUM_BUFS][20];	/* several of them for multiple calls in one printf */
     static int bufix = 0;
     unsigned secs;
     unsigned usecs;
@@ -145,7 +146,7 @@ increasing time order.  Try without the '-z' flag\n",
     decimal = usecs;
 
     /* use one of 4 rotating static buffers (for multiple calls per printf) */
-    bufix = (bufix+1)%4;
+    bufix = (bufix+1)%NUM_BUFS;
     pbuf = bufs[bufix];
 
     snprintf(pbuf,sizeof(bufs[bufix]),"%u.%06u",secs,decimal);
