@@ -72,6 +72,7 @@ static char const GCC_UNUSED rcsid[] =
 /* local routines */
 
 
+/* N.B. - result comes from static memory, save it before calling back! */
 char *
 ServiceName(
      portnum port)
@@ -79,17 +80,25 @@ ServiceName(
     static int cache = -1;
     tcelen len;
     struct servent *pse;
-    static char port_buf[20];
+#define NUM_PORT_BUFS 4
+#define SIZEOF_PORT_BUF 20
+    static char port_bufs[NUM_PORT_BUFS][SIZEOF_PORT_BUF];
+    static int bufix = 0;
+    char *port_buf;
     char *sb_port;
 
+    /* rotate through multiple static buffers, so multiple calls per printf work */
+    port_buf = port_bufs[bufix = ((bufix+1)%NUM_PORT_BUFS)];
+
+
     if (!resolve_ports) {
-	snprintf(port_buf,sizeof(port_buf),"%hu",port);
+	snprintf(port_buf,SIZEOF_PORT_BUF,"%hu",port);
 	return(port_buf);
     }
 
     /* only small numbers have names */
     if (port > 1023) {
-	snprintf(port_buf,sizeof(port_buf),"%hu",port);
+	snprintf(port_buf,SIZEOF_PORT_BUF,"%hu",port);
 	return(port_buf);
     }
 
@@ -98,7 +107,7 @@ ServiceName(
     if (cache == -1) {
 	cache = cacreate("service",250,0);
     }
-    len = sizeof(port_buf);
+    len = SIZEOF_PORT_BUF;
     if (debug > 2)
 	fprintf(stderr,"Searching cache for service %d='%s'\n",
 		port, port_buf);
@@ -117,7 +126,7 @@ ServiceName(
     if (pse != NULL) {
 	sb_port = pse->s_name;
     } else {
-	snprintf(port_buf,sizeof(port_buf),"%d",port);
+	snprintf(port_buf,SIZEOF_PORT_BUF,"%d",port);
 	sb_port = port_buf;
     }
     if (debug > 2)
@@ -137,6 +146,11 @@ char *
 HostAddr(
     ipaddr ipaddress)
 {
+#define NUM_NAME_BUFS 4
+#define SIZEOF_NAME_BUF 100
+    static char name_bufs[NUM_NAME_BUFS][SIZEOF_NAME_BUF];
+    static int bufix = 0;
+    char *name_buf;
     char *adr;
 
     if (ADDR_ISV6(&ipaddress)) {
@@ -147,12 +161,20 @@ HostAddr(
     } else {
 	adr = inet_ntoa(ipaddress.un.ip4);
     }
+
+    /* rotate through multiple static buffers, so multiple calls per printf work */
+    name_buf = name_bufs[bufix = ((bufix+1)%NUM_NAME_BUFS)];
+
+    strncpy(name_buf,adr,SIZEOF_NAME_BUF);
+    
         
-    return(adr);
+    return(name_buf);
 }
 
 
 
+/* turn an ipaddr into a printable name */
+/* N.B. - result comes from static memory, save it before calling back! */
 char *
 HostName(
     ipaddr ipaddress)
@@ -161,8 +183,15 @@ HostName(
     static int cache = -1;
     struct hostent *phe;
     char *sb_host;
-    static char name_buf[100];
+#define NUM_NAME_BUFS 4
+#define SIZEOF_NAME_BUF 100
+    static char name_bufs[NUM_NAME_BUFS][SIZEOF_NAME_BUF];
+    static int bufix = 0;
+    char *name_buf;
     char *adr;
+
+    /* rotate through multiple static buffers, so multiple calls per printf work */
+    name_buf = name_bufs[bufix = ((bufix+1)%NUM_NAME_BUFS)];
 
     adr = HostAddr(ipaddress);
 
@@ -174,7 +203,7 @@ HostName(
     if (cache == -1) {
 	cache = cacreate("host",250,0);
     }
-    len = sizeof(name_buf);
+    len = SIZEOF_NAME_BUF;
     if (debug > 2)
 	fprintf(stderr,"Searching cache for host '%s'\n",
 		adr);
@@ -221,14 +250,22 @@ HostName(
 
 
 
+/* N.B. returns memory that is overwritten by subsequent calls */
 char *
 EndpointName(
     ipaddr ipaddress,
     portnum port)
 {
-    static char name_buf[100];
+#define NUM_NAME_BUFS 4
+#define SIZEOF_NAME_BUF 100
+    static char name_bufs[NUM_NAME_BUFS][SIZEOF_NAME_BUF];
+    static int bufix = 0;
+    char *name_buf;
     char *sb_host;
     char *sb_port;
+
+    /* rotate through multiple static buffers, so multiple calls per printf work */
+    name_buf = name_bufs[bufix = ((bufix+1)%NUM_NAME_BUFS)];
 
     sb_host = HostName(ipaddress);
     sb_port = ServiceName(port);
