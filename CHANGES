@@ -651,4 +651,16 @@ getting into the ip_buf buffer.
 -----
 
 Fixed bugs found in the AVL search function that had major bugs /
-complexity issues. 
+complexity issues.
+
+6.6.8: Thu Jan  5, 2006
+
+fixed static memory returned in names.c:
+ EndpointName();
+ HostName();
+ HostAddr();
+ ServiceName();
+
+to use one of a small static number of buffers so that multiple uses in the
+same printf don't give bogus answers
+
