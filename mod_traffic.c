@@ -291,40 +291,14 @@ IncludePorts(
 
 
 
-/* Mostly as a module example, here's a plug in that records TRAFFIC info */
-int
-traffic_init(
-    int argc,
-    char *argv[])
+static int
+traffic_init_files(void)
 {
-    int i;
-    int enable=0;
-    char *args = NULL;
+    static int created = 0;
 
-    for (i=1; i < argc; ++i) {
-	if (!argv[i])
-	    continue;  /* argument already taken by another module... */
-	if (strncmp(argv[i],"-x",2) == 0) {
-	    if (strncasecmp(argv[i]+2,"traffic",sizeof("traffic")-1) == 0) {
-		/* I want to be called */
-		args = argv[i]+(sizeof("-xtraffic")-1);
-		enable = 1;
-		printf("mod_traffic: characterizing traffic\n");
-		argv[i] = NULL;
-	    }
-	}
-    }
-
-    if (!enable)
-	return(0);	/* don't call me again */
-
-    /* init the data storage structure */
-    ports = MallocZ(NUM_PORTS*sizeof(struct traffic_info *));
-
-    ports[0] = MakeTrafficRec(0);
-
-    /* parse the encoded args */
-    ParseArgs(args);
+    if (created)
+	return;
+    created = 1;
 
     /* open the output files */
     if (doplot_packets)
@@ -444,6 +418,44 @@ traffic_init(
 			"time","number of connections",
 			NULL);
     }
+}
+
+
+
+/* Mostly as a module example, here's a plug in that records TRAFFIC info */
+int
+traffic_init(
+    int argc,
+    char *argv[])
+{
+    int i;
+    int enable=0;
+    char *args = NULL;
+
+    for (i=1; i < argc; ++i) {
+	if (!argv[i])
+	    continue;  /* argument already taken by another module... */
+	if (strncmp(argv[i],"-x",2) == 0) {
+	    if (strncasecmp(argv[i]+2,"traffic",sizeof("traffic")-1) == 0) {
+		/* I want to be called */
+		args = argv[i]+(sizeof("-xtraffic")-1);
+		enable = 1;
+		printf("mod_traffic: characterizing traffic\n");
+		argv[i] = NULL;
+	    }
+	}
+    }
+
+    if (!enable)
+	return(0);	/* don't call me again */
+
+    /* init the data storage structure */
+    ports = MallocZ(NUM_PORTS*sizeof(struct traffic_info *));
+
+    ports[0] = MakeTrafficRec(0);
+
+    /* parse the encoded args */
+    ParseArgs(args);
 
     /* we don't want the normal output */
     printsuppress = TRUE;
@@ -577,6 +589,9 @@ traffic_read(
     static timeval last_time = {0,0};
     struct conn_info *pci = mod_data;
     int was_rexmit = 0;
+
+    /* in case files aren't set up yet */
+    traffic_init_files();
 
     /* if neither port is interesting, then ignore this one */
     if (!pti1 && !pti2) {
