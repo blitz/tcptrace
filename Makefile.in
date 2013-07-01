@@ -3,6 +3,11 @@
 #
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+mandir = @mandir@
+
 VPATH = @srcdir@
 
 ################################################################## 
@@ -122,15 +127,6 @@ DEFINES += -DGROK_NETSCOUT
 # define GROK_ERF if you want tcptrace to understand the output
 # format of the Endace Technology dagsnap program */
 DEFINES += -DGROK_ERF
-
-################################################################## 
-# 
-# Just a quick installation rule, not much to do
-# 
-################################################################## 
-# Pathname of directory to install the binary
-BINDIR = /usr/local/bin
-MANDIR = /usr/local/man/
 
 
 ################################################################## 
@@ -287,9 +283,9 @@ bigtarfile:
 # just a quick installation rule
 INSTALL = ./install-sh -c
 install: tcptrace install-man
-	$(INSTALL) -m 755 -o bin -g bin tcptrace ${BINDIR}/tcptrace
+	$(INSTALL) -m 755 -o bin -g bin tcptrace ${bindir}/tcptrace
 install-man: 
-	$(INSTALL) -m 444 -o bin -g bin tcptrace.man $(MANDIR)/man1/tcptrace.1
+	$(INSTALL) -m 444 -o bin -g bin tcptrace.man $(mandir)/man1/tcptrace.1
 
 
 
