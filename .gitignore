@@ -1,0 +1,11 @@
+*~
+*.o
+/Makefile
+/filt_parser/
+/filt_parser.c
+/filt_parser.h
+/filt_parser.output
+/filt_scanner.c
+/tcptrace
+/versnum
+
