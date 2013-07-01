@@ -557,7 +557,8 @@ enum t_ack
 ack_in (tcb * ptcb,
 	seqnum ack,
 	unsigned tcp_data_length,
-	u_long eff_win)
+	u_long eff_win,
+        int ignore)
 {
     quadrant *pquad;
     quadrant *pquad_prev;

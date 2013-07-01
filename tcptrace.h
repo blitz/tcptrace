@@ -846,7 +846,7 @@ char *EndpointName(ipaddr,portnum);
 PLOTTER new_plotter(tcb *plast, char *filename, char *title,
 		    char *xlabel, char *ylabel, char *suffix);
 int rexmit(tcb *, seqnum, seglen, Bool *);
-enum t_ack ack_in(tcb *, seqnum, unsigned tcp_data_length, u_long eff_win);
+enum t_ack ack_in(tcb *, seqnum, unsigned tcp_data_length, u_long eff_win, int ignore);
 Bool IsRTO(tcb *ptcb, seqnum s);
 void DoThru(tcb *ptcb, int nbytes);
 struct mfile *Mfopen(char *fname, char *mode);
